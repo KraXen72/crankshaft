@@ -1,0 +1,47 @@
+appId: com.creepycatsttv.gatoclient
+win:
+  artifactName: ${productName}-portable-${os}-${arch}.${ext}
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+    - target: portable
+      arch:
+        - x64
+        - ia32
+mac:
+  artifactName: ${productName}-portable-${os}-${arch}.${ext}
+  target:
+    - target: dmg
+      arch:
+        - x64
+linux:
+  artifactName: ${productName}-portable-${os}-${arch}.${ext}
+  target:
+    - target: appImage
+      arch:
+        - x64
+        - ia32
+  category: game
+nsis:
+  artifactName: ${productName}-setup-${os}-${arch}.${ext}
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+files:
+  - "**/*"
+  - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
+  - "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}"
+  - "!**/node_modules/*.d.ts"
+  - "!**/node_modules/.bin"
+  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
+  - "!.editorconfig"
+  - "!.eslintrc.yml"
+  - "!**/._*"
+  - "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}"
+  - "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}"
+  - "!**/{appveyor.yml,.travis.yml,circle.yml,.github}"
+  - "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+  - "!dev-app-update.yml"
+# compression: store
