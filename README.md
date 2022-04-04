@@ -1,5 +1,5 @@
 # crankshaft
-> a sensible client built on the ashes of Gatoclient and Gatoclient lite
+> a sensible client built on the ashes of [Gatoclient](https://github.com/Gatohost/gatoclient) and [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite)  
 - very good performance with additional performance enhancing settings
 - no feature bloat
 - maintained & open source
