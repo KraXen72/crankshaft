@@ -1,5 +1,5 @@
 ﻿const fs = require('fs');
-const { ipcRenderer, TouchBarSegmentedControl } = require('electron');
+const { ipcRenderer } = require('electron');
 const path = require('path');
 require('v8-compile-cache');
 // Preload things
@@ -53,8 +53,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
     settingsSideMenu.setAttribute("onclick", "showWindow(1);SOUND.play(`select_0`,0.15);window.windows[0].changeTab(0)");
     settingsSideMenu.addEventListener("click", (event) => {
-        UpdateSettingsTabs(0, true);
+        UpdateSettingsTabs(0, true, true);
     });
+    try { window.windows[0].toggleType({checked: true}) } catch (e) {  }
 })
 
 ipcRenderer.on('preloadSettings', (event, preferences, version, filedir) => {
@@ -157,7 +158,7 @@ function UpdateSettingsTabs(activeTab, hookSearch = true) {
 
     //we yeet basic settings. its advanced now. deal with it.
     if (window.windows[0].settingsType === "basic") { window.windows[0].toggleType({checked: true}) }
-    document.querySelector(".advancedSwitch").style.display = "none"
+    //document.querySelector(".advancedSwitch").style.display = "none"
 
     if (hookSearch) { 
         // only hook search ONCE to ensure the client settings still work while searching. 
@@ -166,6 +167,14 @@ function UpdateSettingsTabs(activeTab, hookSearch = true) {
         try { document.getElementById("settSearch").removeEventListener("input", settSearchCallback) } catch (e) {}
         document.getElementById("settSearch").addEventListener("input", settSearchCallback)
     }
+
+    // if (hookAdvSlider) {
+    //     const sliderCallback = () => {
+    //         setTimeout(() => { UpdateSettingsTabs(0, false, false) }, 410)
+    //     }
+    //     try { document.querySelector(".advancedSwitch").removeEventListener("click", sliderCallback) } catch (e) { }
+    //     document.querySelector(".advancedSwitch").addEventListener("click", sliderCallback)
+    // }
 
     //modifications we do the the dom:
 

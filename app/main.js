@@ -182,7 +182,7 @@ app.on('ready', function () {
     //general ready to show, runs when window refreshes or loads url
     mainWindow.on('ready-to-show', () => {
         mainWindow.show();
-        mainWindow.webContents.send('injectClientCss', userPrefs.clientSplash, app.getVersion());
+        mainWindow.webContents.send('injectClientCss', userPrefs.clientSplash, userPrefs.hideAds, app.getVersion());
     });
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);

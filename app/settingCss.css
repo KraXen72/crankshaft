@@ -80,3 +80,11 @@
     width: 1rem;
     padding: 0 0.2rem;
 }
+
+.advancedSwitch {
+    opacity: .01;
+    transition: hover 0.2s;
+}
+.advancedSwitch:hover {
+    opacity: 1;
+}

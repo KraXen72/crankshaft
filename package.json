@@ -1,5 +1,5 @@
 {
-  "name": "Crankshaft",
+  "name": "crankshaft",
   "version": "1.0.0",
   "description": "Crankshaft Krunker Client by KraXen72 and LukeTheDuke",
   "main": "./app/main.js",
