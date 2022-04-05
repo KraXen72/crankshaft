@@ -18,16 +18,31 @@ document.addEventListener("keydown", (event) => {
 
 /**
  * inject or uninject css to hide ads
+ * @param {String} value 'toggle'|Boolean
  */
-function toggleAdhideCSS() {
+function toggleAdhideCSS(value = 'toggle') {
     let styleTag = document.getElementById("teeny-tiny-css-snippet")
     const rule = `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder { display: none !important }`
 
-    if (styleTag === null) {
+    function create() {
         styleTag = createElement("style", {id: "teeny-tiny-css-snippet", innerHTML: rule})
         document.head.appendChild(styleTag)
+    }
+
+    const exists = styleTag === null ? false : true
+    if (value === 'toggle') {
+        //normal toggle
+        if (!exists) {
+            create()
+        } else {
+            styleTag.remove()
+        }
     } else {
-        styleTag.remove()
+        if (!exists && value === true) {
+            create()
+        } else if (exists && value === false) {
+            try { styleTag.remove() } catch (e) {  }
+        }
     }
 }
 
@@ -57,7 +72,7 @@ ipcRenderer.on('preloadSettings', (event, preferences, version, filedir) => {
     }
 });
 
-ipcRenderer.on('injectClientCss', (event, injectSplash, version) => {
+ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, version) => {
     const splashId = "GatoclientLite-splash-css"
     const settId = "GatoclientLite-settings-css"
     
@@ -82,7 +97,7 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, version) => {
         initLoader.appendChild(createElement("div", {id: "crankshaft-holder-r", text: `KraXen72 & LukeTheDuke`}))
     }
 
-    if (userPrefs.hideAds) { toggleAdhideCSS() }
+    if (hideAds) { toggleAdhideCSS(true) }
 });
 
 /**
@@ -157,7 +172,7 @@ function UpdateSettingsTabs(activeTab, hookSearch = true) {
     const tabs = document.getElementById('settingsTabLayout').children
     const clientTab = tabs[tabs.length - 1]
     
-    clientTab.textContent = "Crankshaft settings"
+    clientTab.textContent = "Crankshaft"
 
     try { clientTab.removeEventListener("click", renderSettings) } catch (e) {}
     clientTab.addEventListener("click", renderSettings)

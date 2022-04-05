@@ -54,7 +54,7 @@ ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 //send settings to preload
 ipcMain.on('preloadNeedSettings', (event) => {
-    mainWindow.webContents.send('preloadSettings', path.join(app.getPath("documents"), "GatoclientLite/settings.json"), app.getVersion(), __dirname);
+    mainWindow.webContents.send('preloadSettings', path.join(app.getPath("documents"), "GatoclientLite/settings.json"), userPrefs.hideAds, app.getVersion(), __dirname);
 });
 //preload is sending back updated settings
 ipcMain.on("preloadSendsNewSettings", (event, data) => {
