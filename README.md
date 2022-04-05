@@ -9,8 +9,7 @@
 ## quality of life
 - doesen't automatically open free spin urls, prompts you before
 - doesen't disable web security
-
-![in-dev screenshot, replace later](https://cdn.discordapp.com/attachments/824388349514219591/960593277864775770/unknown.png)  
+- Hides ads by default (can be turned off)
   
 ## notes
 - i rewrote the settings and added a bunch of comments so you and later me are not confused :)
@@ -34,7 +33,6 @@
 	- [x] ~~client settings shoud probably be searchable also~~
 - [x] remove old splash screen
 - [ ] search and replace - ``GatoclientLite`` and `Gato`
-- [ ] remove ads setting (just injects css, later can block requests maybe)
 - [x] name the client lmfao
 - [x] add credits somewhere in the client
 - [x] custom window open handler
@@ -46,7 +44,9 @@
 	- [ ] keystrokes userscript (both capital and lowercase letters)
 	- [ ] sky color userscript
 - [ ] test performance with the various flags: determine which ones are good
-- [ ] settings that don't require restart shouldn't require restart
+- [x] collapsible settings legend and note
+- [x] settings categories? idk
+- [x] remove ads setting (just injects css, later can block requests maybe)
 - [x] put on github
   
 ## optional
