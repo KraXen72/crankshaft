@@ -13,8 +13,8 @@ require('v8-compile-cache');
 // LukeTheDuke - Gatoclient-lite
 // KraXen72 - fixes and settings rewrite, splash rewrite, social rewrite
 
-let swapperPath = path.join(app.getPath("documents"), "GatoclientLite/swapper");
-let settingsPath = path.join(app.getPath("documents"), "GatoclientLite/settings.json");
+let swapperPath = path.join(app.getPath("documents"), "Crankshaft/swapper");
+let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json");
 const settingsSkeleton = {
     fpsUncap: true,
     inProcessGPU: false,
@@ -54,12 +54,17 @@ ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 //send settings to preload
 ipcMain.on('preloadNeedSettings', (event) => {
-    mainWindow.webContents.send('preloadSettings', path.join(app.getPath("documents"), "GatoclientLite/settings.json"), userPrefs.hideAds, app.getVersion(), __dirname);
+    mainWindow.webContents.send('preloadSettings', path.join(app.getPath("documents"), "Crankshaft/settings.json"), userPrefs.hideAds, app.getVersion(), __dirname);
 });
 //preload is sending back updated settings
 ipcMain.on("preloadSendsNewSettings", (event, data) => {
     Object.assign(userPrefs, data)
     //TODO reapply settings
+
+    if (userPrefs.fullscreen) {
+        mainWindow.setFullScreen(true);
+        mainWindowIsFullscreen = true;
+    }
 })
 
 
@@ -147,7 +152,7 @@ if (userPrefs.inProcessGPU) {
 // Workaround for Electron 8.x
 if (userPrefs.resourceSwapper) {
     protocol.registerSchemesAsPrivileged([{
-        scheme: "gato-swap",
+        scheme: "crankshaft-swap",
         privileges: {
             secure: true,
             corsEnabled: true,
@@ -161,7 +166,7 @@ app.on('ready', function () {
     app.setAppUserModelId(process.execPath);
 
     if (userPrefs.resourceSwapper) {
-        protocol.registerFileProtocol("gato-swap", (request, callback) => callback(decodeURI(request.url.replace(/gato-swap:/, ""))));
+        protocol.registerFileProtocol("crankshaft-swap", (request, callback) => callback(decodeURI(request.url.replace(/crankshaft-swap:/, ""))));
     }
 
     mainWindow = new BrowserWindow({
@@ -289,8 +294,8 @@ app.on('ready', function () {
     // Resource Swapper
     if (userPrefs.resourceSwapper) {
         const Swapper = require("./resourceswapper");
-        const gatoSwapInstance = new Swapper(mainWindow, "normal", swapperPath)
-        gatoSwapInstance.init();
+        const CrankshaftSwapInstance = new Swapper(mainWindow, "normal", swapperPath)
+        CrankshaftSwapInstance.init();
     }
 
     //nice memory leak lmao
