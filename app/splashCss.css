@@ -1,19 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
 /* Removal - modified from https://envyxyz.github.io/removal/removal.css */
 
-#aMerger,
-#aHolder,
-#adCon,
-.endAHolder,
+
 #voiceDisplay,
 #bubbleContainer,
 .button.small.buttonO img,
 .menuSocialB
-#braveWarning,
 .setSugBox2,
 #faceItIconM,
 #rankedSoonTm {
-    display: none!important;
+    display: none !important;
 }
 
 #loadEditrBtn, 

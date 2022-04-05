@@ -19,6 +19,7 @@ const settingsSkeleton = {
     fpsUncap: true,
     inProcessGPU: false,
     disableAccelerated2D: false,
+    hideAds: true,
     fullscreen: false,
     resourceSwapper: true,
     clientSplash: true,
@@ -55,6 +56,12 @@ ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 ipcMain.on('preloadNeedSettings', (event) => {
     mainWindow.webContents.send('preloadSettings', path.join(app.getPath("documents"), "GatoclientLite/settings.json"), app.getVersion(), __dirname);
 });
+//preload is sending back updated settings
+ipcMain.on("preloadSendsNewSettings", (event, data) => {
+    Object.assign(userPrefs, data)
+    //TODO reapply settings
+})
+
 
 if (userPrefs.safeFlags_removeUselessFeatures) {
     //remove useless features

@@ -1,56 +1,73 @@
 /* this is css requried for this client's settings to work properly. */
-#GatoclientLite-settings .settName {
+.GatoclientLite-settings .settName {
     color: inherit;
 }
-#GatoclientLite-settings .settName .setting-title {
+.GatoclientLite-settings .settName .setting-title {
     color: inherit;
 }
 
-/* #GatoclientLite-settings .setting {
+/* .GatoclientLite-settings .setting {
     display: flex;
     align-items: center;
 }
-#GatoclientLite-settings .setting .setting-title {
+.GatoclientLite-settings .setting .setting-title {
     width: 100%;
 } */
-#GatoclientLite-settings .setting .switch {
+.GatoclientLite-settings .setting .switch {
     /* margin-right: 10px !important; */
     box-sizing: border-box;
 }
 
-#GatoclientLite-settings .setting.safety-1, #GatoclientLite-settings .setting.safety-1 .setting-desc {
+.GatoclientLite-settings .setting.safety-1, .GatoclientLite-settings .setting.safety-1 .setting-desc {
     color: gray;
 }
-#GatoclientLite-settings .setting.safety-2, #GatoclientLite-settings .setting.safety-2 .setting-desc {
+.GatoclientLite-settings .setting.safety-2, .GatoclientLite-settings .setting.safety-2 .setting-desc {
     color: rgb(248, 225, 91);
 }
-#GatoclientLite-settings .setting.safety-3, #GatoclientLite-settings .setting.safety-3 .setting-desc {
+.GatoclientLite-settings .setting.safety-3, .GatoclientLite-settings .setting.safety-3 .setting-desc {
     color: rgb(245, 150, 42);
 }
-#GatoclientLite-settings .setting.safety-4, #GatoclientLite-settings .setting.safety-4 .setting-desc {
+.GatoclientLite-settings .setting.safety-4, .GatoclientLite-settings .setting.safety-4 .setting-desc {
     color: darkred;
 }
 .setting.safety-1, .setting.safety-2, .setting.safety-3, .setting.safety-4,
 .setting.safety-1 .setting-title, .setting.safety-2 .setting-title, .setting.safety-3 .setting-title, .setting.safety-4 .setting-title {
     border-bottom: 2px solid;
 }
-#GatoclientLite-settings .setting.safety-1 .setting-title {
+.GatoclientLite-settings .setting.safety-1 .setting-title {
     border-bottom-color: gray;
 }
-#GatoclientLite-settings .setting.safety-2 .setting-title {
+.GatoclientLite-settings .setting.safety-2 .setting-title {
     border-bottom-color: rgb(248, 225, 91);
 }
-#GatoclientLite-settings .setting.safety-3 .setting-title {
+.GatoclientLite-settings .setting.safety-3 .setting-title {
     border-bottom-color: rgb(245, 150, 42);
 }
-#GatoclientLite-settings .setting.safety-4 .setting-title {
+.GatoclientLite-settings .setting.safety-4 .setting-title {
     border-bottom-color: darkred;
 }
 
-.safetyLegend, .sett-note {
+/* .safetyLegend, .sett-note {
     font-size: 0.8rem;
+} */
+
+.requires-restart {
+    opacity: .8;
+}
+.requires-restart {
+    display: none;
+}
+.requires-restart.restart-level-2 {
+    color: #eb5656;
 }
 
+.setting-category-collapsed {
+    display: none;
+}
+
+.setBodH.safetyLegend {
+    padding: 1rem 20px;
+}
 
 .setting .setting-desc {
     border: 2px solid rgba(165, 117, 98, 0.2);
