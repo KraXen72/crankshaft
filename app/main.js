@@ -1,6 +1,8 @@
-﻿const electron = require('electron');
-const path = require('path');
+﻿const path = require('path');
 const fs = require('fs');
+
+const electron = require('electron');
+const { shell } = require('electron');
 const { app, ipcMain, BrowserWindow, protocol, dialog } = electron;
 require('v8-compile-cache');
 
@@ -9,19 +11,19 @@ require('v8-compile-cache');
 // ando - Billboards, modding, etc
 // Giant - JANREX client
 // LukeTheDuke - Gatoclient-lite
-// KraXen72 - fixes and settings rewrite, splash rewrite
+// KraXen72 - fixes and settings rewrite, splash rewrite, social rewrite
 
 let swapperPath = path.join(app.getPath("documents"), "GatoclientLite/swapper");
 let settingsPath = path.join(app.getPath("documents"), "GatoclientLite/settings.json");
-const settingsSkeleton = { 
-    fpsUncap: true,  
-    inProcessGPU: false, 
-    disableAccelerated2D: false, 
-    fullscreen: false, 
+const settingsSkeleton = {
+    fpsUncap: true,
+    inProcessGPU: false,
+    disableAccelerated2D: false,
+    fullscreen: false,
     resourceSwapper: true,
-    clientSplash: true, 
-    skyColor: false, 
-    skyColorValue: "#ff0000", 
+    clientSplash: true,
+    skyColor: false,
+    skyColorValue: "#ff0000",
     "angle-backend": "default",
     logDebugToConsole: false,
     safeFlags_removeUselessFeatures: false,
@@ -44,21 +46,15 @@ let userPrefs = JSON.parse(fs.readFileSync(settingsPath));
 
 // Fullscreen Handler
 let mainWindowIsFullscreen = false;
-let /*splashWindow,*/ mainWindow, socialWindow
+let mainWindow
 
-// inter process communication
-
-// Give App Version to window
-ipcMain.on('app_version', (event) => { event.sender.send('app_version', { version: app.getVersion() });});
+// console log to electron console because krunker turns browser console off
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 //send settings to preload
 ipcMain.on('preloadNeedSettings', (event) => {
     mainWindow.webContents.send('preloadSettings', path.join(app.getPath("documents"), "GatoclientLite/settings.json"), app.getVersion(), __dirname);
 });
-
-//if swapper works without this, we're golden => it does!
-//app.commandLine.appendSwitch("disable-web-security");
 
 if (userPrefs.safeFlags_removeUselessFeatures) {
     //remove useless features
@@ -134,7 +130,7 @@ if (userPrefs['angle-backend'] !== 'default') {
 
         console.log('Using Angle: ' + userPrefs['angle-backend']);
     }
-    
+
 }
 if (userPrefs.inProcessGPU) {
     app.commandLine.appendSwitch("in-process-gpu");
@@ -152,32 +148,15 @@ if (userPrefs.resourceSwapper) {
         }
     }]);
 }
-// if (userPrefs.clientSplash) {
-//     protocol.registerSchemesAsPrivileged([{
-//         scheme: "crankshaft",
-//         privileges: {
-//             secure: true,
-//             corsEnabled: true,
-//             bypassCSP: true
-//         }
-//     }]);
-// }
 
 //Listen for app to get ready
 app.on('ready', function () {
+    app.setAppUserModelId(process.execPath);
 
     if (userPrefs.resourceSwapper) {
         protocol.registerFileProtocol("gato-swap", (request, callback) => callback(decodeURI(request.url.replace(/gato-swap:/, ""))));
     }
-    // if (userPrefs.clientSplash) {
-    //     protocol.registerFileProtocol('crankshaft', (request, callback) => {
-    //         const url = request.url.slice(7)
-    //         callback({ path: path.normalize(`${__dirname}/${url}`) })
-    //     })
-    // }
 
-    app.setAppUserModelId(process.execPath);
-    
     mainWindow = new BrowserWindow({
         show: false,
         width: 1600,
@@ -203,21 +182,12 @@ app.on('ready', function () {
     if (userPrefs.logDebugToConsole) {
         console.log("GPU INFO BEGIN")
         app.getGPUInfo('complete').then(completeObj => {
-                console.dir(completeObj);
+            console.dir(completeObj);
         });
-        
+
         console.log("GPU FEATURES BEGIN")
         console.dir(app.getGPUFeatureStatus());
     }
-    
-    socialWindow = new BrowserWindow({
-        autoHideMenuBar: true,
-        show: false,
-        width: 1600,
-        height: 900,
-        center: true
-    });
-    socialWindow.removeMenu();
 
     // Add Shortcuts
     mainWindow.webContents.on('before-input-event', (event, input) => {
@@ -251,6 +221,63 @@ app.on('ready', function () {
         }
     })
 
+    mainWindow.webContents.on('new-window', (event, url) => {
+        console.log("url trying to open: ", url)
+        const freeSpinHostnames = [
+            "youtube.com",
+            "twitch.tv",
+            "twitter.com",
+            "reddit.com",
+            "discord.com",
+            "accounts.google.com"
+        ]
+        if (url.includes('https://krunker.io/social.html')) {
+            event.preventDefault()
+
+            const socialWindow = new BrowserWindow({
+                autoHideMenuBar: true,
+                show: false,
+                width: 1600,
+                height: 900,
+                center: true,
+                preload: "./socialPreload.js"
+            });
+            socialWindow.removeMenu();
+            socialWindow.loadURL("https://krunker.io/social.html")
+            socialWindow.once('ready-to-show', () => { socialWindow.show() })
+            event.newGuest = socialWindow
+            // handle social page url switching
+            socialWindow.webContents.on('will-navigate', (e, url) => {
+                if (url.includes('https://krunker.io/social.html')) {
+                    socialWindow.loadURL(url);
+                } else {
+                    e.preventDefault()
+                    shell.openExternal(url)
+                } 
+            })
+            //fully destroy the window once it's closed instead of previous implementation where it just stayed hidden
+            socialWindow.once('closed', () => { socialWindow.destroy() })
+        } else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
+            let pick = dialog.showMessageBoxSync({
+                title: "Opening new url",
+                noLink: true,
+                message: `You're trying to open ${url}`,
+                buttons: ["Open in default browser", "Open as a new window in client", "Don't open"]
+            })
+            switch (pick) {
+                case 0: //open in default browser
+                    event.preventDefault()
+                    shell.openExternal(url)
+                    break;
+                case 2: //don't open
+                    event.preventDefault()
+                    break;
+                case 1: //open as a new window in client
+                default:
+                    break;
+            }
+        }
+    })
 
     // Resource Swapper
     if (userPrefs.resourceSwapper) {
@@ -259,36 +286,8 @@ app.on('ready', function () {
         gatoSwapInstance.init();
     }
 
-    // Handle opening social/editor page
-    mainWindow.webContents.on("new-window", (event, url) => {
-        // I hope this fixes the bug with the shitty Amazon Ad
-        event.preventDefault();
-        if (url.includes('https://krunker.io/social.html')) {
-            socialWindow.loadURL(url);
-            socialWindow.show();
-        }
-        else {
-            require('electron').shell.openExternal(url);
-        }
-    });
-
-    // Handle Social Page Switching
-    socialWindow.webContents.on("new-window", (event, url) => {
-       event.preventDefault();
-       if (url.includes('https://krunker.io/social.html')) {
-            socialWindow.loadURL(url);
-       }
-    });
-
-    socialWindow.on("close", (event) => {
-       event.preventDefault();
-       console.log("SOCIAL CLOSED")
-       socialWindow.loadURL("about:blank");
-       socialWindow.hide();
-    });
-    
     //nice memory leak lmao
-    mainWindow.on('close', function () { app.exit() });
+    mainWindow.on('close', function () { app.exit() })
 });
 
 app.on('window-all-closed', () => { app.exit() })
