@@ -1,4 +1,4 @@
-appId: com.creepycatsttv.gatoclient
+appId: com.kraxen72.crankshaft
 win:
   artifactName: ${productName}-portable-${os}-${arch}.${ext}
   target:

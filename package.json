@@ -1,7 +1,7 @@
 {
-  "name": "GatoClient",
-  "version": "1.4.3",
-  "description": "Gatoclient Krunker Client by creepycats",
+  "name": "Crankshaft",
+  "version": "1.0.0",
+  "description": "Crankshaft Krunker Client by KraXen72 and LukeTheDuke",
   "main": "./app/main.js",
   "scripts": {
     "start": "electron .",
@@ -12,13 +12,13 @@
   },
   "author": "creepycatsTTV",
   "license": "MIT",
-  "homepage": "https://gatohost.tk",
+  "homepage": "https://github.com/KraXen72/crankshaft",
   "keywords": [
     "Krunker"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Gatohost/gatoclient.git"
+    "url": "https://github.com/KraXen72/crankshaft.git"
   },
   "devDependencies": {
     "electron": "^10.4.7",

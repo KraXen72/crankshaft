@@ -73,8 +73,8 @@ ipcRenderer.on('preloadSettings', (event, preferences, version, filedir) => {
 });
 
 ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, version) => {
-    const splashId = "GatoclientLite-splash-css"
-    const settId = "GatoclientLite-settings-css"
+    const splashId = "Crankshaft-splash-css"
+    const settId = "Crankshaft-settings-css"
     
     if (document.getElementById(settId) === null) {
         const settCss = fs.readFileSync(path.join(__dirname, 'settingCss.css'))
@@ -103,7 +103,7 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, version) => {
 /**
  * inject css as a style tag
  */
-const injectSettingsCss = (css, classId = "GatoclientLite-settings-css") => {
+const injectSettingsCss = (css, classId = "Crankshaft-settings-css") => {
     let s = document.createElement("style");
     //s.setAttribute("class", classId);
     s.setAttribute("id", classId);
@@ -206,7 +206,7 @@ const settingsDesc = {
     fpsUncap: {title: "Un-cap FPS", type: "bool", desc: "", safety: 0, reload: 2},   
     fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2},
     hideAds: {title: "Hide Ads", type: "bool", desc: "", safety: 0, reload: 0, callback: toggleAdhideCSS}, 
-    resourceSwapper: {title: "Resource swapper", type: "bool", desc: "enable Krunker Resource Swapper. Reads Documents/GatoclientLite/swapper", safety: 0, reload: 2},
+    resourceSwapper: {title: "Resource swapper", type: "bool", desc: "enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper", safety: 0, reload: 2},
     clientSplash: {title: "Client Splash Screen", type: "bool", desc: "show a custom bg and logo (splash screen) while krunker is loading", safety:0, reload: 1},
     "angle-backend": {title: "ANGLE Backend", type: "sel", opts: ["default","gl","d3d11","d3d9","d3d11on12","vulkan"], safety: 0, reload: 2},
     logDebugToConsole: {title: "Log debug & GPU info to console", type: "bool", desc: "log some GPU and debug info to the electron console. you won't see this unless app is ran from source", safety: 0, reload: 2},
@@ -364,10 +364,10 @@ class SettingElem {
 function renderSettings() {
     //DONE add a legend explaining settings' safety
     //TODO re-implement collapsing
-    document.getElementById('settHolder').innerHTML = `<div class="GatoclientLite-settings" id="settHolder">
-        <div class="setHed GatoclientLite-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Client Settings</div>
-        <div class="setBodH GatoclientLite-setBodH"></div>
-        <div class="setHed GatoclientLite-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Safety legend</div>
+    document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
+        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Client Settings</div>
+        <div class="setBodH Crankshaft-setBodH"></div>
+        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Safety legend</div>
         <div class="setBodH safetyLegend">
             <span class="setting safety-1">safe but extra</span>&nbsp;
             <span class="setting safety-2">not recommended but safe</span>&nbsp;
@@ -391,7 +391,7 @@ function renderSettings() {
         }
     }
 
-    const settHeaders = [...document.querySelectorAll(".GatoclientLite-setHed")]
+    const settHeaders = [...document.querySelectorAll(".Crankshaft-setHed")]
     settHeaders.forEach(header => {
         const collapseCallback = () => {toggleCategory(header)}
         //try { header.removeEventListener("click", collapseCallback) } catch (e) { }
@@ -411,6 +411,6 @@ function renderSettings() {
 
     for (let i = 0; i < settings.length; i++) {
         let set = new SettingElem(settings[i])
-        document.querySelector(".GatoclientLite-settings .setBodH").appendChild(set.elem)
+        document.querySelector(".Crankshaft-settings .setBodH").appendChild(set.elem)
     }
 }

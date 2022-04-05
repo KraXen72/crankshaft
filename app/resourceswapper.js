@@ -98,7 +98,7 @@ class Swapper {
 				this.urls.length && this.win.webContents.session.webRequest.onBeforeRequest({
 					urls: this.urls
 				}, (details, callback) => callback({
-					redirectURL: "gato-swap:/" + path.join(this.swapDir, new URL(details.url).pathname)
+					redirectURL: "crankshaft-swap:/" + path.join(this.swapDir, new URL(details.url).pathname)
 				}));
 				break;
 			}
@@ -106,7 +106,7 @@ class Swapper {
 				this.#recursiveSwapHostname(this.win);
 				this.urls.length && this.win.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
 					let { hostname, pathname } = new URL(details.url);
-					callback({ redirectURL: "gato-swap:/" + path.join(this.swapDir, hostname, pathname) });
+					callback({ redirectURL: "crankshaft-swap:/" + path.join(this.swapDir, hostname, pathname) });
 				});
 				break;
 			}

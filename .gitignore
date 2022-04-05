@@ -3,5 +3,6 @@ dist/*
 node_modules/*
 .vscode/*
 GatoClientLiteRewrite.zip
+CrankshaftRewrite.zip
 *.zip
 *.rar
