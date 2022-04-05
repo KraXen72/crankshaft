@@ -66,11 +66,11 @@ ipcRenderer.on('preloadSettings', (event, preferences, version, filedir) => {
 
     // Sky color script: Thank you Janrex
     // NOTE: this is probably broken rn
-    if (userPrefs.skyColor) {
-        Reflect.defineProperty(Object.prototype, "skyCol", {
-            value: userPrefs['skyColorValue'],
-        });
-    }
+    // if (userPrefs.skyColor) {
+    //     Reflect.defineProperty(Object.prototype, "skyCol", {
+    //         value: userPrefs['skyColorValue'],
+    //     });
+    // }
 });
 
 ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, version) => {
@@ -223,8 +223,8 @@ const settingsDesc = {
     inProcessGPU: {title: "In-Process GPU", type: "bool", desc: "embed the gpu under the same process", safety: 1, reload: 2}, 
     disableAccelerated2D: {title: "disable Accelerated 2D canvas", type: "bool", desc: "", safety: 1, reload: 2},
     safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 2, reload: 2},
-    skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
-    skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2, reload: 1},
+    // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
+    // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2, reload: 1},
     safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: "enables javascript-harmony, future-v8-vm-features, webgl2-compute-context. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 3, reload: 2},
     experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc:"Various flags to increase limits", safety: 4, reload: 2},
     experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", desc:"Various flags to lower latency", safety: 4, reload: 2},
