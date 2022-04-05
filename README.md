@@ -9,6 +9,8 @@
 ## quality of life
 - doesen't automatically open free spin urls, prompts you before
 - doesen't disable web security
+
+![in-dev screenshot, replace later](https://cdn.discordapp.com/attachments/824388349514219591/960593277864775770/unknown.png)  
   
 ## notes
 - i rewrote the settings and added a bunch of comments so you and later me are not confused :)
