@@ -1,5 +1,5 @@
 # crankshaft
-> a sensible client built on the ashes of [Gatoclient](https://github.com/Gatohost/gatoclient) and [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite)
+> a sensible krunker client built on the ashes of [Gatoclient](https://github.com/Gatohost/gatoclient) and [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite)
 - very good performance with additional performance enhancing settings
 - no feature bloat
 - maintained & open source
@@ -67,4 +67,5 @@
 - [ ] about screen with credits
 - [ ] client changelog? could be just a link to github
 - [ ] typescript rewrite (maybe not even needed) i can take a look at setting this up because it's not super intuitive how to set up typescript for electron. would be good int he long term tho.
+	- [ ] typescript compiler would compile to "use strict" for performance benefit [link to issue how to enable it on both](https://github.com/aelbore/esbuild-jest/issues/46)  
   
