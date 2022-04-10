@@ -11,6 +11,7 @@
 - doesen't disable web security
 - Hides ads by default (can be turned off)
 - only 4 dependencies: (`electron`, `electron-builder`, `v8-compile-cache` and `esbuild`)
+- userscript support (optional, doesen't import any additional packages if disabled)
   
 ## notes
 - i rewrote the settings and added a bunch of comments so you and later me are not confused :)
