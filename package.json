@@ -25,6 +25,7 @@
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
+    "esbuild": "^0.14.34",
     "v8-compile-cache": "^2.3.0"
   }
 }

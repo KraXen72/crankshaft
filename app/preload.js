@@ -6,8 +6,13 @@ require('v8-compile-cache');
 
 // get rid of client unsupported message
 window.OffCliV = true;
+
 let userPrefs
 let userPrefsPath
+let userscriptPath = null
+let userscriptPathTracker
+let userscripts
+let userscriptTracker
 
 // Lets us exit the game lmao
 document.addEventListener("keydown", (event) => {
@@ -73,7 +78,41 @@ ipcRenderer.on('preloadSettings', (event, preferences, version, filedir) => {
     // }
 });
 
-ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, version) => {
+ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath) => {
+    userscriptPath = recieved_userscriptPath
+    userscriptPathTracker = path.resolve(userscriptPath, "tracker.json")
+
+    userscripts = fs.readdirSync(userscriptPath, {withFileTypes: true})
+        .filter(entry => entry.name.endsWith(".js"))
+        .map(entry => {
+            const name = entry.name
+            const fullpath = path.resolve(userscriptPath, name).toString()
+            const rawContent = fs.readFileSync(fullpath, {encoding: "utf-8"})
+            let content = require('esbuild').transformSync(rawContent, { minify: true })
+            if (content.warnings.length > 0) { 
+                console.warning(`'${name}' has warnings: `, content.warnings) 
+            }
+            content = content.code
+
+            return {name: name, fullpath, content}
+    })
+    let tracker = {}
+    userscripts.forEach(u => tracker[u.name] = false)
+    Object.assign(tracker, JSON.parse(fs.readFileSync(userscriptPathTracker, {encoding: "utf-8"})))
+    fs.writeFileSync(userscriptPathTracker, JSON.stringify(tracker, null, 2), {encoding: "utf-8"})
+
+    //run the code in the userscript;
+    //TODO figure out how to "use strict"
+    userscripts.forEach(u => {
+        if (tracker[u.name]) {
+            let code = new String(u.content)
+            Function(code)();
+        }
+    })
+    console.log(userscripts)
+})
+
+ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, userscripts, version) => {
     const splashId = "Crankshaft-splash-css"
     const settId = "Crankshaft-settings-css"
     
@@ -94,11 +133,15 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, version) => {
             innerHTML: fs.readFileSync(path.resolve(__dirname, "assets", "splashLogoFragment.html"))
         }))
 
-        initLoader.appendChild(createElement("div", {id: "crankshaft-holder-l", text: `v${version}`}))
-        initLoader.appendChild(createElement("div", {id: "crankshaft-holder-r", text: `KraXen72 & LukeTheDuke`}))
+        //make our won bottom corner holders incase krunker changes it's shit. we only rely on the loading text from krunker.
+        try { document.querySelector("#loadInfoRHolder").remove() } catch (e) {  } 
+        try { document.querySelector("#loadInfoLHolder").remove() } catch (e) {  } 
+        initLoader.appendChild(createElement("div", {class: "crankshaft-holder-l", id: "#loadInfoLHolder", text: `v${version}`}))
+        initLoader.appendChild(createElement("div", {class: "crankshaft-holder-r", id: "#loadInfoRHolder", text: `KraXen72 & LukeTheDuke`}))
     }
 
     if (hideAds) { toggleAdhideCSS(true) }
+    if (userscripts) { ipcRenderer.send("preloadNeedsUserscriptPath") }
 });
 
 /**
@@ -216,6 +259,7 @@ const settingsDesc = {
     fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2},
     hideAds: {title: "Hide Ads", type: "bool", desc: "", safety: 0, reload: 0, callback: toggleAdhideCSS}, 
     resourceSwapper: {title: "Resource swapper", type: "bool", desc: "enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper", safety: 0, reload: 2},
+    userscripts: {title: "Userscript support", type: "bool", desc: "Enable userscript support. place .js files in Documents/Crankshaft/scripts", safety: 1, reload: 2},
     clientSplash: {title: "Client Splash Screen", type: "bool", desc: "show a custom bg and logo (splash screen) while krunker is loading", safety:0, reload: 1},
     "angle-backend": {title: "ANGLE Backend", type: "sel", opts: ["default","gl","d3d11","d3d9","d3d11on12","vulkan"], safety: 0, reload: 2},
     logDebugToConsole: {title: "Log debug & GPU info to console", type: "bool", desc: "log some GPU and debug info to the electron console. you won't see this unless app is ran from source", safety: 0, reload: 2},
@@ -375,7 +419,7 @@ function renderSettings() {
     //TODO re-implement collapsing
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
         <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Client Settings</div>
-        <div class="setBodH Crankshaft-setBodH"></div>
+        <div class="setBodH Crankshaft-setBodH mainSettings"></div>
         <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Safety legend</div>
         <div class="setBodH safetyLegend">
             <span class="setting safety-1">safe but extra</span>&nbsp;
@@ -385,27 +429,6 @@ function renderSettings() {
         </div>
     </div>`
     //<span class="setting safety-1">NOTE: All settings requrie restart of the client</span><br>
-
-    function toggleCategory(me) {
-        const sibling = me.nextElementSibling
-
-        sibling.classList.toggle("setting-category-collapsed")
-
-        const iconElem = me.querySelector(".material-icons")
-        ipcRenderer.send("logMainConsole", iconElem.innerHTML)
-        if (iconElem.innerHTML.toString() === "keyboard_arrow_down") {
-            iconElem.innerHTML = "keyboard_arrow_right"
-        } else {
-            iconElem.innerHTML = "keyboard_arrow_down"
-        }
-    }
-
-    const settHeaders = [...document.querySelectorAll(".Crankshaft-setHed")]
-    settHeaders.forEach(header => {
-        const collapseCallback = () => {toggleCategory(header)}
-        //try { header.removeEventListener("click", collapseCallback) } catch (e) { }
-        header.addEventListener("click", collapseCallback)
-    })
 
     let settings = Object.keys(settingsDesc)
     .map(key => { //first we turn the object into an array of objects so it's iterable
@@ -420,6 +443,36 @@ function renderSettings() {
 
     for (let i = 0; i < settings.length; i++) {
         let set = new SettingElem(settings[i])
-        document.querySelector(".Crankshaft-settings .setBodH").appendChild(set.elem)
+        document.querySelector(".Crankshaft-settings .setBodH.mainSettings").appendChild(set.elem)
     }
+
+    if (userPrefs.userscripts) {
+        const userScriptSkeleton = `
+        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Userscripts</div>
+        <div class="setBodH Crankshaft-setBodH.userscripts"></div>`
+        document.querySelector(".Crankshaft-settings").innerHTML += userScriptSkeleton
+
+        //const userscriptDir = 
+    }
+
+    function toggleCategory(me) {
+        const sibling = me.nextElementSibling
+
+        sibling.classList.toggle("setting-category-collapsed")
+
+        const iconElem = me.querySelector(".material-icons")
+        //ipcRenderer.send("logMainConsole", iconElem.innerHTML)
+        if (iconElem.innerHTML.toString() === "keyboard_arrow_down") {
+            iconElem.innerHTML = "keyboard_arrow_right"
+        } else {
+            iconElem.innerHTML = "keyboard_arrow_down"
+        }
+    }
+
+    const settHeaders = [...document.querySelectorAll(".Crankshaft-setHed")]
+    settHeaders.forEach(header => {
+        const collapseCallback = () => {toggleCategory(header)}
+        //try { header.removeEventListener("click", collapseCallback) } catch (e) { }
+        header.addEventListener("click", collapseCallback)
+    })
 }

@@ -63,21 +63,23 @@
 /* we kinda wanna hide the loader and just keep the text. it interferes with the logo */
 #lC-cont {display: none;}
 
-#crankshaft-holder-r {
+.crankshaft-holder-r {
     position: absolute;
     right: 20px;
     bottom: 20px;
-    font-size: 20px;
+    font-size: 20px !important;
     text-align: right;
     color: rgba(255,255,255,.7);
+    display: block !important;
 }
-#crankshaft-holder-l {
+.crankshaft-holder-l {
     position: absolute;
     left: 20px;
     bottom: 20px;
-    font-size: 20px;
+    font-size: 20px !important;
     text-align: left;
     color: rgba(255,255,255,.7);
+    display: block !important;
 }
 
 /* #initLoader > div:first-child[style*="translate"] {

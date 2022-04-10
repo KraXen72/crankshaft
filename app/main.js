@@ -15,6 +15,9 @@ require('v8-compile-cache');
 
 let swapperPath = path.join(app.getPath("documents"), "Crankshaft/swapper");
 let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json");
+let userscriptPath = path.join(app.getPath("documents"), "Crankshaft/scripts")
+let userscriptPathTracker = path.resolve(userscriptPath, "tracker.json")
+
 const settingsSkeleton = {
     fpsUncap: true,
     inProcessGPU: false,
@@ -22,6 +25,7 @@ const settingsSkeleton = {
     hideAds: true,
     fullscreen: false,
     resourceSwapper: true,
+    userscripts: false,
     clientSplash: true,
     // skyColor: false,
     // skyColorValue: "#ff0000",
@@ -36,6 +40,8 @@ const settingsSkeleton = {
 }
 
 if (!fs.existsSync(swapperPath)) { fs.mkdirSync(swapperPath, { recursive: true }); };
+if (!fs.existsSync(userscriptPath)) { fs.mkdirSync(userscriptPath, { recursive: true }); };
+if (!fs.existsSync(userscriptPathTracker)) { fs.writeFileSync(userscriptPathTracker, "{}", {encoding: "utf-8"}) }
 
 // Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
 if (!fs.existsSync(settingsPath)) {
@@ -54,8 +60,14 @@ ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 //send settings to preload
 ipcMain.on('preloadNeedSettings', (event) => {
-    mainWindow.webContents.send('preloadSettings', path.join(app.getPath("documents"), "Crankshaft/settings.json"), userPrefs.hideAds, app.getVersion(), __dirname);
+    mainWindow.webContents.send('preloadSettings', settingsPath, userPrefs.hideAds, app.getVersion(), __dirname);
 });
+
+//send usercript path to preload
+ipcMain.on("preloadNeedsUserscriptPath", (event) => {
+    mainWindow.webContents.send('preloadUserscriptPath', userscriptPath, __dirname);
+})
+
 //preload is sending back updated settings
 ipcMain.on("preloadSendsNewSettings", (event, data) => {
     Object.assign(userPrefs, data)
@@ -182,7 +194,7 @@ app.on('ready', function () {
     //general ready to show, runs when window refreshes or loads url
     mainWindow.on('ready-to-show', () => {
         mainWindow.show();
-        mainWindow.webContents.send('injectClientCss', userPrefs.clientSplash, userPrefs.hideAds, app.getVersion());
+        mainWindow.webContents.send('injectClientCss', userPrefs.clientSplash, userPrefs.hideAds, userPrefs.userscripts, app.getVersion());
     });
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);
