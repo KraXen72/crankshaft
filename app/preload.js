@@ -258,7 +258,7 @@ function UpdateSettingsTabs(activeTab, hookSearch = true) {
 const settingsDesc = {
     fpsUncap: {title: "Un-cap FPS", type: "bool", desc: "", safety: 0, reload: 2},   
     fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2},
-    hideAds: {title: "Hide Ads", type: "bool", desc: "", safety: 0, reload: 0, callback: toggleAdhideCSS}, 
+    hideAds: {title: "Hide Ads", type: "bool", desc: "", safety: 0, reload: 0}, 
     resourceSwapper: {title: "Resource swapper", type: "bool", desc: "enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper", safety: 0, reload: 2},
     userscripts: {title: "Userscript support", type: "bool", desc: "Enable userscript support. place .js files in Documents/Crankshaft/scripts", safety: 1, reload: 2},
     clientSplash: {title: "Client Splash Screen", type: "bool", desc: "show a custom bg and logo (splash screen) while krunker is loading", safety:0, reload: 1},
@@ -385,6 +385,9 @@ class SettingElem {
             ipcRenderer.send("logMainConsole", `recieved an update for ${this.props.key}: ${value}`)
             userPrefs[this.props.key] = value
             saveSettings()
+
+            // you can add custom instant refresh callbacks for settings here
+            if (this.props.key === "hideAds") { toggleAdhideCSS(value) }
         } else if (callback === "userscript") {
             const thisUserscript = userscripts.filter(u => u.fullpath = this.props.desc)
 
@@ -410,7 +413,7 @@ class SettingElem {
         w.innerHTML = this.HTML
 
         if (this.type === 'sel') { w.querySelector('select').value = this.props.value } //select value applying is fucky so like fix it i guess
-        ipcRenderer.send("logMainConsole", `cb is ${this.props.callback}, update is: ${this.updateMethod}`)
+        //ipcRenderer.send("logMainConsole", `cb is ${this.props.callback}, update is: ${this.updateMethod}`)
 
         //add an eventlistener
         // if (typeof this.props.callback === 'undefined') {
