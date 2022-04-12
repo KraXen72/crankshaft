@@ -89,3 +89,6 @@ input:checked+.advancedSlider:hover {
     opacity: 1;
     transition: all 0s !important;
 }
+.crankshaft-gray {
+    color: gray !important;
+} 

@@ -101,7 +101,7 @@ ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath) => {
     Object.assign(tracker, JSON.parse(fs.readFileSync(userscriptPathTracker, {encoding: "utf-8"})))
     fs.writeFileSync(userscriptPathTracker, JSON.stringify(tracker, null, 2), {encoding: "utf-8"})
 
-    //run the code in the userscript;
+    //run the code in the userscript
     //TODO figure out how to "use strict"
     userscripts.forEach(u => {
         if (tracker[u.name]) {
@@ -109,7 +109,8 @@ ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath) => {
             Function(code)();
         }
     })
-    console.log(userscripts)
+    userscriptTracker = tracker
+    //console.log(userscripts)
 })
 
 ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, userscripts, version) => {
@@ -286,6 +287,10 @@ function saveSettings() {
     ipcRenderer.send("preloadSendsNewSettings", userPrefs) //send them back to main
 }
 
+function saveUserscriptTracker() {
+    fs.writeFileSync(userscriptPathTracker, JSON.stringify(userscriptTracker, null, 2), {encoding: "utf-8"})
+}
+
 //note by KraXen72: i wrote this setting generation myself. didn't just steal it from idkr like every other client does, and then they have no idea how it works.
 
 /**
@@ -375,14 +380,21 @@ class SettingElem {
     set update({elem, callback}) {
         let target = elem.getElementsByClassName('s-update')[0]
         let value = target[this.updateKey]
-        
-        //console.log(`dry run: would update '${this.props.key}' to '${value}'`)
-        ipcRenderer.send("logMainConsole", `recieved an update for ${this.props.key}: ${value}`)
-        userPrefs[this.props.key] = value
-        saveSettings()
-        if (callback !== 'normal') { callback() }
-    }
 
+        if (callback === "normal") {
+            ipcRenderer.send("logMainConsole", `recieved an update for ${this.props.key}: ${value}`)
+            userPrefs[this.props.key] = value
+            saveSettings()
+        } else if (callback === "userscript") {
+            const thisUserscript = userscripts.filter(u => u.fullpath = this.props.desc)
+
+            ipcRenderer.send("logMainConsole", `userscript: recieved an update for ${this.props.title}: ${value}`)
+            userscriptTracker[this.props.title] = value
+            saveUserscriptTracker()
+        } else {
+            callback()
+        }  
+    }
     /**
      * this initializes the element and its eventlisteners. 
      * @returns {Element}
@@ -398,25 +410,27 @@ class SettingElem {
         w.innerHTML = this.HTML
 
         if (this.type === 'sel') { w.querySelector('select').value = this.props.value } //select value applying is fucky so like fix it i guess
+        ipcRenderer.send("logMainConsole", `cb is ${this.props.callback}, update is: ${this.updateMethod}`)
 
         //add an eventlistener
-        if (typeof this.props.callback === 'undefined') {
-            w[this.updateMethod] = () => {
-                this.update = {elem: w, callback: "normal"}
-            }
-        } else {
-            w[this.updateMethod] = () => {
-                this.update = {elem: w, callback: this.props.callback}
-            }
+        // if (typeof this.props.callback === 'undefined') {
+        //     w[this.updateMethod] = () => {
+        //         this.update = {elem: w, callback: "normal"}
+        //     }
+        // } else {
+            
+        // }
+        if (typeof this.props.callback === "undefined") {this.props.callback = "normal"}
+        w[this.updateMethod] = () => {
+            this.update = {elem: w, callback: this.props.callback}
         }
-
         return w //return the element
     }
 }
 
 function renderSettings() {
     //DONE add a legend explaining settings' safety
-    //TODO re-implement collapsing
+    //DONE re-implement collapsing
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
         <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Client Settings</div>
         <div class="setBodH Crankshaft-setBodH mainSettings"></div>
@@ -428,6 +442,15 @@ function renderSettings() {
             <span class="setting safety-4">experimental and unstable</span>
         </div>
     </div>`
+
+    if (userPrefs.userscripts) {
+        const userScriptSkeleton = `
+        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Userscripts</div>
+        <div class="setBodH Crankshaft-setBodH userscripts">
+            <div class="settName setting"><span class="setting-title crankshaft-gray">NOTE: refresh page to see changes</span></div> 
+        </div>`
+        document.querySelector(".Crankshaft-settings").innerHTML += userScriptSkeleton
+    }
     //<span class="setting safety-1">NOTE: All settings requrie restart of the client</span><br>
 
     let settings = Object.keys(settingsDesc)
@@ -437,22 +460,34 @@ function renderSettings() {
         return obj
     })
     .map(obj => { //we then plug in real data from saved userPrefs so settings load with the preferences.
-        Object.assign(obj, {value: userPrefs[obj.key]})
+        Object.assign(obj, {value: userPrefs[obj.key], callback: "normal"})
         return obj
     })
 
     for (let i = 0; i < settings.length; i++) {
-        let set = new SettingElem(settings[i])
+        const set = new SettingElem(settings[i])
         document.querySelector(".Crankshaft-settings .setBodH.mainSettings").appendChild(set.elem)
     }
 
     if (userPrefs.userscripts) {
-        const userScriptSkeleton = `
-        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Userscripts</div>
-        <div class="setBodH Crankshaft-setBodH.userscripts"></div>`
-        document.querySelector(".Crankshaft-settings").innerHTML += userScriptSkeleton
+        let userscriptSettings = userscripts
+        .map(userscript => { 
+            const obj = {
+                title: userscript.name,
+                value: userscriptTracker[userscript.name], 
+                type: "bool", 
+                desc: userscript.fullpath, 
+                safety: 0, 
+                reload: 2,
+                callback: "userscript"
+            }
+            return obj
+        })
 
-        //const userscriptDir = 
+        for (let i = 0; i < userscriptSettings.length; i++) {
+            const userSet = new SettingElem(userscriptSettings[i])
+            document.querySelector(".Crankshaft-settings .setBodH.userscripts").appendChild(userSet.elem)
+        }
     }
 
     function toggleCategory(me) {
