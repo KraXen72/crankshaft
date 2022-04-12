@@ -273,7 +273,7 @@ const settingsDesc = {
     safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: "enables javascript-harmony, future-v8-vm-features, webgl2-compute-context. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 3, reload: 2},
     experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc:"Various flags to increase limits", safety: 4, reload: 2},
     experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", desc:"Various flags to lower latency", safety: 4, reload: 2},
-    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", desc: "Various performance enhancing flags. can be unstable", safety: 4, reload: 2},
+    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", desc: "Various performance enhancing flags. Can be unstable", safety: 4, reload: 2},
 }
 
 const reloadDesc = {
