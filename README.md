@@ -46,9 +46,11 @@
 	- [x] minify content before evaluating. scripts either have to "use strict" or run them through a minifier to solve this.
 	- [x] eval the code in them
 	- [x] a json to keep track of disabled/enabled userscripts
-	- [ ] render settings for userscripts
-	- [ ] save settings to tracker.json
-	- [ ] note to refresh page to apply userscript
+	- [x] render settings for userscripts
+	- [x] save settings to tracker.json
+	- [x] note to refresh page to apply userscript
+	- [x] turning on will run immediatelly
+	- [x] FIX turning userscripts on makes settings not work......
 	- [ ] keystrokes userscript (both capital and lowercase letters)
 	- [ ] sky color userscript
 - [ ] test performance with the various flags: determine which ones are good
