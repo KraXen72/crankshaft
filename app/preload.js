@@ -107,6 +107,11 @@ ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath) => {
         if (tracker[u.name]) {
             let code = new String(u.content)
             Function(code)();
+            console.log(
+                `%c[cs] %cran %c'${u.name.toString()}'`, 
+                "color: lightblue; font-weight: bold;", 
+                "color: white;", "color: lightgreen;"
+            )
         }
     })
     userscriptTracker = tracker
