@@ -12,7 +12,8 @@
 - doesen't automatically open free spin urls, prompts you before
 - doesen't disable web security
 - Hides ads by default (can be turned off)
-- only 4 dependencies: (`electron`, `electron-builder`, `v8-compile-cache` and `esbuild`)
+- written in typescript
+- only 2 dependencies: (`v8-compile-cache` and `esbuild`)
   
 ## userscripts
 - any `.js` file in `Documents/Crankshaft/scripts` will be considered a userscript and executed if enabled in settings.   

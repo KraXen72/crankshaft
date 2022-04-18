@@ -1,12 +1,13 @@
 {
   "name": "crankshaft",
   "version": "1.0.0",
-  "description": "Crankshaft Krunker Client by KraXen72 and LukeTheDuke",
+  "description": "Crankshaft Krunker Client by KraXen72",
   "main": "./app/main.js",
   "scripts": {
-    "start": "electron .",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder",
     "release": "electron-builder --publish always",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -22,7 +23,8 @@
   },
   "devDependencies": {
     "electron": "^10.4.7",
-    "electron-builder": "^22.11.7"
+    "electron-builder": "^22.11.7",
+    "typescript": "^4.6.3"
   },
   "dependencies": {
     "esbuild": "^0.14.34",

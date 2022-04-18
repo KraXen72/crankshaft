@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "noImplicitAny": true,
+      "sourceMap": false,
+      "outDir": "app",
+      "baseUrl": ".",
+      "target": "es2019",
+      "strict": false,
+      "paths": {
+        "*": ["node_modules/*"]
+      }
+    },
+    "include": [
+      "app/src/**/*"
+, "app/socialPreload.js"    ],
+    "exclude": [
+        "dist/*"
+    ]
+  }
