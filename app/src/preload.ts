@@ -131,7 +131,7 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, userscripts, ve
     }
     
     if (document.getElementById(splashId) === null && injectSplash === true) {
-        let splashCSS = fs.readFileSync(path.resolve(__dirname, 'assets', 'splashCSS.css'), {encoding: "utf-8"})
+        let splashCSS = fs.readFileSync(path.resolve(__dirname, 'assets', 'splashCss.css'), {encoding: "utf-8"})
         //console.log(path.resolve(__dirname, "aieGears.png"))
         //splashCSS += ` #initLoader {background-image: url("crankshaft://${path.resolve(__dirname, "assets", "aieGears.png")}") !important;}`
         injectSettingsCss(splashCSS, splashId)

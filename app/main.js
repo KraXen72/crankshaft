@@ -69,6 +69,7 @@ electron_1.ipcMain.on("preloadNeedsUserscriptPath", (event) => {
 //preload is sending back updated settings
 electron_1.ipcMain.on("preloadSendsNewSettings", (event, data) => {
     Object.assign(userPrefs, data);
+    //TODO reapply settings
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);
         mainWindowIsFullscreen = true;
