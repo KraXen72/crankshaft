@@ -122,7 +122,7 @@ electron_1.ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, user
         injectSettingsCss(settCss, settId);
     }
     if (document.getElementById(splashId) === null && injectSplash === true) {
-        let splashCSS = fs.readFileSync(path.resolve(__dirname, 'assets', 'splashCSS.css'), { encoding: "utf-8" });
+        let splashCSS = fs.readFileSync(path.resolve(__dirname, 'assets', 'splashCss.css'), { encoding: "utf-8" });
         //console.log(path.resolve(__dirname, "aieGears.png"))
         //splashCSS += ` #initLoader {background-image: url("crankshaft://${path.resolve(__dirname, "assets", "aieGears.png")}") !important;}`
         injectSettingsCss(splashCSS, splashId);
@@ -135,18 +135,16 @@ electron_1.ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, user
             innerHTML: fs.readFileSync(path.resolve(__dirname, "assets", "splashLogoFragment.html"))
         }));
         //make our won bottom corner holders incase krunker changes it's shit. we only rely on the loading text from krunker.
-        //@ts-ignore
         try {
             document.querySelector("#loadInfoRHolder").remove();
         }
         catch (e) { }
-        //@ts-ignore 
         try {
             document.querySelector("#loadInfoLHolder").remove();
         }
         catch (e) { }
         initLoader.appendChild(createElement("div", { class: "crankshaft-holder-l", id: "#loadInfoLHolder", text: `v${version}` }));
-        initLoader.appendChild(createElement("div", { class: "crankshaft-holder-r", id: "#loadInfoRHolder", text: `KraXen72 & LukeTheDuke` }));
+        initLoader.appendChild(createElement("div", { class: "crankshaft-holder-r", id: "#loadInfoRHolder", text: /*`KraXen72 & LukeTheDuke`*/ `Client by KraXen72` }));
     }
     if (hideAds) {
         toggleAdhideCSS(true);
