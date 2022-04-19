@@ -82,6 +82,8 @@ ipcRenderer.on('preloadSettings', (event, preferences, version, filedir) => {
 
 ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath: string) => {
     userscriptPath = recieved_userscriptPath
+    //feel free to add more code
+    const bannedCode = ["renderer", "reflect", "Reflect", "Renderer", "this._renderer", "game.renderer", "game.renderer.setClearColor"]
 
     userscriptPathTracker = path.resolve(userscriptPath, "tracker.json")
     userscripts = fs.readdirSync(userscriptPath, {withFileTypes: true})
@@ -94,10 +96,24 @@ ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath: string)
             if (content.warnings.length > 0) { 
                 console.warn(`'${name}' has warnings: `, content.warnings) 
             }
+            
             content = content.code
 
             return {name: name, fullpath, content}
-    })
+        })
+        .filter(userscript => {
+            if (bannedCode.some(bc => userscript.content.includes(bc))) {
+                console.log(
+                    `%c[cs] %cdidn't run %c'${userscript.name.toString()}' %cbecause it attempts to modify the game's renderer. Try renaming some variables/text if this is a false positive.`, 
+                    "color: lightblue; font-weight: bold;", 
+                    "color: red;", "color: lightgreen;", "color: white;"
+                )
+                return false
+            } else {
+                return true
+            }
+            
+        })
     let tracker: userscriptTracker = {}
     userscripts.forEach(u => tracker[u.name] = false)
     Object.assign(tracker, JSON.parse(fs.readFileSync(userscriptPathTracker, {encoding: "utf-8"})))

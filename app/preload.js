@@ -83,6 +83,8 @@ electron_1.ipcRenderer.on('preloadSettings', (event, preferences, version, filed
 });
 electron_1.ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath) => {
     userscriptPath = recieved_userscriptPath;
+    //feel free to add more code
+    const bannedCode = ["renderer", "reflect", "this._renderer", "game.renderer", "game.renderer.setClearColor"];
     userscriptPathTracker = path.resolve(userscriptPath, "tracker.json");
     userscripts = fs.readdirSync(userscriptPath, { withFileTypes: true })
         .filter(entry => entry.name.endsWith(".js"))
@@ -96,6 +98,15 @@ electron_1.ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPa
         }
         content = content.code;
         return { name: name, fullpath, content };
+    })
+        .filter(userscript => {
+        if (bannedCode.some(bc => userscript.content.includes(bc))) {
+            console.log(`%c[cs] %cdidn't run %c'${userscript.name.toString()}' %cbecause it attempts to modify the game's renderer. Try renaming some variables if this is a false positive.`, "color: lightblue; font-weight: bold;", "color: red;", "color: lightgreen;", "color: white;");
+            return false;
+        }
+        else {
+            return true;
+        }
     });
     let tracker = {};
     userscripts.forEach(u => tracker[u.name] = false);
