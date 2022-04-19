@@ -38,3 +38,6 @@
 - please report any bugs/feature requests in the Issues.   
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.  
 - we don't have a client discord server yet, but once there is one the link will be here => ____.
+  
+## where to download?
+- releases will be in the Releases tab very soon
