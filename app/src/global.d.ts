@@ -25,6 +25,7 @@ interface SettingsDescItem {
     max?: number,
     //for 'sel'
     opts?: string[],
+    //enriched objects, this client specific
     value?: any,
     key?: any,
     callback?: "normal" | "userscript" | Function 
