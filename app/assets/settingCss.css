@@ -1,3 +1,16 @@
+.Crankshaft-settings .setting.safety-1 {
+    color: #969696;
+}
+.Crankshaft-settings .setting.safety-2 {
+    color: #ffd903;
+}
+.Crankshaft-settings .setting.safety-3 {
+    color: #ff9203;
+}
+.Crankshaft-settings .setting.safety-4 {
+    color: #ff0303;
+}
+
 /* this is css requried for this client's settings to work properly. */
 .Crankshaft-settings .settName {
     color: inherit;
@@ -14,36 +27,32 @@
     width: 100%;
 } */
 .Crankshaft-settings .setting .switch {
-    /* margin-right: 10px !important; */
     box-sizing: border-box;
+    grid-area: 1 / 3 / 2 / 4;
 }
 
-.Crankshaft-settings .setting.safety-1,
 .Crankshaft-settings .setting.safety-1 .setting-desc {
-    color: gray;
+    color: #969696;
+    background-color: rgb(99 99 99 / 16%);
+    border: 2px solid rgb(78 78 78 / 81%);
 }
-.Crankshaft-settings .setting.safety-2,
 .Crankshaft-settings .setting.safety-2 .setting-desc {
-    color: rgb(248, 225, 91);
+    color: #ffd903;
+    background-color: rgba(220, 180, 1, 0.16);
+    border: 2px solid rgba(241, 186, 6, 0.81);
 }
-.Crankshaft-settings .setting.safety-3,
 .Crankshaft-settings .setting.safety-3 .setting-desc {
-    color: rgb(245, 150, 42);
+    color: #ff9203;
+    background-color: rgba(220, 118, 1, 0.16);
+    border: 2px solid rgba(241, 131, 6, 0.81);
 }
-.Crankshaft-settings .setting.safety-4,
 .Crankshaft-settings .setting.safety-4 .setting-desc {
-    color: darkred;
+    color: #ff0303;
+    background-color: rgba(220, 17, 1, 0.16);
+    border: 2px solid rgba(241, 6, 6, 0.81);
 }
-.setting.safety-1,
-.setting.safety-2,
-.setting.safety-3,
-.setting.safety-4,
-.setting.safety-1:hover .setting-title,
-.setting.safety-2:hover .setting-title,
-.setting.safety-3:hover .setting-title,
-.setting.safety-4:hover .setting-title {
-    border-bottom: 2px solid;
-}
+
+
 /* .setting.safety-1 .setting-title,
 .setting.safety-2 .setting-title,
 .setting.safety-3 .setting-title,
@@ -51,17 +60,20 @@
     transition: border .2s ease-in-out;
 } */
 
-.Crankshaft-settings .setting.safety-1 .setting-title {
-    border-bottom-color: gray;
+.Crankshaft-settings .setting.settName.safety-0.sel > select {
+      grid-area: 1 / 3 / 2 / 4;
 }
-.Crankshaft-settings .setting.safety-2 .setting-title {
-    border-bottom-color: rgb(248, 225, 91);
+
+.Crankshaft-settings .settName .setting-title {
+    grid-area: 1 / 2 / 2 / 3;
 }
-.Crankshaft-settings .setting.safety-3 .setting-title {
-    border-bottom-color: rgb(245, 150, 42);
-}
-.Crankshaft-settings .setting.safety-4 .setting-title {
-    border-bottom-color: darkred;
+
+.Crankshaft-settings .settName {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-template-columns: 0fr 1fr 0fr;
+  grid-template-rows: 0fr;
+  align-items: center;
 }
 
 /* .safetyLegend, .sett-note {
@@ -87,14 +99,18 @@
 }
 
 .setting .setting-desc {
-    border: 2px solid rgba(165, 117, 98, 0.2);
-    color: inherit;
-    background: rgba(165, 117, 98, 0.2);
+    grid-area: 1 / 1 / 2 / 2;
     cursor: pointer;
-    border-radius: 100px;
     font-size: 1rem;
-    width: 1rem;
-    padding: 0 0.2rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    line-height: 2.2rem;
+    text-align: center;
+    border-radius: 5px !important;
+    color: #969696;
+    background-color: rgb(99 99 99 / 16%);
+    border: 2px solid rgb(78 78 78 / 81%);
+    margin-right: 10px;
 }
 
 input:checked + .advancedSlider {
@@ -111,27 +127,17 @@ input:checked + .advancedSlider:hover {
 .setting-desc {
     position: relative;
 }
+
 .setting-desc-new {
     display: block;
-    position: absolute;
-    bottom: 1rem;
-    left: 2rem;
-    background: black;
-    color: white;
-    padding: .3rem .5rem;
-    border-radius: 10px;
-    font-size: 1rem;
-    min-width: 12rem;
-    max-width: 30rem;
-    width: auto;
+    width: 700px;
     word-wrap: break-word;
-    z-index: 10;
-    transform: translateY(50%);
-    opacity: 1 !important;
-    display: none;
-    border: none;
+    font-size: 20px;
+    color: rgba(255, 255, 255, .4) !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
-}
-.setting .desc-icon:hover .setting-desc-new {
-    display: block;
+    max-height: 0;
+    overflow: hidden;
+    max-height: 500px;
+    margin-top: 10px;
+    grid-area: 2 / 1 / 3 / 4;
 }

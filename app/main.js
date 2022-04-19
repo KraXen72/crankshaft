@@ -12,6 +12,7 @@ const Swapper = require("./resourceswapper");
 // Giant - JANREX client
 // LukeTheDuke - Gatoclient-lite
 // KraXen72 - fixes and settings rewrite, splash rewrite, social rewrite, typescript rewrite
+// deadcell - css for setting description
 let swapperPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/swapper");
 let settingsPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/settings.json");
 let userscriptPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/scripts");

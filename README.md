@@ -35,9 +35,12 @@
 ## contributing
 - installation: `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i`
 - running from source: `npm run start`, building: `npm run dist`
+- pleae edit the `.ts` files found in `src`, not `.js` files! the typescript files get compiled into js so any changes you make to javascript files are redundant.
 - please report any bugs/feature requests in the Issues.   
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.  
 - we don't have a client discord server yet, but once there is one the link will be here => ____.
+  
+> Let it be known that deadcell, may his name forever be remembered, has contributed css to this client
   
 ## where to download?
 - releases will be in the Releases tab very soon

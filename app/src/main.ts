@@ -11,6 +11,7 @@ import * as Swapper from './resourceswapper';
 // Giant - JANREX client
 // LukeTheDuke - Gatoclient-lite
 // KraXen72 - fixes and settings rewrite, splash rewrite, social rewrite, typescript rewrite
+// deadcell - css for setting description
 
 let swapperPath = path.join(app.getPath("documents"), "Crankshaft/swapper");
 let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json");
