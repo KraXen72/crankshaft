@@ -33,6 +33,7 @@
 > Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED and WILL NOT RUN (sky color script, etc)    
   
 ## contributing
+- you have to have `git`, `nodejs` and `npm` installed.
 - installation: `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i`
 - running from source: `npm run start`, building: `npm run dist`
 - pleae edit the `.ts` files found in `src`, not `.js` files! the typescript files get compiled into js so any changes you make to javascript files are redundant.
@@ -43,4 +44,7 @@
 > Let it be known that deadcell, may his name forever be remembered, has contributed css to this client
   
 ## where to download?
-- releases will be in the Releases tab very soon
+- go releases tab, download `crankshaft-setup-win-x64.exe` if you're on windows.
+- macos builds not available currently because i do not own a mac computer.   
+- if you have a mac, you can build it yourself by doing `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i` and `npm run macdist`.  
+- if you sucessfully build it or have the ability to write a mac building github action, message me on discord (in my github profile).
