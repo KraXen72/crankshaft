@@ -46,4 +46,4 @@
 - macos builds not available currently because i do not own a mac computer.   
 - if you have a mac, you can build it yourself by doing `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i` and `npm run macdist`.  
 - if you sucessfully build it or have the ability to write a mac building github action, message me on discord (in my github profile).
-- you can build electron for linux in theory, but i had no sucess with it. if you sucessfully build it or have the ability to write a linux building github action, message me on discord (in my github profile).
+- you can build electron for linux in theory with `electron-builder --linux`, but i had no sucess with it. if you sucessfully build it or have the ability to write a linux building github action, message me on discord (in my github profile).
