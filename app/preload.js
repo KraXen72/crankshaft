@@ -84,7 +84,7 @@ electron_1.ipcRenderer.on('preloadSettings', (event, preferences, version, filed
 electron_1.ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath) => {
     userscriptPath = recieved_userscriptPath;
     //feel free to add more code
-    const bannedCode = ["renderer", "reflect", "this._renderer", "game.renderer", "game.renderer.setClearColor"];
+    const bannedCode = ["renderer", "reflect", "Reflect", "Renderer", "this._renderer", "game.renderer", "game.renderer.setClearColor"];
     userscriptPathTracker = path.resolve(userscriptPath, "tracker.json");
     userscripts = fs.readdirSync(userscriptPath, { withFileTypes: true })
         .filter(entry => entry.name.endsWith(".js"))
@@ -101,7 +101,7 @@ electron_1.ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPa
     })
         .filter(userscript => {
         if (bannedCode.some(bc => userscript.content.includes(bc))) {
-            console.log(`%c[cs] %cdidn't run %c'${userscript.name.toString()}' %cbecause it attempts to modify the game's renderer. Try renaming some variables if this is a false positive.`, "color: lightblue; font-weight: bold;", "color: red;", "color: lightgreen;", "color: white;");
+            console.log(`%c[cs] %cdidn't run %c'${userscript.name.toString()}' %cbecause it attempts to modify the game's renderer. Try renaming some variables/text if this is a false positive.`, "color: lightblue; font-weight: bold;", "color: red;", "color: lightgreen;", "color: white;");
             return false;
         }
         else {
@@ -283,18 +283,18 @@ const settingsDesc = {
     fpsUncap: { title: "Un-cap FPS", type: "bool", desc: "", safety: 0, reload: 2 },
     fullscreen: { title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2 },
     hideAds: { title: "Hide Ads", type: "bool", desc: "", safety: 0, reload: 0 },
-    resourceSwapper: { title: "Resource swapper", type: "bool", desc: "enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper", safety: 0, reload: 2 },
+    resourceSwapper: { title: "Resource swapper", type: "bool", desc: "Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper", safety: 0, reload: 2 },
     userscripts: { title: "Userscript support", type: "bool", desc: "Enable userscript support. place .js files in Documents/Crankshaft/scripts", safety: 1, reload: 2 },
     clientSplash: { title: "Client Splash Screen", type: "bool", desc: "show a custom bg and logo (splash screen) while krunker is loading", safety: 0, reload: 1 },
     "angle-backend": { title: "ANGLE Backend", type: "sel", opts: ["default", "gl", "d3d11", "d3d9", "d3d11on12", "vulkan"], safety: 0, reload: 2 },
-    logDebugToConsole: { title: "Log debug & GPU info to console", type: "bool", desc: "log some GPU and debug info to the electron console. you won't see this unless app is ran from source", safety: 0, reload: 2 },
-    safeFlags_removeUselessFeatures: { title: "Remove useless features", type: "bool", desc: "adds a lot of chromium flags that disable useless features. Will probably improve performance", safety: 1, reload: 2 },
-    inProcessGPU: { title: "In-Process GPU", type: "bool", desc: "embed the gpu under the same process", safety: 1, reload: 2 },
+    logDebugToConsole: { title: "Log debug & GPU info to console", type: "bool", desc: "Log some GPU and debug info to the electron console. you won't see this unless app is ran from source", safety: 0, reload: 2 },
+    safeFlags_removeUselessFeatures: { title: "Remove useless features", type: "bool", desc: "Adds a lot of chromium flags that disable useless features. Will probably improve performance", safety: 1, reload: 2 },
+    inProcessGPU: { title: "In-Process GPU", type: "bool", desc: "Embed the gpu under the same process", safety: 1, reload: 2 },
     disableAccelerated2D: { title: "disable Accelerated 2D canvas", type: "bool", desc: "", safety: 1, reload: 2 },
     safeFlags_gpuRasterizing: { title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 2, reload: 2 },
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2, reload: 1},
-    safeFlags_helpfulFlags: { title: "(Potentially) useful flags", type: "bool", desc: "enables javascript-harmony, future-v8-vm-features, webgl2-compute-context. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 3, reload: 2 },
+    safeFlags_helpfulFlags: { title: "(Potentially) useful flags", type: "bool", desc: "Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 3, reload: 2 },
     experimentalFlags_increaseLimits: { title: "Increase limits flags", type: "bool", desc: "Various flags to increase limits", safety: 4, reload: 2 },
     experimentalFlags_lowLatency: { title: "Lower Latency flags", type: "bool", desc: "Various flags to lower latency", safety: 4, reload: 2 },
     experimentalFlags_experimental: { title: "Experimental flags", type: "bool", desc: "Various performance enhancing flags. Can be unstable", safety: 4, reload: 2 },
@@ -330,7 +330,11 @@ class SettingElem {
         ///** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
         switch (props.type) {
             case 'bool':
-                this.HTML = `<span class="setting-title">${props.title}</span> 
+                if (!!props.desc && props.desc !== "") {
+                    this.HTML += `<span class="setting-desc desc-icon">?</span>`;
+                }
+
+                this.HTML += `<span class="setting-title">${props.title}</span> 
                 <label class="switch">
                     <input class="s-update" type="checkbox" ${props.value ? "checked" : ""}/>
                     <div class="slider round"></div>
@@ -338,9 +342,11 @@ class SettingElem {
                 // if (typeof props.reload !== "undefined") {
                 //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
                 // }
+
                 if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?<div class="setting-desc-new">${props.desc}</div></span>`;
+                    this.HTML += `<div class="setting-desc-new">${props.desc}</div>`;
                 }
+
                 this.updateKey = `checked`;
                 this.updateMethod = 'onchange';
                 break;
