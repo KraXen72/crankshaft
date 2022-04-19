@@ -17,6 +17,7 @@ interface SettingsDescItem {
     title: string,
     type: 'bool' | 'sel' | 'heading' | 'text' | 'num',
     desc?: string,
+    desclines?: number,
     safety: number,
     reload: number,
     //for 'num'

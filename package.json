@@ -11,7 +11,7 @@
     "release": "electron-builder --publish always",
     "postinstall": "electron-builder install-app-deps"
   },
-  "author": "creepycatsTTV",
+  "author": "KraXen72",
   "license": "MIT",
   "homepage": "https://github.com/KraXen72/crankshaft",
   "keywords": [

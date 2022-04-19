@@ -260,6 +260,13 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
     }
 }
 
+// const userscriptDisclaimer = [
+//     "Enable userscript support. place .js files in Documents/Crankshaft/scripts",
+//     "Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.",
+//     "Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED",
+//     "Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED and WILL NOT RUN (sky color script, etc)"
+// ].join("\n")
+
 //safety: 0: ok setting/recommended, 1: ok but not recommended, 2: not recommended but go ahead, 3: experimental, 4: experimental and unstable
 //     normal text color            gray text color             yellow text color                orange text color       red text color
 
@@ -333,7 +340,7 @@ class SettingElem {
         ///** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
         switch (props.type) {
             case 'bool':
-                this.HTML = `<span class="setting-title" title="${props.desc}">${props.title}</span> 
+                this.HTML = `<span class="setting-title">${props.title}</span> 
                 <label class="switch">
                     <input class="s-update" type="checkbox" ${props.value ? "checked":""}/>
                     <div class="slider round"></div>
@@ -342,7 +349,7 @@ class SettingElem {
                 //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
                 // }
                 if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc" title="${props.desc}">?</span>`
+                    this.HTML += `<span class="setting-desc desc-icon">?<div class="setting-desc-new">${props.desc}</div></span>`
                 }
                 this.updateKey = `checked`
                 this.updateMethod = 'onchange'
@@ -351,7 +358,7 @@ class SettingElem {
                 this.HTML = `<h1 class="setting-title">${props.title}</h1>`
                 break;
             case 'sel':
-                this.HTML = `<span class="setting-title" title="${props.desc}">${props.title}</span>
+                this.HTML = `<span class="setting-title">${props.title}</span>
                     <select class="s-update inputGrey2">${
                         props.opts.map( o => `<option value ="${o}">${o}</option>`).join("") /* create option tags*/
                     }</select>`
@@ -359,14 +366,14 @@ class SettingElem {
                 //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
                 // }
                 if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc" title="${props.desc}">?</span>`
+                    this.HTML += `<span class="setting-desc desc-icon">?<div class="setting-desc-new">${props.desc}</div></span>`
                 }
                 this.updateKey = `value`
                 this.updateMethod = 'onchange'
                 break;
             case 'text':
                 this.HTML = `<span class="setting-title">${props.title}
-                    ${!!props.desc && props.desc !== "" ? `<span class="setting-desc inline" title="${props.desc}">?</span>` : ''}
+                    ${!!props.desc && props.desc !== "" ? `<span class="setting-desc inline desc-icon">?<div class="setting-desc-new inline">${props.desc}</div></span>` : ''}
                 </span>
                 <span class="setting-input-wrapper">
                     <input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}">
@@ -385,9 +392,10 @@ class SettingElem {
                         //@ts-ignore
                         this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
                     }
-                    // if (!!props.desc && props.desc !== "") {
-                    //     this.HTML += `<span class="setting-desc" title="${props.desc}">?</span>`
-                    // }
+                    if (!!props.desc && props.desc !== "") {
+                        this.HTML += `<span class="setting-desc desc-icon">?<div class="setting-desc-new">${props.desc}</div></span>`
+                        this.HTML += ``
+                    }
                     this.updateKey = `value`
                     this.updateMethod = `onchange`
                     break;
@@ -412,6 +420,14 @@ class SettingElem {
 
             // you can add custom instant refresh callbacks for settings here
             if (this.props.key === "hideAds") { toggleAdhideCSS(value) }
+            // if (this.props.key === "userscripts" && value === true) {
+            //     //show disclaimer before turning on userscripts
+            //     const pick = userscriptDisclaimer(false)
+            //     if (!pick) {
+            //         userPrefs["userscripts"] = false
+            //         saveSettings()
+            //     }
+            // }
         } else if (callback === "userscript") {
             const thisUserscript = userscripts.filter(u => u.fullpath = this.props.desc)
 
@@ -475,13 +491,13 @@ function renderSettings() {
         const userScriptSkeleton = `
         <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Userscripts</div>
         <div class="setBodH Crankshaft-setBodH userscripts">
-            <div class="settName setting"><span class="setting-title crankshaft-gray">NOTE: refresh page to see changes</span></div> 
+            <div class="settName setting"><span class="setting-title crankshaft-gray">NOTE: refresh page to see changes</span></div>
         </div>`
+        //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
         document.querySelector(".Crankshaft-settings").innerHTML += userScriptSkeleton
     }
     //<span class="setting safety-1">NOTE: All settings requrie restart of the client</span><br>
 
-    
     //the next 2 ts ignores are bc the settings get modified with 2 maps after they are declared
     //@ts-ignore
     let settings: SettingsDescItem[] = Object.keys(settingsDesc)
@@ -515,6 +531,10 @@ function renderSettings() {
             }
             return obj
         })
+
+        // document.getElementById("userscript-disclaimer").onclick = () => {
+        //     userscriptDisclaimer(true)
+        // }
 
         for (let i = 0; i < userscriptSettings.length; i++) {
             const userSet = new SettingElem(userscriptSettings[i])

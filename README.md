@@ -28,8 +28,9 @@
 - userscripts are executed *as soon as possible*, if you want to add elements, add a `DOMContentLoaded` eventlistener
 - DO NOT DELETE `Documents/Crankshaft/scripts/tracker.json`, it is used to keep track of enabled and disabled userscripts
   
-> Use userscripts at your own risk, the authors of this client are not responsible for any damage done with userscripts because the user is the author of the script.   
-> We don't recommend enabling any userscript you don't trust and know how it works.    
+> Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.   
+> Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED
+> Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED and WILL NOT RUN (sky color script, etc)    
   
 ## contributing
 - installation: `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i`
