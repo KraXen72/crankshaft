@@ -7,7 +7,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "start": "npm run build && electron .",
-    "dist": "npm run build && electron-builder --win",
+    "dist": "npm run build && electron-builder --win --linux",
     "macdist": "npm run build && electron-builder -m",
     "release": "electron-builder --publish always",
     "postinstall": "electron-builder install-app-deps"
