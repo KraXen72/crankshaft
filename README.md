@@ -39,12 +39,11 @@
 - pleae edit the `.ts` files found in `src`, not `.js` files! the typescript files get compiled into js so any changes you make to javascript files are redundant.
 - please report any bugs/feature requests in the Issues.   
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.  
-- we don't have a client discord server yet, but once there is one the link will be here => ____.
-  
-> Let it be known that deadcell, may his name forever be remembered, has contributed css to this client
+- we don't have a client discord server yet, but once there is one the link will be here => ____.p
   
 ## where to download?
 - go releases tab, download `crankshaft-setup-win-x64.exe` if you're on windows.
 - macos builds not available currently because i do not own a mac computer.   
 - if you have a mac, you can build it yourself by doing `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i` and `npm run macdist`.  
 - if you sucessfully build it or have the ability to write a mac building github action, message me on discord (in my github profile).
+- you can build electron for linux in theory, but i had no sucess with it. if you sucessfully build it or have the ability to write a linux building github action, message me on discord (in my github profile).
