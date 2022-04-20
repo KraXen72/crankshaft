@@ -192,37 +192,36 @@ electron_1.app.on('ready', function () {
         console.log("GPU FEATURES BEGIN");
         console.dir(electron_1.app.getGPUFeatureStatus());
     }
-    // Add Shortcuts
-    mainWindow.webContents.on('before-input-event', (event, input) => {
-        // Developer Console
-        if (input.control && input.key.toLowerCase() === 'i') {
-            event.preventDefault();
-            mainWindow.webContents.openDevTools();
+    const csMenuTemplate = [
+        {
+            label: "Crankshaft",
+            submenu: [
+                { label: "Find new Lobby", accelerator: "F6", click: () => { mainWindow.loadURL('https://krunker.io'); } },
+                { label: "Relaunch Client", accelerator: "F12", click: () => { electron_1.app.relaunch(); electron_1.app.exit(); } },
+                { type: 'separator' },
+                { label: "Github repo", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://github.com/KraXen72/crankshaft`); } },
+                { label: "Client Discord", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`); } }
+            ]
+        },
+        {
+            label: "System",
+            submenu: [
+                { role: 'reload' },
+                { role: 'forceReload' },
+                { role: 'toggleDevTools' },
+                { type: 'separator' },
+                { role: 'resetZoom' },
+                { role: 'zoomIn' },
+                { role: 'zoomOut' },
+                { type: 'separator' },
+                { role: 'togglefullscreen' }
+            ]
         }
-        //these keys do some big action like reload the app or page, so they can be considered mutually exclusive, so we can use a switch
-        switch (input.key) {
-            case "F5": // F5 to Reload Lobby
-                event.preventDefault();
-                mainWindow.reload();
-                break;
-            case "F6": // F6 to Find New Lobby
-                event.preventDefault();
-                mainWindow.loadURL('https://krunker.io');
-                break;
-            case "F11": // F11 to fullscreen
-                event.preventDefault();
-                mainWindow.setFullScreen(!mainWindowIsFullscreen);
-                mainWindowIsFullscreen = !mainWindowIsFullscreen;
-                break;
-            case "F12": // F12 to relaunch
-                event.preventDefault();
-                electron_1.app.relaunch();
-                electron_1.app.exit();
-                break;
-            default:
-                break;
-        }
-    });
+    ];
+    const csMenu = electron_1.Menu.buildFromTemplate(csMenuTemplate);
+    mainWindow.setMenu(csMenu);
+    mainWindow.setAutoHideMenuBar(true);
+    mainWindow.setMenuBarVisibility(false);
     mainWindow.webContents.on('new-window', (event, url) => {
         console.log("url trying to open: ", url);
         const freeSpinHostnames = [
