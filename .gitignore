@@ -6,6 +6,7 @@ CrankshaftRewrite.zip
 *.zip
 *.rar
 xed_preload.js
+CHANGELOG.md
 
 # yes i know i shouldn't do this but it solved an error for someone so here goes:
 package-lock.json
