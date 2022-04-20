@@ -234,13 +234,19 @@ function UpdateSettingsTabs(activeTab, hookSearch = true) {
         catch (e) { }
         document.getElementById("settSearch").addEventListener("input", settSearchCallback);
     }
-    // if (hookAdvSlider) {
-    //     const sliderCallback = () => {
-    //         setTimeout(() => { UpdateSettingsTabs(0, false, false) }, 410)
-    //     }
-    //     try { document.querySelector(".advancedSwitch").removeEventListener("click", sliderCallback) } catch (e) { }
-    //     document.querySelector(".advancedSwitch").addEventListener("click", sliderCallback)
-    // }
+    const advSliderElem = document.querySelector(".advancedSwitch input#typeBtn");
+    const advSwitchCallback = () => {
+        advSliderElem.setAttribute("disabled", "disabled");
+        setTimeout(() => {
+            advSliderElem.removeAttribute("disabled");
+            UpdateSettingsTabs(0, true);
+        }, 700);
+    };
+    try {
+        advSliderElem.removeEventListener("change", advSwitchCallback);
+    }
+    catch (e) { }
+    advSliderElem.addEventListener("change", advSwitchCallback);
     //modifications we do the the dom:
     const tabs = document.getElementById('settingsTabLayout').children;
     const clientTab = tabs[tabs.length - 1];
