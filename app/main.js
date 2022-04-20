@@ -6,12 +6,11 @@ require("v8-compile-cache");
 const electron_1 = require("electron");
 //@ts-ignore
 const Swapper = require("./resourceswapper");
+// Credits / mentions
 // Gato/creepycats - Gatoclient
-// Mixaz - IDKR source code (used so many fucking times)
-// ando - Billboards, modding, etc
-// Giant - JANREX client
 // LukeTheDuke - Gatoclient-lite
-// KraXen72 - fixes and settings rewrite, splash rewrite, social rewrite, typescript rewrite
+// Mixaz - IDKR source code, Mac, linux and win build action.yml
+// Giant - JANREX client
 // deadcell - css for setting description
 let swapperPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/swapper");
 let settingsPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/settings.json");
@@ -183,7 +182,7 @@ electron_1.app.on('ready', function () {
         mainWindow.setFullScreen(true);
         mainWindowIsFullscreen = true;
     }
-    mainWindow.removeMenu();
+    //mainWindow.removeMenu();
     mainWindow.loadURL('https://krunker.io');
     if (userPrefs.logDebugToConsole) {
         console.log("GPU INFO BEGIN");
