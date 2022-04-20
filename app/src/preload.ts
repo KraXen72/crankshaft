@@ -303,15 +303,15 @@ const settingsDesc: SettingsDesc = {
     "angle-backend": {title: "ANGLE Backend", type: "sel", opts: ["default","gl","d3d11","d3d9","d3d11on12","vulkan"], safety: 0, reload: 2},
     logDebugToConsole: {title: "Log debug & GPU info to console", type: "bool", desc: "Log some GPU and debug info to the electron console. you won't see this unless app is ran from source", safety: 0, reload: 2},
     safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of chromium flags that disable useless features. Will probably improve performance", safety:1, reload: 2},
-    inProcessGPU: {title: "In-Process GPU", type: "bool", desc: "Embed the gpu under the same process", safety: 1, reload: 2}, 
+    inProcessGPU: {title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, reload: 2}, 
     disableAccelerated2D: {title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 1, reload: 2},
     safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 2, reload: 2},
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2, reload: 1},
     safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: "Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 3, reload: 2},
-    experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc:"Various flags to increase limits", safety: 4, reload: 2},
-    experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", desc:"Various flags to lower latency", safety: 4, reload: 2},
-    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", desc: "Various performance enhancing flags. Can be unstable", safety: 4, reload: 2},
+    experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", safety: 4, reload: 2},
+    experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", safety: 4, reload: 2},
+    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", safety: 4, reload: 2},
 }
 
 const reloadDesc = {

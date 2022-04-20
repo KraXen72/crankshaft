@@ -289,7 +289,7 @@ const settingsDesc = {
     "angle-backend": { title: "ANGLE Backend", type: "sel", opts: ["default", "gl", "d3d11", "d3d9", "d3d11on12", "vulkan"], safety: 0, reload: 2 },
     logDebugToConsole: { title: "Log debug & GPU info to console", type: "bool", desc: "Log some GPU and debug info to the electron console. you won't see this unless app is ran from source", safety: 0, reload: 2 },
     safeFlags_removeUselessFeatures: { title: "Remove useless features", type: "bool", desc: "Adds a lot of chromium flags that disable useless features. Will probably improve performance", safety: 1, reload: 2 },
-    inProcessGPU: { title: "In-Process GPU", type: "bool", desc: "Embed the gpu under the same process", safety: 1, reload: 2 },
+    inProcessGPU: { title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, reload: 2 },
     disableAccelerated2D: { title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 1, reload: 2 },
     safeFlags_gpuRasterizing: { title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 2, reload: 2 },
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
