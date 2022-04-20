@@ -286,6 +286,7 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
 //safety: 0: ok setting/recommended, 1: ok but not recommended, 2: not recommended but go ahead, 3: experimental, 4: experimental and unstable
 //     normal text color            gray text color             yellow text color                orange text color       red text color
 
+
 //this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
 //they are modified here to fit krunker
 
@@ -319,6 +320,13 @@ const reloadDesc = {
     1: "Page reload required",
     2: "Client restart required"
 }
+const safetyDesc = [
+    "This setting is safe/standard",
+    "Proceed with caution",
+    "This setting is not recommended",
+    "This setting is experimental",
+    "This setting is experimental and unstable. Use at your own risk."
+]
 
 function saveSettings() {
     fs.writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), {encoding: "utf-8"})
@@ -354,11 +362,16 @@ class SettingElem {
         /**@type {String} is the key to get checked when writing an update, for checkboxes it's checked, for selects its value etc.*/
         this.updateKey = ''
         ///** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
+
+        //general stuff that every setting has
+        if (!!props.desc && props.desc !== "") {
+            this.HTML += `<span class="setting-desc desc-icon" title="${safetyDesc[this.props.safety]}">?</span>`
+        } else if (this.props.safety > 2) {
+            //show a ! icon even if the desc is empty as long as safety is higher than 2
+            this.HTML += `<span class="setting-desc desc-icon" title="${safetyDesc[this.props.safety]}">!</span>`
+        }
         switch (props.type) {
             case 'bool':
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?</span>`
-                }
                 this.HTML += `<span class="setting-title">${props.title}</span> 
                 <label class="switch">
                     <input class="s-update" type="checkbox" ${props.value ? "checked":""}/>
@@ -377,9 +390,6 @@ class SettingElem {
                 this.HTML = `<h1 class="setting-title">${props.title}</h1>`
                 break;
             case 'sel':
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?</span>`
-                }
                 this.HTML += `<span class="setting-title">${props.title}</span>
                     <select class="s-update inputGrey2">${
                         props.opts.map( o => `<option value ="${o}">${o}</option>`).join("") /* create option tags*/
@@ -394,9 +404,6 @@ class SettingElem {
                 this.updateMethod = 'onchange'
                 break;
             case 'text':
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?</span>`
-                }
                 this.HTML += `<span class="setting-title">${props.title}
                 </span>
                 <span class="setting-input-wrapper">
@@ -411,23 +418,20 @@ class SettingElem {
                 this.updateMethod = `oninput`
                 break;
             case 'num':
-                    if (!!props.desc && props.desc !== "") {
-                        this.HTML += `<span class="setting-desc desc-icon">?</span>`
-                    }
-                    this.HTML += `<span class="setting-title">${props.title}</span><span>
-                        <input type="number" class="rb-input marright s-update" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
-                    </span>
-                    `
-                    // if (typeof props.reload !== "undefined") {
-                    //     //@ts-ignore
-                    //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
-                    // }
-                    if (!!props.desc && props.desc !== "") {
-                        this.HTML += `<div class="setting-desc-new">${props.desc}</div>`
-                    }
-                    this.updateKey = `value`
-                    this.updateMethod = `onchange`
-                    break;
+                this.HTML += `<span class="setting-title">${props.title}</span><span>
+                    <input type="number" class="rb-input marright s-update" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
+                </span>
+                `
+                // if (typeof props.reload !== "undefined") {
+                //     //@ts-ignore
+                //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
+                // }
+                if (!!props.desc && props.desc !== "") {
+                    this.HTML += `<div class="setting-desc-new">${props.desc}</div>`
+                }
+                this.updateKey = `value`
+                this.updateMethod = `onchange`
+                break;
             default:
                 this.HTML = `<span class="setting-title">${props.title}</span><span>Unknown setting type</span>`
         }

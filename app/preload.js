@@ -295,15 +295,22 @@ const settingsDesc = {
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2, reload: 1},
     safeFlags_helpfulFlags: { title: "(Potentially) useful flags", type: "bool", desc: "Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 3, reload: 2 },
-    experimentalFlags_increaseLimits: { title: "Increase limits flags", type: "bool", desc: "Various flags to increase limits", safety: 4, reload: 2 },
-    experimentalFlags_lowLatency: { title: "Lower Latency flags", type: "bool", desc: "Various flags to lower latency", safety: 4, reload: 2 },
-    experimentalFlags_experimental: { title: "Experimental flags", type: "bool", desc: "Various performance enhancing flags. Can be unstable", safety: 4, reload: 2 },
+    experimentalFlags_increaseLimits: { title: "Increase limits flags", type: "bool", safety: 4, reload: 2 },
+    experimentalFlags_lowLatency: { title: "Lower Latency flags", type: "bool", safety: 4, reload: 2 },
+    experimentalFlags_experimental: { title: "Experimental flags", type: "bool", safety: 4, reload: 2 },
 };
 const reloadDesc = {
     0: "No restart required",
     1: "Page reload required",
     2: "Client restart required"
 };
+const safetyDesc = [
+    "This setting is safe/standard",
+    "Proceed with caution",
+    "This setting is not recommended",
+    "This setting is experimental",
+    "This setting is experimental and unstable. Use at your own risk."
+];
 function saveSettings() {
     fs.writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), { encoding: "utf-8" });
     electron_1.ipcRenderer.send("preloadSendsNewSettings", userPrefs); //send them back to main
@@ -328,11 +335,16 @@ class SettingElem {
         /**@type {String} is the key to get checked when writing an update, for checkboxes it's checked, for selects its value etc.*/
         this.updateKey = '';
         ///** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
+        //general stuff that every setting has
+        if (!!props.desc && props.desc !== "") {
+            this.HTML += `<span class="setting-desc desc-icon" title="${safetyDesc[this.props.safety]}">?</span>`;
+        }
+        else if (this.props.safety > 2) {
+            //show a ! icon even if the desc is empty as long as safety is higher than 2
+            this.HTML += `<span class="setting-desc desc-icon" title="${safetyDesc[this.props.safety]}">!</span>`;
+        }
         switch (props.type) {
             case 'bool':
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?</span>`;
-                }
                 this.HTML += `<span class="setting-title">${props.title}</span> 
                 <label class="switch">
                     <input class="s-update" type="checkbox" ${props.value ? "checked" : ""}/>
@@ -351,9 +363,6 @@ class SettingElem {
                 this.HTML = `<h1 class="setting-title">${props.title}</h1>`;
                 break;
             case 'sel':
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?</span>`;
-                }
                 this.HTML += `<span class="setting-title">${props.title}</span>
                     <select class="s-update inputGrey2">${props.opts.map(o => `<option value ="${o}">${o}</option>`).join("") /* create option tags*/}</select>`;
                 // if (typeof props.reload !== "undefined") {
@@ -366,9 +375,6 @@ class SettingElem {
                 this.updateMethod = 'onchange';
                 break;
             case 'text':
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?</span>`;
-                }
                 this.HTML += `<span class="setting-title">${props.title}
                 </span>
                 <span class="setting-input-wrapper">
@@ -383,13 +389,10 @@ class SettingElem {
                 this.updateMethod = `oninput`;
                 break;
             case 'num':
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<span class="setting-desc desc-icon">?</span>`;
-                }
                 this.HTML += `<span class="setting-title">${props.title}</span><span>
-                        <input type="number" class="rb-input marright s-update" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
-                    </span>
-                    `;
+                    <input type="number" class="rb-input marright s-update" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
+                </span>
+                `;
                 // if (typeof props.reload !== "undefined") {
                 //     //@ts-ignore
                 //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
