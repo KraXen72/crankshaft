@@ -10,7 +10,8 @@
     "dist": "npm run build && electron-builder",
     "release": "electron-builder --publish always",
     "postinstall": "electron-builder install-app-deps",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits"
+    "changelog-c": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits -r 0",
+    "changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
   },
   "author": "KraXen72",
   "license": "MIT",
