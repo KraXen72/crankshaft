@@ -1,6 +1,10 @@
-# crankshaft
-![splash](https://cdn.discordapp.com/attachments/704792091955429426/963921255365480618/blank_splash.png)  
-> a sensible krunker client built on the ashes of [Gatoclient](https://github.com/Gatohost/gatoclient) and [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite)
+# crankshaft 
+  > a sensible krunker client built on the ashes of [Gatoclient](https://github.com/Gatohost/gatoclient) and [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite)
+  
+![splash](https://cdn.discordapp.com/attachments/704792091955429426/963921255365480618/blank_splash.png)     
+  
+[![Github All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)]() [![Chat](https://img.shields.io/discord/966300714060116008)]()
+## features
 - very good performance with additional performance enhancing settings
 - no unnecesarry built-in features that can't be turned off
 - maintained & open source
@@ -38,8 +42,7 @@
 - running from source: `npm run start`, building: `npm run dist`
 - pleae edit the `.ts` files found in `src`, not `.js` files! the typescript files get compiled into js so any changes you make to javascript files are redundant.
 - please report any bugs/feature requests in the Issues.   
-- feel free to submit pull requests, they will be merged as long as they support the client ideology.  
-- we don't have a client discord server yet, but once there is one the link will be here => ____.p
+- feel free to submit pull requests, they will be merged as long as they support the client ideology. 
   
 ## where to download?
 - go releases tab, download `crankshaft-setup-win-x64.exe` if you're on windows. 
@@ -48,4 +51,3 @@
 - if you sucessfully build it or have the ability to write a mac building github action, message me on discord (in my github profile).
 - you can build electron for linux in theory with `electron-builder --linux`, but i had no sucess with it. if you sucessfully build it or have the ability to write a linux building github action, message me on discord (in my github profile).
   
-[![Github All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)]()
