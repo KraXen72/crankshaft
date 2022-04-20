@@ -130,7 +130,7 @@ input:checked + .advancedSlider:hover {
 
 .setting-desc-new {
     display: block;
-    width: 700px;
+    width: 750px;
     word-wrap: break-word;
     font-size: 20px;
     color: rgba(255, 255, 255, .4) !important;
@@ -138,6 +138,22 @@ input:checked + .advancedSlider:hover {
     max-height: 0;
     overflow: hidden;
     max-height: 500px;
-    margin-top: 10px;
+    margin-top: 5px;
     grid-area: 2 / 1 / 3 / 4;
 }
+
+/* .crankshaft-settings-codeblock, .crst-cb {
+    color: rgb(166, 166, 166);
+    border: 1px solid #3b3c3e4d;
+    padding: 0.125rem 0.3rem;
+    background-color: rgb(33, 33, 33);
+    font-family: Consolas,monaco,monospace;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 21.6px;
+    border-radius: 5px;
+}
+
+.settings-desc-new em.i, .setting-desc-new strong.b {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+} */

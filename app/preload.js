@@ -281,23 +281,23 @@ function UpdateSettingsTabs(activeTab, hookSearch = true) {
 // leaving desc as "" will cause it to not render the helper question mark
 const settingsDesc = {
     fpsUncap: { title: "Un-cap FPS", type: "bool", desc: "", safety: 0, reload: 2 },
-    fullscreen: { title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2 },
-    hideAds: { title: "Hide Ads", type: "bool", desc: "", safety: 0, reload: 0 },
-    resourceSwapper: { title: "Resource swapper", type: "bool", desc: "Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper", safety: 0, reload: 2 },
-    userscripts: { title: "Userscript support", type: "bool", desc: "Enable userscript support. place .js files in Documents/Crankshaft/scripts", safety: 1, reload: 2 },
-    clientSplash: { title: "Client Splash Screen", type: "bool", desc: "Show a custom bg and logo (splash screen) while krunker is loading", safety: 0, reload: 1 },
     "angle-backend": { title: "ANGLE Backend", type: "sel", opts: ["default", "gl", "d3d11", "d3d9", "d3d11on12", "vulkan"], safety: 0, reload: 2 },
-    logDebugToConsole: { title: "Log debug & GPU info to console", type: "bool", desc: "Log some GPU and debug info to the electron console. you won't see this unless app is ran from source", safety: 0, reload: 2 },
-    safeFlags_removeUselessFeatures: { title: "Remove useless features", type: "bool", desc: "Adds a lot of chromium flags that disable useless features. Will probably improve performance", safety: 1, reload: 2 },
     inProcessGPU: { title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, reload: 2 },
-    disableAccelerated2D: { title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 1, reload: 2 },
-    safeFlags_gpuRasterizing: { title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 2, reload: 2 },
+    fullscreen: { title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2 },
+    hideAds: { title: "Hide Ads", type: "bool", desc: `Adds display: none !important; to most ads. Krunker should still get money.`, safety: 0, reload: 0 },
+    resourceSwapper: { title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, reload: 2 },
+    userscripts: { title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, reload: 2 },
+    clientSplash: { title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety: 0, reload: 1 },
+    logDebugToConsole: { title: "Log debug & GPU info to electron console", type: "bool", safety: 0, reload: 2 },
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2, reload: 1},
-    safeFlags_helpfulFlags: { title: "(Potentially) useful flags", type: "bool", desc: "Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context. does it actually help? ¯\\_(ツ)_/¯ try for yourself.", safety: 3, reload: 2 },
-    experimentalFlags_increaseLimits: { title: "Increase limits flags", type: "bool", safety: 4, reload: 2 },
-    experimentalFlags_lowLatency: { title: "Lower Latency flags", type: "bool", safety: 4, reload: 2 },
-    experimentalFlags_experimental: { title: "Experimental flags", type: "bool", safety: 4, reload: 2 },
+    safeFlags_removeUselessFeatures: { title: "Remove useless features", type: "bool", desc: "Adds a lot of chromium flags that disable useless features.", safety: 1, reload: 2 },
+    safeFlags_gpuRasterizing: { title: "GPU rasterization", type: "bool", /*desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.",*/ safety: 2, reload: 2 },
+    disableAccelerated2D: { title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3, reload: 2 },
+    safeFlags_helpfulFlags: { title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3, reload: 2 },
+    experimentalFlags_increaseLimits: { title: "Increase limits flags", type: "bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`, safety: 4, reload: 2 },
+    experimentalFlags_lowLatency: { title: "Lower Latency flags", type: "bool", desc: `Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas`, safety: 4, reload: 2 },
+    experimentalFlags_experimental: { title: "Experimental flags", type: "bool", desc: `Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server`, safety: 4, reload: 2 },
 };
 const reloadDesc = {
     0: "No restart required",
@@ -485,13 +485,6 @@ function renderSettings() {
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
         <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Client Settings</div>
         <div class="setBodH Crankshaft-setBodH mainSettings"></div>
-        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Safety legend</div>
-        <div class="setBodH safetyLegend">
-            <span class="setting safety-1">safe but extra</span>&nbsp;
-            <span class="setting safety-2">not recommended but safe</span>&nbsp;
-            <span class="setting safety-3">experimental</span>&nbsp;
-            <span class="setting safety-4">experimental and unstable</span>
-        </div>
     </div>`;
     if (userPrefs.userscripts) {
         const userScriptSkeleton = `
