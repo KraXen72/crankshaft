@@ -183,8 +183,8 @@ app.on('ready', function () {
 
     mainWindow = new BrowserWindow({
         show: false,
-        width: 1600,
-        height: 900,
+        width: 1830,
+        height: 1000,
         center: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
