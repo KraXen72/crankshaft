@@ -196,6 +196,7 @@ electron_1.app.on('ready', function () {
         {
             label: "Crankshaft",
             submenu: [
+                { label: "Reload this game", accelerator: "F5", click: () => { mainWindow.reload(); } },
                 { label: "Find new Lobby", accelerator: "F6", click: () => { mainWindow.loadURL('https://krunker.io'); } },
                 { label: "Relaunch Client", accelerator: "F12", click: () => { electron_1.app.relaunch(); electron_1.app.exit(); } },
                 { type: 'separator' },
