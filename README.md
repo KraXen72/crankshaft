@@ -34,7 +34,7 @@
   
 > Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.   
 > Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED
-> Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED and WILL NOT RUN (sky color script, etc)    
+> Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED 
   
 ## contributing
 - you have to have `git`, `nodejs` and `npm` installed.

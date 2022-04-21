@@ -45,8 +45,6 @@ ipcRenderer.on('preloadSettings', (event, preferences, version, filedir) => {
 
 ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath: string) => {
     userscriptPath = recieved_userscriptPath
-    //feel free to add more code
-    const bannedCode = ["renderer", "reflect", "Reflect", "Renderer", "skyCol", "this._renderer", "game.renderer", "game.renderer.setClearColor"]
 
     userscriptPathTracker = path.resolve(userscriptPath, "tracker.json")
     userscripts = fs.readdirSync(userscriptPath, {withFileTypes: true})
@@ -63,19 +61,6 @@ ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath: string)
             content = content.code
 
             return {name: name, fullpath, content}
-        })
-        .filter(userscript => {
-            if (bannedCode.some(bc => userscript.content.includes(bc))) {
-                console.log(
-                    `%c[cs] %cdidn't run %c'${userscript.name.toString()}' %cbecause it attempts to modify the game's renderer. Try renaming some variables/text if this is a false positive.`, 
-                    "color: lightblue; font-weight: bold;", 
-                    "color: red;", "color: lightgreen;", "color: white;"
-                )
-                return false
-            } else {
-                return true
-            }
-            
         })
     let tracker: userscriptTracker = {}
     userscripts.forEach(u => tracker[u.name] = false)
@@ -195,7 +180,7 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
 //     "Enable userscript support. place .js files in Documents/Crankshaft/scripts",
 //     "Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.",
 //     "Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED",
-//     "Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED and WILL NOT RUN (sky color script, etc)"
+//     "Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED
 // ].join("\n")
 
 //safety: 0: ok setting/recommended, 1: ok but not recommended, 2: not recommended but go ahead, 3: experimental, 4: experimental and unstable
