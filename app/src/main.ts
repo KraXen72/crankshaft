@@ -287,20 +287,28 @@ app.on('ready', function () {
                 title: "Opening new url",
                 noLink: true,
                 message: `You're trying to open ${url}`,
-                buttons: ["Open in default browser", "Open as a new window in client", "Don't open"]
+                buttons: ["Open in default browser", "Open as a new window in client", "Open in this window", "Don't open"]
             })
             switch (pick) {
                 case 0: //open in default browser
                     event.preventDefault()
                     shell.openExternal(url)
                     break;
-                case 2: //don't open
+                case 3: //don't open
                     event.preventDefault()
+                    break;
+                case 2: //load as main window
+                    event.preventDefault()
+                    mainWindow.loadURL(url)
                     break;
                 case 1: //open as a new window in client
                 default:
                     break;
             }
+            //for comp just load it into the main url
+        } else if (url.includes("comp.krunker.io")) {
+            event.preventDefault()
+            mainWindow.loadURL(url)
         }
     })
 
