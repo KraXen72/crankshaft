@@ -18,6 +18,7 @@
 - Hides ads by default (can be turned off)
 - written in typescript
 - only 2 dependencies: (`v8-compile-cache` and `esbuild`)
+- built-in hotkeys: `F5` to reload, `F6` to find a new match and `F12` to relaunch client (standard hotkeys like zooming and devtools also included)
   
 ## userscripts
 - any `.js` file in `Documents/Crankshaft/scripts` will be considered a userscript and executed if enabled in settings.   
