@@ -75,6 +75,20 @@ electron_1.ipcMain.on("preloadSendsNewSettings", (event, data) => {
         mainWindowIsFullscreen = true;
     }
 });
+/** open a custom generic window with our menu, hidden */
+function customGenericWin(url, providedMenu) {
+    const genericWin = new electron_1.BrowserWindow({
+        autoHideMenuBar: true,
+        show: false,
+        width: 1600,
+        height: 900,
+        center: true
+    });
+    genericWin.setMenu(providedMenu);
+    genericWin.setMenuBarVisibility(false);
+    genericWin.loadURL(url);
+    genericWin.once('ready-to-show', () => { genericWin.show(); });
+}
 if (userPrefs.safeFlags_removeUselessFeatures) {
     //remove useless features
     electron_1.app.commandLine.appendSwitch("disable-breakpad"); //crash reporting
@@ -219,7 +233,18 @@ electron_1.app.on('ready', function () {
             ]
         }
     ];
+    const strippedTemplate = [
+        {
+            label: "About Crankshaft",
+            submenu: [
+                { label: "Refresh", role: "reload", accelerator: "F5" },
+                { label: "Github repo", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://github.com/KraXen72/crankshaft`); } },
+                { label: "Client Discord", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`); } }
+            ]
+        }, csMenuTemplate[1]
+    ];
     const csMenu = electron_1.Menu.buildFromTemplate(csMenuTemplate);
+    const strippedMenu = electron_1.Menu.buildFromTemplate(strippedTemplate);
     mainWindow.setMenu(csMenu);
     mainWindow.setAutoHideMenuBar(true);
     mainWindow.setMenuBarVisibility(false);
@@ -244,7 +269,8 @@ electron_1.app.on('ready', function () {
                 //@ts-ignore
                 preload: "./socialPreload.js"
             });
-            socialWindow.removeMenu();
+            socialWindow.setMenu(strippedMenu);
+            socialWindow.setMenuBarVisibility(false);
             socialWindow.loadURL("https://krunker.io/social.html");
             socialWindow.once('ready-to-show', () => { socialWindow.show(); });
             event.newGuest = socialWindow;
@@ -282,6 +308,8 @@ electron_1.app.on('ready', function () {
                     break;
                 case 1: //open as a new window in client
                 default:
+                    event.preventDefault();
+                    customGenericWin(url, strippedMenu);
                     break;
             }
             //for comp just load it into the main url
@@ -289,6 +317,10 @@ electron_1.app.on('ready', function () {
         else if (url.includes("comp.krunker.io")) {
             event.preventDefault();
             mainWindow.loadURL(url);
+        }
+        else { //i guess we have to open custom windows for that or so
+            event.preventDefault();
+            customGenericWin(url, strippedMenu);
         }
     });
     // Resource Swapper
