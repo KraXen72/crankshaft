@@ -51,6 +51,21 @@
     background-color: rgba(220, 17, 1, 0.16);
     border: 2px solid rgba(241, 6, 6, 0.81);
 }
+.Crankshaft-settings .setting.safety-1 .setting-desc svg path {
+    color: #969696;
+}
+.Crankshaft-settings .setting.safety-2 .setting-desc svg path {
+    color: #ffd903;
+}
+.Crankshaft-settings .setting.safety-3 .setting-desc svg path {
+    color: #ff9203;
+}
+.Crankshaft-settings .setting.safety-4 .setting-desc svg path {
+    color: #ff0303;
+}
+.Crankshaft-settings .setting .setting-desc svg path {
+    fill: currentColor;
+}
 
 
 /* .setting.safety-1 .setting-title,
@@ -61,7 +76,7 @@
 } */
 
 .Crankshaft-settings .setting.settName.safety-0.sel > select {
-      grid-area: 1 / 3 / 2 / 4;
+    grid-area: 1 / 3 / 2 / 4;
 }
 
 .Crankshaft-settings .settName .setting-title {
@@ -105,12 +120,15 @@
     width: 2.2rem;
     height: 2.2rem;
     line-height: 2.2rem;
-    text-align: center;
     border-radius: 5px !important;
     color: #969696;
     background-color: rgb(99 99 99 / 16%);
     border: 2px solid rgb(78 78 78 / 81%);
     margin-right: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 input:checked + .advancedSlider {
