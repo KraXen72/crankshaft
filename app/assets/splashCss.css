@@ -59,6 +59,9 @@
     color: rgba(255,255,255,.7) !important;
 }
 #loadTipsHolder, .loadTipsHolder { color: rgba(255,255,255,.7) !important; }
+#loadTipsHolder {
+    bottom: 20px !important;
+}
 
 /* we kinda wanna hide the loader and just keep the text. it interferes with the logo */
 #lC-cont {display: none;}
