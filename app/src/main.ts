@@ -93,7 +93,7 @@ function customGenericWin(url: string, providedMenu: Menu) {
     genericWin.loadURL(url)
     genericWin.once('ready-to-show', () => { genericWin.show(); });
 
-    console.log(url)
+    //console.log(url)
 }
 
 
@@ -337,7 +337,7 @@ app.on('ready', function () {
                     break;
             }
             //for comp just load it into the main url
-        } else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || url.includes("&matchId=")) {
+        } else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || (url.includes("&matchId=") && url.includes("https://krunker.io/?game") )) {
             event.preventDefault()
             mainWindow.loadURL(url)
         } else { //i guess we have to open custom windows for that or so
@@ -346,9 +346,9 @@ app.on('ready', function () {
         }
     })
 
-    mainWindow.webContents.on("will-navigate", (event: Event, url: string) => {
-        console.log(url)
-    })
+    // mainWindow.webContents.on("will-navigate", (event: Event, url: string) => {
+    //     console.log(url)
+    // })
 
     // Resource Swapper
     if (userPrefs.resourceSwapper) {

@@ -88,6 +88,7 @@ function customGenericWin(url, providedMenu) {
     genericWin.setMenuBarVisibility(false);
     genericWin.loadURL(url);
     genericWin.once('ready-to-show', () => { genericWin.show(); });
+    //console.log(url)
 }
 if (userPrefs.safeFlags_removeUselessFeatures) {
     //remove useless features
@@ -314,7 +315,7 @@ electron_1.app.on('ready', function () {
             }
             //for comp just load it into the main url
         }
-        else if (url.includes("comp.krunker.io")) {
+        else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || (url.includes("&matchId=") && url.includes("https://krunker.io/?game"))) {
             event.preventDefault();
             mainWindow.loadURL(url);
         }
@@ -323,6 +324,9 @@ electron_1.app.on('ready', function () {
             customGenericWin(url, strippedMenu);
         }
     });
+    // mainWindow.webContents.on("will-navigate", (event: Event, url: string) => {
+    //     console.log(url)
+    // })
     // Resource Swapper
     if (userPrefs.resourceSwapper) {
         const CrankshaftSwapInstance = new Swapper(mainWindow, "normal", swapperPath);
