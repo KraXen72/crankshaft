@@ -21,6 +21,7 @@ const settingsSkeleton = {
     inProcessGPU: false,
     disableAccelerated2D: false,
     hideAds: true,
+    menuTimer: false,
     fullscreen: false,
     resourceSwapper: true,
     userscripts: false,
@@ -191,7 +192,8 @@ electron_1.app.on('ready', function () {
     //general ready to show, runs when window refreshes or loads url
     mainWindow.on('ready-to-show', () => {
         mainWindow.show();
-        mainWindow.webContents.send('injectClientCss', userPrefs.clientSplash, userPrefs.hideAds, userPrefs.userscripts, electron_1.app.getVersion());
+        //TODO this is getting long, rewrite
+        mainWindow.webContents.send('injectClientCss', userPrefs.clientSplash, { hideAds: userPrefs.hideAds, menuTimer: userPrefs.menuTimer }, userPrefs.userscripts, electron_1.app.getVersion());
     });
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);

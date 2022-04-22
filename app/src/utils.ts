@@ -55,12 +55,11 @@ export function createElement(type: string, options: object = {}) {
  * inject or uninject css to hide ads
  * @param value 'toggle'|Boolean
  */
-export function toggleAdhideCSS(value: 'toggle' | Boolean = 'toggle') {
-    let styleTag = document.getElementById("teeny-tiny-css-snippet")
-    const rule = `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder { display: none !important }`
+export function toggleSettingCSS(css: string, styleTagId: string = "teeny-tiny-css-snippet",value: ('toggle' | Boolean) = 'toggle') {
+    let styleTag = document.getElementById(`crankshaft-setting-${styleTagId}`)
 
     function create() {
-        styleTag = createElement("style", {id: "teeny-tiny-css-snippet", innerHTML: rule})
+        styleTag = createElement("style", {id: `crankshaft-setting-${styleTagId}`, innerHTML: css})
         document.head.appendChild(styleTag)
     }
 

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toggleAdhideCSS = exports.createElement = exports.injectSettingsCss = void 0;
+exports.toggleSettingCSS = exports.createElement = exports.injectSettingsCss = void 0;
 /**
  * inject css as a style tag
  */
@@ -55,11 +55,10 @@ exports.createElement = createElement;
  * inject or uninject css to hide ads
  * @param value 'toggle'|Boolean
  */
-function toggleAdhideCSS(value = 'toggle') {
-    let styleTag = document.getElementById("teeny-tiny-css-snippet");
-    const rule = `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder { display: none !important }`;
+function toggleSettingCSS(css, styleTagId = "teeny-tiny-css-snippet", value = 'toggle') {
+    let styleTag = document.getElementById(`crankshaft-setting-${styleTagId}`);
     function create() {
-        styleTag = createElement("style", { id: "teeny-tiny-css-snippet", innerHTML: rule });
+        styleTag = createElement("style", { id: `crankshaft-setting-${styleTagId}`, innerHTML: css });
         document.head.appendChild(styleTag);
     }
     if (value === 'toggle') {
@@ -83,4 +82,4 @@ function toggleAdhideCSS(value = 'toggle') {
         }
     }
 }
-exports.toggleAdhideCSS = toggleAdhideCSS;
+exports.toggleSettingCSS = toggleSettingCSS;

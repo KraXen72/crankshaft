@@ -75,7 +75,12 @@ electron_1.ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPa
     userscriptTracker = tracker;
     //console.log(userscripts)
 });
-electron_1.ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, userscripts, version) => {
+/** actual css for settings that are style-based (hide ads, etc)*/
+const styleSettingsCss = {
+    hideAds: `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder { display: none !important }`,
+    menuTimer: fs.readFileSync(path.resolve(__dirname, 'assets', 'menuTimer.css'), { encoding: "utf-8" })
+};
+electron_1.ipcRenderer.on('injectClientCss', (event, injectSplash, { hideAds, menuTimer }, userscripts, version) => {
     const splashId = "Crankshaft-splash-css";
     const settId = "Crankshaft-settings-css";
     if (document.getElementById(settId) === null) {
@@ -107,8 +112,12 @@ electron_1.ipcRenderer.on('injectClientCss', (event, injectSplash, hideAds, user
         initLoader.appendChild((0, utils_1.createElement)("div", { class: "crankshaft-holder-l", id: "#loadInfoLHolder", text: `v${version}` }));
         initLoader.appendChild((0, utils_1.createElement)("div", { class: "crankshaft-holder-r", id: "#loadInfoRHolder", text: /*`KraXen72 & LukeTheDuke`*/ `Client by KraXen72` }));
     }
+    //TODO rewrite, this is not well scalable
     if (hideAds) {
-        (0, utils_1.toggleAdhideCSS)(true);
+        (0, utils_1.toggleSettingCSS)(styleSettingsCss.hideAds, "hideAds", true);
+    }
+    if (menuTimer) {
+        (0, utils_1.toggleSettingCSS)(styleSettingsCss.menuTimer, "menuTimer", true);
     }
     if (userscripts) {
         electron_1.ipcRenderer.send("preloadNeedsUserscriptPath");
@@ -192,7 +201,8 @@ const settingsDesc = {
     fullscreen: { title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2 },
     "angle-backend": { title: "ANGLE Backend", type: "sel", opts: ["default", "gl", "d3d11", "d3d9", "d3d11on12", "vulkan"], safety: 0, reload: 2 },
     inProcessGPU: { title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, reload: 2 },
-    hideAds: { title: "Hide Ads", type: "bool", desc: `Adds display: none !important; to most ads. Krunker should still get money.`, safety: 0, reload: 0 },
+    hideAds: { title: "Hide Ads", type: "bool", safety: 0, reload: 0 },
+    menuTimer: { title: "Menu Timer", type: "bool", safety: 0, reload: 0 },
     resourceSwapper: { title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, reload: 2 },
     userscripts: { title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, reload: 2 },
     clientSplash: { title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety: 0, reload: 1 },
@@ -256,12 +266,6 @@ class SettingElem {
                     <input class="s-update" type="checkbox" ${props.value ? "checked" : ""}/>
                     <div class="slider round"></div>
                 </label>`;
-                // if (typeof props.reload !== "undefined") {
-                //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
-                // }
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<div class="setting-desc-new">${props.desc}</div>`;
-                }
                 this.updateKey = `checked`;
                 this.updateMethod = 'onchange';
                 break;
@@ -271,12 +275,6 @@ class SettingElem {
             case 'sel':
                 this.HTML += `<span class="setting-title">${props.title}</span>
                     <select class="s-update inputGrey2">${props.opts.map(o => `<option value ="${o}">${o}</option>`).join("") /* create option tags*/}</select>`;
-                // if (typeof props.reload !== "undefined") {
-                //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
-                // }
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<div class="setting-desc-new">${props.desc}</div>`;
-                }
                 this.updateKey = `value`;
                 this.updateMethod = 'onchange';
                 break;
@@ -287,10 +285,6 @@ class SettingElem {
                     <input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}">
                 </span>
                 `;
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<div class="setting-desc-new">${props.desc}</div>`;
-                }
-                //${typeof props.reload !== "undefined" ? `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>` : ``}
                 this.updateKey = `value`;
                 this.updateMethod = `oninput`;
                 break;
@@ -299,18 +293,15 @@ class SettingElem {
                     <input type="number" class="rb-input marright s-update" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
                 </span>
                 `;
-                // if (typeof props.reload !== "undefined") {
-                //     //@ts-ignore
-                //     this.HTML += `<span title="${reloadDesc[props.reload]}" class="requires-restart restart-level-${props.reload}">*</span>`
-                // }
-                if (!!props.desc && props.desc !== "") {
-                    this.HTML += `<div class="setting-desc-new">${props.desc}</div>`;
-                }
                 this.updateKey = `value`;
                 this.updateMethod = `onchange`;
                 break;
             default:
                 this.HTML = `<span class="setting-title">${props.title}</span><span>Unknown setting type</span>`;
+        }
+        //add desc
+        if (!!props.desc && props.desc !== "") {
+            this.HTML += `<div class="setting-desc-new">${props.desc}</div>`;
         }
     }
     /**
@@ -330,7 +321,10 @@ class SettingElem {
             saveSettings();
             // you can add custom instant refresh callbacks for settings here
             if (this.props.key === "hideAds") {
-                (0, utils_1.toggleAdhideCSS)(value);
+                (0, utils_1.toggleSettingCSS)(styleSettingsCss.hideAds, this.props.key, value);
+            }
+            if (this.props.key === "menuTimer") {
+                (0, utils_1.toggleSettingCSS)(styleSettingsCss.menuTimer, this.props.key, value);
             }
             // if (this.props.key === "userscripts" && value === true) {
             //     //show disclaimer before turning on userscripts
@@ -390,7 +384,9 @@ function renderSettings() {
     //DONE re-implement collapsing
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
         <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Client Settings</div>
-        <div class="setBodH Crankshaft-setBodH mainSettings"></div>
+        <div class="setBodH Crankshaft-setBodH mainSettings">
+            <div class="settName setting"><span class="setting-title crankshaft-gray">Most settings need a client restart to work. You can use F12.</span></div>
+        </div>
     </div>`;
     if (userPrefs.userscripts) {
         const userScriptSkeleton = `
@@ -401,7 +397,6 @@ function renderSettings() {
         //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
         document.querySelector(".Crankshaft-settings").innerHTML += userScriptSkeleton;
     }
-    //<span class="setting safety-1">NOTE: All settings requrie restart of the client</span><br>
     //the next 2 ts ignores are bc the settings get modified with 2 maps after they are declared
     //@ts-ignore
     let settings = Object.keys(settingsDesc)

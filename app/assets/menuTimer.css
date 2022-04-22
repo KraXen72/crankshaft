@@ -1,0 +1,38 @@
+/* menu timer by KraXen72 */
+#uiBase.onMenu div#spectateUI[style*="none"] {
+    display: block !important;
+}
+
+#uiBase.onMenu div#spectateUI #spectateHUD {
+     width: min-content !important;
+     position: absolute !important;
+     
+}
+
+#uiBase.onMenu div#spectateUI #specTeam0,
+#uiBase.onMenu div#spectateUI #spec0,
+#uiBase.onMenu div#spectateUI #spec1,
+#uiBase.onMenu div#spectateUI #specTeam1,
+#uiBase.onMenu div#spectateUI #specGMessage,
+#uiBase.onMenu div#spectateUI #specGameInfo,
+#uiBase.onMenu div#spectateUI #specNames,
+#uiBase.onMenu div#spectateUI #specContr,
+#uiBase.onMenu div#spectateUI #specKPDContr,
+#uiBase.onMenu div#spectateUI #specSUS
+{
+    display: none !important;
+}
+
+#uiBase.onMenu div#spectateUI #specTimer {
+    color: white !important;
+    opacity: 1 !important;
+}
+
+#uiBase.onMenu div#spectateUI #spectateHUD {
+    left: 50%;
+    transform: translateX(-50%);
+}
+#uiBase.onMenu div#spectateUI #spectateHUD {
+    top: calc(50% + 2rem);
+}
+
