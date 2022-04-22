@@ -196,9 +196,9 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
 // leaving desc as "" will cause it to not render the helper question mark
 const settingsDesc: SettingsDesc = {
     fpsUncap: {title: "Un-cap FPS", type: "bool", desc: "", safety: 0, reload: 2},
+    fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2},
     "angle-backend": {title: "ANGLE Backend", type: "sel", opts: ["default","gl","d3d11","d3d9","d3d11on12","vulkan"], safety: 0, reload: 2},   
     inProcessGPU: {title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, reload: 2},
-    fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2},
     hideAds: {title: "Hide Ads", type: "bool", desc: `Adds display: none !important; to most ads. Krunker should still get money.`, safety: 0, reload: 0},
     resourceSwapper: {title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, reload: 2},
     userscripts: {title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, reload: 2},
