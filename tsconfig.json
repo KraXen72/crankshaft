@@ -11,10 +11,8 @@
         "*": ["node_modules/*"]
       }
     },
-    "include": [
-      "app/src/**/*"
-, "app/socialPreload.js"    ],
+    "include": ["src/**/*"],
     "exclude": [
-        "dist/*"
+        "dist/*", "app/*"
     ]
   }

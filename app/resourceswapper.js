@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Swapper = void 0;
 const fs = require("fs");
 const path = require("path");
 require("v8-compile-cache");
@@ -87,4 +89,4 @@ class Swapper {
         }
     }
 }
-module.exports = Swapper;
+exports.Swapper = Swapper;

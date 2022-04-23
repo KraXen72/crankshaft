@@ -2,8 +2,8 @@
 import * as fs from 'fs';
 import 'v8-compile-cache'
 import { shell, app, ipcMain, BrowserWindow, protocol, dialog, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
-//@ts-ignore
-import * as Swapper from './resourceswapper';
+import { Swapper } from './resourceswapper';
+///<reference path="global.d.ts" />
 
 // Credits / mentions
 
@@ -15,8 +15,8 @@ import * as Swapper from './resourceswapper';
 
 let swapperPath = path.join(app.getPath("documents"), "Crankshaft/swapper");
 let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json");
-let userscriptPath = path.join(app.getPath("documents"), "Crankshaft/scripts")
-let userscriptPathTracker = path.resolve(userscriptPath, "tracker.json")
+let userscriptsPath = path.join(app.getPath("documents"), "Crankshaft/scripts")
+let userscriptTrackerPath = path.resolve(userscriptsPath, "tracker.json")
 
 const settingsSkeleton = {
     fpsUncap: true,
@@ -41,8 +41,8 @@ const settingsSkeleton = {
 }
 
 if (!fs.existsSync(swapperPath)) { fs.mkdirSync(swapperPath, { recursive: true }); };
-if (!fs.existsSync(userscriptPath)) { fs.mkdirSync(userscriptPath, { recursive: true }); };
-if (!fs.existsSync(userscriptPathTracker)) { fs.writeFileSync(userscriptPathTracker, "{}", {encoding: "utf-8"}) }
+if (!fs.existsSync(userscriptsPath)) { fs.mkdirSync(userscriptsPath, { recursive: true }); };
+if (!fs.existsSync(userscriptTrackerPath)) { fs.writeFileSync(userscriptTrackerPath, "{}", {encoding: "utf-8"}) }
 
 // Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
 if (!fs.existsSync(settingsPath)) {
@@ -62,12 +62,12 @@ ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 //send settings to preload
 ipcMain.on('preloadNeedSettings', (event) => {
-    mainWindow.webContents.send('preloadSettings', settingsPath, userPrefs.hideAds, app.getVersion(), __dirname);
+    mainWindow.webContents.send('preloadSettings', settingsPath, userPrefs);
 });
 
 //send usercript path to preload
-ipcMain.on("preloadNeedsUserscriptPath", (event) => {
-    mainWindow.webContents.send('preloadUserscriptPath', userscriptPath, __dirname);
+ipcMain.on("preloadNeedsuserscriptsPath", (event) => {
+    mainWindow.webContents.send('preloaduserscriptsPath', userscriptsPath, __dirname);
 })
 
 //preload is sending back updated settings
@@ -199,8 +199,8 @@ app.on('ready', function () {
 
     mainWindow = new BrowserWindow({
         show: false,
-        width: 1830,
-        height: 950,
+        width: 1600,
+        height: 900,
         center: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
@@ -258,11 +258,11 @@ app.on('ready', function () {
     ]
     const strippedTemplate: (MenuItemConstructorOptions | MenuItem)[]  = [
         {
-        label: "About Crankshaft",
+        label: "Crankshaft",
         submenu: [
             { label: "Refresh", role: "reload", accelerator: "F5"},
-            { label: "Github repo", registerAccelerator: false, click: () => {shell.openExternal(`https://github.com/KraXen72/crankshaft`)}},
-            { label: "Client Discord", registerAccelerator: false, click: () => {shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`)}}
+            { label: "Github repository", registerAccelerator: false, click: () => {shell.openExternal(`https://github.com/KraXen72/crankshaft`)}},
+            { label: "Crankshaft Discord", registerAccelerator: false, click: () => {shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`)}}
         ]
     }, csMenuTemplate[1] ]
 
@@ -314,12 +314,13 @@ app.on('ready', function () {
         } else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || (url.includes("https://krunker.io/?game") && url.includes("&matchId="))) {
             event.preventDefault()
             mainWindow.loadURL(url)
-        } else { //i guess we have to open custom windows for that or so
+        } else { //for any other link, fall back to creating a custom window with strippedMenu. 
             event.preventDefault()
             const genericWin = customGenericWin(url, strippedMenu)
             event.newGuest = genericWin
             
-            if (url.includes('https://krunker.io/social.html')) { // if the window is social, create and assign a new socialWindow
+            // if the window is social, create and assign a new socialWindow
+            if (url.includes('https://krunker.io/social.html')) { 
                 socialWindowReference = genericWin
                 genericWin.once('close', () => { socialWindowReference = void 0 }) //remove reference once window is closed
 
@@ -340,7 +341,7 @@ app.on('ready', function () {
     //     console.log(url)
     // })
 
-    // Resource Swapper
+    // Resource Swapper, thanks idkr
     if (userPrefs.resourceSwapper) {
         const CrankshaftSwapInstance = new Swapper(mainWindow, "normal", swapperPath)
         CrankshaftSwapInstance.init();

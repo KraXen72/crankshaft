@@ -4,8 +4,8 @@ const path = require("path");
 const fs = require("fs");
 require("v8-compile-cache");
 const electron_1 = require("electron");
-//@ts-ignore
-const Swapper = require("./resourceswapper");
+const resourceswapper_1 = require("./resourceswapper");
+///<reference path="global.d.ts" />
 // Credits / mentions
 // Gato/creepycats - Gatoclient
 // LukeTheDuke - Gatoclient-lite
@@ -14,8 +14,8 @@ const Swapper = require("./resourceswapper");
 // deadcell - css for setting description
 let swapperPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/swapper");
 let settingsPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/settings.json");
-let userscriptPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/scripts");
-let userscriptPathTracker = path.resolve(userscriptPath, "tracker.json");
+let userscriptsPath = path.join(electron_1.app.getPath("documents"), "Crankshaft/scripts");
+let userscriptTrackerPath = path.resolve(userscriptsPath, "tracker.json");
 const settingsSkeleton = {
     fpsUncap: true,
     inProcessGPU: false,
@@ -41,12 +41,12 @@ if (!fs.existsSync(swapperPath)) {
     fs.mkdirSync(swapperPath, { recursive: true });
 }
 ;
-if (!fs.existsSync(userscriptPath)) {
-    fs.mkdirSync(userscriptPath, { recursive: true });
+if (!fs.existsSync(userscriptsPath)) {
+    fs.mkdirSync(userscriptsPath, { recursive: true });
 }
 ;
-if (!fs.existsSync(userscriptPathTracker)) {
-    fs.writeFileSync(userscriptPathTracker, "{}", { encoding: "utf-8" });
+if (!fs.existsSync(userscriptTrackerPath)) {
+    fs.writeFileSync(userscriptTrackerPath, "{}", { encoding: "utf-8" });
 }
 // Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
 if (!fs.existsSync(settingsPath)) {
@@ -62,11 +62,11 @@ let socialWindowReference;
 electron_1.ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 //send settings to preload
 electron_1.ipcMain.on('preloadNeedSettings', (event) => {
-    mainWindow.webContents.send('preloadSettings', settingsPath, userPrefs.hideAds, electron_1.app.getVersion(), __dirname);
+    mainWindow.webContents.send('preloadSettings', settingsPath, userPrefs);
 });
 //send usercript path to preload
-electron_1.ipcMain.on("preloadNeedsUserscriptPath", (event) => {
-    mainWindow.webContents.send('preloadUserscriptPath', userscriptPath, __dirname);
+electron_1.ipcMain.on("preloadNeedsuserscriptsPath", (event) => {
+    mainWindow.webContents.send('preloaduserscriptsPath', userscriptsPath, __dirname);
 });
 //preload is sending back updated settings
 electron_1.ipcMain.on("preloadSendsNewSettings", (event, data) => {
@@ -180,8 +180,8 @@ electron_1.app.on('ready', function () {
     }
     mainWindow = new electron_1.BrowserWindow({
         show: false,
-        width: 1830,
-        height: 950,
+        width: 1600,
+        height: 900,
         center: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
@@ -235,11 +235,11 @@ electron_1.app.on('ready', function () {
     ];
     const strippedTemplate = [
         {
-            label: "About Crankshaft",
+            label: "Crankshaft",
             submenu: [
                 { label: "Refresh", role: "reload", accelerator: "F5" },
-                { label: "Github repo", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://github.com/KraXen72/crankshaft`); } },
-                { label: "Client Discord", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`); } }
+                { label: "Github repository", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://github.com/KraXen72/crankshaft`); } },
+                { label: "Crankshaft Discord", registerAccelerator: false, click: () => { electron_1.shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`); } }
             ]
         }, csMenuTemplate[1]
     ];
@@ -293,11 +293,12 @@ electron_1.app.on('ready', function () {
             event.preventDefault();
             mainWindow.loadURL(url);
         }
-        else { //i guess we have to open custom windows for that or so
+        else { //for any other link, fall back to creating a custom window with strippedMenu. 
             event.preventDefault();
             const genericWin = customGenericWin(url, strippedMenu);
             event.newGuest = genericWin;
-            if (url.includes('https://krunker.io/social.html')) { // if the window is social, create and assign a new socialWindow
+            // if the window is social, create and assign a new socialWindow
+            if (url.includes('https://krunker.io/social.html')) {
                 socialWindowReference = genericWin;
                 genericWin.once('close', () => { socialWindowReference = void 0; }); //remove reference once window is closed
                 genericWin.webContents.on('will-navigate', (e, url) => {
@@ -315,9 +316,9 @@ electron_1.app.on('ready', function () {
     // mainWindow.webContents.on("will-navigate", (event: Event, url: string) => {
     //     console.log(url)
     // })
-    // Resource Swapper
+    // Resource Swapper, thanks idkr
     if (userPrefs.resourceSwapper) {
-        const CrankshaftSwapInstance = new Swapper(mainWindow, "normal", swapperPath);
+        const CrankshaftSwapInstance = new resourceswapper_1.Swapper(mainWindow, "normal", swapperPath);
         CrankshaftSwapInstance.init();
     }
     //nice memory leak lmao

@@ -105,4 +105,4 @@ class Swapper {
 	}
 }
 
-export = Swapper
+export { Swapper }

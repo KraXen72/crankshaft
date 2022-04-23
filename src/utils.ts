@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync, writeFileSync } from "fs";
+import * as path from 'path';
+
 /**
  * inject css as a style tag
  */
