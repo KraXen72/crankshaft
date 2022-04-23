@@ -8,7 +8,7 @@
     "watch": "tsc -w",
     "start": "npm run build && electron .",
     "dist": "npm run build && electron-builder",
-    "release": "electron-builder --publish always",
+    "release": "npm run build && electron-builder --publish always",
     "postinstall": "electron-builder install-app-deps",
     "changelog-c": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits -r 0",
     "changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
