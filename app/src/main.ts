@@ -50,7 +50,8 @@ if (!fs.existsSync(settingsPath)) {
 }
 
 // Read settings to apply them to the command line arguments
-let userPrefs = JSON.parse(fs.readFileSync(settingsPath, {encoding: "utf-8"}));
+let userPrefs = settingsSkeleton
+Object.assign(userPrefs, JSON.parse(fs.readFileSync(settingsPath, {encoding: "utf-8"})))
 
 // Fullscreen Handler
 let mainWindowIsFullscreen = false;

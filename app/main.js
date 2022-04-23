@@ -53,7 +53,8 @@ if (!fs.existsSync(settingsPath)) {
     fs.writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: "utf-8", flag: 'wx' });
 }
 // Read settings to apply them to the command line arguments
-let userPrefs = JSON.parse(fs.readFileSync(settingsPath, { encoding: "utf-8" }));
+let userPrefs = settingsSkeleton;
+Object.assign(userPrefs, JSON.parse(fs.readFileSync(settingsPath, { encoding: "utf-8" })));
 // Fullscreen Handler
 let mainWindowIsFullscreen = false;
 let mainWindow;
