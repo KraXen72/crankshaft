@@ -17,11 +17,15 @@
 #loadInfoRHolder {
     display: none !important;
 }
+html { background: #363636 }
 #initLoader/*, .Crankshaft-setBodH */ {
     background-color: #363636 !important;
     /* background-image: url("https://cdn.discordapp.com/attachments/704792091955429426/959589744906489896/aieGears.png") !important; */
     background-size: 100px !important;
     background-repeat: repeat !important;
+    border: none !important;
+    outline: none !important;
+    z-index: 20 !important;
 
     /* i am aware this is not an ideal solution. 
         alternative 1) host image on discord: will not work when discord's cdn is down and i couldn't think of a better free cdn
