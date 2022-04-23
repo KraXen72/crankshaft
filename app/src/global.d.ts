@@ -10,7 +10,8 @@ interface userscriptTracker {
 interface userscript {
     name: string,
     fullpath: string,
-    content: string
+    rawContent?: string,
+    content?: string
 }
 
 interface SettingsDescItem {
@@ -19,7 +20,6 @@ interface SettingsDescItem {
     desc?: string,
     desclines?: number,
     safety: number,
-    reload: number,
     //for 'num'
     min?: number,
     max?: number,
@@ -28,9 +28,13 @@ interface SettingsDescItem {
     //enriched objects, this client specific
     value?: any,
     key?: any,
-    callback?: "normal" | "userscript" | Function 
+    callback?: "normal" | "userscript" | Function
 }
 
 interface SettingsDesc {
     [settingKey: string]: SettingsDescItem
 }
+
+interface Window {
+    errAlert: Function;
+  }

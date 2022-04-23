@@ -202,7 +202,7 @@ app.on('ready', function () {
     mainWindow = new BrowserWindow({
         show: false,
         width: 1830,
-        height: 1000,
+        height: 950,
         center: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')

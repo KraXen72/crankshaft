@@ -17,7 +17,8 @@
 #uiBase.onMenu div#spectateUI #specNames,
 #uiBase.onMenu div#spectateUI #specContr,
 #uiBase.onMenu div#spectateUI #specKPDContr,
-#uiBase.onMenu div#spectateUI #specSUS
+#uiBase.onMenu div#spectateUI #specSUS,
+#uiBase.onMenu div#spectateUI #specStats
 {
     display: none !important;
 }

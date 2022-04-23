@@ -21,6 +21,9 @@ document.addEventListener("keydown", (event) => {
         document.exitPointerLock();
     }
 });
+window.errAlert = (err, name) => {
+    alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.`);
+};
 // Settings Stuff
 document.addEventListener("DOMContentLoaded", (event) => {
     electron_1.ipcRenderer.send('preloadNeedSettings');
@@ -50,25 +53,36 @@ electron_1.ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPa
         .map(entry => {
         const name = entry.name;
         const fullpath = path.resolve(userscriptPath, name).toString();
-        const rawContent = fs.readFileSync(fullpath, { encoding: "utf-8" });
-        let content = require('esbuild').transformSync(rawContent, { minify: true });
-        if (content.warnings.length > 0) {
-            console.warn(`'${name}' has warnings: `, content.warnings);
-        }
-        content = content.code;
-        return { name: name, fullpath, content };
+        return { name: name, fullpath };
     });
     let tracker = {};
     userscripts.forEach(u => tracker[u.name] = false);
     Object.assign(tracker, JSON.parse(fs.readFileSync(userscriptPathTracker, { encoding: "utf-8" })));
     fs.writeFileSync(userscriptPathTracker, JSON.stringify(tracker, null, 2), { encoding: "utf-8" });
     //run the code in the userscript
-    //TODO figure out how to "use strict"
     userscripts.forEach(u => {
-        if (tracker[u.name]) {
-            let code = new String(u.content);
-            //@ts-ignore
-            Function(code)();
+        if (tracker[u.name]) { //if enabled
+            const rawContent = fs.readFileSync(u.fullpath, { encoding: "utf-8" });
+            let content;
+            try {
+                content = require('esbuild').transformSync(rawContent, { minify: true });
+            }
+            catch (error) {
+                window.errAlert(error, u.name);
+                content = { code: "", warnings: ["FATAL: userscript failed to compile."] };
+            }
+            if (content.warnings.length > 0) {
+                console.warn(`'${u.name}' compiled with warnings: `, content.warnings);
+            }
+            u.content = content.code;
+            let code = new String(`"use strict";try { ${content.code}; } catch (e) { window.errAlert(e, ${u.name}); }; `);
+            try {
+                //@ts-ignore
+                Function(code)();
+            }
+            catch (error) {
+                window.errAlert(error, u.name);
+            }
             console.log(`%c[cs] %cran %c'${u.name.toString()}'`, "color: lightblue; font-weight: bold;", "color: white;", "color: lightgreen;");
         }
     });
@@ -197,30 +211,25 @@ function UpdateSettingsTabs(activeTab, hookSearch = true) {
 // some have some extra stuff, like selects have opts for options.
 // leaving desc as "" will cause it to not render the helper question mark
 const settingsDesc = {
-    fpsUncap: { title: "Un-cap FPS", type: "bool", desc: "", safety: 0, reload: 2 },
-    fullscreen: { title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, reload: 2 },
-    "angle-backend": { title: "ANGLE Backend", type: "sel", opts: ["default", "gl", "d3d11", "d3d9", "d3d11on12", "vulkan"], safety: 0, reload: 2 },
-    inProcessGPU: { title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, reload: 2 },
-    hideAds: { title: "Hide Ads", type: "bool", safety: 0, reload: 0 },
-    menuTimer: { title: "Menu Timer", type: "bool", safety: 0, reload: 0 },
-    resourceSwapper: { title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, reload: 2 },
-    userscripts: { title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, reload: 2 },
-    clientSplash: { title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety: 0, reload: 1 },
-    logDebugToConsole: { title: "Log debug & GPU info to electron console", type: "bool", safety: 0, reload: 2 },
-    // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2, reload: 1},
-    // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2, reload: 1},
-    safeFlags_removeUselessFeatures: { title: "Remove useless features", type: "bool", desc: "Adds a lot of chromium flags that disable useless features.", safety: 1, reload: 2 },
-    safeFlags_gpuRasterizing: { title: "GPU rasterization", type: "bool", /*desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.",*/ safety: 2, reload: 2 },
-    disableAccelerated2D: { title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3, reload: 2 },
-    safeFlags_helpfulFlags: { title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3, reload: 2 },
-    experimentalFlags_increaseLimits: { title: "Increase limits flags", type: "bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`, safety: 4, reload: 2 },
-    experimentalFlags_lowLatency: { title: "Lower Latency flags", type: "bool", desc: `Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas`, safety: 4, reload: 2 },
-    experimentalFlags_experimental: { title: "Experimental flags", type: "bool", desc: `Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server`, safety: 4, reload: 2 },
-};
-const reloadDesc = {
-    0: "No restart required",
-    1: "Page reload required",
-    2: "Client restart required"
+    fpsUncap: { title: "Un-cap FPS", type: "bool", desc: "", safety: 0 },
+    fullscreen: { title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, },
+    "angle-backend": { title: "ANGLE Backend", type: "sel", opts: ["default", "gl", "d3d11", "d3d9", "d3d11on12", "vulkan"], safety: 0 },
+    inProcessGPU: { title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1 },
+    hideAds: { title: "Hide Ads", type: "bool", safety: 0 },
+    menuTimer: { title: "Menu Timer", type: "bool", safety: 0 },
+    resourceSwapper: { title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0 },
+    userscripts: { title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1 },
+    clientSplash: { title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety: 0 },
+    logDebugToConsole: { title: "Log debug & GPU info to electron console", type: "bool", safety: 0 },
+    // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2},
+    // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2},
+    safeFlags_removeUselessFeatures: { title: "Remove useless features", type: "bool", desc: "Adds a lot of chromium flags that disable useless features.", safety: 1 },
+    safeFlags_gpuRasterizing: { title: "GPU rasterization", type: "bool", /*desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.",*/ safety: 22 },
+    disableAccelerated2D: { title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3 },
+    safeFlags_helpfulFlags: { title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3 },
+    experimentalFlags_increaseLimits: { title: "Increase limits flags", type: "bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`, safety: 4 },
+    experimentalFlags_lowLatency: { title: "Lower Latency flags", type: "bool", desc: `Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas`, safety: 4 },
+    experimentalFlags_experimental: { title: "Experimental flags", type: "bool", desc: `Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server`, safety: 4 },
 };
 const safetyDesc = [
     "This setting is safe/standard",
@@ -423,7 +432,6 @@ function renderSettings() {
                 type: "bool",
                 desc: userscript.fullpath,
                 safety: 0,
-                reload: 2,
                 callback: "userscript"
             };
             return obj;
