@@ -2,8 +2,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { BrowserWindow } from "electron"
+import 'v8-compile-cache'
 //converted to typescript by KraXen72. original is what i can only assume is from idkr, because of the jsdoc. found it in gatoclient lite.
-//
 
 /**
  * Swapping Handler

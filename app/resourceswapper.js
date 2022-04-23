@@ -1,8 +1,8 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+require("v8-compile-cache");
 //converted to typescript by KraXen72. original is what i can only assume is from idkr, because of the jsdoc. found it in gatoclient lite.
-//
 /**
  * Swapping Handler
  *
