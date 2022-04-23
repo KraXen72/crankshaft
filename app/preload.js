@@ -83,7 +83,7 @@ electron_1.ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPa
             catch (error) {
                 window.errAlert(error, u.name);
             }
-            console.log(`%c[cs] %cran %c'${u.name.toString()}'`, "color: lightblue; font-weight: bold;", "color: white;", "color: lightgreen;");
+            console.log(`%c[cs] %cexecuted %c'${u.name.toString()}'`, "color: lightblue; font-weight: bold;", "color: white;", "color: lightgreen;");
         }
     });
     userscriptTracker = tracker;

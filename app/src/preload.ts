@@ -88,7 +88,7 @@ ipcRenderer.on('preloadUserscriptPath', (event, recieved_userscriptPath: string)
             }
 
             console.log(
-                `%c[cs] %cran %c'${u.name.toString()}'`, 
+                `%c[cs] %cexecuted %c'${u.name.toString()}'`, 
                 "color: lightblue; font-weight: bold;", 
                 "color: white;", "color: lightgreen;"
             )

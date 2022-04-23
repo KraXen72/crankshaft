@@ -94,7 +94,7 @@ function customGenericWin(url: string, providedMenu: Menu) {
     genericWin.loadURL(url)
     genericWin.once('ready-to-show', () => { genericWin.show(); });
 
-    //console.log(url)
+    return genericWin//console.log(url)
 }
 
 
@@ -299,7 +299,7 @@ app.on('ready', function () {
             });
             socialWindow.setMenu(strippedMenu);
             socialWindow.setMenuBarVisibility(false)
-            socialWindow.loadURL("https://krunker.io/social.html")
+            socialWindow.loadURL(url)
             socialWindow.once('ready-to-show', () => { socialWindow.show() })
             event.newGuest = socialWindow
             // handle social page url switching
@@ -335,16 +335,18 @@ app.on('ready', function () {
                 case 1: //open as a new window in client
                 default:
                     event.preventDefault()
-                    customGenericWin(url, strippedMenu)
+                    const genericWin = customGenericWin(url, strippedMenu)
+                    event.newGuest = genericWin
                     break;
             }
             //for comp just load it into the main url
-        } else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || (url.includes("&matchId=") && url.includes("https://krunker.io/?game") )) {
+        } else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || (url.includes("https://krunker.io/?game") && url.includes("&matchId="))) {
             event.preventDefault()
             mainWindow.loadURL(url)
         } else { //i guess we have to open custom windows for that or so
             event.preventDefault()
-            customGenericWin(url, strippedMenu)
+            const genericWin = customGenericWin(url, strippedMenu)
+            event.newGuest = genericWin
         }
     })
 
