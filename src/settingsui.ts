@@ -218,21 +218,22 @@ class SettingElem {
     }
 }
 
+function createCategory(title: string, innerHTML: string, elemClass: string = "mainSettings") {
+    return `
+    <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}</div>
+    <div class="setBodH Crankshaft-setBodH ${elemClass}">
+        ${innerHTML}
+    </div>`
+}
+
 
 export function renderSettings() {
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
-        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Client Settings</div>
-        <div class="setBodH Crankshaft-setBodH mainSettings">
-            <div class="settName setting"><span class="setting-title crankshaft-gray">Most settings need a client restart to work. You can use F12.</span></div>
-        </div>
+        ${createCategory("Client Settings", `<div class="settName setting"><span class="setting-title crankshaft-gray">Most settings need a client restart to work. You can use F12.</span></div>` )}
     </div>`
 
     if (userPrefs.userscripts) {
-        const userScriptSkeleton = `
-        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> Userscripts</div>
-        <div class="setBodH Crankshaft-setBodH userscripts">
-            <div class="settName setting"><span class="setting-title crankshaft-gray">NOTE: refresh page to see changes</span></div>
-        </div>`
+        const userScriptSkeleton = createCategory("Userscripts", `<div class="settName setting"><span class="setting-title crankshaft-gray">NOTE: refresh page to see changes</span></div>`, "userscripts")
         //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
         document.querySelector(".Crankshaft-settings").innerHTML += userScriptSkeleton
     }
