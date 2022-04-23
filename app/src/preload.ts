@@ -231,7 +231,7 @@ const settingsDesc: SettingsDesc = {
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2},
     safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of chromium flags that disable useless features.", safety:1},
-    safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", /*desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.",*/ safety: 22},
+    safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", /*desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.",*/ safety: 2},
     disableAccelerated2D: {title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3},
     safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3},
     experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`,  safety: 4},

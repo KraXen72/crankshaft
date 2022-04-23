@@ -54,8 +54,8 @@ let userPrefs = settingsSkeleton
 Object.assign(userPrefs, JSON.parse(fs.readFileSync(settingsPath, {encoding: "utf-8"})))
 
 // Fullscreen Handler
-let mainWindowIsFullscreen = false;
 let mainWindow: BrowserWindow
+let socialWindowReference: BrowserWindow
 
 // console log to electron console because krunker turns browser console off
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
@@ -73,12 +73,8 @@ ipcMain.on("preloadNeedsUserscriptPath", (event) => {
 //preload is sending back updated settings
 ipcMain.on("preloadSendsNewSettings", (event, data) => {
     Object.assign(userPrefs, data)
-    //TODO reapply settings
 
-    if (userPrefs.fullscreen) {
-        mainWindow.setFullScreen(true);
-        mainWindowIsFullscreen = true;
-    }
+    mainWindow.setFullScreen(userPrefs.fullscreen);
 })
 
 /** open a custom generic window with our menu, hidden */
@@ -94,8 +90,9 @@ function customGenericWin(url: string, providedMenu: Menu) {
     genericWin.setMenuBarVisibility(false)
     genericWin.loadURL(url)
     genericWin.once('ready-to-show', () => { genericWin.show(); });
+    genericWin.once('close', () => { genericWin.destroy() })
 
-    return genericWin//console.log(url)
+    return genericWin
 }
 
 
@@ -218,7 +215,6 @@ app.on('ready', function () {
     });
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);
-        mainWindowIsFullscreen = true;
     }
     //mainWindow.removeMenu();
     mainWindow.loadURL('https://krunker.io');
@@ -286,38 +282,12 @@ app.on('ready', function () {
             "discord.com",
             "accounts.google.com"
         ]
-        if (url.includes('https://krunker.io/social.html')) {
-            event.preventDefault()
-
-            const socialWindow = new BrowserWindow({
-                autoHideMenuBar: true,
-                show: false,
-                width: 1600,
-                height: 900,
-                center: true,
-                //@ts-ignore
-                preload: "./socialPreload.js"
-            });
-            socialWindow.setMenu(strippedMenu);
-            socialWindow.setMenuBarVisibility(false)
-            socialWindow.loadURL(url)
-            socialWindow.once('ready-to-show', () => { socialWindow.show() })
-            event.newGuest = socialWindow
-            // handle social page url switching
-            socialWindow.webContents.on('will-navigate', (e, url) => {
-                if (url.includes('https://krunker.io/social.html')) {
-                    socialWindow.loadURL(url);
-                } else {
-                    e.preventDefault()
-                    shell.openExternal(url)
-                } 
-            })
-            //fully destroy the window once it's closed instead of previous implementation where it just stayed hidden
-            socialWindow.once('closed', () => { socialWindow.destroy() })
+        if (url.includes('https://krunker.io/social.html') && typeof socialWindowReference !== "undefined") {
+            socialWindowReference.loadURL(url) //if a designated socialWindow exists already, just load the url there
         } else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
             let pick = dialog.showMessageBoxSync({
                 title: "Opening new url",
-                noLink: true,
+                noLink: false,
                 message: `You're trying to open ${url}`,
                 buttons: ["Open in default browser", "Open as a new window in client", "Open in this window", "Don't open"]
             })
@@ -348,6 +318,21 @@ app.on('ready', function () {
             event.preventDefault()
             const genericWin = customGenericWin(url, strippedMenu)
             event.newGuest = genericWin
+            
+            if (url.includes('https://krunker.io/social.html')) { // if the window is social, create and assign a new socialWindow
+                socialWindowReference = genericWin
+                genericWin.once('close', () => { socialWindowReference = void 0 }) //remove reference once window is closed
+
+                genericWin.webContents.on('will-navigate', (e, url) => { //new social pages will just replace the url in this one window
+                    if (url.includes('https://krunker.io/social.html')) {
+                        genericWin.loadURL(url);
+                    } else {
+                        e.preventDefault()
+                        shell.openExternal(url)
+                    }
+                })
+            }
+            
         }
     })
 
