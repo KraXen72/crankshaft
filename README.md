@@ -42,7 +42,6 @@
 - installation: `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i`
 - running from source: `npm run dev`/`npm run start`(slower), building: `npm run dist`
 - `npm run dev` is faster but test it also once with `npm run start` because `dev` script is experimental
-- pleae edit the `.ts` files found in `src`, not `.js` files! the typescript files get compiled into js so any changes you make to javascript files are redundant.
 - please report any bugs/feature requests in the Issues.   
 - feel free to submit pull requests, they will be merged as long as they support the client ideology. 
   
