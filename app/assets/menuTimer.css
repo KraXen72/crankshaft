@@ -4,9 +4,8 @@
 }
 
 #uiBase.onMenu div#spectateUI #spectateHUD {
-     width: min-content !important;
-     position: absolute !important;
-     
+    width: min-content !important;
+    position: absolute !important;
 }
 
 #uiBase.onMenu div#spectateUI #specTeam0,
@@ -26,6 +25,7 @@
 #uiBase.onMenu div#spectateUI #specTimer {
     color: white !important;
     opacity: 1 !important;
+    border-radius: 0.5rem;
 }
 
 #uiBase.onMenu div#spectateUI #spectateHUD {
