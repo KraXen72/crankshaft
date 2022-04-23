@@ -27,7 +27,8 @@ interface SettingItemGeneric {
     title: string,
     desc?: string,
     safety: number
-    type: validTypes
+    type: validTypes,
+    cat?: number //category
 }
 interface SelectSettingDescItem extends SettingItemGeneric { type: 'sel', opts?: string[] } //sel has to have an opts with a string array
 interface NumSettingItem extends SettingItemGeneric { type: 'num', min?: number, max?: number } //num has to have a min and max
@@ -52,4 +53,10 @@ interface renderReadySetting extends SettingItemGeneric {
     key: string,
     callback: 'normal' | 'userscript' | Function,
     value: any
+}
+
+interface categoryName {
+    n: string,
+    c: string,
+    note?: string
 }

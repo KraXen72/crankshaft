@@ -20,13 +20,18 @@ export const injectSettingsCss = (css: string, classId = "Crankshaft-settings-cs
  * @param options options for the element. like class, id, etc
  * @returns element
  */
-export function createElement(type: string, options: object = {}) {
+export function createElement(type: string, options: Object = {}) {
     const element = document.createElement(type)
 
     Object.entries(options).forEach(([key, value]) => {
         if (key === "class") {
             //@ts-ignore
-            element.classList.add(value)
+            if (Array.isArray(value)) {
+                value.forEach((c: string) => {element.classList.add(c)})
+            } else {
+                element.classList.add(value)
+            }
+            
             return
         }
 

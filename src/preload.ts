@@ -93,7 +93,6 @@ ipcRenderer.on('preloaduserscriptsPath', (event, recieved_userscriptsPath: strin
             )
         }
     })
-    //console.log(userscripts)
 })
 
 /** actual css for settings that are style-based (hide ads, etc)*/

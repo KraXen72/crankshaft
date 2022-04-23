@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, app } from 'electron';
 import 'v8-compile-cache';
 import { injectSettingsCss, createElement, toggleSettingCSS } from './utils';
 import { styleSettingsCss, su } from "./preload";
@@ -7,9 +7,6 @@ import { styleSettingsCss, su } from "./preload";
 
 let userPrefs: userPrefs
 let userPrefsPath: string
-
-let userscriptTracker: userscriptTracker
-let userscriptTrackerPath: string
 
 ipcRenderer.on('preloadSettings', (event, recieved_userPrefsPath: string, recieved_userPrefs: userPrefs) => {
     //main sends us the path to settings and also settings themselves on initial load.
@@ -40,34 +37,44 @@ function transformMarrySettings(data: userPrefs, desc: SettingsDesc, callback: c
 //note by KraXen: this might look scary, but it's just extra info needed to make a nice gui
 // each setting has these things: title, type: {'bool' | 'sel' | 'heading' | 'text' | 'num'}, desc and safety(0-4)
 // some have some extra stuff, like selects have opts for options.
+// cat (category) is optional, ommiting it will put it in the first (0th) category
 // leaving desc as "" will cause it to not render the helper question mark
 const settingsDesc: SettingsDesc = {
-    fpsUncap: {title: "Un-cap FPS", type: "bool", desc: "", safety: 0},
-    fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0,},
-    "angle-backend": {title: "ANGLE Backend", type: "sel", safety: 0, opts: ["default","gl","d3d11","d3d9","d3d11on12","vulkan"]},   
-    inProcessGPU: {title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1},
-    hideAds: {title: "Hide Ads", type: "bool", safety: 0},
-    menuTimer: {title: "Menu Timer", type: "bool", safety: 0},
-    resourceSwapper: {title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0},
-    userscripts: {title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1},
-    clientSplash: {title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety:0}, 
-    logDebugToConsole: {title: "Log debug & GPU info to electron console", type: "bool", safety: 0},
+    fpsUncap: {title: "Un-cap FPS", type: "bool", desc: "", safety: 0, cat:0},
+    fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, cat: 0},
+    "angle-backend": {title: "ANGLE Backend", type: "sel", safety: 0, opts: ["default","gl","d3d11","d3d9","d3d11on12","vulkan"], cat: 0},   
+    inProcessGPU: {title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, cat: 0},
+    hideAds: {title: "Hide Ads", type: "bool", safety: 0, cat: 1},
+    menuTimer: {title: "Menu Timer", type: "bool", safety: 0, cat: 1},
+    resourceSwapper: {title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, cat: 2},
+    userscripts: {title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, cat: 2},
+    clientSplash: {title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety:0, cat: 2}, 
+    logDebugToConsole: {title: "Log debug & GPU info to electron console", type: "bool", safety: 0, cat: 3},
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2},
-    safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of chromium flags that disable useless features.", safety:1},
-    safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", /*desc: "Enable GPU rasterization. does it actually help? ¯\\_(ツ)_/¯ try for yourself.",*/ safety: 2},
-    disableAccelerated2D: {title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3},
-    safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3},
-    experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`,  safety: 4},
-    experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", desc: `Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas`, safety: 4},
-    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", desc: `Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server`, safety: 4}
+    safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of chromium flags that disable useless features.", safety:1, cat:3},
+    safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable", safety: 2, cat:3},
+    safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3, cat:3},
+    disableAccelerated2D: {title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3, cat:4},
+    experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`,  safety: 4, cat:4},
+    experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", desc: `Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas`, safety: 4, cat: 4},
+    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", desc: `Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server`, safety: 4, cat:4}
 }
+/** index-based safety descriptions. goes in title attribute */
 const safetyDesc = [
     "This setting is safe/standard",
     "Proceed with caution",
     "This setting is not recommended",
     "This setting is experimental",
     "This setting is experimental and unstable. Use at your own risk."
+]
+/** index-based category names. n = name, c = class */
+const categoryNames: categoryName[] = [
+    {n: "Client Settings", c: "mainSettings"},
+    {n: "Visual Settings (instant refresh!)", c: "styleSettings"},
+    {n: "Modules", c: "moduleSettings"},
+    {n: "Advanced Settings", c: "advSettings"},
+    {n: "Experimental Settings", c: "experimentalSettings"}
 ]
 
 function saveSettings() {
@@ -76,7 +83,7 @@ function saveSettings() {
 }
 
 function saveUserscriptTracker() {
-    fs.writeFileSync(userscriptTrackerPath, JSON.stringify(su.userscriptTracker, null, 2), {encoding: "utf-8"})
+    fs.writeFileSync(su.userscriptTrackerPath, JSON.stringify(su.userscriptTracker, null, 2), {encoding: "utf-8"})
 }
 
 /**
@@ -217,32 +224,66 @@ class SettingElem {
         return w //return the element
     }
 }
+// DONE someday rewrite this with createElement or svelte, parsing innerHTML is slow
+// i am insane for making this
 
-function createCategory(title: string, innerHTML: string, elemClass: string = "mainSettings") {
-    return `
-    <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}</div>
-    <div class="setBodH Crankshaft-setBodH ${elemClass}">
-        ${innerHTML}
-    </div>`
+/** a settings generation helper. has some skeleton elements and methods that make them */
+const skeleton = {
+    /** make a setting cateogry */
+    category: (title: string, innerHTML: string, elemClass: string = "mainSettings") => {
+        return `
+        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}</div>
+        <div class="setBodH Crankshaft-setBodH ${elemClass}">
+            ${innerHTML}
+        </div>`
+    },
+    /** make a setting with some text (notice) */
+    notice: (notice: string) => {
+        return `<div class="settName setting">
+            <span class="setting-title crankshaft-gray">${notice}</span>
+        </div>`
+    },
+    /** make a settings category header element */
+    catHedElem: (title: string) => createElement("div", { 
+        class: "setHed Crankshaft-setHed".split(" "), 
+        innerHTML: `<span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}`
+    }),
+    /** make a settings category body element */
+    catBodElem: (elemClass: string, content: string) => {
+        return createElement("div", { 
+            class: `setBodH Crankshaft-setBodH ${elemClass}`.split(" "), 
+            innerHTML: content
+        })
+    }
 }
 
 
 export function renderSettings() {
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
-        ${createCategory("Client Settings", `<div class="settName setting"><span class="setting-title crankshaft-gray">Most settings need a client restart to work. You can use F12.</span></div>` )}
+        ${skeleton.category(categoryNames[0].n, skeleton.notice("Most settings need a client restart to work. You can use F12."), categoryNames[0].c)}
     </div>`
 
-    if (userPrefs.userscripts) {
-        const userScriptSkeleton = createCategory("Userscripts", `<div class="settName setting"><span class="setting-title crankshaft-gray">NOTE: refresh page to see changes</span></div>`, "userscripts")
-        //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
-        document.querySelector(".Crankshaft-settings").innerHTML += userScriptSkeleton
-    }
-
+    const csSettings = document.querySelector(".Crankshaft-settings")
 
     let settings: renderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal')
     for (let i = 0; i < settings.length; i++) {
-        const set = new SettingElem(settings[i])
-        document.querySelector(".Crankshaft-settings .setBodH.mainSettings").appendChild(set.elem)
+        const setObj = settings[i]
+        const setElem = new SettingElem(setObj)
+        const settElemMade = setElem.elem
+        
+        if ('cat' in setObj) {
+            const cat = categoryNames[setObj.cat]
+            //create the given category if it doesen't exist
+            if (document.querySelector(`.Crankshaft-settings .${cat.c}`) === null) {
+                csSettings.appendChild(skeleton.catHedElem(cat.n))
+                csSettings.appendChild(skeleton.catBodElem(cat.c, ('note' in cat) ? skeleton.notice(cat.note) : ""))
+            }
+            // add to that category
+            document.querySelector(`.Crankshaft-settings .${cat.c}`).appendChild(settElemMade)
+        } else {
+            // add to default category
+            document.querySelector(".Crankshaft-settings .setBodH.mainSettings").appendChild(settElemMade)
+        }
     }
 
     if (userPrefs.userscripts) {
@@ -260,9 +301,11 @@ export function renderSettings() {
             return obj
         })
 
-        // document.getElementById("userscript-disclaimer").onclick = () => {
-        //     userscriptDisclaimer(true)
-        // }
+        if (userPrefs.userscripts) {
+            csSettings.appendChild(skeleton.catHedElem("Userscripts"))
+            csSettings.appendChild(skeleton.catBodElem("userscripts", skeleton.notice("NOTE: refresh page to see changes")))
+            //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
+        }
 
         for (let i = 0; i < userscriptSettings.length; i++) {
             const userSet = new SettingElem(userscriptSettings[i])
