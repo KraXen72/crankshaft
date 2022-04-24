@@ -31,14 +31,13 @@ function transformMarrySettings(data: userPrefs, desc: SettingsDesc, callback: c
 // ].join("\n")
 
 //this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
-//they are modified here to fit krunker
-//note by KraXen72: i wrote this setting generation myself. didn't just steal it from idkr like every other client does, and then they have no idea how it works.
+//they are modified & extended to fit krunker
 
 //note by KraXen: this might look scary, but it's just extra info needed to make a nice gui
 // each setting has these things: title, type: {'bool' | 'sel' | 'heading' | 'text' | 'num'}, desc and safety(0-4)
-// some have some extra stuff, like selects have opts for options.
-// cat (category) is optional, ommiting it will put it in the first (0th) category
-// leaving desc as "" will cause it to not render the helper question mark
+// some have some extra stuff, like selects have opts for options. you should get typescript autocomplete for those telling you what extra stuff is required.
+// cat (category) is optional, omitting it will put it in the first (0th) category
+// desc (description) is optional, omitting it or leaving it "" will not render any description
 const settingsDesc: SettingsDesc = {
     fpsUncap: {title: "Un-cap FPS", type: "bool", desc: "", safety: 0, cat:0},
     fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, cat: 0},
@@ -52,7 +51,7 @@ const settingsDesc: SettingsDesc = {
     logDebugToConsole: {title: "Log debug & GPU info to electron console", type: "bool", safety: 0, cat: 3},
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2},
-    safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of chromium flags that disable useless features.", safety:1, cat:3},
+    safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of flags that disable useless features.", safety:1, cat:3},
     safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable", safety: 2, cat:3},
     safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3, cat:3},
     disableAccelerated2D: {title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3, cat:4},
@@ -207,13 +206,12 @@ class SettingElem {
     */
     get elem(): Element { 
         // i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
-        let w = document.createElement('div') //w stands for wrapper
-        w.classList.add("setting")
-        w.classList.add("settName") //add setname for krunker compat
-        w.classList.add("safety-"+this.props.safety)
-        w.id = `settingElem-${this.props.key}`
-        w.classList.add(this.type) //add bool or title etc
-        w.innerHTML = this.HTML
+        // w stands for wrapper
+        let w = createElement('div', {
+            class: ["setting", "settName", `safety-${this.props.safety}`],
+            id: `settingElem-${this.props.key}`,
+            innerHTML: this.HTML
+        }) //w stands for wrapper
 
         if (this.type === 'sel') { w.querySelector('select').value = this.props.value } //select value applying is fucky so like fix it i guess
         if (typeof this.props.callback === "undefined") {this.props.callback = "normal"}
@@ -227,7 +225,7 @@ class SettingElem {
 // DONE someday rewrite this with createElement or svelte, parsing innerHTML is slow
 // i am insane for making this
 
-/** a settings generation helper. has some skeleton elements and methods that make them */
+/** a settings generation helper. has some skeleton elements and methods that make them. purpose: prevent's code duplication */
 const skeleton = {
     /** make a setting cateogry */
     category: (title: string, innerHTML: string, elemClass: string = "mainSettings") => {
@@ -249,14 +247,11 @@ const skeleton = {
         innerHTML: `<span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}`
     }),
     /** make a settings category body element */
-    catBodElem: (elemClass: string, content: string) => {
-        return createElement("div", { 
-            class: `setBodH Crankshaft-setBodH ${elemClass}`.split(" "), 
-            innerHTML: content
-        })
-    }
+    catBodElem: (elemClass: string, content: string) => createElement("div", { 
+        class: `setBodH Crankshaft-setBodH ${elemClass}`.split(" "), 
+        innerHTML: content
+    })
 }
-
 
 export function renderSettings() {
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
@@ -271,7 +266,7 @@ export function renderSettings() {
         const setElem = new SettingElem(setObj)
         const settElemMade = setElem.elem
         
-        if ('cat' in setObj) {
+        if ('cat' in setObj) { //if category is specified
             const cat = categoryNames[setObj.cat]
             //create the given category if it doesen't exist
             if (document.querySelector(`.Crankshaft-settings .${cat.c}`) === null) {
@@ -287,6 +282,10 @@ export function renderSettings() {
     }
 
     if (userPrefs.userscripts) {
+        csSettings.appendChild(skeleton.catHedElem("Userscripts"))
+        csSettings.appendChild(skeleton.catBodElem("userscripts", skeleton.notice("NOTE: refresh page to see changes")))
+        //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
+
         let userscriptSettings: renderReadySetting[] = su.userscripts
         .map(userscript => { 
             const obj: renderReadySetting = {
@@ -300,13 +299,7 @@ export function renderSettings() {
             }
             return obj
         })
-
-        if (userPrefs.userscripts) {
-            csSettings.appendChild(skeleton.catHedElem("Userscripts"))
-            csSettings.appendChild(skeleton.catBodElem("userscripts", skeleton.notice("NOTE: refresh page to see changes")))
-            //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
-        }
-
+        
         for (let i = 0; i < userscriptSettings.length; i++) {
             const userSet = new SettingElem(userscriptSettings[i])
             document.querySelector(".Crankshaft-settings .setBodH.userscripts").appendChild(userSet.elem)
@@ -328,7 +321,7 @@ export function renderSettings() {
     const settHeaders = [...document.querySelectorAll(".Crankshaft-setHed")]
     settHeaders.forEach(header => {
         const collapseCallback = () => {toggleCategory(header)}
-        //try { header.removeEventListener("click", collapseCallback) } catch (e) { }
+        try { header.removeEventListener("click", collapseCallback) } catch (e) { }
         header.addEventListener("click", collapseCallback)
     })
 }
