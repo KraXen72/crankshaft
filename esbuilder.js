@@ -6,6 +6,9 @@ require('esbuild').buildSync({
     platform: 'node',
     target: "es2020",
     sourcemap: false,
+    banner: {
+      js: "\"use strict\";"
+    },
     outdir: 'app',
     tsconfig: 'tsconfig.json',
   })
