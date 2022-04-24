@@ -7,8 +7,11 @@ import { renderSettings } from './settingsui';
 ///<reference path="global.d.ts" />
 
 // get rid of client unsupported message
-//@ts-ignore
 window.OffCliV = true;
+/** simple error message for usercripts. can be called from the userscript itself */
+window.errAlert = (err: Error, name: string) => {
+    alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.`)
+}
 
 /** sharedUserscriptData */
 export const su = {
@@ -17,9 +20,7 @@ export const su = {
     userscripts: <userscript[]>[],
     userscriptTracker: <userscriptTracker>{}
 }
-
-
-let $assets = path.resolve(__dirname, "..", "assets")
+const $assets = path.resolve(__dirname, "..", "assets")
 
 // Lets us exit the game lmao
 document.addEventListener("keydown", (event) => {
@@ -28,20 +29,15 @@ document.addEventListener("keydown", (event) => {
     }
 })
 
-window.errAlert = (err: Error, name: string) => {
-    alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.`)
-}
-
 // Settings Stuff
 document.addEventListener("DOMContentLoaded", (event) => {
     ipcRenderer.send('preloadNeedSettings');
     // Side Menu Settings Thing
     const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
-    settingsSideMenu.setAttribute("onclick", "showWindow(1);SOUND.play(`select_0`,0.15);window.windows[0].changeTab(0)");
-    settingsSideMenu.addEventListener("click", (event) => {
-        UpdateSettingsTabs(0, true);
-    });
-    //@ts-ignore
+    settingsSideMenu.setAttribute("onclick", "showWindow(1); SOUND.play(`select_0`,0.15); window.windows[0].changeTab(0)");
+    settingsSideMenu.addEventListener("click", (event) => { UpdateSettingsTabs(0, true); });
+
+    //@ts-ignore cba to add it to the window interface
     try { window.windows[0].toggleType({checked: true}) } catch (e) {  }
 })
 
@@ -133,8 +129,6 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, {hideAds, menuTimer}, us
     if (menuTimer) { toggleSettingCSS(styleSettingsCss.menuTimer, "menuTimer", true) }
     if (userscripts) { ipcRenderer.send("preloadNeedsuserscriptsPath") }
 });
-
-
 
 
 /**
