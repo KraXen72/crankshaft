@@ -1,5 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync } from "fs";
-import * as path from 'path';
+///<reference path="global.d.ts" />
 
 /**
  * inject css as a style tag
@@ -13,7 +12,6 @@ export const injectSettingsCss = (css: string, classId = "Crankshaft-settings-cs
 }
 
 //create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js
-//yes the typing on this function is shit pr a fix if you have a better idea
 /**
  * create a dom element given an object of properties
  * @param type element type, e.g. "div"
@@ -22,38 +20,32 @@ export const injectSettingsCss = (css: string, classId = "Crankshaft-settings-cs
  */
 export function createElement(type: string, options: Object = {}) {
     const element = document.createElement(type)
-
+    
     Object.entries(options).forEach(([key, value]) => {
         if (key === "class") {
-            //@ts-ignore
             if (Array.isArray(value)) {
                 value.forEach((c: string) => {element.classList.add(c)})
-            } else {
-                element.classList.add(value)
-            }
-            
+            } else { element.classList.add(value) }
             return
         }
 
         if (key === "dataset") {
-            Object.entries(value).forEach(([dataKey, dataValue]) => {
-                //@ts-ignore
+            Object.entries(value).forEach((entry) => {
+                const dataKey = entry[0]
+                const dataValue: any = entry[1]
                 element.dataset[dataKey] = dataValue
             })
             return
         }
 
         if (key === "text") {
-            //@ts-ignore
             element.textContent = value
             return
         }
         if (key === "innerHTML") {
-            //@ts-ignore
             element.innerHTML = value
             return
         }
-        //@ts-ignore
         element.setAttribute(key, value)
     })
     return element
