@@ -43,21 +43,21 @@ const settingsDesc: SettingsDesc = {
     fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, cat: 0},
     "angle-backend": {title: "ANGLE Backend", type: "sel", safety: 0, opts: ["default","gl","d3d11","d3d9","d3d11on12","vulkan"], cat: 0},   
     inProcessGPU: {title: "In-Process GPU (video capture)", type: "bool", desc: "Enables video capture & embeds the GPU under the same process", safety: 1, cat: 0},
+    clientSplash: {title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety:0, cat: 0},
+    resourceSwapper: {title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, cat: 0},
+    userscripts: {title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, cat: 0},
     hideAds: {title: "Hide Ads", type: "bool", safety: 0, cat: 1},
-    menuTimer: {title: "Menu Timer", type: "bool", safety: 0, cat: 1},
-    resourceSwapper: {title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, cat: 2},
-    userscripts: {title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, cat: 2},
-    clientSplash: {title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety:0, cat: 2}, 
-    logDebugToConsole: {title: "Log debug & GPU info to electron console", type: "bool", safety: 0, cat: 3},
+    menuTimer: {title: "Menu Timer", type: "bool", safety: 0, cat: 1}, 
+    logDebugToConsole: {title: "Log debug & GPU info to electron console", type: "bool", safety: 0, cat:2},
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2},
-    safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of flags that disable useless features.", safety:1, cat:3},
-    safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable", safety: 2, cat:3},
-    safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3, cat:3},
-    disableAccelerated2D: {title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3, cat:4},
-    experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`,  safety: 4, cat:4},
-    experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", desc: `Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas`, safety: 4, cat: 4},
-    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", desc: `Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server`, safety: 4, cat:4}
+    safeFlags_removeUselessFeatures: {title: "Remove useless features", type:"bool", desc:"Adds a lot of flags that disable useless features.", safety:1, cat:2},
+    safeFlags_gpuRasterizing: {title: "GPU rasterization", type: "bool", desc: "Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable", safety: 2, cat:2},
+    safeFlags_helpfulFlags: {title: "(Potentially) useful flags", type: "bool", desc: `Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.`, safety: 3, cat:2},
+    disableAccelerated2D: {title: "Disable Accelerated 2D canvas", type: "bool", desc: "", safety: 3, cat:2},
+    experimentalFlags_increaseLimits: {title: "Increase limits flags", type:"bool", desc: `Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist`,  safety: 4, cat:2},
+    experimentalFlags_lowLatency: {title: "Lower Latency flags", type:"bool", desc: `Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas`, safety: 4, cat:2},
+    experimentalFlags_experimental: {title: "Experimental flags", type: "bool", desc: `Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server`, safety: 4, cat:2}
 }
 /** index-based safety descriptions. goes in title attribute */
 const safetyDesc = [
@@ -71,9 +71,7 @@ const safetyDesc = [
 const categoryNames: categoryName[] = [
     {n: "Client Settings", c: "mainSettings"},
     {n: "Visual Settings (instant refresh!)", c: "styleSettings"},
-    {n: "Modules", c: "moduleSettings"},
-    {n: "Advanced Settings", c: "advSettings"},
-    {n: "Experimental Settings", c: "experimentalSettings"}
+    {n: "Advanced Settings", c: "advSettings"}
 ]
 
 function saveSettings() {
@@ -208,7 +206,7 @@ class SettingElem {
         // i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
         // w stands for wrapper
         let w = createElement('div', {
-            class: ["setting", "settName", `safety-${this.props.safety}`],
+            class: ["setting", "settName", `safety-${this.props.safety}`, this.props.type],
             id: `settingElem-${this.props.key}`,
             innerHTML: this.HTML
         }) //w stands for wrapper
