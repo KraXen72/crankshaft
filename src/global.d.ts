@@ -15,7 +15,8 @@ interface userscript {
 }
 
 interface Window {
-    errAlert: Function;
+    errAlert: Function,
+    OffCliV: Boolean
 }
 
 // these setting type defs do look complicated but they just ensure a noob can easily create a new setting.
