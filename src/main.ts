@@ -1,6 +1,5 @@
 ﻿import * as path from 'path';
 import * as fs from 'fs';
-import 'v8-compile-cache'
 import { shell, app, ipcMain, BrowserWindow, protocol, dialog, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
 import { Swapper } from './resourceswapper';
 ///<reference path="global.d.ts" />

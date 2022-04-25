@@ -1,7 +1,6 @@
 ﻿import * as fs from 'fs';
 import * as path from 'path';
 import { ipcRenderer } from 'electron';
-import 'v8-compile-cache';
 import { injectSettingsCss, createElement, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
 ///<reference path="global.d.ts" />

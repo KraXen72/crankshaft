@@ -2,7 +2,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { BrowserWindow } from "electron"
-import 'v8-compile-cache'
 //converted to typescript by KraXen72. original is from idkr: https://github.com/idkr-client/idkr
 
 /**

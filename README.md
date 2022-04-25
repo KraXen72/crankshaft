@@ -18,7 +18,7 @@
 - doesen't automatically open free spin urls, prompts you before
 - doesen't disable web security
 - written in typescript
-- only 2 dependencies: (`v8-compile-cache` and `esbuild`)
+- only 1 dependency: `esbuild` (for userscripts)
   
 ## userscripts
 - any `.js` file in `Documents/Crankshaft/scripts` will be considered a userscript and executed if enabled in settings.   
@@ -36,7 +36,7 @@
 > Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.   
 > Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED  
 > Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED  
-> You are encouraged to write scripts using `"use strict"`, because it skips the transforming step that does this for you.  
+> You are encouraged to write scripts using `"use strict"`, because it skips esbuild transforming your code.  
   
 ## contributing
 - you have to have `git`, `nodejs` and `npm` installed.
