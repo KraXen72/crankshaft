@@ -70,9 +70,12 @@ ipcRenderer.on('preloaduserscriptsPath', (event, recieved_userscriptsPath: strin
         if (tracker[u.name]) { //if enabled
             const rawContent = fs.readFileSync(u.fullpath, { encoding: "utf-8" })
             let content: {code: string, warnings: string[]}
+            let hadToTransform = true
+
 
             if (rawContent.startsWith('"use strict"')) {
                 content = {code: rawContent, warnings: []}
+                hadToTransform = false
             } else {
                 try {
                     content = require('esbuild').transformSync(rawContent, { minify: true, banner: '"use strict"' })
@@ -95,8 +98,8 @@ ipcRenderer.on('preloaduserscriptsPath', (event, recieved_userscriptsPath: strin
             }
 
             strippedConsole.log(
-                `%c[cs] %cran %c'${u.name.toString()}'`, 
-                "color: lightblue; font-weight: bold;", 
+                `%c[cs]${hadToTransform ? '%c[esbuilt]' : '%c[strict]'} %cran %c'${u.name.toString()}' `, 
+                "color: lightblue; font-weight: bold;", hadToTransform ? "color: orange" : "color: #62dd4f", 
                 "color: white;", "color: lightgreen;"
             )
         }
