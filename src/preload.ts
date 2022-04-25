@@ -69,28 +69,33 @@ ipcRenderer.on('preloaduserscriptsPath', (event, recieved_userscriptsPath: strin
     su.userscripts.forEach(u => {
         if (tracker[u.name]) { //if enabled
             const rawContent = fs.readFileSync(u.fullpath, { encoding: "utf-8" })
-            let content
+            let content: {code: string, warnings: string[]}
 
-            try {
-                content = require('esbuild').transformSync(rawContent, { minify: true })
-            } catch (error) {
-                errAlert(error, u.name)
-                strippedConsole.error(error)
+            if (rawContent.startsWith('"use strict"')) {
+                content = {code: rawContent, warnings: []}
+            } else {
+                try {
+                    content = require('esbuild').transformSync(rawContent, { minify: true, banner: '"use strict"' })
+                } catch (error) {
+                    errAlert(error, u.name)
+                    strippedConsole.error(error)
+                }
             }
+            
             if (content.warnings.length > 0) { strippedConsole.warn(`'${u.name}' compiled with warnings: `, content.warnings) }
             u.content = content.code
 
-            let code = new String(`"use strict";${content.code};`)
+            let code = new String(content.code)
             try {
                 //@ts-ignore
-                Function(code)();
+                (new Function(code)());
             } catch (error) {
                 errAlert(error, u.name)
                 strippedConsole.error(error)
             }
 
-            console.log(
-                `%c[cs] %cexecuted %c'${u.name.toString()}'`, 
+            strippedConsole.log(
+                `%c[cs] %cran %c'${u.name.toString()}'`, 
                 "color: lightblue; font-weight: bold;", 
                 "color: white;", "color: lightgreen;"
             )

@@ -34,8 +34,9 @@
 - DO NOT DELETE `Documents/Crankshaft/scripts/tracker.json`, it is used to keep track of enabled and disabled userscripts
   
 > Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.   
-> Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED
-> Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED 
+> Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED  
+> Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED  
+> You are encouraged to write scripts using `"use strict"`, because it skips the transforming step that does this for you.  
   
 ## contributing
 - you have to have `git`, `nodejs` and `npm` installed.
