@@ -8,9 +8,15 @@ import { renderSettings } from './settingsui';
 
 // get rid of client unsupported message
 window.OffCliV = true;
+const strippedConsole = {
+    error: console.error.bind(console) as Function, 
+    log: console.log.bind(console) as Function, 
+    warn: console.warn.bind(console) as Function
+}
+
 /** simple error message for usercripts. can be called from the userscript itself */
-window.errAlert = (err: Error, name: string) => {
-    alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.`)
+const errAlert = (err: Error, name: string) => {
+    alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`)
 }
 
 /** sharedUserscriptData */
@@ -68,18 +74,19 @@ ipcRenderer.on('preloaduserscriptsPath', (event, recieved_userscriptsPath: strin
             try {
                 content = require('esbuild').transformSync(rawContent, { minify: true })
             } catch (error) {
-                window.errAlert(error, u.name)
-                content = {code: "", warnings: ["FATAL: userscript failed to compile."]}
+                errAlert(error, u.name)
+                strippedConsole.error(error)
             }
-            if (content.warnings.length > 0) { console.warn(`'${u.name}' compiled with warnings: `, content.warnings) }
+            if (content.warnings.length > 0) { strippedConsole.warn(`'${u.name}' compiled with warnings: `, content.warnings) }
             u.content = content.code
 
-            let code = new String(`"use strict";try { ${content.code}; } catch (e) { window.errAlert(e, ${u.name}); }; `)
+            let code = new String(`"use strict";${content.code};`)
             try {
                 //@ts-ignore
                 Function(code)();
             } catch (error) {
-                window.errAlert(error, u.name)
+                errAlert(error, u.name)
+                strippedConsole.error(error)
             }
 
             console.log(
