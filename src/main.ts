@@ -9,7 +9,7 @@ import { Swapper } from './resourceswapper';
 
 // Gato/creepycats - Gatoclient
 // LukeTheDuke - Gatoclient-lite
-// Mixaz - IDKR source code, Mac, linux and win build action.yml
+// Mixaz and IDKR team - https://github.com/idkr-client/idkr
 // Giant - JANREX client
 // deadcell - css for setting description
 
