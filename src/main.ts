@@ -18,6 +18,8 @@ let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json
 let userscriptsPath = path.join(app.getPath("documents"), "Crankshaft/scripts")
 let userscriptTrackerPath = path.resolve(userscriptsPath, "tracker.json")
 
+app.userAgentFallback = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36`
+
 const settingsSkeleton = {
     fpsUncap: true,
     inProcessGPU: false,
@@ -216,8 +218,8 @@ app.on('ready', function () {
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);
     }
-    //mainWindow.removeMenu();
-    mainWindow.loadURL('https://krunker.io');
+
+    mainWindow.loadURL('https://krunker.io')
 
     if (userPrefs.logDebugToConsole) {
         console.log("GPU INFO BEGIN")

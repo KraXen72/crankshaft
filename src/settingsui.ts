@@ -38,6 +38,8 @@ function transformMarrySettings(data: userPrefs, desc: SettingsDesc, callback: c
 // some have some extra stuff, like selects have opts for options. you should get typescript autocomplete for those telling you what extra stuff is required.
 // cat (category) is optional, omitting it will put it in the first (0th) category
 // desc (description) is optional, omitting it or leaving it "" will not render any description
+// simplest way to create a new setting is to add setting: {} as SettingsDescItem and you will get autocomplete for all needed stuff
+
 const settingsDesc: SettingsDesc = {
     fpsUncap: {title: "Un-cap FPS", type: "bool", desc: "", safety: 0, cat:0},
     fullscreen: {title: "Start in Fullscreen", type: "bool", desc: "", safety: 0, cat: 0},
@@ -252,6 +254,7 @@ const skeleton = {
 }
 
 export function renderSettings() {
+    console.log("sucessfully saved console :)")
     document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
         ${skeleton.category(categoryNames[0].n, skeleton.notice("Most settings need a client restart to work. You can use F12."), categoryNames[0].c)}
     </div>`
