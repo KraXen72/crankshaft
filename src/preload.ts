@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     ipcRenderer.send('preloadNeedSettings');
     // Side Menu Settings Thing
     const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
-    settingsSideMenu.setAttribute("onclick", "showWindow(1); SOUND.play(`select_0`,0.15); window.windows[0].changeTab(0)");
+    //settingsSideMenu.setAttribute("onclick", "showWindow(1);SOUND.play(`select_0`,0.15);window.windows[0].changeTab(0)");
     settingsSideMenu.addEventListener("click", (event) => { UpdateSettingsTabs(0, true); });
 
     //@ts-ignore cba to add it to the window interface
@@ -150,8 +150,7 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, {hideAds, menuTimer}, us
  * make sure our setting tab is always called as it should be and has the proper onclick
  */
 function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
-    // Settings Menu
-    //ipcRenderer.send("logMainConsole", windows[0].searchList)
+    const activeClass ="tabANew"
 
     //we yeet basic settings. its advanced now. deal with it.
     //@ts-ignore
@@ -161,7 +160,8 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
     if (hookSearch) { 
         // only hook search ONCE to ensure the client settings still work while searching. 
         // it will not yield the client settings tho, that's pain to implement
-        const settSearchCallback = () => { UpdateSettingsTabs(0, false) }
+        hookSearch = false
+        const settSearchCallback = () => { UpdateSettingsTabs(0, hookSearch) }
         try { document.getElementById("settSearch").removeEventListener("input", settSearchCallback) } catch (e) {}
         document.getElementById("settSearch").addEventListener("input", settSearchCallback)
     }
@@ -179,24 +179,26 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
 
     //modifications we do the the dom:
 
-    const tabs = document.getElementById('settingsTabLayout').children
+    const tabs = [...document.getElementById('settingsTabLayout').children]
     const clientTab = tabs[tabs.length - 1]
+    const selectedTab = document.querySelector(`#settingsTabLayout .${activeClass}`)
     
-    clientTab.textContent = "Crankshaft"
+    //clientTab.textContent = "Crankshaft"
 
     try { clientTab.removeEventListener("click", renderSettings) } catch (e) {}
     clientTab.addEventListener("click", renderSettings)
 
-    //re-hook all tabs so the name stays the same and onclick
-    const settingTabArray = document.getElementById('settingsTabLayout').children;
-    for (let i = 0; i < settingTabArray.length; i++) {
-        //TODO this might not want to run for every tab?
-        const currentTabCallback = () => {UpdateSettingsTabs(i, true)}
-        try { settingTabArray[i].removeEventListener("click", currentTabCallback) } catch (e) {  }
-        settingTabArray[i].addEventListener("click", currentTabCallback)
+    if (selectedTab === clientTab) {
+        renderSettings()
+    }
+
+    for (let i = 0; i < tabs.length; i++) {
+        const currentTabCallback = () => { UpdateSettingsTabs(i, hookSearch) }
+        try { tabs[i].removeEventListener("click", currentTabCallback) } catch (e) {  }
+        tabs[i].addEventListener("click", currentTabCallback)
 
         if (i == activeTab) { // if the current selected tab is our settings, just add active class
-            settingTabArray[i].setAttribute('class', 'settingTab tabANew');
+            tabs[i].classList.add(activeClass)
         }
     }
 }
