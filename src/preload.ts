@@ -8,7 +8,7 @@ import { renderSettings } from './settingsui';
 
 // get rid of client unsupported message
 window.OffCliV = true;
-const strippedConsole = {
+export const strippedConsole = {
     error: console.error.bind(console) as Function, 
     log: console.log.bind(console) as Function, 
     warn: console.warn.bind(console) as Function

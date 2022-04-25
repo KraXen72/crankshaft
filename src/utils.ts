@@ -1,4 +1,8 @@
 ///<reference path="global.d.ts" />
+import { webFrame } from 'electron'
+import { strippedConsole } from './preload';
+
+const insertedCSS: insertedCSS = {}
 
 /**
  * inject css as a style tag
@@ -55,26 +59,32 @@ export function createElement(type: string, options: Object = {}) {
  * inject or uninject css to hide ads
  * @param value 'toggle'|Boolean
  */
-export function toggleSettingCSS(css: string, styleTagId: string = "teeny-tiny-css-snippet",value: ('toggle' | Boolean) = 'toggle') {
-    let styleTag = document.getElementById(`crankshaft-setting-${styleTagId}`)
+export function toggleSettingCSS(css: string, identifier: string, value: ('toggle' | Boolean) = 'toggle') {
+    function inject() {
+        insertedCSS[identifier] = webFrame.insertCSS(css)
+    }
 
-    function create() {
-        styleTag = createElement("style", {id: `crankshaft-setting-${styleTagId}`, innerHTML: css})
-        document.head.appendChild(styleTag)
+    function uninject() {
+        try {
+            webFrame.removeInsertedCSS(insertedCSS[identifier])
+            delete insertedCSS[identifier]
+        } catch (error) {
+            strippedConsole.error("couldn't uninject css: ", error)
+        }
     }
 
     if (value === 'toggle') {
         //normal toggle
-        if (styleTag == null) {
-            create()
+        if (!(identifier in insertedCSS)) {
+            inject()
         } else {
-            styleTag.remove()
+            uninject()
         }
     } else {
-        if (styleTag == null && value === true) {
-            create()
-        } else if (styleTag !== null && value === false) {
-            try { styleTag.remove() } catch (e) {  }
+        if (!(identifier in insertedCSS) && value === true) {
+            inject()
+        } else if (identifier in insertedCSS && value === false) {
+           uninject()
         }
     }
 }

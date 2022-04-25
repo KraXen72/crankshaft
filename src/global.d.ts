@@ -7,6 +7,10 @@ interface userscriptTracker {
     [script: string]: Boolean
 }
 
+interface insertedCSS {
+    [identifier: string]: string
+}
+
 interface userscript {
     name: string,
     fullpath: string,
