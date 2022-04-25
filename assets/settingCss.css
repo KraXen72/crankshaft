@@ -160,6 +160,10 @@ input:checked + .advancedSlider:hover {
     margin-top: 5px;
     grid-area: 2 / 1 / 3 / 4;
 }
+.setting-desc-new a {
+    font-size: inherit !important;
+    font-family: inherit !important;
+}
 
 /* .crankshaft-settings-codeblock, .crst-cb {
     color: rgb(166, 166, 166);

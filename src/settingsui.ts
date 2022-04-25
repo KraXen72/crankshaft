@@ -235,9 +235,10 @@ const skeleton = {
         </div>`
     },
     /** make a setting with some text (notice) */
-    notice: (notice: string) => {
+    notice: (notice: string, desc?: string) => {
         return `<div class="settName setting">
             <span class="setting-title crankshaft-gray">${notice}</span>
+            ${typeof desc !== "undefined" ? `<div class="setting-desc-new">${desc}</div>` : ""}
         </div>`
     },
     /** make a settings category header element */
@@ -282,8 +283,17 @@ export function renderSettings() {
     }
 
     if (userPrefs.userscripts) {
+
         csSettings.appendChild(skeleton.catHedElem("Userscripts"))
-        csSettings.appendChild(skeleton.catBodElem("userscripts", skeleton.notice("NOTE: refresh page to see changes")))
+        if (su.userscripts.length > 0) {
+            csSettings.appendChild(skeleton.catBodElem("userscripts", skeleton.notice("NOTE: refresh page to see changes")))
+        } else {
+            csSettings.appendChild(skeleton.catBodElem("userscripts", skeleton.notice(
+                `No userscripts...`, 
+                `Go to the Crankshaft <a href="https://github.com/KraXen72/crankshaft#userscripts">README.md</a> to download some made by the client dev.`
+            )));
+        }
+        
         //<div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
 
         let userscriptSettings: renderReadySetting[] = su.userscripts

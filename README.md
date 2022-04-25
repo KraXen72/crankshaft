@@ -22,7 +22,12 @@
   
 ## userscripts
 - any `.js` file in `Documents/Crankshaft/scripts` will be considered a userscript and executed if enabled in settings.   
-- There is one official & example userscript, the [keystrokes.js](https://gist.github.com/KraXen72/2ea1332440b0c66b83ca9b73afc38269) userscript. (shows wasd, shift and space keystrokes on screen). Feel free to download it and put into the `/scripts` directory
+- There are a few official/example userscripts:
+  - [keystrokes.js](https://gist.github.com/KraXen72/2ea1332440b0c66b83ca9b73afc38269): shows WASD, shift, space and 2 configurable keys on screen.
+  - [autospectate.js](https://gist.github.com/KraXen72/270b2b8f28dda974f9e643b384e87a68): automatically joins game as spectator if turned on
+  
+Feel free to download them and put them into the `/scripts` directory. 
+  
 ### features:  
 - no overcomplicated format required for userscripts. just make sure it is valid js code.
 - all userscripts are disabled when they are first added.
