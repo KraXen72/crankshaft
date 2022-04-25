@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { ipcRenderer, app } from 'electron';
-import { injectSettingsCss, createElement, toggleSettingCSS } from './utils';
+import { createElement, toggleSettingCSS } from './utils';
 import { styleSettingsCss, su } from "./preload";
 ///<reference path="global.d.ts" />
 

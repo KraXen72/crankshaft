@@ -7,14 +7,9 @@ const insertedCSS: insertedCSS = {}
 /**
  * inject css as a style tag
  */
-export const injectSettingsCss = (css: string, classId = "Crankshaft-settings-css") => {
-    let s = document.createElement("style");
-    //s.setAttribute("class", classId);
-    s.setAttribute("id", classId);
-    s.innerHTML = css;
-    document.head.appendChild(s);
+export const injectSettingsCss = (css: string, identifier = "settings") => {
+    webFrame.insertCSS(css)
 }
-
 //create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js
 /**
  * create a dom element given an object of properties

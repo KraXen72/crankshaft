@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
 /* Removal - modified from https://envyxyz.github.io/removal/removal.css */
-
-
 #voiceDisplay,
 #bubbleContainer,
 .button.small.buttonO img,
@@ -11,13 +8,12 @@
 #rankedSoonTm {
     display: none !important;
 }
-
 #loadEditrBtn, 
 #loadInfoLHolder,
 #loadInfoRHolder {
     display: none !important;
 }
-html { background: #363636 }
+html { background: #363636 !important }
 #initLoader/*, .Crankshaft-setBodH */ {
     background-color: #363636 !important;
     /* background-image: url("https://cdn.discordapp.com/attachments/704792091955429426/959589744906489896/aieGears.png") !important; */
@@ -48,16 +44,11 @@ html { background: #363636 }
     flex-direction: column;
     /* top: 3rem; */
 }
-#crankshaft-title {
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 5.5rem;
-    margin: .2rem 0;
-}
 
 #loadGamNm {
     display: block !important; 
-    top:  70%;
+    bottom: 13rem !important;
+    top: initial !important;
     font-size: 20px !important;
     height: min-content !important;
     color: rgba(255,255,255,.7) !important;
@@ -68,7 +59,7 @@ html { background: #363636 }
 }
 
 /* we kinda wanna hide the loader and just keep the text. it interferes with the logo */
-#lC-cont {display: none;}
+#lC-cont, #lC-ico, #initLoader > div:first-child[style*="absolute"] {display: none;}
 
 .crankshaft-holder-r {
     position: absolute;
