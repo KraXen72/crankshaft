@@ -86,7 +86,10 @@ function customGenericWin(url: string, providedMenu: Menu) {
         show: false,
         width: 1600,
         height: 900,
-        center: true
+        center: true,
+        webPreferences: {
+            spellcheck: false
+        }
     })
     genericWin.setMenu(providedMenu)
     genericWin.setMenuBarVisibility(false)
@@ -182,7 +185,7 @@ if (userPrefs.inProcessGPU) {
 // Workaround for Electron 8.x
 if (userPrefs.resourceSwapper) {
     protocol.registerSchemesAsPrivileged([{
-        scheme: "crankshaft-swap",
+        scheme: "krunker-resource-swapper",
         privileges: {
             secure: true,
             corsEnabled: true,
@@ -196,7 +199,7 @@ app.on('ready', function () {
     app.setAppUserModelId(process.execPath);
 
     if (userPrefs.resourceSwapper) {
-        protocol.registerFileProtocol("crankshaft-swap", (request, callback) => callback(decodeURI(request.url.replace(/crankshaft-swap:/, ""))));
+        protocol.registerFileProtocol("krunker-resource-swapper", (request, callback) => callback(decodeURI(request.url.replace(/krunker-resource-swapper:/, ""))));
     }
 
     mainWindow = new BrowserWindow({
@@ -205,7 +208,8 @@ app.on('ready', function () {
         height: 900,
         center: true,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
+            spellcheck: false
         }
     });
 
