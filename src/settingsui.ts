@@ -47,8 +47,8 @@ const settingsDesc: SettingsDesc = {
     clientSplash: {title: "Client Splash Screen", type: "bool", desc: `Show a custom bg and logo (splash screen) while krunker is loading`, safety:0, cat: 0},
     resourceSwapper: {title: "Resource swapper", type: "bool", desc: `Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper`, safety: 0, cat: 0},
     userscripts: {title: "Userscript support", type: "bool", desc: `Enable userscript support. place .js files in Documents/Crankshaft/scripts`, safety: 1, cat: 0},
-    hideAds: {title: "Hide Ads", type: "bool", safety: 0, cat: 1},
-    menuTimer: {title: "Menu Timer", type: "bool", safety: 0, cat: 1}, 
+    hideAds: {title: "Hide Ads", type: "bool", safety: 0, cat: 1, instant: true},
+    menuTimer: {title: "Menu Timer", type: "bool", safety: 0, cat: 1, instant: true}, 
     logDebugToConsole: {title: "Log debug & GPU info to electron console", type: "bool", safety: 0, cat:2},
     // skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2},
     // skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2},
@@ -71,7 +71,7 @@ const safetyDesc = [
 /** index-based category names. n = name, c = class */
 const categoryNames: categoryName[] = [
     {n: "Client Settings", c: "mainSettings"},
-    {n: "Visual Settings (instant refresh!)", c: "styleSettings"},
+    {n: "Visual Settings", c: "styleSettings"},
     {n: "Advanced Settings", c: "advSettings"}
 ]
 
@@ -113,6 +113,11 @@ class SettingElem {
             this.HTML += `<span class="setting-desc desc-icon" title="${safetyDesc[this.props.safety]}">
             <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M12 12.5ZM3.425 20.5Q2.9 20.5 2.65 20.05Q2.4 19.6 2.65 19.15L11.2 4.35Q11.475 3.9 12 3.9Q12.525 3.9 12.8 4.35L21.35 19.15Q21.6 19.6 21.35 20.05Q21.1 20.5 20.575 20.5ZM12 10.2Q11.675 10.2 11.463 10.412Q11.25 10.625 11.25 10.95V14.45Q11.25 14.75 11.463 14.975Q11.675 15.2 12 15.2Q12.325 15.2 12.538 14.975Q12.75 14.75 12.75 14.45V10.95Q12.75 10.625 12.538 10.412Q12.325 10.2 12 10.2ZM12 17.8Q12.35 17.8 12.575 17.575Q12.8 17.35 12.8 17Q12.8 16.65 12.575 16.425Q12.35 16.2 12 16.2Q11.65 16.2 11.425 16.425Q11.2 16.65 11.2 17Q11.2 17.35 11.425 17.575Q11.65 17.8 12 17.8ZM4.45 19H19.55L12 6Z"/></svg>
             </span>`
+        } else if (this.props.instant) {
+            this.HTML += `
+            <span class="setting-desc desc-icon instant" title="Refreshes instantly!">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M12 6v1.79c0 .45.54.67.85.35l2.79-2.79c.2-.2.2-.51 0-.71l-2.79-2.79c-.31-.31-.85-.09-.85.36V4c-4.42 0-8 3.58-8 8 0 1.04.2 2.04.57 2.95.27.67 1.13.85 1.64.34.27-.27.38-.68.23-1.04C6.15 13.56 6 12.79 6 12c0-3.31 2.69-6 6-6zm5.79 2.71c-.27.27-.38.69-.23 1.04.28.7.44 1.46.44 2.25 0 3.31-2.69 6-6 6v-1.79c0-.45-.54-.67-.85-.35l-2.79 2.79c-.2.2-.2.51 0 .71l2.79 2.79c.31.31.85.09.85-.35V20c4.42 0 8-3.58 8-8 0-1.04-.2-2.04-.57-2.95-.27-.67-1.13-.85-1.64-.34z"/></svg>
+            </span>`
         }
         switch (props.type) {
             case 'bool':
@@ -148,7 +153,7 @@ class SettingElem {
                 break;
             case 'num':
                 this.HTML += `<span class="setting-title">${props.title}</span><span>
-                    <input type="number" class="rb-input marright s-update" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
+                    <input type="number" class="rb-input marright s-update cs-input-num" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
                 </span>
                 `
                 this.updateKey = `value`
@@ -255,9 +260,11 @@ const skeleton = {
 
 export function renderSettings() {
     console.log("sucessfully saved console :)")
-    document.getElementById('settHolder').innerHTML = `<div class="Crankshaft-settings" id="settHolder">
-        ${skeleton.category(categoryNames[0].n, skeleton.notice("Most settings need a client restart to work. You can use F12."), categoryNames[0].c)}
-    </div>`
+    const settHolder = document.getElementById('settHolder')
+
+    settHolder.classList.add("Crankshaft-settings")
+    settHolder.appendChild(skeleton.catHedElem(categoryNames[0].n));
+    settHolder.appendChild(skeleton.catBodElem(categoryNames[0].c, skeleton.notice("Most settings need a client restart to work. You can use F12.")));
 
     const csSettings = document.querySelector(".Crankshaft-settings")
 

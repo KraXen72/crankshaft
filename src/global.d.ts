@@ -34,6 +34,7 @@ interface SettingItemGeneric {
     safety: number
     type: validTypes,
     cat?: number //category
+    instant?: Boolean //true means setting should show autorenew icon
 }
 interface SelectSettingDescItem extends SettingItemGeneric { type: 'sel', opts?: string[] } //sel has to have an opts with a string array
 interface NumSettingItem extends SettingItemGeneric { type: 'num', min?: number, max?: number } //num has to have a min and max

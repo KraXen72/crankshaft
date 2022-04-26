@@ -1,31 +1,8 @@
-.Crankshaft-settings .setting.safety-1 {
-    color: #969696;
-}
-.Crankshaft-settings .setting.safety-2 {
-    color: #ffd903;
-}
-.Crankshaft-settings .setting.safety-3 {
-    color: #ff9203;
-}
-.Crankshaft-settings .setting.safety-4 {
-    color: #ff0303;
-}
-
 /* this is css requried for this client's settings to work properly. */
-.Crankshaft-settings .settName {
-    color: inherit;
-}
+.Crankshaft-settings .settName,
 .Crankshaft-settings .settName .setting-title {
     color: inherit;
 }
-
-/* .Crankshaft-settings .setting {
-    display: flex;
-    align-items: center;
-}
-.Crankshaft-settings .setting .setting-title {
-    width: 100%;
-} */
 
 .Crankshaft-settings .setting.safety-1 .setting-desc {
     color: #969696;
@@ -47,22 +24,34 @@
     background-color: rgba(220, 17, 1, 0.16);
     border: 2px solid rgba(241, 6, 6, 0.81);
 }
+.Crankshaft-settings .setting .setting-desc.instant {
+    color: #0385ff;
+    background-color: rgba(1, 89, 220, 0.16);
+    border: 2px solid rgba(3, 133, 255, 0.81);
+}
+
+.Crankshaft-settings .setting.safety-1,
 .Crankshaft-settings .setting.safety-1 .setting-desc svg path {
     color: #969696;
 }
+.Crankshaft-settings .setting.safety-2,
 .Crankshaft-settings .setting.safety-2 .setting-desc svg path {
     color: #ffd903;
 }
+.Crankshaft-settings .setting.safety-3,
 .Crankshaft-settings .setting.safety-3 .setting-desc svg path {
     color: #ff9203;
 }
+.Crankshaft-settings .setting.safety-4,
 .Crankshaft-settings .setting.safety-4 .setting-desc svg path {
     color: #ff0303;
+}
+.Crankshaft-settings .setting .setting-desc.instant svg path {
+    color: #0385ff;
 }
 .Crankshaft-settings .setting .setting-desc svg path {
     fill: currentColor;
 }
-
 
 /* .setting.safety-1 .setting-title,
 .setting.safety-2 .setting-title,
@@ -97,18 +86,22 @@
     display: grid;
     grid-auto-columns: 1fr;
     grid-template-columns: 0fr 1fr 0fr;
+    grid-template-areas: "icon title input";
     grid-template-rows: 0fr;
     align-items: center;
-  }
+}
 
+/* this is the warning icon now, used to be ? icon*/
 .setting .setting-desc {
-    grid-area: 1 / 1 / 2 / 2;
+    grid-area: icon;
+
     cursor: pointer;
     font-size: 1rem;
     width: 2.2rem;
     height: 2.2rem;
     line-height: 2.2rem;
     border-radius: 5px !important;
+
     color: #969696;
     background-color: rgb(99 99 99 / 16%);
     border: 2px solid rgb(78 78 78 / 81%);
@@ -119,13 +112,14 @@
     align-items: center;
 }
 
-.Crankshaft-settings .setting.settName.sel > select,
-.Crankshaft-settings .setting .switch {
-    grid-area: 1 / 3 / 2 / 4;
+.Crankshaft-settings .setting.settName .inputGrey2,
+.Crankshaft-settings .setting.settName .switch,
+.Crankshaft-settings .setting.settName .cs-input-num {
+    grid-area: input;
 }
 
 .Crankshaft-settings .settName .setting-title {
-    grid-area: 1 / 2 / 2 / 3;
+    grid-area: title;
 }
 
 .Crankshaft-settings .setting .switch {
@@ -152,8 +146,8 @@ input:checked + .advancedSlider:hover {
     width: 750px;
     word-wrap: break-word;
     font-size: 20px;
-    color: rgba(255, 255, 255, .4) !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
     max-height: 0;
     overflow: hidden;
     max-height: 500px;
