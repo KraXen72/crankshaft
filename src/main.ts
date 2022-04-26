@@ -75,7 +75,7 @@ ipcMain.on("preload_requests_userscriptPath", (event) => {
 ipcMain.on("settingsUI_updates_userPrefs", (event, data) => {
     Object.assign(userPrefs, data)
 
-    mainWindow.setFullScreen(userPrefs.fullscreen);
+    //mainWindow.setFullScreen(userPrefs.fullscreen);
 })
 
 /** open a custom generic window with our menu, hidden */
