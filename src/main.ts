@@ -62,17 +62,17 @@ let socialWindowReference: BrowserWindow
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 //send settings to preload
-ipcMain.on('preloadNeedSettings', (event) => {
-    mainWindow.webContents.send('preloadSettings', settingsPath, userPrefs);
+ipcMain.on('settingsUI_requests_userPrefs', (event) => {
+    mainWindow.webContents.send('main_sends_userPrefs', settingsPath, userPrefs);
 });
 
 //send usercript path to preload
-ipcMain.on("preloadNeedsuserscriptsPath", (event) => {
-    mainWindow.webContents.send('preloaduserscriptsPath', userscriptsPath, __dirname);
+ipcMain.on("preload_requests_userscriptPath", (event) => {
+    mainWindow.webContents.send('main_sends_userscriptPath', userscriptsPath, __dirname);
 })
 
 //preload is sending back updated settings
-ipcMain.on("preloadSendsNewSettings", (event, data) => {
+ipcMain.on("settingsUI_updates_userPrefs", (event, data) => {
     Object.assign(userPrefs, data)
 
     mainWindow.setFullScreen(userPrefs.fullscreen);

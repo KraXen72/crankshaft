@@ -1,6 +1,6 @@
-///<reference path="global.d.ts" />
 import { webFrame } from 'electron'
 import { strippedConsole } from './preload';
+///<reference path="global.d.ts" />
 
 const insertedCSS: insertedCSS = {}
 
