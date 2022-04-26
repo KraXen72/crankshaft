@@ -26,6 +26,7 @@ export const su = {
     userscriptTracker: <userscriptTracker>{}
 }
 const $assets = path.resolve(__dirname, "..", "assets")
+let lastActiveTab = 0
 
 // Lets us exit the game lmao
 document.addEventListener("keydown", (event) => {
@@ -39,7 +40,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     // Side Menu Settings Thing
     const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
     //settingsSideMenu.setAttribute("onclick", "showWindow(1);SOUND.play(`select_0`,0.15);window.windows[0].changeTab(0)");
-    settingsSideMenu.addEventListener("click", (event) => { UpdateSettingsTabs(0, true, true); });
+    settingsSideMenu.addEventListener("click", (event) => { UpdateSettingsTabs(lastActiveTab, true, true); });
 
     //@ts-ignore cba to add it to the window interface
     try { window.windows[0].toggleType({checked: true}) } catch (e) {  }
@@ -150,8 +151,8 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, {hideAds, menuTimer}, us
 function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
     //strippedConsole.log("update settings tabs")
     const activeClass ="tabANew"
+    const settHolder = document.getElementById('settHolder')
 
-    //we yeet basic settings. its advanced now. deal with it.
     //@ts-ignore
     if (window.windows[0].settingsType === "basic") { window.windows[0].toggleType({checked: true}) }
     //document.querySelector(".advancedSwitch").style.display = "none"
@@ -182,7 +183,9 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
     const clientTab = tabs[tabs.length - 1]
     const selectedTab = document.querySelector(`#settingsTabLayout .${activeClass}`)
     
-    //clientTab.textContent = "Crankshaft"
+    if (selectedTab !== clientTab) {
+        settHolder.classList.remove("Crankshaft-settings")
+    }
 
     try { clientTab.removeEventListener("click", renderSettings) } catch (e) {}
     clientTab.addEventListener("click", renderSettings)
@@ -197,6 +200,7 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
         tabs[i].addEventListener("click", currentTabCallback)
 
         if (i == activeTab) { // if the current selected tab is our settings, just add active class
+            lastActiveTab = i
             tabs[i].classList.add(activeClass)
         }
     }
