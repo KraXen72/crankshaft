@@ -11,6 +11,7 @@ import { Swapper } from './resourceswapper';
 // Mixaz and IDKR team - https://github.com/idkr-client/idkr
 // Giant - JANREX client
 // deadcell - css for setting description
+// Tae - logo for the client
 
 let swapperPath = path.join(app.getPath("documents"), "Crankshaft/swapper");
 let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json");
