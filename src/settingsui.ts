@@ -7,7 +7,11 @@ import { styleSettingsCss, su } from "./preload";
 let userPrefs: userPrefs
 let userPrefsPath: string
 
-ipcRenderer.on('preloadSettings', (event, recieved_userPrefsPath: string, recieved_userPrefs: userPrefs) => {
+document.addEventListener("DOMContentLoaded", () => {
+    ipcRenderer.send('settingsUI_requests_userPrefs');
+}, {once: true})
+
+ipcRenderer.on('main_sends_userPrefs', (event, recieved_userPrefsPath: string, recieved_userPrefs: userPrefs) => {
     //main sends us the path to settings and also settings themselves on initial load.
     userPrefsPath = recieved_userPrefsPath
     userPrefs = recieved_userPrefs
@@ -77,7 +81,7 @@ const categoryNames: categoryName[] = [
 
 function saveSettings() {
     fs.writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), {encoding: "utf-8"})
-    ipcRenderer.send("preloadSendsNewSettings", userPrefs) //send them back to main
+    ipcRenderer.send("settingsUI_updates_userPrefs", userPrefs) //send them back to main
 }
 
 function saveUserscriptTracker() {
@@ -259,8 +263,9 @@ const skeleton = {
 }
 
 export function renderSettings() {
-    console.log("sucessfully saved console :)")
+    //strippedConsole.log("renderSettings")
     const settHolder = document.getElementById('settHolder')
+    settHolder.textContent = ''
 
     settHolder.classList.add("Crankshaft-settings")
     settHolder.appendChild(skeleton.catHedElem(categoryNames[0].n));

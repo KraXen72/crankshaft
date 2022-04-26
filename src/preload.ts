@@ -36,17 +36,16 @@ document.addEventListener("keydown", (event) => {
 
 // Settings Stuff
 document.addEventListener("DOMContentLoaded", (event) => {
-    ipcRenderer.send('preloadNeedSettings');
     // Side Menu Settings Thing
     const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
     //settingsSideMenu.setAttribute("onclick", "showWindow(1);SOUND.play(`select_0`,0.15);window.windows[0].changeTab(0)");
-    settingsSideMenu.addEventListener("click", (event) => { UpdateSettingsTabs(0, true); });
+    settingsSideMenu.addEventListener("click", (event) => { UpdateSettingsTabs(0, true, true); });
 
     //@ts-ignore cba to add it to the window interface
     try { window.windows[0].toggleType({checked: true}) } catch (e) {  }
 })
 
-ipcRenderer.on('preloaduserscriptsPath', (event, recieved_userscriptsPath: string) => {
+ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
     su.userscriptsPath = recieved_userscriptsPath
     su.userscriptTrackerPath = path.resolve(su.userscriptsPath, "tracker.json")
 
@@ -141,14 +140,15 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, {hideAds, menuTimer}, us
     //TODO rewrite, this is not well scalable
     if (hideAds) { toggleSettingCSS(styleSettingsCss.hideAds, "hideAds", true) }
     if (menuTimer) { toggleSettingCSS(styleSettingsCss.menuTimer, "menuTimer", true) }
-    if (userscripts) { ipcRenderer.send("preloadNeedsuserscriptsPath") }
+    if (userscripts) { ipcRenderer.send("preload_requests_userscriptPath") }
 });
 
 
 /**
  * make sure our setting tab is always called as it should be and has the proper onclick
  */
-function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
+function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
+    //strippedConsole.log("update settings tabs")
     const activeClass ="tabANew"
 
     //we yeet basic settings. its advanced now. deal with it.
@@ -187,7 +187,7 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true) {
     try { clientTab.removeEventListener("click", renderSettings) } catch (e) {}
     clientTab.addEventListener("click", renderSettings)
 
-    if (selectedTab === clientTab) {
+    if (selectedTab === clientTab && coldStart) {
         renderSettings()
     }
 
