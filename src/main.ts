@@ -11,11 +11,11 @@ import { Swapper } from './resourceswapper';
 // Mixaz and IDKR team - https://github.com/idkr-client/idkr
 // Giant - JANREX client
 // deadcell - css for setting description
-// Tae - logo for the client
+// Tae - logo for>> the client
 
-let swapperPath = path.join(app.getPath("documents"), "Crankshaft/swapper");
-let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json");
-let userscriptsPath = path.join(app.getPath("documents"), "Crankshaft/scripts")
+let swapperPath = path.join(app.getPath("appData"), "Crankshaft/swapper");
+let settingsPath = path.join(app.getPath("appData"), "Crankshaft/settings.json");
+let userscriptsPath = path.join(app.getPath("appData"), "Crankshaft/scripts")
 let userscriptTrackerPath = path.resolve(userscriptsPath, "tracker.json")
 
 app.userAgentFallback = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36`
@@ -42,9 +42,17 @@ const settingsSkeleton = {
     experimentalFlags_experimental: false
 }
 
-if (!fs.existsSync(swapperPath)) { fs.mkdirSync(swapperPath, { recursive: true }); };
-if (!fs.existsSync(userscriptsPath)) { fs.mkdirSync(userscriptsPath, { recursive: true }); };
-if (!fs.existsSync(userscriptTrackerPath)) { fs.writeFileSync(userscriptTrackerPath, "{}", {encoding: "utf-8"}) }
+if (!fs.existsSync(swapperPath)) { 
+    fs.mkdirSync(swapperPath, { recursive: true }); 
+}
+
+if (!fs.existsSync(userscriptsPath)) { 
+    fs.mkdirSync(userscriptsPath, { recursive: true }); 
+}
+
+if (!fs.existsSync(userscriptTrackerPath)) { 
+    fs.writeFileSync(userscriptTrackerPath, "{}", {encoding: "utf-8"}) 
+}
 
 // Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
 if (!fs.existsSync(settingsPath)) {
