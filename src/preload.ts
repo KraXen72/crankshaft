@@ -35,6 +35,7 @@ document.addEventListener("keydown", (event) => {
     }
 })
 
+
 // Settings Stuff
 document.addEventListener("DOMContentLoaded", (event) => {
     // Side Menu Settings Thing
@@ -107,7 +108,7 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCss = {
-    hideAds: `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder { display: none !important }`,
+    hideAds: `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder,.adsbygoogle,.adsbygoogle-noablate { display: none !important }`,
     menuTimer: fs.readFileSync(path.join($assets, 'menuTimer.css'), {encoding: "utf-8"})
 }
 
