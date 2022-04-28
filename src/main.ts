@@ -13,9 +13,18 @@ import { Swapper } from './resourceswapper';
 // deadcell - css for setting description
 // Tae - logo for>> the client
 
-let swapperPath = path.join(app.getPath("appData"), "Crankshaft/swapper");
-let settingsPath = path.join(app.getPath("appData"), "Crankshaft/settings.json");
-let userscriptsPath = path.join(app.getPath("appData"), "Crankshaft/scripts")
+// Determine whether the folder "Crankshaft" exists in the directory provided by app.getPath("appData")
+let doesAppDataExist: boolean = fs.existsSync(path.join(app.getPath("appData"), "Crankshaft"));
+
+let crankshaftPath: string = path.join(app.getPath("documents"), "Crankshaft");
+
+if (doesAppDataExist) {
+    crankshaftPath = path.join(app.getPath("appData"), "Crankshaft")
+}
+
+let swapperPath = path.join(crankshaftPath, "swapper");
+let settingsPath = path.join(crankshaftPath, "settings.json");
+let userscriptsPath = path.join(crankshaftPath, "scripts")
 let userscriptTrackerPath = path.resolve(userscriptsPath, "tracker.json")
 
 app.userAgentFallback = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36`
