@@ -1,5 +1,5 @@
 /* menu timer by KraXen72 */
-#uiBase.onMenu div#spectateUI[style*="none"] {
+#uiBase.onMenu div#spectateUI {
     display: block !important;
 }
 
