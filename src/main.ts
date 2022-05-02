@@ -241,7 +241,8 @@ app.on('ready', function () {
             submenu: [
                 {label: "Reload this game", accelerator: "F5", click: () => {mainWindow.reload()}},
                 { label: "Find new Lobby", accelerator: "F6", click: () => { mainWindow.loadURL('https://krunker.io'); } },
-                { label: "Relaunch Client", accelerator: "F12", click: () => { app.relaunch(); app.exit(); }},
+                { label: "Relaunch Client", accelerator: "F10", click: () => { app.relaunch(); app.exit(); }},
+                { role: 'toggleDevTools', accelerator: "F12"},
                 { type: 'separator' },
                 { label: "Github repo", registerAccelerator: false, click: () => {shell.openExternal(`https://github.com/KraXen72/crankshaft`)}},
                 { label: "Client Discord", registerAccelerator: false, click: () => {shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`)}}
