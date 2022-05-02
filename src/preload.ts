@@ -136,7 +136,7 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, {hideAds, menuTimer}, us
         try { document.querySelector("#loadInfoRHolder").remove() } catch (e) {  }
         try { document.querySelector("#loadInfoLHolder").remove() } catch (e) {  } 
         initLoader.appendChild(createElement("div", {class: "crankshaft-holder-l", id: "#loadInfoLHolder", text: `v${version}`}))
-        initLoader.appendChild(createElement("div", {class: "crankshaft-holder-r", id: "#loadInfoRHolder", text: /*`KraXen72 & LukeTheDuke`*/ `Client by KraXen72`}))
+        initLoader.appendChild(createElement("div", {class: "crankshaft-holder-r", id: "#loadInfoRHolder", text: `Client by KraXen72`}))
     }
 
     //TODO rewrite, this is not well scalable
@@ -144,7 +144,6 @@ ipcRenderer.on('injectClientCss', (event, injectSplash, {hideAds, menuTimer}, us
     if (menuTimer) { toggleSettingCSS(styleSettingsCss.menuTimer, "menuTimer", true) }
     if (userscripts) { ipcRenderer.send("preload_requests_userscriptPath") }
 });
-
 
 /**
  * make sure our setting tab is always called as it should be and has the proper onclick
