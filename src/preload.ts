@@ -1,7 +1,7 @@
 ﻿import * as fs from 'fs';
 import * as path from 'path';
 import { ipcRenderer } from 'electron';
-import { injectSettingsCss, createElement, toggleSettingCSS } from './utils';
+import { injectSettingsCSS, createElement, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
 ///<reference path="global.d.ts" />
 
@@ -28,6 +28,12 @@ export const su = {
 const $assets = path.resolve(__dirname, "..", "assets")
 let lastActiveTab = 0
 
+/** actual css for settings that are style-based (hide ads, etc)*/
+export const styleSettingsCss = {
+    hideAds: `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder,.adsbygoogle,.adsbygoogle-noablate { display: none !important }`,
+    menuTimer: fs.readFileSync(path.join($assets, 'menuTimer.css'), {encoding: "utf-8"})
+}
+
 // Lets us exit the game lmao
 document.addEventListener("keydown", (event) => {
     if (event.code == "Escape") {
@@ -40,7 +46,6 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("DOMContentLoaded", (event) => {
     // Side Menu Settings Thing
     const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
-    //settingsSideMenu.setAttribute("onclick", "showWindow(1);SOUND.play(`select_0`,0.15);window.windows[0].changeTab(0)");
     settingsSideMenu.addEventListener("click", (event) => { UpdateSettingsTabs(lastActiveTab, true, true); });
 
     //@ts-ignore cba to add it to the window interface
@@ -71,7 +76,6 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
             const rawContent = fs.readFileSync(u.fullpath, { encoding: "utf-8" })
             let content: {code: string, warnings: string[]}
             let hadToTransform = true
-
 
             if (rawContent.startsWith('"use strict"')) {
                 content = {code: rawContent, warnings: []}
@@ -106,30 +110,23 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
     })
 })
 
-/** actual css for settings that are style-based (hide ads, etc)*/
-export const styleSettingsCss = {
-    hideAds: `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder,.adsbygoogle,.adsbygoogle-noablate { display: none !important }`,
-    menuTimer: fs.readFileSync(path.join($assets, 'menuTimer.css'), {encoding: "utf-8"})
-}
-
-ipcRenderer.on('injectClientCss', (event, injectSplash, {hideAds, menuTimer}, userscripts, version) => {
+ipcRenderer.on('injectClientCSS', (event, injectSplash, {hideAds, menuTimer}, userscripts, version) => {
     const splashId = "Crankshaft-splash-css"
     const settId = "Crankshaft-settings-css"
     
-    if (document.getElementById(settId) === null) {
-        const settCss = fs.readFileSync(path.join($assets, 'settingCss.css'), {encoding: "utf-8"})
-        injectSettingsCss(settCss, settId)
-    }
+    const settCss = fs.readFileSync(path.join($assets, 'settingCss.css'), {encoding: "utf-8"})
+    injectSettingsCSS(settCss, settId)
     
-    if (document.getElementById(splashId) === null && injectSplash === true) {
+    if (injectSplash === true) {
         let splashCSS = fs.readFileSync(path.join($assets, 'splashCss.css'), {encoding: "utf-8"})
-        injectSettingsCss(splashCSS, splashId)
+        injectSettingsCSS(splashCSS, splashId)
+
         const initLoader = document.getElementById("initLoader")
         if (initLoader === null) {throw "Krunker didn't create #initLoader"}
         
         initLoader.appendChild(createElement("svg", {
-            id: "crankshaft-logo",
-            innerHTML: fs.readFileSync(path.join($assets, "splashLogoFragment.html"))
+            id: "crankshaft-logo-holder",
+            innerHTML: fs.readFileSync(path.join($assets, "Frame_1Logo-minText.svg"), {encoding: "utf-8"})
         }))
 
         //make our won bottom corner holders incase krunker changes it's shit. we only rely on the loading text from krunker.

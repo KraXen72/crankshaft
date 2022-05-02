@@ -30,8 +30,6 @@ const settingsSkeleton = {
     resourceSwapper: true,
     userscripts: false,
     clientSplash: true,
-    // skyColor: false,
-    // skyColorValue: "#ff0000",
     "angle-backend": "default",
     logDebugToConsole: false,
     safeFlags_removeUselessFeatures: false,
@@ -217,7 +215,7 @@ app.on('ready', function () {
     mainWindow.on('ready-to-show', () => {
         mainWindow.show();
         //TODO this is getting long, rewrite
-        mainWindow.webContents.send('injectClientCss', userPrefs.clientSplash, {hideAds: userPrefs.hideAds, menuTimer: userPrefs.menuTimer}, userPrefs.userscripts, app.getVersion());
+        mainWindow.webContents.send('injectClientCSS', userPrefs.clientSplash, {hideAds: userPrefs.hideAds, menuTimer: userPrefs.menuTimer}, userPrefs.userscripts, app.getVersion());
     });
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);

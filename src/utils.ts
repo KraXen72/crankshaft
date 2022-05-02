@@ -7,7 +7,7 @@ const insertedCSS: insertedCSS = {}
 /**
  * inject css as a style tag
  */
-export const injectSettingsCss = (css: string, identifier = "settings") => {
+export const injectSettingsCSS = (css: string, identifier = "settings") => {
     webFrame.insertCSS(css)
 }
 //create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js

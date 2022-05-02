@@ -176,7 +176,7 @@ class SettingElem {
      * update the settings when you change something in the gui
      * @param {{elem: Element, callback: 'normal'|Function}} elemAndCb
      */
-    set update({elem, callback}: { elem: Element; callback: 'normal' | "userscript" | Function; }) {
+    update({elem, callback}: { elem: Element; callback: 'normal' | "userscript" | Function; }) {
         if (this.updateKey === "") { throw "Invalid update key"; }
         let target = elem.getElementsByClassName('s-update')[0]
         //@ts-ignore
@@ -225,7 +225,7 @@ class SettingElem {
         if (typeof this.props.callback === "undefined") {this.props.callback = "normal"}
         //@ts-ignore
         w[this.updateMethod] = () => {
-            this.update = {elem: w, callback: this.props.callback}
+            this.update({elem: w, callback: this.props.callback})
         }
         return w //return the element
     }
