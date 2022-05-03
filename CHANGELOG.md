@@ -1,3 +1,28 @@
+## [1.5.0](https://github.com/KraXen72/crankshaft/compare/1.4.0...1.5.0) (2022-05-03)
+
+
+### Features
+
+* F10 to relaunch, F12 for devtools ([2d1e902](https://github.com/KraXen72/crankshaft/commit/2d1e902ae88d26f6965132016699b42b364a0933))
+* hideAds now works in all windows, history nav ([58fe613](https://github.com/KraXen72/crankshaft/commit/58fe613eefecdaa2da85d7d1bee46b15f652905d))
+* menu rewrite, stuff is now grouped ([0f6615c](https://github.com/KraXen72/crankshaft/commit/0f6615cb399b56c95a35c7ae9fe14fde02a86108))
+* new logo for the client ([4d37282](https://github.com/KraXen72/crankshaft/commit/4d37282a1e3bbaf6e59eba82d40006fe00c9f875))
+* remove all * imports throught the app ([02508a6](https://github.com/KraXen72/crankshaft/commit/02508a65b468f60a512f5eacf42e701de06c7f88))
+* slight tweak to icon 2: electric bogaloo ([feb4b8c](https://github.com/KraXen72/crankshaft/commit/feb4b8ceb7fa28c29602b2c060052205d7fa39c1))
+* source cleanup (part 1),remove useless stuff ([f5f6a31](https://github.com/KraXen72/crankshaft/commit/f5f6a319d505b64e9c173f9febb547959bdf9be2))
+
+
+### Bug Fixes
+
+* block more ads ([5725381](https://github.com/KraXen72/crankshaft/commit/5725381bddc560bd0de5b11a26bd1cd564355d24))
+* menutimer not displayed until game is entered ([5c71d7e](https://github.com/KraXen72/crankshaft/commit/5c71d7e1788402d1881332f3b89ee6e7e27ab7d0))
+* slight tweak to new logo ([e2d73c9](https://github.com/KraXen72/crankshaft/commit/e2d73c977e2f80335915f624886ce14513024740))
+
+
+### Performance Improvements
+
+* don't call app getPath multiple times ([e3388a1](https://github.com/KraXen72/crankshaft/commit/e3388a18b7d82a9eab059ef1450affdf09c49a5e))
+
 ## [1.4.0](https://github.com/KraXen72/crankshaft/compare/1.3.1...1.4.0) (2022-04-26)
 
 
