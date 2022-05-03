@@ -10,7 +10,7 @@
 - maintained & open source
 - a lot of customisation options (settings)
 - userscript support (can be disabled)
-- built-in hotkeys: more about them here[#hotkeys]
+- built-in hotkeys: [more about them here](https://github.com/KraXen72/crankshaft#hotkeys)
   
 ## quality of life
 - no artificial "splash screens" that increase load time, splash shows over krunker actually loading
