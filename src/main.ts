@@ -4,18 +4,19 @@ import { shell, app, ipcMain, BrowserWindow, protocol, dialog, Menu, MenuItem, M
 import { Swapper } from './resourceswapper';
 ///<reference path="global.d.ts" />
 
-// Credits / mentions
+// Credits / mentions (if not mentioned on github)
 
 // Gato/creepycats - Gatoclient
 // LukeTheDuke - Gatoclient-lite
 // Mixaz and IDKR team - https://github.com/idkr-client/idkr
 // Giant - JANREX client
-// deadcell - css for setting description
-// Tae - logo for the client
+// Tae - logo for the client <3
 
-let swapperPath = pathJoin(app.getPath("documents"), "Crankshaft/swapper");
-let settingsPath = pathJoin(app.getPath("documents"), "Crankshaft/settings.json");
-let userscriptsPath = pathJoin(app.getPath("documents"), "Crankshaft/scripts")
+
+const docsPath = app.getPath("documents")
+let swapperPath = pathJoin(docsPath, "Crankshaft/swapper");
+let settingsPath = pathJoin(docsPath, "Crankshaft/settings.json");
+let userscriptsPath = pathJoin(docsPath, "Crankshaft/scripts")
 let userscriptTrackerPath = pathJoin(userscriptsPath, "tracker.json")
 
 app.userAgentFallback = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36`
@@ -214,8 +215,7 @@ app.on('ready', function () {
     //general ready to show, runs when window refreshes or loads url
     mainWindow.on('ready-to-show', () => {
         mainWindow.show();
-        //TODO this is getting long, rewrite
-        mainWindow.webContents.send('injectClientCSS', userPrefs.clientSplash, {hideAds: userPrefs.hideAds, menuTimer: userPrefs.menuTimer}, userPrefs.userscripts, app.getVersion());
+        mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion());
     });
     if (userPrefs.fullscreen) {
         mainWindow.setFullScreen(true);
