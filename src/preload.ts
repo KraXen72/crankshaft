@@ -112,14 +112,14 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
     })
 })
 
-ipcRenderer.on('injectClientCSS', (event, injectSplash, {hideAds, menuTimer}, userscripts, version) => {
+ipcRenderer.on('injectClientCSS', (event, {hideAds, menuTimer, clientSplash, userscripts}, version) => {
     const splashId = "Crankshaft-splash-css"
     const settId = "Crankshaft-settings-css"
     
     const settCss = readFileSync(pathJoin($assets, 'settingCss.css'), {encoding: "utf-8"})
     injectSettingsCSS(settCss, settId)
     
-    if (injectSplash === true) {
+    if (clientSplash) {
         let splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), {encoding: "utf-8"})
         injectSettingsCSS(splashCSS, splashId)
 
