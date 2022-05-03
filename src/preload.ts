@@ -1,5 +1,5 @@
-﻿import * as fs from 'fs';
-import * as path from 'path';
+﻿import {writeFileSync, readFileSync, readdirSync } from 'fs';
+import { resolve as pathResolve, join as pathJoin} from 'path';
 import { ipcRenderer } from 'electron';
 import { injectSettingsCSS, createElement, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
@@ -7,6 +7,8 @@ import { renderSettings } from './settingsui';
 
 // get rid of client unsupported message
 window.OffCliV = true;
+
+//save some console methods from krunker
 export const strippedConsole = {
     error: console.error.bind(console) as Function, 
     log: console.log.bind(console) as Function, 
@@ -25,13 +27,13 @@ export const su = {
     userscripts: <userscript[]>[],
     userscriptTracker: <userscriptTracker>{}
 }
-const $assets = path.resolve(__dirname, "..", "assets")
+const $assets = pathResolve(__dirname, "..", "assets")
 let lastActiveTab = 0
 
 /** actual css for settings that are style-based (hide ads, etc)*/
-export const styleSettingsCss = {
+export const styleSettingsCSS = {
     hideAds: `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder,.adsbygoogle,.adsbygoogle-noablate { display: none !important }`,
-    menuTimer: fs.readFileSync(path.join($assets, 'menuTimer.css'), {encoding: "utf-8"})
+    menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), {encoding: "utf-8"})
 }
 
 // Lets us exit the game lmao
@@ -54,26 +56,26 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
     su.userscriptsPath = recieved_userscriptsPath
-    su.userscriptTrackerPath = path.resolve(su.userscriptsPath, "tracker.json")
+    su.userscriptTrackerPath = pathResolve(su.userscriptsPath, "tracker.json")
 
     //init the userscripts (read, map and set up tracker)
 
     //remove all non .js files, map to {name, fullpath}
-    su.userscripts = fs.readdirSync(su.userscriptsPath, {withFileTypes: true})
+    su.userscripts = readdirSync(su.userscriptsPath, {withFileTypes: true})
         .filter(entry => entry.name.endsWith(".js"))
-        .map(entry => ({name: entry.name, fullpath: path.resolve(su.userscriptsPath, entry.name).toString()}))
+        .map(entry => ({name: entry.name, fullpath: pathResolve(su.userscriptsPath, entry.name).toString()}))
     
     let tracker: userscriptTracker = {}
     su.userscripts.forEach(u => tracker[u.name] = false) //fill tracker with falses, so new userscripts get added disabled
-    Object.assign(tracker, JSON.parse(fs.readFileSync(su.userscriptTrackerPath, {encoding: "utf-8"}))) //read and assign the tracker.json
-    fs.writeFileSync(su.userscriptTrackerPath, JSON.stringify(tracker, null, 2), {encoding: "utf-8"}) //save with the new userscripts
+    Object.assign(tracker, JSON.parse(readFileSync(su.userscriptTrackerPath, {encoding: "utf-8"}))) //read and assign the tracker.json
+    writeFileSync(su.userscriptTrackerPath, JSON.stringify(tracker, null, 2), {encoding: "utf-8"}) //save with the new userscripts
 
     su.userscriptTracker = tracker
     
     //run the code in the userscript
     su.userscripts.forEach(u => {
         if (tracker[u.name]) { //if enabled
-            const rawContent = fs.readFileSync(u.fullpath, { encoding: "utf-8" })
+            const rawContent = readFileSync(u.fullpath, { encoding: "utf-8" })
             let content: {code: string, warnings: string[]}
             let hadToTransform = true
 
@@ -114,11 +116,11 @@ ipcRenderer.on('injectClientCSS', (event, injectSplash, {hideAds, menuTimer}, us
     const splashId = "Crankshaft-splash-css"
     const settId = "Crankshaft-settings-css"
     
-    const settCss = fs.readFileSync(path.join($assets, 'settingCss.css'), {encoding: "utf-8"})
+    const settCss = readFileSync(pathJoin($assets, 'settingCss.css'), {encoding: "utf-8"})
     injectSettingsCSS(settCss, settId)
     
     if (injectSplash === true) {
-        let splashCSS = fs.readFileSync(path.join($assets, 'splashCss.css'), {encoding: "utf-8"})
+        let splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), {encoding: "utf-8"})
         injectSettingsCSS(splashCSS, splashId)
 
         const initLoader = document.getElementById("initLoader")
@@ -126,7 +128,7 @@ ipcRenderer.on('injectClientCSS', (event, injectSplash, {hideAds, menuTimer}, us
         
         initLoader.appendChild(createElement("svg", {
             id: "crankshaft-logo-holder",
-            innerHTML: fs.readFileSync(path.join($assets, "Frame_1Logo-minText.svg"), {encoding: "utf-8"})
+            innerHTML: readFileSync(pathJoin($assets, "Frame_1Logo-minText.svg"), {encoding: "utf-8"})
         }))
 
         //make our won bottom corner holders incase krunker changes it's shit. we only rely on the loading text from krunker.
@@ -137,8 +139,8 @@ ipcRenderer.on('injectClientCSS', (event, injectSplash, {hideAds, menuTimer}, us
     }
 
     //TODO rewrite, this is not well scalable
-    if (hideAds) { toggleSettingCSS(styleSettingsCss.hideAds, "hideAds", true) }
-    if (menuTimer) { toggleSettingCSS(styleSettingsCss.menuTimer, "menuTimer", true) }
+    if (hideAds) { toggleSettingCSS(styleSettingsCSS.hideAds, "hideAds", true) }
+    if (menuTimer) { toggleSettingCSS(styleSettingsCSS.menuTimer, "menuTimer", true) }
     if (userscripts) { ipcRenderer.send("preload_requests_userscriptPath") }
 });
 

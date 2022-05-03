@@ -1,5 +1,5 @@
-﻿import * as path from 'path';
-import * as fs from 'fs';
+﻿import { join as pathJoin } from 'path';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { shell, app, ipcMain, BrowserWindow, protocol, dialog, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
 import { Swapper } from './resourceswapper';
 ///<reference path="global.d.ts" />
@@ -13,10 +13,10 @@ import { Swapper } from './resourceswapper';
 // deadcell - css for setting description
 // Tae - logo for the client
 
-let swapperPath = path.join(app.getPath("documents"), "Crankshaft/swapper");
-let settingsPath = path.join(app.getPath("documents"), "Crankshaft/settings.json");
-let userscriptsPath = path.join(app.getPath("documents"), "Crankshaft/scripts")
-let userscriptTrackerPath = path.resolve(userscriptsPath, "tracker.json")
+let swapperPath = pathJoin(app.getPath("documents"), "Crankshaft/swapper");
+let settingsPath = pathJoin(app.getPath("documents"), "Crankshaft/settings.json");
+let userscriptsPath = pathJoin(app.getPath("documents"), "Crankshaft/scripts")
+let userscriptTrackerPath = pathJoin(userscriptsPath, "tracker.json")
 
 app.userAgentFallback = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36`
 
@@ -40,18 +40,18 @@ const settingsSkeleton = {
     experimentalFlags_experimental: false
 }
 
-if (!fs.existsSync(swapperPath)) { fs.mkdirSync(swapperPath, { recursive: true }); };
-if (!fs.existsSync(userscriptsPath)) { fs.mkdirSync(userscriptsPath, { recursive: true }); };
-if (!fs.existsSync(userscriptTrackerPath)) { fs.writeFileSync(userscriptTrackerPath, "{}", {encoding: "utf-8"}) }
+if (!existsSync(swapperPath)) { mkdirSync(swapperPath, { recursive: true }); };
+if (!existsSync(userscriptsPath)) { mkdirSync(userscriptsPath, { recursive: true }); };
+if (!existsSync(userscriptTrackerPath)) { writeFileSync(userscriptTrackerPath, "{}", {encoding: "utf-8"}) }
 
 // Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
-if (!fs.existsSync(settingsPath)) {
-    fs.writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: "utf-8", flag: 'wx' });
+if (!existsSync(settingsPath)) {
+    writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: "utf-8", flag: 'wx' });
 }
 
 // Read settings to apply them to the command line arguments
 let userPrefs = settingsSkeleton
-Object.assign(userPrefs, JSON.parse(fs.readFileSync(settingsPath, {encoding: "utf-8"})))
+Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, {encoding: "utf-8"})))
 
 // Fullscreen Handler
 let mainWindow: BrowserWindow
@@ -206,7 +206,7 @@ app.on('ready', function () {
         height: 900,
         center: true,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: pathJoin(__dirname, 'preload.js'),
             spellcheck: false
         }
     });

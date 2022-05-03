@@ -1,6 +1,6 @@
 //"use strict";
-import * as fs from 'fs'
-import * as path from 'path'
+import { readdirSync } from 'fs';
+import { join as pathJoin } from 'path';
 import { BrowserWindow } from "electron"
 //converted to typescript by KraXen72. original is from idkr: https://github.com/idkr-client/idkr
 
@@ -29,7 +29,7 @@ class Swapper {
 	 */
 	private recursiveSwapNormal = (win: BrowserWindow, prefix: string = "") => {
 		try {
-			fs.readdirSync(path.join(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
+			readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
 				if (dirent.isDirectory()) this.recursiveSwapNormal(win, `${prefix}/${dirent.name}`);
 				else {
 					let pathname = `${prefix}/${dirent.name}`;
@@ -59,7 +59,7 @@ class Swapper {
 	 */
 	private recursiveSwapHostname = (win: BrowserWindow, prefix: string = "", hostname: string = "") => {
 		try {
-			fs.readdirSync(path.join(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
+			readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
 				if (dirent.isDirectory()){
 					this.recursiveSwapHostname(
 						win,
@@ -87,7 +87,7 @@ class Swapper {
 				this.urls.length && this.win.webContents.session.webRequest.onBeforeRequest({
 					urls: this.urls
 				}, (details, callback) => callback({
-					redirectURL: "krunker-resource-swapper:/" + path.join(this.swapDir, new URL(details.url).pathname)
+					redirectURL: "krunker-resource-swapper:/" + pathJoin(this.swapDir, new URL(details.url).pathname)
 				}));
 				break;
 			}
@@ -95,7 +95,7 @@ class Swapper {
 				this.recursiveSwapHostname(this.win);
 				this.urls.length && this.win.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
 					let { hostname, pathname } = new URL(details.url);
-					callback({ redirectURL: "krunker-resource-swapper:/" + path.join(this.swapDir, hostname, pathname) });
+					callback({ redirectURL: "krunker-resource-swapper:/" + pathJoin(this.swapDir, hostname, pathname) });
 				});
 				break;
 			}

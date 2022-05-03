@@ -1,7 +1,7 @@
-import * as fs from 'fs';
-import { ipcRenderer, app } from 'electron';
+import { writeFileSync } from 'fs';
+import { ipcRenderer } from 'electron'; //add app if crashes
 import { createElement, toggleSettingCSS } from './utils';
-import { styleSettingsCss, su } from "./preload";
+import { su, styleSettingsCSS } from "./preload";
 ///<reference path="global.d.ts" />
 
 let userPrefs: userPrefs
@@ -80,12 +80,12 @@ const categoryNames: categoryName[] = [
 ]
 
 function saveSettings() {
-    fs.writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), {encoding: "utf-8"})
+    writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), {encoding: "utf-8"})
     ipcRenderer.send("settingsUI_updates_userPrefs", userPrefs) //send them back to main
 }
 
 function saveUserscriptTracker() {
-    fs.writeFileSync(su.userscriptTrackerPath, JSON.stringify(su.userscriptTracker, null, 2), {encoding: "utf-8"})
+    writeFileSync(su.userscriptTrackerPath, JSON.stringify(su.userscriptTracker, null, 2), {encoding: "utf-8"})
 }
 
 /**
@@ -188,8 +188,8 @@ class SettingElem {
             saveSettings()
 
             // you can add custom instant refresh callbacks for settings here
-            if (this.props.key === "hideAds") { toggleSettingCSS(styleSettingsCss.hideAds, this.props.key, value) }
-            if (this.props.key === "menuTimer") { toggleSettingCSS(styleSettingsCss.menuTimer, this.props.key, value) }
+            if (this.props.key === "hideAds") { toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value) }
+            if (this.props.key === "menuTimer") { toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value) }
             // if (this.props.key === "userscripts" && value === true) {
             //     //show disclaimer before turning on userscripts
             //     const pick = userscriptDisclaimer(false)
