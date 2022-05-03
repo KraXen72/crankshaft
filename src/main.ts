@@ -309,14 +309,15 @@ app.on('ready', function () {
                     mainWindow.loadURL(url)
                     break;
                 case 1: //open as a new window in client
-                default:
+                default: {
                     event.preventDefault()
                     const genericWin = customGenericWin(url, strippedMenu)
                     event.newGuest = genericWin
                     break;
+                }   
             }
             //for comp just load it into the main url
-        } else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || (url.includes("https://krunker.io/?game") && url.includes("&matchId="))) {
+        } else if (url.includes("comp.krunker.io") || url.includes("https://krunker.io/?game") || (url.includes("?game=") && url.includes("&matchId="))) {
             event.preventDefault()
             mainWindow.loadURL(url)
         } else { //for any other link, fall back to creating a custom window with strippedMenu. 
