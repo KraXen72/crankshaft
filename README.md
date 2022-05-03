@@ -10,7 +10,7 @@
 - maintained & open source
 - a lot of customisation options (settings)
 - userscript support (can be disabled)
-- built-in hotkeys: `F5` to reload, `F6` to find a new match and `F12` to relaunch client (standard hotkeys like zooming and devtools also included)
+- built-in hotkeys: more about them here[#hotkeys]
   
 ## quality of life
 - no artificial "splash screens" that increase load time, splash shows over krunker actually loading
@@ -42,6 +42,17 @@ Feel free to download them and put them into the `/scripts` directory.
 > Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED  
 > Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED  
 > You are encouraged to write scripts using `"use strict"`, because it skips esbuild transforming your code.  
+  
+## hotkeys
+Press `Alt` to show electron menu. Here you can find all hotkeys.  
+standard hotkeys like zooming and devtools also included.  
+**Client's hotkeys:**  
+  - `F5`: reload
+  - `F6`: find a new match, 
+  - `F7`: copy game link, 
+  - `Ctrl+F7`: join game from clipboard
+  - `F10`: relaunch 
+  - `F12`: devtools (alternative hotkey)
   
 ## contributing
 - you have to have `git`, `nodejs` and `npm` installed.
