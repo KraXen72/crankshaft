@@ -1,6 +1,6 @@
 ﻿import { join as pathJoin } from 'path';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { shell, app, ipcMain, BrowserWindow, protocol, dialog, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
+import { shell, app, ipcMain, BrowserWindow, protocol, dialog, Menu, MenuItem, MenuItemConstructorOptions, clipboard } from 'electron'
 import { Swapper } from './resourceswapper';
 ///<reference path="global.d.ts" />
 
@@ -79,18 +79,28 @@ ipcMain.on("settingsUI_updates_userPrefs", (event, data) => {
 })
 
 /** open a custom generic window with our menu, hidden */
-function customGenericWin(url: string, providedMenu: Menu) {
+function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructorOptions | MenuItem)[], injectCopy: Boolean = true) {
     const genericWin = new BrowserWindow({
         autoHideMenuBar: true,
         show: false,
-        width: 1600,
-        height: 900,
+        width: 1366,
+        height: 768,
         center: true,
         webPreferences: {
             spellcheck: false
         }
     })
-    genericWin.setMenu(providedMenu)
+    //add the 'copy current url' command to the menu if injectCopy is true
+    if (injectCopy && Array.isArray(providedMenuTemplate[0].submenu)) {
+        providedMenuTemplate[0].submenu.push({ 
+            label: "Copy current url to clipboard", 
+            accelerator: "F7", 
+            click: () => { clipboard.writeText(genericWin.webContents.getURL()); }
+        })
+    }
+    const thisMenu = Menu.buildFromTemplate(providedMenuTemplate)
+
+    genericWin.setMenu(thisMenu)
     genericWin.setMenuBarVisibility(false)
     genericWin.loadURL(url)
     genericWin.once('ready-to-show', () => { genericWin.show(); });
@@ -101,7 +111,6 @@ function customGenericWin(url: string, providedMenu: Menu) {
 
 
 if (userPrefs.safeFlags_removeUselessFeatures) {
-    //remove useless features
     app.commandLine.appendSwitch("disable-breakpad"); //crash reporting
     app.commandLine.appendSwitch("disable-print-preview");
     app.commandLine.appendSwitch('disable-metrics-repo')
@@ -114,7 +123,6 @@ if (userPrefs.safeFlags_removeUselessFeatures) {
     console.log("Removed useless features")
 }
 if (userPrefs.safeFlags_helpfulFlags) {
-    //enable (potentially) helpful stuff
     app.commandLine.appendSwitch("enable-javascript-harmony");
     app.commandLine.appendSwitch("enable-future-v8-vm-features");
     app.commandLine.appendSwitch("enable-webgl2-compute-context");
@@ -122,7 +130,6 @@ if (userPrefs.safeFlags_helpfulFlags) {
     console.log("Applied helpful flags")
 }
 if (userPrefs.experimentalFlags_increaseLimits) {
-    //increase limits
     app.commandLine.appendSwitch("renderer-process-limit", "100");
     app.commandLine.appendSwitch("max-active-webgl-contexts", "100");
     app.commandLine.appendSwitch("webrtc-max-cpu-consumption-percentage=100");
@@ -131,7 +138,6 @@ if (userPrefs.experimentalFlags_increaseLimits) {
     console.log("Applied flags to increase limits")
 }
 if (userPrefs.experimentalFlags_lowLatency) {
-    //experimental low-latency flags by KraXen72
     app.commandLine.appendSwitch('enable-highres-timer') //supposedly lowers latency
     app.commandLine.appendSwitch('enable-quic') //enables an experimental low-latency protocol that might or might not be used, who knows
     app.commandLine.appendSwitch('enable-accelerated-2d-canvas');
@@ -139,7 +145,6 @@ if (userPrefs.experimentalFlags_lowLatency) {
     console.log("Applied latency-reducing flags")
 }
 if (userPrefs.experimentalFlags_experimental) {
-    //experimental-er flags added by KraXen72
     //do they crash the game? not for me. do they actually help? ¯\_(ツ)_/¯
     app.commandLine.appendSwitch('disable-low-end-device-mode')
     app.commandLine.appendSwitch('high-dpi-support', "1")
@@ -150,7 +155,6 @@ if (userPrefs.experimentalFlags_experimental) {
     console.log('Enabled Experiments');
 }
 if (userPrefs.safeFlags_gpuRasterizing) {
-    //gpu rasterization enabling by KraXen72
     // do they crash the game? not for me. do they actually help? yeah kind of. depending on your gpu etc.
     app.commandLine.appendSwitch("enable-gpu-rasterization")
     app.commandLine.appendSwitch("disable-zero-copy") //this is really important, otherwise the game crashes.
@@ -162,8 +166,9 @@ if (userPrefs.fpsUncap) {
     app.commandLine.appendSwitch('disable-gpu-vsync');
     console.log('Removed FPS Cap');
 }
+
 if (userPrefs['angle-backend'] !== 'default') {
-    if (userPrefs['angle-backend'] == 'vulkan') {
+    if (userPrefs['angle-backend'] === 'vulkan') {
         app.commandLine.appendSwitch("use-angle", "vulkan");
         app.commandLine.appendSwitch("use-vulkan");
         app.commandLine.appendSwitch("--enable-features=Vulkan");
@@ -215,11 +220,9 @@ app.on('ready', function () {
     //general ready to show, runs when window refreshes or loads url
     mainWindow.on('ready-to-show', () => {
         mainWindow.show();
-        mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion());
+        mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); //tell preload to inject settingcss and splashcss + other
     });
-    if (userPrefs.fullscreen) {
-        mainWindow.setFullScreen(true);
-    }
+    if (userPrefs.fullscreen) { mainWindow.setFullScreen(true); }
 
     mainWindow.loadURL('https://krunker.io')
 
@@ -232,66 +235,69 @@ app.on('ready', function () {
         console.log("GPU FEATURES BEGIN")
         console.dir(app.getGPUFeatureStatus());
     }
-
+    /** submenu for in-game shortcuts */
+    const gameSubmenu: (MenuItemConstructorOptions | MenuItem) = {
+        label: "Game",
+        submenu: [
+            { label: "Reload this game", accelerator: "F5", click: () => {mainWindow.reload()}},
+            { label: "Find new Lobby", accelerator: "F6", click: () => { mainWindow.loadURL('https://krunker.io'); } },
+            { label: "Copy game link to clipboard", accelerator: "F7", click: () => { clipboard.writeText(mainWindow.webContents.getURL()); } },
+            { label: "Join game link from clipboard", accelerator: "CommandOrControl+F7", click: () => { 
+                const copiedText = clipboard.readText()
+                if (copiedText.includes("https://krunker.io/?game")) { mainWindow.webContents.loadURL(copiedText) }
+            }},
+            { label: "Relaunch Client", accelerator: "F10", click: () => { app.relaunch(); app.exit(); }},
+        ]
+    }
+    /** submenu for social shortcuts */
+    const genericMainSubmenu: (MenuItemConstructorOptions | MenuItem) = {
+        label: "Window",
+        submenu: [
+            { label: "Refresh", role: "reload", accelerator: "F5"}
+        ]
+    }
+    /** other submenus that all windows share */
     const csMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
-        {
-            label: "Crankshaft",
-            submenu: [
-                {label: "Reload this game", accelerator: "F5", click: () => {mainWindow.reload()}},
-                { label: "Find new Lobby", accelerator: "F6", click: () => { mainWindow.loadURL('https://krunker.io'); } },
-                { label: "Relaunch Client", accelerator: "F10", click: () => { app.relaunch(); app.exit(); }},
-                { role: 'toggleDevTools', accelerator: "F12"},
-                { type: 'separator' },
-                { label: "Github repo", registerAccelerator: false, click: () => {shell.openExternal(`https://github.com/KraXen72/crankshaft`)}},
-                { label: "Client Discord", registerAccelerator: false, click: () => {shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`)}}
-            ]
-        },
         {
             label: "System",
             submenu: [
                 { role: 'reload' },
                 { role: 'forceReload' },
+                { type: "separator" },
                 { role: 'toggleDevTools' },
+                { role: 'toggleDevTools', label: "Toggle Developer Tools (F12)",  accelerator: "F12"},
                 { type: 'separator' },
-                { role: 'resetZoom' },
                 { role: 'zoomIn' },
                 { role: 'zoomOut' },
+                { role: 'resetZoom' },
                 { type: 'separator' },
                 { role: 'togglefullscreen' }
             ]
+        },
+        {
+            label: "About Crankshaft",
+            submenu: [
+                { label: "Github repo", registerAccelerator: false, click: () => {shell.openExternal(`https://github.com/KraXen72/crankshaft`)}},
+                { label: "Client Discord", registerAccelerator: false, click: () => {shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`)}}
+            ]
         }
     ]
-    const strippedTemplate: (MenuItemConstructorOptions | MenuItem)[]  = [
-        {
-        label: "Crankshaft",
-        submenu: [
-            { label: "Refresh", role: "reload", accelerator: "F5"},
-            { label: "Github repository", registerAccelerator: false, click: () => {shell.openExternal(`https://github.com/KraXen72/crankshaft`)}},
-            { label: "Crankshaft Discord", registerAccelerator: false, click: () => {shell.openExternal(`https://discord.gg/ZeVuxG7gQJ`)}}
-        ]
-    }, csMenuTemplate[1] ]
+    const csMenu = Menu.buildFromTemplate([gameSubmenu, ...csMenuTemplate])
+    const strippedMenuTemplate = [genericMainSubmenu, ...csMenuTemplate]
 
-    const csMenu = Menu.buildFromTemplate(csMenuTemplate)
-    const strippedMenu = Menu.buildFromTemplate(strippedTemplate)
     mainWindow.setMenu(csMenu)
     mainWindow.setAutoHideMenuBar(true)
     mainWindow.setMenuBarVisibility(false)
 
     mainWindow.webContents.on('new-window', (event, url) => {
         console.log("url trying to open: ", url)
-        const freeSpinHostnames = [
-            "youtube.com",
-            "twitch.tv",
-            "twitter.com",
-            "reddit.com",
-            "discord.com",
-            "accounts.google.com"
-        ]
+        const freeSpinHostnames = [ "youtube.com", "twitch.tv", "twitter.com", "reddit.com", "discord.com", "accounts.google.com" ]
+
         if (url.includes('https://krunker.io/social.html') && typeof socialWindowReference !== "undefined") {
             socialWindowReference.loadURL(url) //if a designated socialWindow exists already, just load the url there
         } else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
             let pick = dialog.showMessageBoxSync({
-                title: "Opening new url",
+                title: "Opening a new url",
                 noLink: false,
                 message: `You're trying to open ${url}`,
                 buttons: ["Open in default browser", "Open as a new window in client", "Open in this window", "Don't open"]
@@ -311,7 +317,7 @@ app.on('ready', function () {
                 case 1: //open as a new window in client
                 default: {
                     event.preventDefault()
-                    const genericWin = customGenericWin(url, strippedMenu)
+                    const genericWin = customGenericWin(url, strippedMenuTemplate, true)
                     event.newGuest = genericWin
                     break;
                 }   
@@ -322,7 +328,7 @@ app.on('ready', function () {
             mainWindow.loadURL(url)
         } else { //for any other link, fall back to creating a custom window with strippedMenu. 
             event.preventDefault()
-            const genericWin = customGenericWin(url, strippedMenu)
+            const genericWin = customGenericWin(url, strippedMenuTemplate, true)
             event.newGuest = genericWin
             
             // if the window is social, create and assign a new socialWindow
