@@ -1,4 +1,4 @@
-﻿import { join as pathJoin } from 'path';
+﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { shell, app, ipcMain, BrowserWindow, protocol, dialog, Menu, MenuItem, MenuItemConstructorOptions, clipboard } from 'electron'
 import { Swapper } from './resourceswapper';
@@ -78,32 +78,47 @@ ipcMain.on("settingsUI_updates_userPrefs", (event, data) => {
     //mainWindow.setFullScreen(userPrefs.fullscreen);
 })
 
+const $assets = pathResolve(__dirname, "..", "assets")
+const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), {encoding: "utf-8"})
+
 /** open a custom generic window with our menu, hidden */
-function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructorOptions | MenuItem)[], injectCopy: Boolean = true) {
+function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructorOptions | MenuItem)[], addAdditionalSubmenus: Boolean = true) {
     const genericWin = new BrowserWindow({
         autoHideMenuBar: true,
         show: false,
-        width: 1366,
-        height: 768,
+        width: 1600,
+        height: 900,
         center: true,
         webPreferences: {
             spellcheck: false
         }
     })
-    //add the 'copy current url' command to the menu if injectCopy is true
-    if (injectCopy && Array.isArray(providedMenuTemplate[0].submenu)) {
-        providedMenuTemplate[0].submenu.push({ 
-            label: "Copy current url to clipboard", 
-            accelerator: "F7", 
-            click: () => { clipboard.writeText(genericWin.webContents.getURL()); }
-        })
+    //add additional submenus to the generic win
+    if (addAdditionalSubmenus && Array.isArray(providedMenuTemplate[0].submenu)) {
+        providedMenuTemplate[0].submenu = [
+            ...providedMenuTemplate[0].submenu,
+            { label: "Copy current url to clipboard", accelerator: "F7", click: () => { clipboard.writeText(genericWin.webContents.getURL()); } },
+            { type: "separator"},
+            { label: "Go to previous page (Go Back)", registerAccelerator: false, click: () => { 
+                if (genericWin.webContents.canGoBack()) { genericWin.webContents.goBack() };
+            }},
+            { label: "Go to next page (Go Forward)", registerAccelerator: false, click: () => { 
+                if (genericWin.webContents.canGoForward()) { genericWin.webContents.goForward() };
+            }}
+        ]
     }
     const thisMenu = Menu.buildFromTemplate(providedMenuTemplate)
 
     genericWin.setMenu(thisMenu)
     genericWin.setMenuBarVisibility(false)
     genericWin.loadURL(url)
-    genericWin.once('ready-to-show', () => { genericWin.show(); });
+    genericWin.once('ready-to-show', () => { //if hideAds is enabled, hide them. then show the window
+        if (userPrefs.hideAds) { genericWin.webContents.insertCSS(hideAdsCSS) }
+        genericWin.show(); 
+    });
+    if (userPrefs.hideAds) { //re-inject hide ads even when going back and forth in history
+        genericWin.webContents.on("did-navigate", () => { genericWin.webContents.insertCSS(hideAdsCSS) })
+    }
     genericWin.once('close', () => { genericWin.destroy() })
 
     return genericWin
@@ -292,6 +307,8 @@ app.on('ready', function () {
     mainWindow.webContents.on('new-window', (event, url) => {
         console.log("url trying to open: ", url)
         const freeSpinHostnames = [ "youtube.com", "twitch.tv", "twitter.com", "reddit.com", "discord.com", "accounts.google.com" ]
+        //sanity check, if social window is destroyed but the reference still exists
+        if (typeof socialWindowReference !== "undefined" && socialWindowReference.isDestroyed()) { socialWindowReference = void 0 } 
 
         if (url.includes('https://krunker.io/social.html') && typeof socialWindowReference !== "undefined") {
             socialWindowReference.loadURL(url) //if a designated socialWindow exists already, just load the url there
@@ -317,7 +334,7 @@ app.on('ready', function () {
                 case 1: //open as a new window in client
                 default: {
                     event.preventDefault()
-                    const genericWin = customGenericWin(url, strippedMenuTemplate, true)
+                    const genericWin = customGenericWin(url, strippedMenuTemplate)
                     event.newGuest = genericWin
                     break;
                 }   
@@ -328,13 +345,13 @@ app.on('ready', function () {
             mainWindow.loadURL(url)
         } else { //for any other link, fall back to creating a custom window with strippedMenu. 
             event.preventDefault()
-            const genericWin = customGenericWin(url, strippedMenuTemplate, true)
+            const genericWin = customGenericWin(url, strippedMenuTemplate)
             event.newGuest = genericWin
             
             // if the window is social, create and assign a new socialWindow
             if (url.includes('https://krunker.io/social.html')) { 
                 socialWindowReference = genericWin
-                genericWin.once('close', () => { socialWindowReference = void 0 }) //remove reference once window is closed
+                genericWin.on('close', () => { socialWindowReference = void 0 }) //remove reference once window is closed
 
                 genericWin.webContents.on('will-navigate', (e, url) => { //new social pages will just replace the url in this one window
                     if (url.includes('https://krunker.io/social.html')) {
@@ -345,13 +362,12 @@ app.on('ready', function () {
                     }
                 })
             }
-            
         }
+        // console.log("url: ", url)
+        // console.log("typeof socialWindowReference", typeof socialWindowReference)
     })
 
-    // mainWindow.webContents.on("will-navigate", (event: Event, url: string) => {
-    //     console.log(url)
-    // })
+    // mainWindow.webContents.on("will-navigate", (event: Event, url: string) => { console.log(url) })
 
     // Resource Swapper, thanks idkr
     if (userPrefs.resourceSwapper) {

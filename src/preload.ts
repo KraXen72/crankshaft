@@ -32,7 +32,7 @@ let lastActiveTab = 0
 
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCSS = {
-    hideAds: `#aMerger,#aHolder,#adCon,#braveWarning,.endAHolder,.adsbygoogle,.adsbygoogle-noablate { display: none !important }`,
+    hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), {encoding: "utf-8"}),
     menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), {encoding: "utf-8"})
 }
 
