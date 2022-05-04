@@ -39,7 +39,7 @@ class Swapper {
 			readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
 				if (dirent.isDirectory()) { this.recursiveSwapNormal(win, `${prefix}/${dirent.name}`); } else {
 					const pathname = `${prefix}/${dirent.name}`;
-					this.urls.push(...(/^\/(models|textures|sound)($|\/)/.test(pathname)
+					this.urls.push(...(/^\/(models|textures|sound)($|\/)/u.test(pathname)
 						? [
 							`*://assets.krunker.io${pathname}`,
 							`*://assets.krunker.io${pathname}?*`

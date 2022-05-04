@@ -3,7 +3,7 @@ import { strippedConsole } from './preload';
 
 // /<reference path="global.d.ts" />
 
-const insertedCSS: insertedCSS = {};
+const insertedCSS: InsertedCSS = {};
 
 /**
  * inject css as a style tag
@@ -31,9 +31,9 @@ export function createElement(type: string, options: Object = {}) {
 
 		if (key === 'dataset') {
 			Object.entries(value).forEach(entry => {
-				const dataKey = entry[0];
-				const dataValue: any = entry[1];
-				element.dataset[dataKey] = dataValue;
+				const [dataKey, dataValue] = entry;
+
+				element.dataset[dataKey] = (dataValue as string);
 			});
 			return;
 		}
@@ -48,6 +48,7 @@ export function createElement(type: string, options: Object = {}) {
 		}
 		element.setAttribute(key, value);
 	});
+
 	return element;
 }
 

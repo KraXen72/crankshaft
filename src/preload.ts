@@ -25,8 +25,8 @@ const errAlert = (err: Error, name: string) => {
 export const su = {
 	userscriptsPath: '',
 	userscriptTrackerPath: '',
-	userscripts: <userscript[]>[],
-	userscriptTracker: <userscriptTracker>{}
+	userscripts: <Userscript[]>[],
+	userscriptTracker: <UserscriptTracker>{}
 };
 const $assets = pathResolve(__dirname, '..', 'assets');
 let lastActiveTab = 0;
@@ -39,18 +39,18 @@ export const styleSettingsCSS = {
 
 // Lets us exit the game lmao
 document.addEventListener('keydown', event => {
-	if (event.code == 'Escape') document.exitPointerLock();
+	if (event.code === 'Escape') document.exitPointerLock();
 });
 
 
 // Settings Stuff
-document.addEventListener('DOMContentLoaded', event => {
+document.addEventListener('DOMContentLoaded', () => {
 	// Side Menu Settings Thing
 	const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
-	settingsSideMenu.addEventListener('click', event => { UpdateSettingsTabs(lastActiveTab, true, true); });
+	settingsSideMenu.addEventListener('click', () => { UpdateSettingsTabs(lastActiveTab, true, true); });
 
 	// @ts-ignore cba to add it to the window interface
-	try { window.windows[0].toggleType({ checked: true }); } catch (e) { }
+	try { window.windows[0].toggleType({ checked: true }); } catch (err) {}
 });
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
@@ -64,7 +64,7 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 		.filter(entry => entry.name.endsWith('.js'))
 		.map(entry => ({ name: entry.name, fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
 
-	const tracker: userscriptTracker = {};
+	const tracker: UserscriptTracker = {};
 	su.userscripts.forEach(u => tracker[u.name] = false); // fill tracker with falses, so new userscripts get added disabled
 	Object.assign(tracker, JSON.parse(readFileSync(su.userscriptTrackerPath, { encoding: 'utf-8' }))); // read and assign the tracker.json
 	writeFileSync(su.userscriptTrackerPath, JSON.stringify(tracker, null, 2), { encoding: 'utf-8' }); // save with the new userscripts
@@ -177,19 +177,16 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 	advSliderElem.addEventListener('change', advSwitchCallback);
 
 	// modifications we do the the dom:
-
 	const tabs = [...document.getElementById('settingsTabLayout').children];
 	const clientTab = tabs[tabs.length - 1];
 	const selectedTab = document.querySelector(`#settingsTabLayout .${activeClass}`);
 
 	if (selectedTab !== clientTab) settHolder.classList.remove('Crankshaft-settings');
 
-
 	try { clientTab.removeEventListener('click', renderSettings); } catch (e) {}
 	clientTab.addEventListener('click', renderSettings);
 
 	if (selectedTab === clientTab && coldStart) renderSettings();
-
 
 	for (let i = 0; i < tabs.length; i++) {
 		const currentTabCallback = () => { UpdateSettingsTabs(i, hookSearch); };

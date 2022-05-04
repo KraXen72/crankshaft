@@ -5,21 +5,21 @@ import { styleSettingsCSS, su } from './preload';
 
 // /<reference path="global.d.ts" />
 
-let userPrefs: userPrefs;
+let userPrefs: UserPrefs;
 let userPrefsPath: string;
 
 document.addEventListener('DOMContentLoaded', () => {
 	ipcRenderer.send('settingsUI_requests_userPrefs');
 }, { once: true });
 
-ipcRenderer.on('main_sends_userPrefs', (event, recieved_userPrefsPath: string, recieved_userPrefs: userPrefs) => {
+ipcRenderer.on('main_sends_userPrefs', (event, recieved_userPrefsPath: string, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
 	userPrefsPath = recieved_userPrefsPath;
 	userPrefs = recieved_userPrefs;
 });
 
 /** * joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
-function transformMarrySettings(data: userPrefs, desc: SettingsDesc, callback: callbacks): renderReadySetting[] {
+function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: Callbacks): RenderReadySetting[] {
 	const renderReadySettings = Object.keys(desc)
 		.map(key => ({ key, ...desc[key] })) // embeds key into the original object: hideAds: {title: 'Hide Ads', ...} => {key: 'hideAds', title: 'Hide Ads', ...}
 		.map(obj => ({ callback, value: data[obj.key], ...obj })); // adds value (from the data object) and callback ('normal' by default)
@@ -85,7 +85,7 @@ const safetyDesc = [
 ];
 
 /** index-based category names. n = name, c = class */
-const categoryNames: categoryName[] = [
+const categoryNames: CategoryName[] = [
 	{ n: 'Client Settings', c: 'mainSettings' },
 	{ n: 'Visual Settings', c: 'styleSettings' },
 	{ n: 'Advanced Settings', c: 'advSettings' }
@@ -107,7 +107,7 @@ class SettingElem {
 
 
 	// s-update is the class for element to watch
-	props: renderReadySetting;
+	props: RenderReadySetting;
 
 	type: 'bool' | 'sel' | 'heading' | 'text' | 'num';
 
@@ -117,7 +117,7 @@ class SettingElem {
 
 	updateKey: 'value' | 'checked' | '';
 
-	constructor(props: renderReadySetting) {
+	constructor(props: RenderReadySetting) {
 		/** @type {Object} save the props from constructor to this class (instance) */
 		this.props = props;
 
@@ -310,7 +310,7 @@ export function renderSettings() {
 
 	const csSettings = document.querySelector('.Crankshaft-settings');
 
-	const settings: renderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal');
+	const settings: RenderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal');
 	for (let i = 0; i < settings.length; i++) {
 		const setObj = settings[i];
 		const setElem = new SettingElem(setObj);
@@ -344,9 +344,9 @@ export function renderSettings() {
 
 		// <div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
 
-		const userscriptSettings: renderReadySetting[] = su.userscripts
+		const userscriptSettings: RenderReadySetting[] = su.userscripts
 			.map(userscript => {
-				const obj: renderReadySetting = {
+				const obj: RenderReadySetting = {
 					key: userscript.name.slice(0, -3), // remove .js
 					title: userscript.name,
 					value: su.userscriptTracker[userscript.name],
