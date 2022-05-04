@@ -1,16 +1,18 @@
-import { webFrame } from 'electron'
+import { webFrame } from 'electron';
 import { strippedConsole } from './preload';
-///<reference path="global.d.ts" />
 
-const insertedCSS: insertedCSS = {}
+// /<reference path="global.d.ts" />
+
+const insertedCSS: insertedCSS = {};
 
 /**
  * inject css as a style tag
  */
-export const injectSettingsCSS = (css: string, identifier = "settings") => {
-    webFrame.insertCSS(css)
-}
-//create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js
+export const injectSettingsCSS = (css: string, identifier = 'settings') => {
+	webFrame.insertCSS(css);
+};
+
+// create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js
 /**
  * create a dom element given an object of properties
  * @param type element type, e.g. "div"
@@ -18,68 +20,62 @@ export const injectSettingsCSS = (css: string, identifier = "settings") => {
  * @returns element
  */
 export function createElement(type: string, options: Object = {}) {
-    const element = document.createElement(type)
-    
-    Object.entries(options).forEach(([key, value]) => {
-        if (key === "class") {
-            if (Array.isArray(value)) {
-                value.forEach((c: string) => {element.classList.add(c)})
-            } else { element.classList.add(value) }
-            return
-        }
+	const element = document.createElement(type);
 
-        if (key === "dataset") {
-            Object.entries(value).forEach((entry) => {
-                const dataKey = entry[0]
-                const dataValue: any = entry[1]
-                element.dataset[dataKey] = dataValue
-            })
-            return
-        }
+	Object.entries(options).forEach(([key, value]) => {
+		if (key === 'class') {
+			if (Array.isArray(value)) value.forEach((c: string) => { element.classList.add(c); });
+			else element.classList.add(value);
+			return;
+		}
 
-        if (key === "text") {
-            element.textContent = value
-            return
-        }
-        if (key === "innerHTML") {
-            element.innerHTML = value
-            return
-        }
-        element.setAttribute(key, value)
-    })
-    return element
+		if (key === 'dataset') {
+			Object.entries(value).forEach(entry => {
+				const dataKey = entry[0];
+				const dataValue: any = entry[1];
+				element.dataset[dataKey] = dataValue;
+			});
+			return;
+		}
+
+		if (key === 'text') {
+			element.textContent = value;
+			return;
+		}
+		if (key === 'innerHTML') {
+			element.innerHTML = value;
+			return;
+		}
+		element.setAttribute(key, value);
+	});
+	return element;
 }
 
 /**
  * inject or uninject css to hide ads
  * @param value 'toggle'|Boolean
  */
-export function toggleSettingCSS(css: string, identifier: string, value: ('toggle' | Boolean) = 'toggle') {
-    function inject() {
-        insertedCSS[identifier] = webFrame.insertCSS(css)
-    }
+export function toggleSettingCSS(css: string, identifier: string, value: ('toggle' | boolean) = 'toggle') {
+	function inject() {
+		insertedCSS[identifier] = webFrame.insertCSS(css);
+	}
 
-    function uninject() {
-        try {
-            webFrame.removeInsertedCSS(insertedCSS[identifier])
-            delete insertedCSS[identifier]
-        } catch (error) {
-            strippedConsole.error("couldn't uninject css: ", error)
-        }
-    }
+	function uninject() {
+		try {
+			webFrame.removeInsertedCSS(insertedCSS[identifier]);
+			delete insertedCSS[identifier];
+		} catch (error) {
+			strippedConsole.error("couldn't uninject css: ", error);
+		}
+	}
 
-    if (value === 'toggle') {
-        //normal toggle
-        if (!(identifier in insertedCSS)) {
-            inject()
-        } else {
-            uninject()
-        }
-    } else {
-        if (!(identifier in insertedCSS) && value === true) {
-            inject()
-        } else if (identifier in insertedCSS && value === false) {
-           uninject()
-        }
-    }
+	if (value === 'toggle') {
+		// normal toggle
+		if (!(identifier in insertedCSS)) inject();
+		else uninject();
+	} else if (!(identifier in insertedCSS) && value === true) {
+		inject();
+	} else if (identifier in insertedCSS && value === false) {
+		uninject();
+	}
 }
