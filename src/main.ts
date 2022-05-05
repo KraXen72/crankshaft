@@ -310,6 +310,7 @@ app.on('ready', () => {
 	];
 	const csMenu = Menu.buildFromTemplate([gameSubmenu, ...csMenuTemplate]);
 	const strippedMenuTemplate = [genericMainSubmenu, ...csMenuTemplate];
+	Menu.setApplicationMenu(csMenu) //macos fix
 
 	mainWindow.setMenu(csMenu);
 	mainWindow.setAutoHideMenuBar(true);
