@@ -1,7 +1,6 @@
 dist/*
 app/*
 node_modules/*
-.vscode/*
 
 GatoClientLiteRewrite.zip
 CrankshaftRewrite.zip

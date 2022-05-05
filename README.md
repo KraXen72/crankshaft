@@ -60,6 +60,7 @@ standard hotkeys like zooming and devtools also included.
 - running from source: `npm run dev`/`npm run start`(slower), building: `npm run dist`
 - `npm run dev` is faster but test it also once with `npm run start` because `dev` script is experimental
 - please report any bugs/feature requests in the Issues.   
+- make sure to run the code through the configured eslint before contributing. (vs code will enable it if you have the extension)
 - feel free to submit pull requests, they will be merged as long as they support the client ideology. 
   
 ## where to download?
