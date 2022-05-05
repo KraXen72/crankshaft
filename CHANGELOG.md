@@ -1,3 +1,10 @@
+### [1.5.1](https://github.com/KraXen72/crankshaft/compare/1.5.0...1.5.1) (2022-05-05)
+
+
+### Bug Fixes
+
+* MacOS shortcuts ([44fb8a8](https://github.com/KraXen72/crankshaft/commit/44fb8a8201289339e5956c758910f949c9f7a4bd))
+
 ## [1.5.0](https://github.com/KraXen72/crankshaft/compare/1.4.0...1.5.0) (2022-05-03)
 
 
@@ -8,6 +15,7 @@
 * menu rewrite, stuff is now grouped ([0f6615c](https://github.com/KraXen72/crankshaft/commit/0f6615cb399b56c95a35c7ae9fe14fde02a86108))
 * new logo for the client ([4d37282](https://github.com/KraXen72/crankshaft/commit/4d37282a1e3bbaf6e59eba82d40006fe00c9f875))
 * remove all * imports throught the app ([02508a6](https://github.com/KraXen72/crankshaft/commit/02508a65b468f60a512f5eacf42e701de06c7f88))
+* remove menuTimer credits ([4d16b94](https://github.com/KraXen72/crankshaft/commit/4d16b9444dc61b81d153d4afdc1368e8742f8910))
 * slight tweak to icon 2: electric bogaloo ([feb4b8c](https://github.com/KraXen72/crankshaft/commit/feb4b8ceb7fa28c29602b2c060052205d7fa39c1))
 * source cleanup (part 1),remove useless stuff ([f5f6a31](https://github.com/KraXen72/crankshaft/commit/f5f6a319d505b64e9c173f9febb547959bdf9be2))
 
