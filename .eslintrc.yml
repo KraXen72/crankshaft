@@ -29,10 +29,12 @@ rules:
   '@typescript-eslint/ban-ts-comment': 0
   '@typescript-eslint/no-throw-literal': 0
   '@typescript-eslint/semi': 0
+  "prefer-destructuring": ["error", {"object": true, "array": false}]
   no-trailing-spaces: [error, { ignoreComments: true }]
   prefer-named-capture-group: 0
   linebreak-style: 0
   sort-keys: 0
+  sort-imports: 0
   no-console: 0 
   no-alert: 0
   init-declarations: 0
@@ -48,7 +50,6 @@ rules:
   '@typescript-eslint/quotes': 1
   '@typescript-eslint/no-unused-vars': 1
   '@typescript-eslint/ban-types': 1
-  prefer-destructuring: 1
 
 env:
   browser: true

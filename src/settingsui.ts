@@ -266,7 +266,7 @@ const skeleton = {
         </div>`,
 
 	/** make a settings category header element */
-	catHedElem: (title: string) => createElement("div", {
+	catHedElem: (title: string) => createElement('div', {
 		class: 'setHed Crankshaft-setHed'.split(' '),
 		innerHTML: `<span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}`
 	}),

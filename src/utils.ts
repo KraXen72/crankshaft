@@ -18,6 +18,7 @@ export const injectSettingsCSS = (css: string, identifier = 'settings') => {
  * @param options options for the element. like class, id, etc
  * @returns element
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function createElement(type: string, options: Object = {}) {
 	const element = document.createElement(type);
 
