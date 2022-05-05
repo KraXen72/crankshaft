@@ -25,11 +25,30 @@ rules:
   '@typescript-eslint/indent': [error, tab]
   '@typescript-eslint/comma-dangle': [error, never]
   '@typescript-eslint/space-before-function-paren': [error, never]
+  '@typescript-eslint/no-use-before-define': 0
+  '@typescript-eslint/ban-ts-comment': 0
+  '@typescript-eslint/no-throw-literal': 0
+  '@typescript-eslint/semi': 0
   no-trailing-spaces: [error, { ignoreComments: true }]
   prefer-named-capture-group: 0
   linebreak-style: 0
   sort-keys: 0
-  no-console: 0
+  no-console: 0 
+  no-alert: 0
+  init-declarations: 0
+  complexity: 0
+  no-inline-comments: 0
+  line-comment-position: 0
+  max-len: ["error", { "code": 220, "tabWidth": 4 }]
+  spaced-comment: 0
+  id-length: 0
+  no-empty: 0
+  multiline-comment-style: 0
+  no-warning-comments: 0
+  '@typescript-eslint/quotes': 1
+  '@typescript-eslint/no-unused-vars': 1
+  '@typescript-eslint/ban-types': 1
+  prefer-destructuring: 1
 
 env:
   browser: true

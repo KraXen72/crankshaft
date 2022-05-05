@@ -11,9 +11,9 @@ window.OffCliV = true;
 
 // save some console methods from krunker
 export const strippedConsole = {
-	error: console.error.bind(console) as Function,
-	log: console.log.bind(console) as Function,
-	warn: console.warn.bind(console) as Function
+	error: console.error.bind(console),
+	log: console.log.bind(console),
+	warn: console.warn.bind(console)
 };
 
 /** simple error message for usercripts. can be called from the userscript itself */
@@ -47,7 +47,7 @@ document.addEventListener('keydown', event => {
 document.addEventListener('DOMContentLoaded', () => {
 	// Side Menu Settings Thing
 	const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
-	settingsSideMenu.addEventListener('click', () => { UpdateSettingsTabs(lastActiveTab, true, true); });
+	settingsSideMenu.addEventListener('click', () => { updateSettingsTabs(lastActiveTab, true, true); });
 
 	// @ts-ignore cba to add it to the window interface
 	try { window.windows[0].toggleType({ checked: true }); } catch (err) {}
@@ -65,7 +65,7 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 		.map(entry => ({ name: entry.name, fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
 
 	const tracker: UserscriptTracker = {};
-	su.userscripts.forEach(u => tracker[u.name] = false); // fill tracker with falses, so new userscripts get added disabled
+	su.userscripts.forEach(u => { tracker[u.name] = false }); // fill tracker with falses, so new userscripts get added disabled
 	Object.assign(tracker, JSON.parse(readFileSync(su.userscriptTrackerPath, { encoding: 'utf-8' }))); // read and assign the tracker.json
 	writeFileSync(su.userscriptTrackerPath, JSON.stringify(tracker, null, 2), { encoding: 'utf-8' }); // save with the new userscripts
 
@@ -83,6 +83,7 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 				hadToTransform = false;
 			} else {
 				try {
+					// eslint-disable-next-line
 					content = require('esbuild').transformSync(rawContent, { minify: true, banner: '"use strict"' });
 				} catch (error) {
 					errAlert(error, u.name);
@@ -93,9 +94,11 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 			if (content.warnings.length > 0) strippedConsole.warn(`'${u.name}' compiled with warnings: `, content.warnings);
 			u.content = content.code;
 
+			// eslint-disable-next-line no-new-wrappers
 			const code = new String(content.code);
 			try {
 				// @ts-ignore
+				// eslint-disable-next-line @typescript-eslint/no-implied-eval
 				(new Function(code)());
 			} catch (error) {
 				errAlert(error, u.name);
@@ -144,7 +147,7 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, clientSplash, us
 /**
  * make sure our setting tab is always called as it should be and has the proper onclick
  */
-function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
+function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
 	// strippedConsole.log("update settings tabs")
 	const activeClass = 'tabANew';
 	const settHolder = document.getElementById('settHolder');
@@ -159,8 +162,9 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 		 * only hook search ONCE to ensure the client settings still work while searching. 
 		 * it will not yield the client settings tho, that's pain to implement
 		 */
+		// eslint-disable-next-line no-param-reassign
 		hookSearch = false;
-		const settSearchCallback = () => { UpdateSettingsTabs(0, hookSearch); };
+		const settSearchCallback = () => { updateSettingsTabs(0, hookSearch); };
 		try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) {}
 		document.getElementById('settSearch').addEventListener('input', settSearchCallback);
 	}
@@ -170,7 +174,7 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 		advSliderElem.setAttribute('disabled', 'disabled');
 		setTimeout(() => {
 			advSliderElem.removeAttribute('disabled');
-			UpdateSettingsTabs(0, true);
+			updateSettingsTabs(0, true);
 		}, 700);
 	};
 	try { advSliderElem.removeEventListener('change', advSwitchCallback); } catch (e) { }
@@ -189,11 +193,11 @@ function UpdateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 	if (selectedTab === clientTab && coldStart) renderSettings();
 
 	for (let i = 0; i < tabs.length; i++) {
-		const currentTabCallback = () => { UpdateSettingsTabs(i, hookSearch); };
+		const currentTabCallback = () => { updateSettingsTabs(i, hookSearch); };
 		try { tabs[i].removeEventListener('click', currentTabCallback); } catch (e) { }
 		tabs[i].addEventListener('click', currentTabCallback);
 
-		if (i == activeTab) { // if the current selected tab is our settings, just add active class
+		if (i === activeTab) { // if the current selected tab is our settings, just add active class
 			lastActiveTab = i;
 			tabs[i].classList.add(activeClass);
 		}

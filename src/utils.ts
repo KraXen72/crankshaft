@@ -5,9 +5,8 @@ import { strippedConsole } from './preload';
 
 const insertedCSS: InsertedCSS = {};
 
-/**
- * inject css as a style tag
- */
+/** inject css as a style tag */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const injectSettingsCSS = (css: string, identifier = 'settings') => {
 	webFrame.insertCSS(css);
 };

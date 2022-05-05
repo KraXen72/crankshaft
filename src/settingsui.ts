@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, toggleSettingCSS } from './utils';
@@ -8,9 +9,7 @@ import { styleSettingsCSS, su } from './preload';
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
 
-document.addEventListener('DOMContentLoaded', () => {
-	ipcRenderer.send('settingsUI_requests_userPrefs');
-}, { once: true });
+document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); }, { once: true });
 
 ipcRenderer.on('main_sends_userPrefs', (event, recieved_userPrefsPath: string, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
@@ -27,20 +26,8 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 	return renderReadySettings;
 }
 
-/*
- * const userscriptDisclaimer = [
- *     "Enable userscript support. place .js files in Documents/Crankshaft/scripts",
- *     "Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.",
- *     "Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED",
- *     "Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED
- * ].join("\n")
- */
-
-/*
- * this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
- * they are modified & extended to fit krunker
- */
-
+//this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
+//they are modified & extended to fit krunker
 /*
  * note by KraXen: this might look scary, but it's just extra info needed to make a nice gui
  *  each setting has these things: title, type: {'bool' | 'sel' | 'heading' | 'text' | 'num'}, desc and safety(0-4)
@@ -48,8 +35,7 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
  *  cat (category) is optional, omitting it will put it in the first (0th) category
  *  desc (description) is optional, omitting it or leaving it "" will not render any description
  *  simplest way to create a new setting is to add setting: {} as SettingsDescItem and you will get autocomplete for all needed stuff
- */
-
+*/
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
 	fullscreen: { title: 'Start in Fullscreen', type: 'bool', desc: '', safety: 0, cat: 0 },
@@ -61,11 +47,6 @@ const settingsDesc: SettingsDesc = {
 	hideAds: { title: 'Hide Ads', type: 'bool', safety: 0, cat: 1, instant: true },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 2 },
-
-	/*
-	 * skyColor: {title: "Custom Sky Color", type: "bool", desc: "override the sky color", safety: 2},
-	 * skyColorValue: {title: "Custom Sky Color: value", type: "text", desc: "must be a hex code like #ff0000", placeholder: "#ff0000", safety: 2},
-	 */
 	safeFlags_removeUselessFeatures: { title: 'Remove useless features', type: 'bool', desc: 'Adds a lot of flags that disable useless features.', safety: 1, cat: 2 },
 	safeFlags_gpuRasterizing: { title: 'GPU rasterization', type: 'bool', desc: 'Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable', safety: 2, cat: 2 },
 	safeFlags_helpfulFlags: { title: '(Potentially) useful flags', type: 'bool', desc: 'Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.', safety: 3, cat: 2 },
@@ -100,9 +81,7 @@ function saveUserscriptTracker() {
 	writeFileSync(su.userscriptTrackerPath, JSON.stringify(su.userscriptTracker, null, 2), { encoding: 'utf-8' });
 }
 
-/**
- * creates a new Setting element
- */
+/** * creates a new Setting element */
 class SettingElem {
 
 
@@ -201,6 +180,7 @@ class SettingElem {
 	 * update the settings when you change something in the gui
 	 * @param {{elem: Element, callback: 'normal'|Function}} elemAndCb
 	 */
+	// eslint-disable-next-line @typescript-eslint/ban-types
 	update({ elem, callback }: { elem: Element; callback: 'normal' | 'userscript' | Function; }) {
 		if (this.updateKey === '') throw 'Invalid update key';
 		const target = elem.getElementsByClassName('s-update')[0];
@@ -234,6 +214,7 @@ class SettingElem {
 			su.userscriptTracker[this.props.title] = value;
 			saveUserscriptTracker();
 		} else {
+			// eslint-disable-next-line callback-return
 			callback();
 		}
 	}
@@ -266,10 +247,8 @@ class SettingElem {
 
 }
 
-/*
- * DONE someday rewrite this with createElement or svelte, parsing innerHTML is slow
- * i am insane for making this
- */
+//DONE someday rewrite this with createElement or svelte, parsing innerHTML is slow
+//i am insane for making this
 
 /** a settings generation helper. has some skeleton elements and methods that make them. purpose: prevent's code duplication */
 const skeleton = {
@@ -287,7 +266,7 @@ const skeleton = {
         </div>`,
 
 	/** make a settings category header element */
-	catHedElem: (title: string) => createElement('div', {
+	catHedElem: (title: string) => createElement("div", {
 		class: 'setHed Crankshaft-setHed'.split(' '),
 		innerHTML: `<span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}`
 	}),

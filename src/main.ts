@@ -7,14 +7,11 @@ import { Swapper } from './resourceswapper';
 
 // Credits / mentions (if not mentioned on github)
 
-/*
- * Gato/creepycats - Gatoclient
- * LukeTheDuke - Gatoclient-lite
- * Mixaz and IDKR team - https://github.com/idkr-client/idkr
- * Giant - JANREX client
- * Tae - logo for the client <3
- */
-
+// Gato/creepycats - Gatoclient
+// LukeTheDuke - Gatoclient-lite
+// Mixaz and IDKR team - https://github.com/idkr-client/idkr
+// Giant - JANREX client
+// Tae - logo for the client <3
 
 const docsPath = app.getPath('documents');
 const swapperPath = pathJoin(docsPath, 'Crankshaft/swapper');
@@ -64,12 +61,12 @@ let socialWindowReference: BrowserWindow;
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 // send settings to preload
-ipcMain.on('settingsUI_requests_userPrefs', event => {
+ipcMain.on('settingsUI_requests_userPrefs', () => {
 	mainWindow.webContents.send('main_sends_userPrefs', settingsPath, userPrefs);
 });
 
 // send usercript path to preload
-ipcMain.on('preload_requests_userscriptPath', event => {
+ipcMain.on('preload_requests_userscriptPath', () => {
 	mainWindow.webContents.send('main_sends_userscriptPath', userscriptsPath, __dirname);
 });
 
@@ -225,7 +222,7 @@ if (userPrefs.resourceSwapper) {
 app.on('ready', () => {
 	app.setAppUserModelId(process.execPath);
 
-	if (userPrefs.resourceSwapper) protocol.registerFileProtocol('krunker-resource-swapper', (request, callback) => callback(decodeURI(request.url.replace(/krunker-resource-swapper:/, ''))));
+	if (userPrefs.resourceSwapper) protocol.registerFileProtocol('krunker-resource-swapper', (request, callback) => callback(decodeURI(request.url.replace(/krunker-resource-swapper:/u, ''))));
 
 
 	mainWindow = new BrowserWindow({
@@ -323,6 +320,7 @@ app.on('ready', () => {
 		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com'];
 
 		// sanity check, if social window is destroyed but the reference still exists
+		// eslint-disable-next-line no-void
 		if (typeof socialWindowReference !== 'undefined' && socialWindowReference.isDestroyed()) socialWindowReference = void 0;
 
 		if (url.includes('https://krunker.io/social.html') && typeof socialWindowReference !== 'undefined') {
@@ -367,14 +365,15 @@ app.on('ready', () => {
 			// if the window is social, create and assign a new socialWindow
 			if (url.includes('https://krunker.io/social.html')) {
 				socialWindowReference = genericWin;
+				// eslint-disable-next-line no-void
 				genericWin.on('close', () => { socialWindowReference = void 0; }); // remove reference once window is closed
 
-				genericWin.webContents.on('will-navigate', (e, url) => { // new social pages will just replace the url in this one window
-					if (url.includes('https://krunker.io/social.html')) {
-						genericWin.loadURL(url);
+				genericWin.webContents.on('will-navigate', (evt, willnavUrl) => { // new social pages will just replace the url in this one window
+					if (willnavUrl.includes('https://krunker.io/social.html')) {
+						genericWin.loadURL(willnavUrl);
 					} else {
-						e.preventDefault();
-						shell.openExternal(url);
+						evt.preventDefault();
+						shell.openExternal(willnavUrl);
 					}
 				});
 			}
