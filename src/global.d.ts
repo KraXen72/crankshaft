@@ -1,68 +1,80 @@
 
-type userPrefs = {
-    [preference: string]: Boolean | string
+type UserPrefs = {
+	[preference: string]: boolean | string;
+};
+
+interface UserscriptTracker {
+	[script: string]: boolean;
 }
 
-interface userscriptTracker {
-    [script: string]: Boolean
+interface InsertedCSS {
+	[identifier: string]: string;
 }
 
-interface insertedCSS {
-    [identifier: string]: string
-}
-
-interface userscript {
-    name: string,
-    fullpath: string,
-    rawContent?: string,
-    content?: string
+interface Userscript {
+	name: string;
+	fullpath: string;
+	rawContent?: string;
+	content?: string;
 }
 
 interface Window {
-    errAlert: Function,
-    OffCliV: Boolean
+	errAlert: Function;
+	OffCliV: boolean;
 }
 
-// these setting type defs do look complicated but they just ensure a noob can easily create a new setting.
-// basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see
-type callbacks = "normal" | "userscript" | Function
-type validTypes = "bool" | "heading" | "text" | "sel" | "num"
+/*
+ * these setting type defs do look complicated but they just ensure a noob can easily create a new setting.
+ * basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see
+ */
+type Callbacks = 'normal' | 'userscript' | Function;
+type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'num';
 
 interface SettingItemGeneric {
-    title: string,
-    desc?: string,
-    safety: number
-    type: validTypes,
-    cat?: number //category
-    instant?: Boolean //true means setting should show autorenew icon
-}
-interface SelectSettingDescItem extends SettingItemGeneric { type: 'sel', opts?: string[] } //sel has to have an opts with a string array
-interface NumSettingItem extends SettingItemGeneric { type: 'num', min?: number, max?: number } //num has to have a min and max
+	title: string;
+	desc?: string;
+	safety: number;
+	type: ValidTypes;
 
-type SettingsDescItem = ( SettingItemGeneric | NumSettingItem | SelectSettingDescItem )
+	// category
+	cat?: number;
+
+	// true means setting should show autorenew icon
+	instant?: boolean;
+}
+
+// sel has to have an opts with a string array
+interface SelectSettingDescItem extends SettingItemGeneric { type: 'sel', opts?: string[] }
+
+// num has to have a min and max
+interface NumSettingItem extends SettingItemGeneric { type: 'num', min?: number, max?: number }
+
+type SettingsDescItem = (SettingItemGeneric | NumSettingItem | SelectSettingDescItem);
 
 /** array of SettingDescItem objects */
 interface SettingsDesc {
-    [settingKey: string]: SettingsDescItem
+	[settingKey: string]: SettingsDescItem;
 }
 
 /** a render-ready setting. contains a SettingsDescItem + value, callback and key */
-interface renderReadySetting extends SettingItemGeneric {
-    type: validTypes,
-    // for sel
-    opts?: string[],
-    //for num
-    min?: number,
-    max?: number,
+interface RenderReadySetting extends SettingItemGeneric {
+	type: ValidTypes;
 
-    //the data
-    key: string,
-    callback: 'normal' | 'userscript' | Function,
-    value: any
+	// for sel
+	opts?: string[];
+
+	// for num
+	min?: number;
+	max?: number;
+
+	// the data
+	key: string;
+	callback: 'normal' | 'userscript' | Function;
+	value: any;
 }
 
-interface categoryName {
-    n: string,
-    c: string,
-    note?: string
+interface CategoryName {
+	n: string;
+	c: string;
+	note?: string;
 }
