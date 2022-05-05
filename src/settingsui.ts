@@ -285,7 +285,7 @@ export function renderSettings() {
 
 	settHolder.classList.add('Crankshaft-settings');
 	settHolder.appendChild(skeleton.catHedElem(categoryNames[0].n));
-	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].c, skeleton.notice('Most settings need a client restart to work. You can use F12.')));
+	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].c, skeleton.notice('These settings need a client restart to work.')));
 
 	const csSettings = document.querySelector('.Crankshaft-settings');
 
