@@ -4,6 +4,7 @@
 ### Bug Fixes
 
 * MacOS shortcuts ([44fb8a8](https://github.com/KraXen72/crankshaft/commit/44fb8a8201289339e5956c758910f949c9f7a4bd))
+* mention of F12 in settings ([916f102](https://github.com/KraXen72/crankshaft/commit/916f102e3064777e42a5e945cd841b84f53fdcde))
 
 ## [1.5.0](https://github.com/KraXen72/crankshaft/compare/1.4.0...1.5.0) (2022-05-03)
 
