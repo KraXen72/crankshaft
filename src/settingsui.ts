@@ -4,10 +4,12 @@ import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, toggleSettingCSS } from './utils';
 import { styleSettingsCSS, su } from './preload';
 
-// /<reference path="global.d.ts" />
+/// <reference path="global.d.ts" />
 
+/* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
+/* eslint-disable init-declarations */
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); }, { once: true });
 
@@ -26,16 +28,21 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 	return renderReadySettings;
 }
 
-//this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
-//they are modified & extended to fit krunker
 /*
- * note by KraXen: this might look scary, but it's just extra info needed to make a nice gui
+ * this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
+ * they are modified & extended to fit krunker
+ */
+
+// note by KraXen: this might look scary, but it's just extra info needed to make a nice gui
+/*
  *  each setting has these things: title, type: {'bool' | 'sel' | 'heading' | 'text' | 'num'}, desc and safety(0-4)
- *  some have some extra stuff, like selects have opts for options. you should get typescript autocomplete for those telling you what extra stuff is required.
+ *  some have some extra stuff, like selects have opts for options. 
+ * 	you should get typescript autocomplete for those telling you what extra stuff is required.
+ * 
  *  cat (category) is optional, omitting it will put it in the first (0th) category
  *  desc (description) is optional, omitting it or leaving it "" will not render any description
  *  simplest way to create a new setting is to add setting: {} as SettingsDescItem and you will get autocomplete for all needed stuff
-*/
+ */
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
 	fullscreen: { title: 'Start in Fullscreen', type: 'bool', desc: '', safety: 0, cat: 0 },
@@ -67,9 +74,9 @@ const safetyDesc = [
 
 /** index-based category names. n = name, c = class */
 const categoryNames: CategoryName[] = [
-	{ n: 'Client Settings', c: 'mainSettings' },
-	{ n: 'Visual Settings', c: 'styleSettings' },
-	{ n: 'Advanced Settings', c: 'advSettings' }
+	{ name: 'Client Settings', cat: 'mainSettings' },
+	{ name: 'Visual Settings', cat: 'styleSettings' },
+	{ name: 'Advanced Settings', cat: 'advSettings' }
 ];
 
 function saveSettings() {
@@ -143,7 +150,7 @@ class SettingElem {
                     <select class="s-update inputGrey2">${
 
 	/* create option tags*/
-	props.opts.map(o => `<option value ="${o}">${o}</option>`).join('')
+	props.opts.map(opt => `<option value ="${opt}">${opt}</option>`).join('')
 }</select>`;
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
@@ -229,28 +236,29 @@ class SettingElem {
 		 * i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
 		 * w stands for wrapper
 		 */
-		const w = createElement('div', {
+		const wrapper = createElement('div', {
 			class: ['setting', 'settName', `safety-${this.props.safety}`, this.props.type],
 			id: `settingElem-${this.props.key}`,
 			innerHTML: this.HTML
 		}); // w stands for wrapper
 
-		if (this.type === 'sel') w.querySelector('select').value = this.props.value; // select value applying is fucky so like fix it i guess
+		if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value; // select value applying is fucky so like fix it i guess
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal';
 
 		// @ts-ignore
-		w[this.updateMethod] = () => {
-			this.update({ elem: w, callback: this.props.callback });
+		wrapper[this.updateMethod] = () => {
+			this.update({ elem: wrapper, callback: this.props.callback });
 		};
-		return w; // return the element
+		return wrapper; // return the element
 	}
 
 }
 
-//DONE someday rewrite this with createElement or svelte, parsing innerHTML is slow
-//i am insane for making this
+// i am insane for making this
 
-/** a settings generation helper. has some skeleton elements and methods that make them. purpose: prevent's code duplication */
+/** 
+ * a settings generation helper. has some skeleton elements and methods that make them. purpose: prevent's code duplication 
+ */
 const skeleton = {
 	/** make a setting cateogry */
 	category: (title: string, innerHTML: string, elemClass = 'mainSettings') => `
@@ -284,8 +292,8 @@ export function renderSettings() {
 	settHolder.textContent = '';
 
 	settHolder.classList.add('Crankshaft-settings');
-	settHolder.appendChild(skeleton.catHedElem(categoryNames[0].n));
-	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].c, skeleton.notice('These settings need a client restart to work.')));
+	settHolder.appendChild(skeleton.catHedElem(categoryNames[0].name));
+	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].cat, skeleton.notice('These settings need a client restart to work.')));
 
 	const csSettings = document.querySelector('.Crankshaft-settings');
 
@@ -299,13 +307,13 @@ export function renderSettings() {
 			const cat = categoryNames[setObj.cat];
 
 			// create the given category if it doesen't exist
-			if (document.querySelector(`.Crankshaft-settings .${cat.c}`) === null) {
-				csSettings.appendChild(skeleton.catHedElem(cat.n));
-				csSettings.appendChild(skeleton.catBodElem(cat.c, ('note' in cat) ? skeleton.notice(cat.note) : ''));
+			if (document.querySelector(`.Crankshaft-settings .${cat.cat}`) === null) {
+				csSettings.appendChild(skeleton.catHedElem(cat.name));
+				csSettings.appendChild(skeleton.catBodElem(cat.cat, ('note' in cat) ? skeleton.notice(cat.note) : ''));
 			}
 
 			// add to that category
-			document.querySelector(`.Crankshaft-settings .${cat.c}`).appendChild(settElemMade);
+			document.querySelector(`.Crankshaft-settings .${cat.cat}`).appendChild(settElemMade);
 		} else {
 			// add to default category
 			document.querySelector('.Crankshaft-settings .setBodH.mainSettings').appendChild(settElemMade);

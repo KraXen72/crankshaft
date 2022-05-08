@@ -4,7 +4,7 @@ import { ipcRenderer } from 'electron';
 import { createElement, injectSettingsCSS, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
 
-// /<reference path="global.d.ts" />
+/// <reference path="global.d.ts" />
 
 // get rid of client unsupported message
 window.OffCliV = true;
