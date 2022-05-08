@@ -22,34 +22,43 @@ parserOptions:
   sourceType: module
 
 rules:
+  # typescript
   '@typescript-eslint/indent': [error, tab]
   '@typescript-eslint/comma-dangle': [error, never]
   '@typescript-eslint/space-before-function-paren': [error, never]
-  '@typescript-eslint/no-use-before-define': 0
-  '@typescript-eslint/ban-ts-comment': 0
-  '@typescript-eslint/no-throw-literal': 0
-  '@typescript-eslint/semi': 0
+  '@typescript-eslint/no-use-before-define': 0 # triggers mentioning stuff in callback functions
+  '@typescript-eslint/ban-ts-comment': 0 # i already use @ts-ignore sparingly
+  '@typescript-eslint/no-throw-literal': 0 # some errors are fine as a string
+  '@typescript-eslint/semi': 1
+  '@typescript-eslint/quotes': 1
+  '@typescript-eslint/no-unused-vars': 1
+  '@typescript-eslint/ban-types': 0
+
+  # general
   "prefer-destructuring": ["error", {"object": true, "array": false}]
   no-trailing-spaces: [error, { ignoreComments: true }]
   prefer-named-capture-group: 0
   linebreak-style: 0
+  no-console: 0 
+  no-empty: ["error", { "allowEmptyCatch": true }]
+  init-declarations: ["warn", "always"]
+  complexity: 0
+
+  # COMMENTS
+  # i tried configuring these so it's either inline or above, not both, but couldn't figure it out
+  # the current plan is just manually reviewing prs (which i'd do anyway) and if it's over commented i'd request changesS
+  line-comment-position: 0
+  no-inline-comments: 0
+  multiline-comment-style: ["error", "starred-block"]
+  no-warning-comments: 0 # use TODO and FIXME
+  spaced-comment: 1
+
+  # VISUAL
+  max-len: ["error", { "code": 220, "tabWidth": 4 }]
+  # ignore some common ones (forloop, arrow functions, error/event paramter) but warn about others
+  id-length: ["warn", { "exceptions": ["e", "u", "i", "j"] }] 
   sort-keys: 0
   sort-imports: 0
-  no-console: 0 
-  no-alert: 0
-  init-declarations: 0
-  complexity: 0
-  no-inline-comments: 0
-  line-comment-position: 0
-  max-len: ["error", { "code": 220, "tabWidth": 4 }]
-  spaced-comment: 0
-  id-length: 0
-  no-empty: 0
-  multiline-comment-style: 0
-  no-warning-comments: 0
-  '@typescript-eslint/quotes': 1
-  '@typescript-eslint/no-unused-vars': 1
-  '@typescript-eslint/ban-types': 1
 
 env:
   browser: true

@@ -24,9 +24,10 @@ interface Window {
 }
 
 /*
- * these setting type defs do look complicated but they just ensure a noob can easily create a new setting.
- * basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see
+ *	these setting type defs do look complicated but they just ensure a noob can easily create a new setting.
+ *	basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see 
  */
+
 type Callbacks = 'normal' | 'userscript' | Function;
 type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'num';
 
@@ -70,6 +71,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 	// the data
 	key: string;
 	callback: 'normal' | 'userscript' | Function;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	value: any;
 }
 

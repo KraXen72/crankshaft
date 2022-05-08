@@ -18,6 +18,7 @@ export const strippedConsole = {
 
 /** simple error message for usercripts. can be called from the userscript itself */
 const errAlert = (err: Error, name: string) => {
+	// eslint-disable-next-line no-alert
 	alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`);
 };
 
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	settingsSideMenu.addEventListener('click', () => { updateSettingsTabs(lastActiveTab, true, true); });
 
 	// @ts-ignore cba to add it to the window interface
-	try { window.windows[0].toggleType({ checked: true }); } catch (err) {}
+	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
 });
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
@@ -65,7 +66,8 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 		.map(entry => ({ name: entry.name, fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
 
 	const tracker: UserscriptTracker = {};
-	su.userscripts.forEach(u => { tracker[u.name] = false }); // fill tracker with falses, so new userscripts get added disabled
+
+	su.userscripts.forEach(u => { tracker[u.name] = false; }); // fill tracker with falses, so new userscripts get added disabled
 	Object.assign(tracker, JSON.parse(readFileSync(su.userscriptTrackerPath, { encoding: 'utf-8' }))); // read and assign the tracker.json
 	writeFileSync(su.userscriptTrackerPath, JSON.stringify(tracker, null, 2), { encoding: 'utf-8' }); // save with the new userscripts
 
@@ -75,7 +77,7 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 	su.userscripts.forEach(u => {
 		if (tracker[u.name]) { // if enabled
 			const rawContent = readFileSync(u.fullpath, { encoding: 'utf-8' });
-			let content: { code: string, warnings: string[] };
+			let content: { code: string, warnings: string[] } = { code: '', warnings: [] };
 			let hadToTransform = true;
 
 			if (rawContent.startsWith('"use strict"')) {
@@ -132,8 +134,8 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, clientSplash, us
 		}));
 
 		// make our won bottom corner holders incase krunker changes it's shit. we only rely on the loading text from krunker.
-		try { document.querySelector('#loadInfoRHolder').remove(); } catch (e) { }
-		try { document.querySelector('#loadInfoLHolder').remove(); } catch (e) { }
+		try { document.querySelector('#loadInfoRHolder').remove(); } catch (e) { strippedConsole.warn("didn't remove right info holder, doesen't exist"); }
+		try { document.querySelector('#loadInfoLHolder').remove(); } catch (e) { strippedConsole.warn("didn't remove left info holder, doesen't exist"); }
 		initLoader.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: '#loadInfoLHolder', text: `v${version}` }));
 		initLoader.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: '#loadInfoRHolder', text: 'Client by KraXen72' }));
 	}
@@ -157,14 +159,16 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 
 	// document.querySelector(".advancedSwitch").style.display = "none"
 
+	/**
+	 * only hook search ONCE to ensure the client settings still work while searching. 
+	 * it will not yield the client settings tho, that's pain to implement 
+	 */
 	if (hookSearch) {
-		/*
-		 * only hook search ONCE to ensure the client settings still work while searching. 
-		 * it will not yield the client settings tho, that's pain to implement
-		 */
 		// eslint-disable-next-line no-param-reassign
 		hookSearch = false;
+
 		const settSearchCallback = () => { updateSettingsTabs(0, hookSearch); };
+
 		try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) {}
 		document.getElementById('settSearch').addEventListener('input', settSearchCallback);
 	}

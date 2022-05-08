@@ -7,11 +7,13 @@ import { Swapper } from './resourceswapper';
 
 // Credits / mentions (if not mentioned on github)
 
-// Gato/creepycats - Gatoclient
-// LukeTheDuke - Gatoclient-lite
-// Mixaz and IDKR team - https://github.com/idkr-client/idkr
-// Giant - JANREX client
-// Tae - logo for the client <3
+/*
+ *	Gato/creepycats - Gatoclient
+ *	LukeTheDuke - Gatoclient-lite
+ *	Mixaz and IDKR team - https://github.com/idkr-client/idkr
+ *	Giant - JANREX client
+ *	Tae - logo for the client <3
+ */
 
 const docsPath = app.getPath('documents');
 const swapperPath = pathJoin(docsPath, 'Crankshaft/swapper');
@@ -53,9 +55,11 @@ if (!existsSync(settingsPath)) writeFileSync(settingsPath, JSON.stringify(settin
 const userPrefs = settingsSkeleton;
 Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, { encoding: 'utf-8' })));
 
-// Fullscreen Handler
+// Window definitions
+/* eslint-disable init-declarations */
 let mainWindow: BrowserWindow;
 let socialWindowReference: BrowserWindow;
+/* eslint-disable init-declarations */
 
 // console log to electron console because krunker turns browser console off
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
@@ -118,11 +122,14 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 	genericWin.setMenu(thisMenu);
 	genericWin.setMenuBarVisibility(false);
 	genericWin.loadURL(url);
-	genericWin.once('ready-to-show', () => { // if hideAds is enabled, hide them. then show the window
+
+	// if hideAds is enabled, hide them. then show the window
+	genericWin.once('ready-to-show', () => {
 		if (userPrefs.hideAds) genericWin.webContents.insertCSS(hideAdsCSS);
 		genericWin.show();
 	});
-	if (userPrefs.hideAds) { // re-inject hide ads even when going back and forth in history
+	if (userPrefs.hideAds) {
+		// re-inject hide ads even when going back and forth in history
 		genericWin.webContents.on('did-navigate', () => { genericWin.webContents.insertCSS(hideAdsCSS); });
 	}
 	genericWin.once('close', () => { genericWin.destroy(); });
@@ -132,7 +139,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 
 
 if (userPrefs.safeFlags_removeUselessFeatures) {
-	app.commandLine.appendSwitch('disable-breakpad'); // crash reporting
+	app.commandLine.appendSwitch('disable-breakpad');
 	app.commandLine.appendSwitch('disable-print-preview');
 	app.commandLine.appendSwitch('disable-metrics-repo');
 	app.commandLine.appendSwitch('disable-metrics');
@@ -310,7 +317,7 @@ app.on('ready', () => {
 	];
 	const csMenu = Menu.buildFromTemplate([gameSubmenu, ...csMenuTemplate]);
 	const strippedMenuTemplate = [genericMainSubmenu, ...csMenuTemplate];
-	Menu.setApplicationMenu(csMenu) //macos fix
+	Menu.setApplicationMenu(csMenu); // macos fix
 
 	mainWindow.setMenu(csMenu);
 	mainWindow.setAutoHideMenuBar(true);
@@ -382,7 +389,7 @@ app.on('ready', () => {
 
 		/*
 		 * console.log("url: ", url)
-		 * console.log("typeof socialWindowReference", typeof socialWindowReference)
+		 * console.log("typeof socialWindowReference", typeof socialWindowReference) 
 		 */
 	});
 
@@ -394,7 +401,6 @@ app.on('ready', () => {
 		CrankshaftSwapInstance.init();
 	}
 
-	// nice memory leak lmao
 	mainWindow.on('close', () => { app.exit(); });
 });
 
