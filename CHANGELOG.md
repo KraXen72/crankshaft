@@ -1,3 +1,14 @@
+### [1.5.2](https://github.com/KraXen72/crankshaft/compare/1.5.1...1.5.2) (2022-05-08)
+
+
+### Bug Fixes
+
+* Default keyboard shortcuts on mac ([c6e6ef9](https://github.com/KraXen72/crankshaft/commit/c6e6ef9eed6f0098894e20cdf66f24067e5f91a2))
+* **internal:** allow ts path references in eslint ([0d12f67](https://github.com/KraXen72/crankshaft/commit/0d12f67ecb674fae5941e9d4e30db382e5c47250))
+* **internal:** longer ccat names and ts reference fix ([bd4a60f](https://github.com/KraXen72/crankshaft/commit/bd4a60f1d2abd04eead678c1ff489c802d9cb7a0))
+* **internal:** longer names for CategoryName in defs ([7f37d91](https://github.com/KraXen72/crankshaft/commit/7f37d91f179432940b0d65d93ef986d0d23f7d47))
+* longer param names in utils ([325d179](https://github.com/KraXen72/crankshaft/commit/325d17948635a066f15227c3fa63a594ae7182a7))
+
 ### [1.5.1](https://github.com/KraXen72/crankshaft/compare/1.5.0...1.5.1) (2022-05-05)
 
 
