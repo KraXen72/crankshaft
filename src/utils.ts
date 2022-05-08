@@ -1,7 +1,7 @@
 import { webFrame } from 'electron';
 import { strippedConsole } from './preload';
 
-// /<reference path="global.d.ts" />
+/// <reference path="global.d.ts" />
 
 const insertedCSS: InsertedCSS = {};
 
@@ -24,7 +24,7 @@ export function createElement(type: string, options: Object = {}) {
 
 	Object.entries(options).forEach(([key, value]) => {
 		if (key === 'class') {
-			if (Array.isArray(value)) value.forEach((c: string) => { element.classList.add(c); });
+			if (Array.isArray(value)) value.forEach((cls: string) => { element.classList.add(cls); });
 			else element.classList.add(value);
 			return;
 		}
