@@ -51,12 +51,12 @@ rules:
   no-inline-comments: 0
   multiline-comment-style: ["error", "starred-block"]
   no-warning-comments: 0 # use TODO and FIXME
-  spaced-comment: 1
+  spaced-comment: ["warn", "always", { "markers": ["/"] }] # ignore for ts path reference
 
   # VISUAL
   max-len: ["error", { "code": 220, "tabWidth": 4 }]
   # ignore some common ones (forloop, arrow functions, error/event paramter) but warn about others
-  id-length: ["warn", { "exceptions": ["e", "u", "i", "j"] }] 
+  id-length: ["error", { "exceptions": ["e", "u", "i", "j"] }] 
   sort-keys: 0
   sort-imports: 0
 
