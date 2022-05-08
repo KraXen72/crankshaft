@@ -1,3 +1,10 @@
+### [1.5.3](https://github.com/KraXen72/crankshaft/compare/1.5.2...1.5.3) (2022-05-08)
+
+
+### Features
+
+* macOS fix (part3), menuRewrite (part3) ([8d78078](https://github.com/KraXen72/crankshaft/commit/8d780789c9f4927f3a796b129b7d2f92e36f5101))
+
 ### [1.5.2](https://github.com/KraXen72/crankshaft/compare/1.5.1...1.5.2) (2022-05-08)
 
 
