@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell } from 'electron';
 import { Swapper } from './resourceswapper';
 
-// /<reference path="global.d.ts" />
+/// <reference path="global.d.ts" />
 
 // Credits / mentions (if not mentioned on github)
 
@@ -317,7 +317,13 @@ app.on('ready', () => {
 	];
 	const csMenu = Menu.buildFromTemplate([gameSubmenu, ...csMenuTemplate]);
 	const strippedMenuTemplate = [genericMainSubmenu, ...csMenuTemplate];
-	Menu.setApplicationMenu(csMenu); // macos fix
+
+	if (process.platform === 'darwin') {
+		// slightly scuffed way to have menus on mac, just insert them as 2nd and 3rd
+		const macMenu = Menu.getApplicationMenu();
+		macMenu.insert(1, new MenuItem(gameSubmenu));
+		macMenu.insert(2, new MenuItem(csMenuTemplate[1] as MenuItemConstructorOptions));
+	}
 
 	mainWindow.setMenu(csMenu);
 	mainWindow.setAutoHideMenuBar(true);
