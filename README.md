@@ -18,6 +18,7 @@
 - doesen't automatically open free spin urls, prompts you before
 - doesen't disable web security
 - written in typescript
+- no-compromise mac, linux and windows support
 - only 1 dependency: `esbuild` (for userscripts)
   
 ## userscripts
@@ -45,7 +46,7 @@ Feel free to download them and put them into the `/scripts` directory.
   
 ## hotkeys
 Press `Alt` to show electron menu. Here you can find all hotkeys.  
-standard hotkeys like zooming and devtools also included.  
+standard hotkeys like zooming, copying/pasting and devtools also included.  
 **Client's hotkeys:**  
   - `F5`: reload
   - `F6`: find a new match, 

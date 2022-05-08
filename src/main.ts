@@ -96,9 +96,11 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 	});
 
 	// add additional submenus to the generic win
-	if (addAdditionalSubmenus && Array.isArray(providedMenuTemplate[0].submenu)) {
-		providedMenuTemplate[0].submenu = [
-			...providedMenuTemplate[0].submenu,
+	const injectablePosition = process.platform === 'darwin' ? 1 : 0; // the position where we should inject our submenus
+	const { submenu } = providedMenuTemplate[injectablePosition];
+
+	if (addAdditionalSubmenus && Array.isArray(submenu)) {
+		providedMenuTemplate[injectablePosition].submenu = submenu.concat([
 			{ label: 'Copy current url to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(genericWin.webContents.getURL()); } },
 			{ type: 'separator' },
 			{
@@ -115,7 +117,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 					if (genericWin.webContents.canGoForward()) genericWin.webContents.goForward();
 				}
 			}
-		];
+		]);
 	}
 	const thisMenu = Menu.buildFromTemplate(providedMenuTemplate);
 
@@ -262,6 +264,30 @@ app.on('ready', () => {
 		console.dir(app.getGPUFeatureStatus());
 	}
 
+	// Menu
+	/** submenu to replace the About screen */
+	const aboutSubmenu = [
+		{ label: 'Github repo', registerAccelerator: false, click: () => { shell.openExternal('https://github.com/KraXen72/crankshaft'); } },
+		{ label: 'Client Discord', registerAccelerator: false, click: () => { shell.openExternal('https://discord.gg/ZeVuxG7gQJ'); } }
+	];
+
+	/** the menu with the app name on mac (array, to be spread) */
+	const macAppMenuArr: (MenuItemConstructorOptions | MenuItem)[] = process.platform === 'darwin'
+		? [ {
+			label: app.name,
+			submenu: [
+				...aboutSubmenu,
+				{ type: 'separator' },
+				{ role: 'hide' },
+				{ role: 'hideOthers' },
+				{ role: 'unhide' },
+				{ type: 'separator' },
+				{ role: 'services' },
+				{ role: 'quit', registerAccelerator: false }
+			]
+		} ]
+		: [];
+
 	/** submenu for in-game shortcuts */
 	const gameSubmenu: (MenuItemConstructorOptions | MenuItem) = {
 		label: 'Game',
@@ -289,10 +315,24 @@ app.on('ready', () => {
 		]
 	};
 
-	/** other submenus that all windows share */
+	/** other submenus that all windows share. since it appears mac relies on menu for system stuff like copying, i have to add it here */
 	const csMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
 		{
-			label: 'System',
+			label: 'Edit',
+			submenu: [
+				{ role: 'undo' },
+				{ role: 'redo' },
+				{ type: 'separator' },
+				{ role: 'cut' },
+				{ role: 'copy' },
+				{ role: 'paste' },
+				{ role: 'delete' },
+				{ type: 'separator' },
+				{ role: 'selectAll' }
+			]
+		},
+		{
+			label: 'Page',
 			submenu: [
 				{ role: 'reload' },
 				{ role: 'forceReload' },
@@ -306,31 +346,21 @@ app.on('ready', () => {
 				{ type: 'separator' },
 				{ role: 'togglefullscreen' }
 			]
-		},
-		{
-			label: 'About Crankshaft',
-			submenu: [
-				{ label: 'Github repo', registerAccelerator: false, click: () => { shell.openExternal('https://github.com/KraXen72/crankshaft'); } },
-				{ label: 'Client Discord', registerAccelerator: false, click: () => { shell.openExternal('https://discord.gg/ZeVuxG7gQJ'); } }
-			]
 		}
 	];
-	const csMenu = Menu.buildFromTemplate([gameSubmenu, ...csMenuTemplate]);
-	const strippedMenuTemplate = [genericMainSubmenu, ...csMenuTemplate];
+	if (process.platform !== 'darwin') csMenuTemplate.push({ label: 'About', submenu: aboutSubmenu });
 
-	if (process.platform === 'darwin') {
-		// slightly scuffed way to have menus on mac, just insert them as 2nd and 3rd
-		const macMenu = Menu.getApplicationMenu();
-		macMenu.insert(1, new MenuItem(gameSubmenu));
-		macMenu.insert(2, new MenuItem(csMenuTemplate[1] as MenuItemConstructorOptions));
-	}
+	const csMenu = Menu.buildFromTemplate([...macAppMenuArr, gameSubmenu, ...csMenuTemplate]);
+	const strippedMenuTemplate = [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate];
+
+	Menu.setApplicationMenu(csMenu);
 
 	mainWindow.setMenu(csMenu);
 	mainWindow.setAutoHideMenuBar(true);
 	mainWindow.setMenuBarVisibility(false);
 
 	mainWindow.webContents.on('new-window', (event, url) => {
-		console.log('url trying to open: ', url);
+		console.log('url trying to open:', url, 'socialWindowReference:', typeof socialWindowReference);
 		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com'];
 
 		// sanity check, if social window is destroyed but the reference still exists
@@ -338,6 +368,7 @@ app.on('ready', () => {
 		if (typeof socialWindowReference !== 'undefined' && socialWindowReference.isDestroyed()) socialWindowReference = void 0;
 
 		if (url.includes('https://krunker.io/social.html') && typeof socialWindowReference !== 'undefined') {
+			event.preventDefault();
 			socialWindowReference.loadURL(url); // if a designated socialWindow exists already, just load the url there
 		} else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
 			const pick = dialog.showMessageBoxSync({
