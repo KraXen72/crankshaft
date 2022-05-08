@@ -76,7 +76,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 }
 
 interface CategoryName {
-	n: string;
-	c: string;
+	name: string;
+	cat: string;
 	note?: string;
 }
