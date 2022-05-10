@@ -397,6 +397,7 @@ app.on('ready', () => {
 					break;
 				}
 			}
+
 		// for comp just load it into the main url
 		} else if (url.includes('comp.krunker.io') || url.includes('https://krunker.io/?game') || (url.includes('?game=') && url.includes('&matchId='))) {
 			event.preventDefault();
