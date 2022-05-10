@@ -1,3 +1,17 @@
+### [1.5.4](https://github.com/KraXen72/crankshaft/compare/1.5.3...1.5.4) (2022-05-10)
+
+
+### Features
+
+* make the client more secure (see readme) ([1c8a0c3](https://github.com/KraXen72/crankshaft/commit/1c8a0c367f67af6e8b3bd28d4dd210ad26917255))
+* split main into 3 files ([8d0775c](https://github.com/KraXen72/crankshaft/commit/8d0775cf65c16d3f83f74a9246760503b2ef4994))
+
+
+### Bug Fixes
+
+* client settings don't load after "reset settings" ([978424a](https://github.com/KraXen72/crankshaft/commit/978424afd5087ad1fafbfdbd58740ccba75c7b7a))
+* small source cleanup ([c5c54b4](https://github.com/KraXen72/crankshaft/commit/c5c54b41a5293e2f02c45fbe5931c2f278cdf639))
+
 ### [1.5.3](https://github.com/KraXen72/crankshaft/compare/1.5.2...1.5.3) (2022-05-08)
 
 
