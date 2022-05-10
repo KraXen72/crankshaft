@@ -382,12 +382,12 @@ app.on('ready', () => {
 					event.preventDefault();
 					shell.openExternal(url);
 					break;
-				case 3: // don't open
-					event.preventDefault();
-					break;
 				case 2: // load as main window
 					event.preventDefault();
 					mainWindow.loadURL(url);
+					break;
+				case 3: // don't open
+					event.preventDefault();
 					break;
 				case 1: // open as a new window in client
 				default: {
@@ -397,8 +397,7 @@ app.on('ready', () => {
 					break;
 				}
 			}
-
-			// for comp just load it into the main url
+		// for comp just load it into the main url
 		} else if (url.includes('comp.krunker.io') || url.includes('https://krunker.io/?game') || (url.includes('?game=') && url.includes('&matchId='))) {
 			event.preventDefault();
 			mainWindow.loadURL(url);
@@ -423,11 +422,6 @@ app.on('ready', () => {
 				});
 			}
 		}
-
-		/*
-		 * console.log("url: ", url)
-		 * console.log("typeof socialWindowReference", typeof socialWindowReference) 
-		 */
 	});
 
 	// mainWindow.webContents.on("will-navigate", (event: Event, url: string) => { console.log(url) })

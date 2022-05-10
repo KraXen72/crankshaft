@@ -148,6 +148,9 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, clientSplash, us
 
 /**
  * make sure our setting tab is always called as it should be and has the proper onclick
+ * @param activeTab the tab that should get active class
+ * @param hookSearch if true, it will also add an eventlistener to search and reset settings
+ * @param coldStart if client tab is selected upon launch of settings themselved, also call renderSettings()
  */
 function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
 	// strippedConsole.log("update settings tabs")
@@ -171,6 +174,9 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 
 		try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) {}
 		document.getElementById('settSearch').addEventListener('input', settSearchCallback);
+
+		try { document.querySelector(`.settingsBtn[onclick*="reset"]`).removeEventListener("click", settSearchCallback) } catch (e) { }
+		document.querySelector(`.settingsBtn[onclick*="reset"]`).addEventListener("click", settSearchCallback)
 	}
 
 	const advSliderElem = document.querySelector('.advancedSwitch input#typeBtn');
