@@ -1,12 +1,13 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell } from 'electron';
+import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate } from './menu';
+import { applyCommandLineSwitches } from './switches';
 import { Swapper } from './resourceswapper';
 
 /// <reference path="global.d.ts" />
 
 // Credits / mentions (if not mentioned on github)
-
 /*
  *	Gato/creepycats - Gatoclient
  *	LukeTheDuke - Gatoclient-lite
@@ -92,7 +93,10 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 		width: 1600,
 		height: 900,
 		center: true,
-		webPreferences: { spellcheck: false }
+		webPreferences: {
+			spellcheck: false,
+			enableRemoteModule: false
+		}
 	});
 
 	// add additional submenus to the generic win
@@ -139,83 +143,9 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 	return genericWin;
 }
 
+// apply settings and flags
+applyCommandLineSwitches(userPrefs);
 
-if (userPrefs.safeFlags_removeUselessFeatures) {
-	app.commandLine.appendSwitch('disable-breakpad');
-	app.commandLine.appendSwitch('disable-print-preview');
-	app.commandLine.appendSwitch('disable-metrics-repo');
-	app.commandLine.appendSwitch('disable-metrics');
-	app.commandLine.appendSwitch('disable-2d-canvas-clip-aa');
-	app.commandLine.appendSwitch('disable-bundled-ppapi-flash');
-	app.commandLine.appendSwitch('disable-logging');
-	app.commandLine.appendSwitch('disable-hang-monitor');
-
-	console.log('Removed useless features');
-}
-if (userPrefs.safeFlags_helpfulFlags) {
-	app.commandLine.appendSwitch('enable-javascript-harmony');
-	app.commandLine.appendSwitch('enable-future-v8-vm-features');
-	app.commandLine.appendSwitch('enable-webgl2-compute-context');
-
-	console.log('Applied helpful flags');
-}
-if (userPrefs.experimentalFlags_increaseLimits) {
-	app.commandLine.appendSwitch('renderer-process-limit', '100');
-	app.commandLine.appendSwitch('max-active-webgl-contexts', '100');
-	app.commandLine.appendSwitch('webrtc-max-cpu-consumption-percentage=100');
-	app.commandLine.appendSwitch('ignore-gpu-blacklist');
-
-	console.log('Applied flags to increase limits');
-}
-if (userPrefs.experimentalFlags_lowLatency) {
-	app.commandLine.appendSwitch('enable-highres-timer'); // supposedly lowers latency
-	app.commandLine.appendSwitch('enable-quic'); // enables an experimental low-latency protocol that might or might not be used, who knows
-	app.commandLine.appendSwitch('enable-accelerated-2d-canvas');
-
-	console.log('Applied latency-reducing flags');
-}
-if (userPrefs.experimentalFlags_experimental) {
-	// do they crash the game? not for me. do they actually help? ¯\_(ツ)_/¯
-	app.commandLine.appendSwitch('disable-low-end-device-mode');
-	app.commandLine.appendSwitch('high-dpi-support', '1');
-	app.commandLine.appendSwitch('ignore-gpu-blacklist');
-	app.commandLine.appendSwitch('no-pings');
-	app.commandLine.appendSwitch('no-proxy-server');
-
-	console.log('Enabled Experiments');
-}
-if (userPrefs.safeFlags_gpuRasterizing) {
-	// do they crash the game? not for me. do they actually help? yeah kind of. depending on your gpu etc.
-	app.commandLine.appendSwitch('enable-gpu-rasterization');
-	app.commandLine.appendSwitch('disable-zero-copy'); // this is really important, otherwise the game crashes.
-	console.log('GPU rasterization active');
-}
-
-if (userPrefs.fpsUncap) {
-	app.commandLine.appendSwitch('disable-frame-rate-limit');
-	app.commandLine.appendSwitch('disable-gpu-vsync');
-	console.log('Removed FPS Cap');
-}
-
-if (userPrefs['angle-backend'] !== 'default') {
-	if (userPrefs['angle-backend'] === 'vulkan') {
-		app.commandLine.appendSwitch('use-angle', 'vulkan');
-		app.commandLine.appendSwitch('use-vulkan');
-		app.commandLine.appendSwitch('--enable-features=Vulkan');
-
-		console.log('VULKAN INITIALIZED');
-	} else {
-		app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend']);
-
-		console.log(`Using Angle: ${ userPrefs['angle-backend']}`);
-	}
-}
-if (userPrefs.inProcessGPU) {
-	app.commandLine.appendSwitch('in-process-gpu');
-	console.log('In Process GPU is active');
-}
-
-// Workaround for Electron 8.x
 if (userPrefs.resourceSwapper) {
 	protocol.registerSchemesAsPrivileged([ {
 		scheme: 'krunker-resource-swapper',
@@ -241,6 +171,7 @@ app.on('ready', () => {
 		center: true,
 		webPreferences: {
 			preload: pathJoin(__dirname, 'preload.js'),
+			enableRemoteModule: false,
 			spellcheck: false
 		}
 	});
@@ -264,30 +195,6 @@ app.on('ready', () => {
 		console.dir(app.getGPUFeatureStatus());
 	}
 
-	// Menu
-	/** submenu to replace the About screen */
-	const aboutSubmenu = [
-		{ label: 'Github repo', registerAccelerator: false, click: () => { shell.openExternal('https://github.com/KraXen72/crankshaft'); } },
-		{ label: 'Client Discord', registerAccelerator: false, click: () => { shell.openExternal('https://discord.gg/ZeVuxG7gQJ'); } }
-	];
-
-	/** the menu with the app name on mac (array, to be spread) */
-	const macAppMenuArr: (MenuItemConstructorOptions | MenuItem)[] = process.platform === 'darwin'
-		? [ {
-			label: app.name,
-			submenu: [
-				...aboutSubmenu,
-				{ type: 'separator' },
-				{ role: 'hide' },
-				{ role: 'hideOthers' },
-				{ role: 'unhide' },
-				{ type: 'separator' },
-				{ role: 'services' },
-				{ role: 'quit', registerAccelerator: false }
-			]
-		} ]
-		: [];
-
 	/** submenu for in-game shortcuts */
 	const gameSubmenu: (MenuItemConstructorOptions | MenuItem) = {
 		label: 'Game',
@@ -307,49 +214,9 @@ app.on('ready', () => {
 		]
 	};
 
-	/** submenu for social shortcuts */
-	const genericMainSubmenu: (MenuItemConstructorOptions | MenuItem) = {
-		label: 'Window',
-		submenu: [
-			{ label: 'Refresh', role: 'reload', accelerator: 'F5' }
-		]
-	};
-
-	/** other submenus that all windows share. since it appears mac relies on menu for system stuff like copying, i have to add it here */
-	const csMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
-		{
-			label: 'Edit',
-			submenu: [
-				{ role: 'undo' },
-				{ role: 'redo' },
-				{ type: 'separator' },
-				{ role: 'cut' },
-				{ role: 'copy' },
-				{ role: 'paste' },
-				{ role: 'delete' },
-				{ type: 'separator' },
-				{ role: 'selectAll' }
-			]
-		},
-		{
-			label: 'Page',
-			submenu: [
-				{ role: 'reload' },
-				{ role: 'forceReload' },
-				{ type: 'separator' },
-				{ role: 'toggleDevTools' },
-				{ role: 'toggleDevTools', label: 'Toggle Developer Tools (F12)', accelerator: 'F12' },
-				{ type: 'separator' },
-				{ role: 'zoomIn' },
-				{ role: 'zoomOut' },
-				{ role: 'resetZoom' },
-				{ type: 'separator' },
-				{ role: 'togglefullscreen' }
-			]
-		}
-	];
 	if (process.platform !== 'darwin') csMenuTemplate.push({ label: 'About', submenu: aboutSubmenu });
 
+	// the other submenus are defined in menu.ts
 	const csMenu = Menu.buildFromTemplate([...macAppMenuArr, gameSubmenu, ...csMenuTemplate]);
 	const strippedMenuTemplate = [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate];
 

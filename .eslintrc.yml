@@ -11,6 +11,7 @@ ignorePatterns:
   - node_modules/
   - build/
   - gulpfile.mjs
+  - esbuilder.js # this is just a hacked together dev building file that uses esbuild. not even in js
 
 extends:
   - raven
@@ -46,7 +47,7 @@ rules:
 
   # COMMENTS
   # i tried configuring these so it's either inline or above, not both, but couldn't figure it out
-  # the current plan is just manually reviewing prs (which i'd do anyway) and if it's over commented i'd request changesS
+  # the current plan is just manually reviewing prs (which i'd do anyway) and if it's over commented i'd request changes
   line-comment-position: 0
   no-inline-comments: 0
   multiline-comment-style: ["error", "starred-block"]
