@@ -16,7 +16,7 @@
 - no artificial "splash screens" that increase load time, splash shows over krunker actually loading
 - *hides* ads by default (can be turned off)
 - doesen't automatically open free spin urls, prompts you before
-- doesen't disable web security
+- **secure:** `web security` is on, the `remote` module and `nodeIntegration` are disabled
 - written in typescript
 - no-compromise mac, linux and windows support
 - only 1 dependency: `esbuild` (for userscripts)

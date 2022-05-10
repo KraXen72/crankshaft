@@ -95,7 +95,8 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 		center: true,
 		webPreferences: {
 			spellcheck: false,
-			enableRemoteModule: false
+			enableRemoteModule: false,
+			nodeIntegration: false
 		}
 	});
 
@@ -172,7 +173,8 @@ app.on('ready', () => {
 		webPreferences: {
 			preload: pathJoin(__dirname, 'preload.js'),
 			enableRemoteModule: false,
-			spellcheck: false
+			spellcheck: false,
+			nodeIntegration: false
 		}
 	});
 
