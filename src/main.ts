@@ -1,6 +1,6 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell } from 'electron';
+import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate } from './menu';
 import { applyCommandLineSwitches } from './switches';
 import { Swapper } from './resourceswapper';
@@ -30,7 +30,7 @@ const settingsSkeleton = {
 	disableAccelerated2D: false,
 	hideAds: true,
 	menuTimer: false,
-	fullscreen: false,
+	fullscreen: 'windowed', // windowed, maximized, fullscreen, borderless
 	resourceSwapper: true,
 	userscripts: false,
 	clientSplash: true,
@@ -55,6 +55,19 @@ if (!existsSync(settingsPath)) writeFileSync(settingsPath, JSON.stringify(settin
 // Read settings to apply them to the command line arguments
 const userPrefs = settingsSkeleton;
 Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, { encoding: 'utf-8' })));
+
+// convert legacy settings files to newer formats
+let modifiedSettings = false;
+
+// fullscreen was a true/false, now it's "windowed", "fullscreen" or "borderless"
+if (typeof userPrefs.fullscreen === 'boolean') {
+	modifiedSettings = true;
+	if (userPrefs.fullscreen === true) userPrefs.fullscreen = 'fullscreen'; else userPrefs.fullscreen = 'windowed';
+}
+
+// write the new settings format to the settings.json file right after the conversion
+if (modifiedSettings) writeFileSync(settingsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
+
 
 // Window definitions
 /* eslint-disable init-declarations */
@@ -144,6 +157,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 	return genericWin;
 }
 
+
 // apply settings and flags
 applyCommandLineSwitches(userPrefs);
 
@@ -164,8 +178,7 @@ app.on('ready', () => {
 
 	if (userPrefs.resourceSwapper) protocol.registerFileProtocol('krunker-resource-swapper', (request, callback) => callback(decodeURI(request.url.replace(/krunker-resource-swapper:/u, ''))));
 
-
-	mainWindow = new BrowserWindow({
+	const mainWindowProps: BrowserWindowConstructorOptions = {
 		show: false,
 		width: 1600,
 		height: 900,
@@ -176,14 +189,42 @@ app.on('ready', () => {
 			spellcheck: false,
 			nodeIntegration: false
 		}
-	});
+	};
+
+	switch (userPrefs.fullscreen) {
+		case 'fullscreen':
+			mainWindowProps.fullscreen = true;
+			break;
+		case 'borderless': {
+			const dimensions = screen.getPrimaryDisplay().bounds;
+			const borderlessProps: BrowserWindowConstructorOptions = {
+				frame: false,
+				kiosk: true,
+				fullscreenable: false,
+				fullscreen: false,
+				width: dimensions.width,
+				height: dimensions.height
+			};
+
+			Object.assign(mainWindowProps, borderlessProps);
+			break;
+		}
+		case 'windowed':
+		default:
+			mainWindowProps.fullscreen = false;
+			break;
+	}
+
+	mainWindow = new BrowserWindow(mainWindowProps);
+	if (userPrefs.fullscreen === 'borderless') mainWindow.moveTop();
+
 
 	// general ready to show, runs when window refreshes or loads url
 	mainWindow.on('ready-to-show', () => {
 		mainWindow.show();
+		if (userPrefs.fullscreen === 'maximized') mainWindow.maximize();
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
 	});
-	if (userPrefs.fullscreen) mainWindow.setFullScreen(true);
 
 	mainWindow.loadURL('https://krunker.io');
 

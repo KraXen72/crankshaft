@@ -45,7 +45,7 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
  */
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
-	fullscreen: { title: 'Start in Fullscreen', type: 'bool', desc: '', safety: 0, cat: 0 },
+	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', 'borderless'] },
 	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'd3d11', 'd3d9', 'd3d11on12', 'vulkan'], cat: 0 },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
 	clientSplash: { title: 'Client Splash Screen', type: 'bool', desc: 'Show a custom bg and logo (splash screen) while krunker is loading', safety: 0, cat: 0 },
@@ -90,7 +90,6 @@ function saveUserscriptTracker() {
 
 /** * creates a new Setting element */
 class SettingElem {
-
 
 	// s-update is the class for element to watch
 	props: RenderReadySetting;
