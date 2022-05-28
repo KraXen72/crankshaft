@@ -1,3 +1,10 @@
+### [1.5.5](https://github.com/KraXen72/crankshaft/compare/1.5.4...1.5.5) (2022-05-28)
+
+
+### Features
+
+* add borderless fullscreen mode ([a76ad10](https://github.com/KraXen72/crankshaft/commit/a76ad10f30d9736949941a9f0da732a2eed197af))
+
 ### [1.5.4](https://github.com/KraXen72/crankshaft/compare/1.5.3...1.5.4) (2022-05-10)
 
 
