@@ -43,6 +43,7 @@ document.addEventListener('keydown', event => {
 	if (event.code === 'Escape') document.exitPointerLock();
 });
 
+const tempRPCenabled = true
 
 // Settings Stuff
 document.addEventListener('DOMContentLoaded', () => {
@@ -52,6 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// @ts-ignore cba to add it to the window interface
 	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
+
+	//TODO finish this bit
+	// if (tempRPCenabled) {
+	// 	ipcRenderer.send("preload_updates_DiscordRPC", {
+
+	// 	})
+	// }
 });
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {

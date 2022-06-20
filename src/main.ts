@@ -95,6 +95,34 @@ ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 	// mainWindow.setFullScreen(userPrefs.fullscreen);
 });
 
+const tempRpcEnabled = true
+
+if (tempRpcEnabled) {
+	
+	const DiscordRPC = require("discord-rpc");
+	const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+	const startTimestamp = new Date();
+	const clientId = "988529967220523068"
+
+	//TODO add args here
+	function updateRPC() {
+		rpc.setActivity({
+			details: `booped x times`,
+			state: 'in slither party',
+			startTimestamp,
+			largeImageKey: 'logo',
+			largeImageText: 'Large image text',
+			instance: false,
+		});
+	}
+
+	rpc.once("ready", () => { updateRPC() });
+	rpc.login({ clientId }).catch(console.error);
+
+	ipcMain.on('preload_updates_DiscordRPC', (event, data) => { updateRPC() })
+	
+}
+
 const $assets = pathResolve(__dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
 
