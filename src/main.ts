@@ -271,7 +271,7 @@ app.on('ready', () => {
 
 	mainWindow.webContents.on('new-window', (event, url) => {
 		console.log('url trying to open:', url, 'socialWindowReference:', typeof socialWindowReference);
-		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com'];
+		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', "instagram.com"];
 
 		// sanity check, if social window is destroyed but the reference still exists
 		// eslint-disable-next-line no-void
