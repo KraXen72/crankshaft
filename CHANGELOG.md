@@ -1,3 +1,13 @@
+### [1.5.6](https://github.com/KraXen72/crankshaft/compare/1.5.5...1.5.6) (2022-06-21)
+
+
+### Features
+
+* Full Discord RPC support ([680ec50](https://github.com/KraXen72/crankshaft/commit/680ec501cc7a9d7de6281307430ce8bc971fee30))
+* more rpc work? ([61ba267](https://github.com/KraXen72/crankshaft/commit/61ba267388ae9b1ace8df66e581e31d66f586c47))
+* refactor esbuilder.js ([152c71b](https://github.com/KraXen72/crankshaft/commit/152c71b4c913d2e9617429179fc2cb979b76bdf2))
+* rpc prepare + add instagram as freespin ([36a39ab](https://github.com/KraXen72/crankshaft/commit/36a39ab27f94fdde194ab3efa82bc1ce94f2d5ce))
+
 ### [1.5.5](https://github.com/KraXen72/crankshaft/compare/1.5.4...1.5.5) (2022-05-28)
 
 
