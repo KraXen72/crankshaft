@@ -10,6 +10,7 @@
 - maintained & open source
 - a lot of customisation options (settings)
 - userscript support (can be disabled)
+- discord rpc support (can be disabled)
 - built-in hotkeys: [more about them here](https://github.com/KraXen72/crankshaft#hotkeys)
   
 ## quality of life
@@ -42,7 +43,14 @@ Feel free to download them and put them into the `/scripts` directory.
 > Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.   
 > Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED  
 > Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED  
-> You are encouraged to write scripts using `"use strict"`, because it skips esbuild transforming your code.  
+> You are encouraged to write scripts using `"use strict"`, because it skips esbuild transforming your code.
+
+## discord rich presence
+- enable discord rich presence to show off your gamemode, map, class and skin to your discord friends!
+- doesen't affect performance in any way when disabled
+- only updates the presence while you're not actively in-game.
+- you can enable "Extended Discord RPC" to also add Discord and Github buttons/links under your rich presence in discord
+- uses the lightweight discord-rpc librarly, not the entire discord.js
   
 ## hotkeys
 Press `Alt` to show electron menu. Here you can find all hotkeys.  
