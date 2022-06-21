@@ -387,7 +387,11 @@ app.on('ready', () => {
 		CrankshaftSwapInstance.init();
 	}
 
-	mainWindow.on('close', () => { app.exit(); });
+	mainWindow.on('close', () => { app.quit(); });
 });
 
-app.on('window-all-closed', () => { app.exit(); });
+app.on('quit', () => app.quit());
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') return app.quit();
+	return null;
+});
