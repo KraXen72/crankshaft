@@ -1,3 +1,16 @@
+### [1.5.7](https://github.com/KraXen72/crankshaft/compare/1.5.6...1.5.7) (2022-06-21)
+
+
+### Features
+
+* improve RPC hooks ([f4c3572](https://github.com/KraXen72/crankshaft/commit/f4c35722f8abb60b01c0b02565b079ff2fae7834))
+
+
+### Bug Fixes
+
+* Devtools now work again on linux machines ([e7d37ea](https://github.com/KraXen72/crankshaft/commit/e7d37ea338957fbb11ca3aefd4cd0cc206582a03))
+* wait 500 ms for devtools regardless of os ([6645128](https://github.com/KraXen72/crankshaft/commit/66451288601acca9810fc5a784d0b7b2ad6f5503))
+
 ### [1.5.6](https://github.com/KraXen72/crankshaft/compare/1.5.5...1.5.6) (2022-06-21)
 
 

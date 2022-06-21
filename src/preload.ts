@@ -95,17 +95,16 @@ ipcRenderer.on('initDiscordRPC', () => {
 
 	// updating rpc
 	ipcRenderer.on('main_did-finish-load', updateRPC);
-	window.addEventListener('load', updateRPC);
+	window.addEventListener('load', () => {
+		updateRPC();
+		setTimeout(() => {
+			// hook elements that update rpc
+			try { document.getElementById('windowCloser').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook wincloser", e); }
+			try { document.getElementById('customizeButton').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook customizeButton", e); }
+		}, 4000);
+	});
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
-
-	// this stuff is not needed since pointerlock hook is good enough. it also lags on first customizeButton click
-	/*
-	 * setTimeout(() => {
-	 * 	// hook elements that update rpc
-	 * 	try { document.getElementById('windowCloser').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook wincloser", e); }
-	 * 	try { document.getElementById('customizeButton').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook customizeButton", e); }
-	 * }, 4000);
-	 */
+	 
 });
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
