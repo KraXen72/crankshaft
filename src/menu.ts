@@ -37,9 +37,7 @@ export const genericMainSubmenu: (MenuItemConstructorOptions | MenuItem) = {
 
 /** make 2 menuItems that determine wether to use fallback or not, and then act accordingly */
 export function constructDevtoolsSubmenu(providedWindow: BrowserWindow, skipFallback: null | boolean = null, options?: OpenDevToolsOptions) {
-
-	let maxLag = 500 // default timeout by asger-finding / Commander
-	if (process.platform === "win32") maxLag = 1200 // win can take up to 1.2s to open devtools, but it's worth it because they are embedded in main win
+	const maxLag = 500 // default timeout by asger-finding / Commander
 	
 	/** Fallback if openDevTools fails */ 
 	function fallbackDevtools() {
