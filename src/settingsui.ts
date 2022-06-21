@@ -50,6 +50,8 @@ const settingsDesc: SettingsDesc = {
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
 	clientSplash: { title: 'Client Splash Screen', type: 'bool', desc: 'Show a custom bg and logo (splash screen) while krunker is loading', safety: 0, cat: 0 },
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper', safety: 0, cat: 0 },
+	discordRPC: { title: "Discord Rich Presence", type: 'bool', desc: "Enable Discord Rich Presence. Shows Gamemode, Map, Class and Skin", safety: 0, cat: 0 },
+	extendedRPC: { title: "Extended Discord RPC", type: 'bool', desc: "Adds Github and Discord buttons to the rich presence. No effect if RPC is disabled", safety: 0, cat: 0 },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: 'Enable userscript support. place .js files in Documents/Crankshaft/scripts', safety: 1, cat: 0 },
 	hideAds: { title: 'Hide Ads', type: 'bool', safety: 0, cat: 1, instant: true },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },

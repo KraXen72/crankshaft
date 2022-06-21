@@ -80,3 +80,6 @@ interface CategoryName {
 	cat: string;
 	note?: string;
 }
+
+//discord rpc
+type RPCargs = { details: string, state: string }

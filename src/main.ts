@@ -34,6 +34,8 @@ const settingsSkeleton = {
 	resourceSwapper: true,
 	userscripts: false,
 	clientSplash: true,
+	discordRPC: false,
+	extendedRPC: false,
 	'angle-backend': 'default',
 	logDebugToConsole: false,
 	safeFlags_removeUselessFeatures: false,
@@ -94,34 +96,6 @@ ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 
 	// mainWindow.setFullScreen(userPrefs.fullscreen);
 });
-
-const tempRpcEnabled = true
-
-if (tempRpcEnabled) {
-	
-	const DiscordRPC = require("discord-rpc");
-	const rpc = new DiscordRPC.Client({ transport: 'ipc' });
-	const startTimestamp = new Date();
-	const clientId = "988529967220523068"
-
-	//TODO add args here
-	function updateRPC() {
-		rpc.setActivity({
-			details: `booped x times`,
-			state: 'in slither party',
-			startTimestamp,
-			largeImageKey: 'logo',
-			largeImageText: 'Large image text',
-			instance: false,
-		});
-	}
-
-	rpc.once("ready", () => { updateRPC() });
-	rpc.login({ clientId }).catch(console.error);
-
-	ipcMain.on('preload_updates_DiscordRPC', (event, data) => { updateRPC() })
-	
-}
 
 const $assets = pathResolve(__dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
@@ -184,7 +158,6 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 
 	return genericWin;
 }
-
 
 // apply settings and flags
 applyCommandLineSwitches(userPrefs);
@@ -252,6 +225,40 @@ app.on('ready', () => {
 		mainWindow.show();
 		if (userPrefs.fullscreen === 'maximized') mainWindow.maximize();
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
+		mainWindow.webContents.on("did-finish-load", () => { mainWindow.webContents.send("main_did-finish-load") })
+
+		if (userPrefs.discordRPC) {
+			const DiscordRPC = require("discord-rpc");
+			const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+			const startTimestamp = new Date();
+			const clientId = "988529967220523068"
+		
+			function updateRPC({ details, state }: RPCargs) {
+				const data = {
+					details,
+					state,
+					startTimestamp,
+					largeImageKey: 'logo',
+					largeImageText: 'Playing Krunker',
+					instance: false,
+				}
+				if (userPrefs.extendedRPC) { 
+					Object.assign(data, {
+						buttons: [
+							{ label: "Github", url: "https://github.com/KraXen72/crankshaft" }, 
+							{ label: "Discord Server", url: "https://discord.gg/ZeVuxG7gQJ" }
+						]
+					})
+				}
+				rpc.setActivity(data);
+			}
+		
+			//rpc.once("ready", () => { updateRPC() });
+			rpc.login({ clientId }).catch(console.error);
+		
+			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data) })
+			mainWindow.webContents.send("initDiscordRPC")
+		}
 	});
 
 	mainWindow.loadURL('https://krunker.io');

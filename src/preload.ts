@@ -43,8 +43,6 @@ document.addEventListener('keydown', event => {
 	if (event.code === 'Escape') document.exitPointerLock();
 });
 
-const tempRPCenabled = true
-
 // Settings Stuff
 document.addEventListener('DOMContentLoaded', () => {
 	// Side Menu Settings Thing
@@ -53,14 +51,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// @ts-ignore cba to add it to the window interface
 	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
-
-	//TODO finish this bit
-	// if (tempRPCenabled) {
-	// 	ipcRenderer.send("preload_updates_DiscordRPC", {
-
-	// 	})
-	// }
 });
+
+ipcRenderer.on("initDiscordRPC", (event) => {
+	//let areHiddenClassesHooked = false
+	function updateRPC() {
+		strippedConsole.log("> updated RPC")
+		const classElem = document.getElementById("menuClassName")
+		const skinElem = document.querySelector("#menuClassSubtext > span")
+		const mapElem = document.getElementById("mapInfo")
+
+		let gameMode = ""
+		let map = ""
+		if (mapElem !== null) {
+			const parts = mapElem.textContent.split("_", 2) // ffa_undergrowth 
+			gameMode = parts[0].toUpperCase() // get gamemode (FFA for example)
+			map = parts[1] // get the remainder (map name)
+		} 
+
+		const data: RPCargs = {
+			details: `${gameMode} on ${map}`,
+			state: `${classElem === null ? "" : classElem.textContent} • ${skinElem === null ? "" : skinElem.textContent}`
+		}
+		if (!gameMode || !map || !classElem || !skinElem) {
+			ipcRenderer.send("preload_updates_DiscordRPC", { details: "Loading krunker...", state: "github.com/KraXen72/crankshaft" })
+		} else {
+			ipcRenderer.send("preload_updates_DiscordRPC", data)
+		}
+		
+		// this doesen't seem to work no matter what i do, so no hidden classes updating rpc for now. playling the game will update anyway
+		// if (!areHiddenClassesHooked) { //once hidden classes are hooked, it won't attempt to do it again
+		// 	if (document.getElementById("#hiddenClasses") === null) return; //guard clause
+		// 	[...document.getElementById("#hiddenClasses").children].forEach(hc => hc.addEventListener('click', updateRPC))
+		// 	strippedConsole.log("hooked hiddenClasses")
+		// 	areHiddenClassesHooked = true
+		// }
+	}
+
+	//updating rpc
+	ipcRenderer.on('main_did-finish-load', updateRPC)
+	document.addEventListener("pointerlockchange", updateRPC) //thank God this exists
+	window.addEventListener("load", () => {
+		updateRPC(); 
+		setTimeout(() => {
+			//hook elements that update rpc
+			try { document.getElementById("windowCloser").addEventListener('click', updateRPC) } catch (e) { strippedConsole.error("didn't hook wincloser", e) }
+			try { document.getElementById("customizeButton").addEventListener('click', updateRPC) } catch (e) { strippedConsole.error("didn't hook customizeButton", e) }
+		}, 4000)
+	})
+	
+})
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
 	su.userscriptsPath = recieved_userscriptsPath;
