@@ -53,54 +53,58 @@ document.addEventListener('DOMContentLoaded', () => {
 	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
 });
 
-ipcRenderer.on("initDiscordRPC", (event) => {
-	//let areHiddenClassesHooked = false
+ipcRenderer.on('initDiscordRPC', () => {
+	// let areHiddenClassesHooked = false
 	function updateRPC() {
-		strippedConsole.log("> updated RPC")
-		const classElem = document.getElementById("menuClassName")
-		const skinElem = document.querySelector("#menuClassSubtext > span")
-		const mapElem = document.getElementById("mapInfo")
+		strippedConsole.log('> updated RPC');
+		const classElem = document.getElementById('menuClassName');
+		const skinElem = document.querySelector('#menuClassSubtext > span');
+		const mapElem = document.getElementById('mapInfo');
 
-		let gameMode = ""
-		let map = ""
+		let gameMode = '';
+		let map = '';
 		if (mapElem !== null) {
-			const parts = mapElem.textContent.split("_", 2) // ffa_undergrowth 
-			gameMode = parts[0].toUpperCase() // get gamemode (FFA for example)
-			map = parts[1] // get the remainder (map name)
-		} 
+			const parts = mapElem.textContent.split('_', 2); // ffa_undergrowth 
+			gameMode = parts[0].toUpperCase(); // get gamemode (FFA for example)
+			map = parts[1]; // get the remainder (map name)
+		}
 
 		const data: RPCargs = {
 			details: `${gameMode} on ${map}`,
-			state: `${classElem === null ? "" : classElem.textContent} • ${skinElem === null ? "" : skinElem.textContent}`
-		}
+			state: `${classElem === null ? '' : classElem.textContent} • ${skinElem === null ? '' : skinElem.textContent}`
+		};
 		if (!gameMode || !map || !classElem || !skinElem) {
-			ipcRenderer.send("preload_updates_DiscordRPC", { details: "Loading krunker...", state: "github.com/KraXen72/crankshaft" })
+			// send dummy state
+			ipcRenderer.send('preload_updates_DiscordRPC', { details: 'Loading krunker...', state: 'github.com/KraXen72/crankshaft' });
 		} else {
-			ipcRenderer.send("preload_updates_DiscordRPC", data)
+			// send actual data
+			ipcRenderer.send('preload_updates_DiscordRPC', data);
 		}
-		
-		// this doesen't seem to work no matter what i do, so no hidden classes updating rpc for now. playling the game will update anyway
-		// if (!areHiddenClassesHooked) { //once hidden classes are hooked, it won't attempt to do it again
-		// 	if (document.getElementById("#hiddenClasses") === null) return; //guard clause
-		// 	[...document.getElementById("#hiddenClasses").children].forEach(hc => hc.addEventListener('click', updateRPC))
-		// 	strippedConsole.log("hooked hiddenClasses")
-		// 	areHiddenClassesHooked = true
-		// }
+
+
+		/*
+		 * this doesen't seem to work no matter what i do, so no hidden classes updating rpc for now. playling the game will update anyway
+		 * if (!areHiddenClassesHooked) { //once hidden classes are hooked, it won't attempt to do it again
+		 * 	if (document.getElementById("#hiddenClasses") === null) return; //guard clause
+		 * 	[...document.getElementById("#hiddenClasses").children].forEach(hc => hc.addEventListener('click', updateRPC))
+		 * 	strippedConsole.log("hooked hiddenClasses")
+		 * 	areHiddenClassesHooked = true
+		 * }
+		 */
 	}
 
-	//updating rpc
-	ipcRenderer.on('main_did-finish-load', updateRPC)
-	document.addEventListener("pointerlockchange", updateRPC) //thank God this exists
-	window.addEventListener("load", () => {
-		updateRPC(); 
+	// updating rpc
+	ipcRenderer.on('main_did-finish-load', updateRPC);
+	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
+	window.addEventListener('load', () => {
+		updateRPC();
 		setTimeout(() => {
-			//hook elements that update rpc
-			try { document.getElementById("windowCloser").addEventListener('click', updateRPC) } catch (e) { strippedConsole.error("didn't hook wincloser", e) }
-			try { document.getElementById("customizeButton").addEventListener('click', updateRPC) } catch (e) { strippedConsole.error("didn't hook customizeButton", e) }
-		}, 4000)
-	})
-	
-})
+			// hook elements that update rpc
+			try { document.getElementById('windowCloser').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook wincloser", e); }
+			try { document.getElementById('customizeButton').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook customizeButton", e); }
+		}, 4000);
+	});
+});
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
 	su.userscriptsPath = recieved_userscriptsPath;
@@ -223,8 +227,8 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 		try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) {}
 		document.getElementById('settSearch').addEventListener('input', settSearchCallback);
 
-		try { document.querySelector(`.settingsBtn[onclick*="reset"]`).removeEventListener("click", settSearchCallback) } catch (e) { }
-		document.querySelector(`.settingsBtn[onclick*="reset"]`).addEventListener("click", settSearchCallback)
+		try { document.querySelector('.settingsBtn[onclick*="reset"]').removeEventListener('click', settSearchCallback); } catch (e) { }
+		document.querySelector('.settingsBtn[onclick*="reset"]').addEventListener('click', settSearchCallback);
 	}
 
 	const advSliderElem = document.querySelector('.advancedSwitch input#typeBtn');

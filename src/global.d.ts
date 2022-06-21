@@ -81,5 +81,5 @@ interface CategoryName {
 	note?: string;
 }
 
-//discord rpc
-type RPCargs = { details: string, state: string }
+// discord rpc
+type RPCargs = { details: string, state: string };

@@ -225,14 +225,16 @@ app.on('ready', () => {
 		mainWindow.show();
 		if (userPrefs.fullscreen === 'maximized') mainWindow.maximize();
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
-		mainWindow.webContents.on("did-finish-load", () => { mainWindow.webContents.send("main_did-finish-load") })
+		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); });
 
 		if (userPrefs.discordRPC) {
-			const DiscordRPC = require("discord-rpc");
+			// eslint-disable-next-line
+			const DiscordRPC = require('discord-rpc');
 			const rpc = new DiscordRPC.Client({ transport: 'ipc' });
 			const startTimestamp = new Date();
-			const clientId = "988529967220523068"
-		
+			const clientId = '988529967220523068';
+
+			// eslint-disable-next-line no-inner-declarations
 			function updateRPC({ details, state }: RPCargs) {
 				const data = {
 					details,
@@ -240,24 +242,24 @@ app.on('ready', () => {
 					startTimestamp,
 					largeImageKey: 'logo',
 					largeImageText: 'Playing Krunker',
-					instance: false,
-				}
-				if (userPrefs.extendedRPC) { 
+					instance: false
+				};
+				if (userPrefs.extendedRPC) {
 					Object.assign(data, {
 						buttons: [
-							{ label: "Github", url: "https://github.com/KraXen72/crankshaft" }, 
-							{ label: "Discord Server", url: "https://discord.gg/ZeVuxG7gQJ" }
+							{ label: 'Github', url: 'https://github.com/KraXen72/crankshaft' },
+							{ label: 'Discord Server', url: 'https://discord.gg/ZeVuxG7gQJ' }
 						]
-					})
+					});
 				}
 				rpc.setActivity(data);
 			}
-		
-			//rpc.once("ready", () => { updateRPC() });
+
+			// rpc.once("ready", () => { updateRPC() });
 			rpc.login({ clientId }).catch(console.error);
-		
-			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data) })
-			mainWindow.webContents.send("initDiscordRPC")
+
+			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); });
+			mainWindow.webContents.send('initDiscordRPC');
 		}
 	});
 
@@ -306,7 +308,7 @@ app.on('ready', () => {
 
 	mainWindow.webContents.on('new-window', (event, url) => {
 		console.log('url trying to open:', url, 'socialWindowReference:', typeof socialWindowReference);
-		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', "instagram.com"];
+		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com'];
 
 		// sanity check, if social window is destroyed but the reference still exists
 		// eslint-disable-next-line no-void
