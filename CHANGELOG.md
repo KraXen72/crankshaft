@@ -8,6 +8,7 @@
 
 ### Bug Fixes
 
+* add back rpc stuff ([b2917ed](https://github.com/KraXen72/crankshaft/commit/b2917ed802f0983772384e4067e9464256980577))
 * Devtools now work again on linux machines ([e7d37ea](https://github.com/KraXen72/crankshaft/commit/e7d37ea338957fbb11ca3aefd4cd0cc206582a03))
 * wait 500 ms for devtools regardless of os ([6645128](https://github.com/KraXen72/crankshaft/commit/66451288601acca9810fc5a784d0b7b2ad6f5503))
 
