@@ -1,7 +1,7 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
-import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate } from './menu';
+import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
 import { Swapper } from './resourceswapper';
 
@@ -38,6 +38,7 @@ const settingsSkeleton = {
 	extendedRPC: false,
 	'angle-backend': 'default',
 	logDebugToConsole: false,
+	alwaysWaitForDevTools: false,
 	safeFlags_removeUselessFeatures: false,
 	safeFlags_helpfulFlags: false,
 	safeFlags_gpuRasterizing: false,
@@ -136,9 +137,13 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 				click: () => {
 					if (genericWin.webContents.canGoForward()) genericWin.webContents.goForward();
 				}
-			}
+			},
+			{ type: 'separator' },
+			...constructDevtoolsSubmenu(genericWin, userPrefs.alwaysWaitForDevTools || null)
 		]);
 	}
+
+
 	const thisMenu = Menu.buildFromTemplate(providedMenuTemplate);
 
 	genericWin.setMenu(thisMenu);
@@ -290,7 +295,9 @@ app.on('ready', () => {
 					if (copiedText.includes('https://krunker.io/?game')) mainWindow.webContents.loadURL(copiedText);
 				}
 			},
-			{ label: 'Relaunch Client', accelerator: 'F10', click: () => { app.relaunch(); app.exit(); } }
+			{ label: 'Relaunch Client', accelerator: 'F10', click: () => { app.relaunch(); app.exit(); } },
+			{ type: 'separator' },
+			...constructDevtoolsSubmenu(mainWindow, userPrefs.alwaysWaitForDevTools || null)
 		]
 	};
 
@@ -298,7 +305,7 @@ app.on('ready', () => {
 
 	// the other submenus are defined in menu.ts
 	const csMenu = Menu.buildFromTemplate([...macAppMenuArr, gameSubmenu, ...csMenuTemplate]);
-	const strippedMenuTemplate = [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate];
+	const strippedMenuTemplate = [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate]; // don't forget to inject devtools in this
 
 	Menu.setApplicationMenu(csMenu);
 
