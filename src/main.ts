@@ -378,7 +378,7 @@ app.on('ready', () => {
 			}
 		}
 	});
-
+	
 	// mainWindow.webContents.on("will-navigate", (event: Event, url: string) => { console.log(url) })
 
 	// Resource Swapper, thanks idkr
