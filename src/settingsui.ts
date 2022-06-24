@@ -11,7 +11,7 @@ let userPrefs: UserPrefs;
 let userPrefsPath: string;
 /* eslint-disable init-declarations */
 
-document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); }, { once: true });
+document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
 ipcRenderer.on('main_sends_userPrefs', (event, recieved_userPrefsPath: string, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
