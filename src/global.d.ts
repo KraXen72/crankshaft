@@ -11,7 +11,7 @@ interface InsertedCSS {
 	[identifier: string]: string;
 }
 
-interface Userscript {
+interface IUserscript {
 	name: string;
 	fullpath: string;
 	rawContent?: string;
@@ -20,6 +20,12 @@ interface Userscript {
 		meta?: UserscriptMeta | false,
 		unload?: Function | false
 	}
+}
+
+interface IUserscriptInstance extends IUserscript {
+	load: Function;
+	meta: UserscriptMeta | false,
+	unload: Function | false 
 }
 
 interface UserscriptMeta {
@@ -82,9 +88,13 @@ interface RenderReadySetting extends SettingItemGeneric {
 
 	// the data
 	key: string;
-	callback: 'normal' | 'userscript' | Function;
+	callback: Callbacks;
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	value: any;
+
+	// an optional unload function (for now for userscripts)
+	unload?: Function;
 }
 
 interface CategoryName {
