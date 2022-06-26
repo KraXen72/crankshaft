@@ -34,16 +34,15 @@ Feel free to download them and put them into the `/scripts` directory.
 - no overcomplicated format required for userscripts. just make sure it is valid js code.
 - all userscripts are disabled when they are first added.
 - refresh the page to see userscript changes.
-  
+
 ### notes:
 - when *userscript support* is disabled in settings, no code related to this feature will run inside or outside the client. => doesen't have any performance impact on the client if disabled
-- userscripts are executed *as soon as possible*, if you want to add elements, add a `DOMContentLoaded` eventlistener
 - DO NOT DELETE `Documents/Crankshaft/scripts/tracker.json`, it is used to keep track of enabled and disabled userscripts
   
 > Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.   
 > Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED  
-> Any userscripts that modify the game's canvas (Renderer) are NOT ALLOWED  
-> You are encouraged to write scripts using `"use strict"`, because it skips esbuild transforming your code.
+  
+If you want to write a userscript, please read the [Documentation](./USERSCRIPTS.md)
 
 ## discord rich presence
 - enable discord rich presence to show off your gamemode, map, class and skin to your discord friends!
