@@ -391,6 +391,7 @@ app.on('ready', () => {
  * for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic
  * when all windows close, the app should exit itself
  */
+// eslint-disable-next-line consistent-return
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') return app.quit(); // don't quit on mac systems unless user explicitly quits
 });

@@ -1,8 +1,10 @@
+
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, toggleSettingCSS } from './utils';
-import { styleSettingsCSS, su } from './preload';
+import { styleSettingsCSS } from './preload';
+import { su } from './userscripts';
 
 /// <reference path="global.d.ts" />
 
@@ -217,8 +219,6 @@ class SettingElem {
 			 * }
 			 */
 		} else if (callback === 'userscript') {
-			// const thisUserscript = userscripts.filter(u => u.fullpath = this.props.desc)
-
 			ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
 			su.userscriptTracker[this.props.title] = value;
 			saveUserscriptTracker();
@@ -226,6 +226,11 @@ class SettingElem {
 			// eslint-disable-next-line callback-return
 			callback();
 		}
+
+		if ('unload' in this.props
+			&& typeof this.props.unload === 'function'
+			&& this.props.type === 'bool'
+			&& value === false) this.props.unload();
 	}
 
 
@@ -344,14 +349,20 @@ export function renderSettings() {
 					safety: 0,
 					callback: 'userscript'
 				};
-				if (userscript?.exported?.meta ?? false) { // render custom metadata if provided in userscrsipt.exported
-					const thisMeta = userscript.exported.meta as UserscriptMeta;
+				if (userscript.meta) { // render custom metadata if provided in userscrsipt.exported
+					const thisMeta = userscript.meta
 					Object.assign(obj, {
 						title: 'name' in thisMeta && thisMeta.name ? thisMeta.name : userscript.name,
 						desc: `${'desc' in thisMeta && thisMeta.desc ? thisMeta.desc.slice(0, 60) : ''}
 						${'author' in thisMeta && thisMeta.author ? `&#8226; by ${thisMeta.author}` : ''}
 						${'version' in thisMeta && thisMeta.version ? `&#8226; v${thisMeta.version}` : ''}
 						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}`
+					});
+				}
+				if (userscript.unload) { // if userscript has an unload function, add instant icon and register unload function
+					Object.assign(obj, {
+						instant: true,
+						unload: userscript.unload as Function
 					});
 				}
 

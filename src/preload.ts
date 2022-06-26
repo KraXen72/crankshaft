@@ -1,4 +1,4 @@
-﻿import { readFileSync, readdirSync, writeFileSync } from 'fs';
+﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { createElement, injectSettingsCSS, toggleSettingCSS } from './utils';
@@ -16,19 +16,6 @@ export const strippedConsole = {
 	warn: console.warn.bind(console)
 };
 
-/** simple error message for usercripts. can be called from the userscript itself */
-const errAlert = (err: Error, name: string) => {
-	// eslint-disable-next-line no-alert
-	alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`);
-};
-
-/** sharedUserscriptData */
-export const su = {
-	userscriptsPath: '',
-	userscriptTrackerPath: '',
-	userscripts: <Userscript[]>[],
-	userscriptTracker: <UserscriptTracker>{}
-};
 const $assets = pathResolve(__dirname, '..', 'assets');
 let lastActiveTab = 0;
 
@@ -80,17 +67,6 @@ ipcRenderer.on('initDiscordRPC', () => {
 			// send actual data
 			ipcRenderer.send('preload_updates_DiscordRPC', data);
 		}
-
-
-		/*
-		 * this doesen't seem to work no matter what i do, so no hidden classes updating rpc for now. playling the game will update anyway
-		 * if (!areHiddenClassesHooked) { //once hidden classes are hooked, it won't attempt to do it again
-		 * 	if (document.getElementById("#hiddenClasses") === null) return; //guard clause
-		 * 	[...document.getElementById("#hiddenClasses").children].forEach(hc => hc.addEventListener('click', updateRPC))
-		 * 	strippedConsole.log("hooked hiddenClasses")
-		 * 	areHiddenClassesHooked = true
-		 * }
-		 */
 	}
 
 	// updating rpc
@@ -104,77 +80,6 @@ ipcRenderer.on('initDiscordRPC', () => {
 		}, 4000);
 	});
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
-});
-
-ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
-	su.userscriptsPath = recieved_userscriptsPath;
-	su.userscriptTrackerPath = pathResolve(su.userscriptsPath, 'tracker.json');
-
-	// init the userscripts (read, map and set up tracker)
-
-	// remove all non .js files, map to {name, fullpath}
-	su.userscripts = readdirSync(su.userscriptsPath, { withFileTypes: true })
-		.filter(entry => entry.name.endsWith('.js'))
-		.map(entry => ({ name: entry.name, fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
-
-	const tracker: UserscriptTracker = {};
-
-	su.userscripts.forEach(u => { tracker[u.name] = false; }); // fill tracker with falses, so new userscripts get added disabled
-	Object.assign(tracker, JSON.parse(readFileSync(su.userscriptTrackerPath, { encoding: 'utf-8' }))); // read and assign the tracker.json
-	writeFileSync(su.userscriptTrackerPath, JSON.stringify(tracker, null, 2), { encoding: 'utf-8' }); // save with the new userscripts
-
-	su.userscriptTracker = tracker;
-
-	// dummy metadata object
-	const meta = {
-		name: 'Untitled userscript',
-		author: false,
-		version: false,
-		desc: false,
-		src: false
-	};
-
-	// run the code in the userscript
-	su.userscripts.forEach((u, index) => {
-		if (tracker[u.name]) { // if enabled
-			const rawContent = readFileSync(u.fullpath, { encoding: 'utf-8' });
-			let content: { code: string, warnings: string[] } = { code: '', warnings: [] };
-			let hadToTransform = true;
-
-			if (rawContent.startsWith('"use strict"')) {
-				content = { code: rawContent, warnings: [] };
-				hadToTransform = false;
-			} else {
-				try {
-					// eslint-disable-next-line
-					content = require('esbuild').transformSync(rawContent, { minify: true, banner: '"use strict"' });
-				} catch (error) {
-					errAlert(error, u.name);
-					strippedConsole.error(error);
-				}
-			}
-
-			if (content.warnings.length > 0) strippedConsole.warn(`'${u.name}' compiled with warnings: `, content.warnings);
-			u.content = content.code;
-
-			// eslint-disable-next-line no-new-wrappers
-			const code = new String(content.code);
-
-			try {
-				// @ts-ignore
-				// eslint-disable-next-line @typescript-eslint/no-implied-eval
-				const exported = new Function(code).apply({ unload: false, meta }); // userscriptUtils get exposed to the userscript
-				if (typeof exported !== 'undefined') su.userscripts[index].exported = exported;
-			} catch (error) {
-				errAlert(error, u.name);
-				strippedConsole.error(error);
-			}
-
-			strippedConsole.log(`%c[cs]${hadToTransform ? '%c[esbuilt]' : '%c[strict]'} %cran %c'${u.name.toString()}' `,
-				'color: lightblue; font-weight: bold;', hadToTransform ? 'color: orange' : 'color: #62dd4f',
-				'color: white;', 'color: lightgreen;');
-		}
-	});
 });
 
 ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, clientSplash, userscripts }, version) => {
