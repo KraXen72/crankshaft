@@ -197,6 +197,7 @@ app.on('ready', () => {
 		}
 	};
 
+	// userPrefs.fullscreen = maximized gets handled later
 	switch (userPrefs.fullscreen) {
 		case 'fullscreen':
 			mainWindowProps.fullscreen = true;
@@ -260,11 +261,9 @@ app.on('ready', () => {
 				rpc.setActivity(data);
 			}
 
-			// rpc.once("ready", () => { updateRPC() });
-			rpc.login({ clientId }).catch(console.error);
-
-			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); });
-			mainWindow.webContents.send('initDiscordRPC');
+			rpc.login({ clientId }).catch(console.error); // login to the RPC
+			mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
+			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
 		}
 	});
 
@@ -352,7 +351,7 @@ app.on('ready', () => {
 				}
 			}
 
-		// for comp just load it into the main url
+		// for comp just load it into the mainWindow
 		} else if (url.includes('comp.krunker.io') || url.includes('https://krunker.io/?game') || (url.includes('?game=') && url.includes('&matchId='))) {
 			event.preventDefault();
 			mainWindow.loadURL(url);
@@ -378,7 +377,7 @@ app.on('ready', () => {
 			}
 		}
 	});
-	
+
 	// mainWindow.webContents.on("will-navigate", (event: Event, url: string) => { console.log(url) })
 
 	// Resource Swapper, thanks idkr
@@ -386,12 +385,12 @@ app.on('ready', () => {
 		const CrankshaftSwapInstance = new Swapper(mainWindow, 'normal', swapperPath);
 		CrankshaftSwapInstance.init();
 	}
-
-	mainWindow.on('close', () => { app.quit(); });
 });
 
-app.on('quit', () => app.quit());
+/*
+ * for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic
+ * when all windows close, the app should exit itself
+ */
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') return app.quit();
-	return null;
+	if (process.platform !== 'darwin') return app.quit(); // don't quit on mac systems unless user explicitly quits
 });

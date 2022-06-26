@@ -344,6 +344,17 @@ export function renderSettings() {
 					safety: 0,
 					callback: 'userscript'
 				};
+				if (userscript?.exported?.meta ?? false) { // render custom metadata if provided in userscrsipt.exported
+					const thisMeta = userscript.exported.meta as UserscriptMeta;
+					Object.assign(obj, {
+						title: 'name' in thisMeta && thisMeta.name ? thisMeta.name : userscript.name,
+						desc: `${'desc' in thisMeta && thisMeta.desc ? thisMeta.desc.slice(0, 60) : ''}
+						${'author' in thisMeta && thisMeta.author ? `&#8226; by ${thisMeta.author}` : ''}
+						${'version' in thisMeta && thisMeta.version ? `&#8226; v${thisMeta.version}` : ''}
+						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}`
+					});
+				}
+
 				return obj;
 			});
 

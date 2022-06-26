@@ -104,7 +104,6 @@ ipcRenderer.on('initDiscordRPC', () => {
 		}, 4000);
 	});
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
-	 
 });
 
 ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
@@ -126,8 +125,17 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 
 	su.userscriptTracker = tracker;
 
+	// dummy metadata object
+	const meta = {
+		name: 'Untitled userscript',
+		author: false,
+		version: false,
+		desc: false,
+		src: false
+	};
+
 	// run the code in the userscript
-	su.userscripts.forEach(u => {
+	su.userscripts.forEach((u, index) => {
 		if (tracker[u.name]) { // if enabled
 			const rawContent = readFileSync(u.fullpath, { encoding: 'utf-8' });
 			let content: { code: string, warnings: string[] } = { code: '', warnings: [] };
@@ -151,10 +159,12 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 
 			// eslint-disable-next-line no-new-wrappers
 			const code = new String(content.code);
+
 			try {
 				// @ts-ignore
 				// eslint-disable-next-line @typescript-eslint/no-implied-eval
-				(new Function(code)());
+				const exported = new Function(code).apply({ unload: false, meta }); // userscriptUtils get exposed to the userscript
+				if (typeof exported !== 'undefined') su.userscripts[index].exported = exported;
 			} catch (error) {
 				errAlert(error, u.name);
 				strippedConsole.error(error);

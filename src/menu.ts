@@ -37,9 +37,9 @@ export const genericMainSubmenu: (MenuItemConstructorOptions | MenuItem) = {
 
 /** make 2 menuItems that determine wether to use fallback or not, and then act accordingly */
 export function constructDevtoolsSubmenu(providedWindow: BrowserWindow, skipFallback: null | boolean = null, options?: OpenDevToolsOptions) {
-	const maxLag = 500 // default timeout by asger-finding / Commander
-	
-	/** Fallback if openDevTools fails */ 
+	const maxLag = 500; // default timeout by asger-finding / Commander
+
+	/** Fallback if openDevTools fails */
 	function fallbackDevtools() {
 		providedWindow.webContents.closeDevTools();
 
@@ -55,12 +55,12 @@ export function constructDevtoolsSubmenu(providedWindow: BrowserWindow, skipFall
 	function openDevToolsWithFallback() {
 		if (skipFallback === true) {
 			providedWindow.webContents.openDevTools(options);
-		} else if (skipFallback === false) { 
-			fallbackDevtools()
+		} else if (skipFallback === false) {
+			fallbackDevtools();
 		} else if (skipFallback === null) {
-			providedWindow.webContents.openDevTools(options); //start opening devtools
-			const popupDevtoolTimeout = setTimeout(() => { skipFallback = false; fallbackDevtools() }, maxLag); //wait maxLag. if times out, always run fallback
-			providedWindow.webContents.once('devtools-opened', () => { skipFallback = true; clearTimeout(popupDevtoolTimeout) }); //if opens devtools first, never run fallback
+			providedWindow.webContents.openDevTools(options); // start opening devtools
+			const popupDevtoolTimeout = setTimeout(() => { skipFallback = false; fallbackDevtools(); }, maxLag); // wait maxLag. if times out, always run fallback
+			providedWindow.webContents.once('devtools-opened', () => { skipFallback = true; clearTimeout(popupDevtoolTimeout); }); // if opens devtools first, never run fallback
 		}
 	}
 

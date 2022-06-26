@@ -16,6 +16,18 @@ interface Userscript {
 	fullpath: string;
 	rawContent?: string;
 	content?: string;
+	exported?: {
+		meta?: UserscriptMeta | false,
+		unload?: Function | false
+	}
+}
+
+interface UserscriptMeta {
+	name: string;
+	author: string;
+	version: string;
+	desc: string;
+	src: string;
 }
 
 interface Window {
