@@ -37,7 +37,7 @@ class Userscript implements IUserscriptInstance {
 
 	#parsedContent?: string;
 
-	constructor(props: IUserscript ) {
+	constructor(props: IUserscript) {
 		this.#initialized = false;
 		this.name = props.name;
 		this.fullpath = props.fullpath;
@@ -47,24 +47,27 @@ class Userscript implements IUserscriptInstance {
 
 		this.rawContent = readFileSync(this.fullpath, { encoding: 'utf-8' });
 
-		if (this.rawContent.includes("// ==UserScript==")) {
-			const metaParser = require("userscript-meta")
+		if (this.rawContent.includes('// ==UserScript==') && this.rawContent.includes('// ==/UserScript==')) {
+			// eslint-disable-next-line
+			const metaParser = require('userscript-meta');
 
-			let chunk: (string[] | string) = this.rawContent.split("\n")
-			const startLine = chunk.findIndex(l => l.includes("// ==UserScript=="))
-			const endLine = chunk.findIndex(l => l.includes("// ==/UserScript=="))
-			strippedConsole.log(chunk, startLine, endLine)
-			chunk = chunk.slice(startLine, endLine + 1).join("\n")
-			
-			strippedConsole.log(chunk)
-			this.meta = metaParser.parse(chunk)
+			let chunk: (string[] | string) = this.rawContent.split('\n');
+			const startLine = chunk.findIndex(l => l.includes('// ==UserScript=='));
+			const endLine = chunk.findIndex(l => l.includes('// ==/UserScript=='));
+			strippedConsole.log(chunk, startLine, endLine);
+			chunk = chunk.slice(startLine, endLine + 1).join('\n');
 
-			// if the metadata define some prop twice, the parser turns it into an array.
-			// we check if a value isArray and if yes, take the first item in that array as the new value
+			this.meta = metaParser.parse(chunk);
+
+			/*
+			 * if the metadata define some prop twice, the parser turns it into an array.
+			 * we check if a value isArray and if yes, take the first item in that array as the new value
+			 */
 			for (let i = 0; i < Object.keys(this.meta).length; i++) {
 				const metaKey = Object.keys(this.meta)[i];
-				//@ts-ignore
-				if (Array.isArray(this.meta[metaKey])) this.meta[metaKey] = this.meta[metaKey][0]
+
+				// @ts-ignore
+				if (Array.isArray(this.meta[metaKey])) this.meta[metaKey] = this.meta[metaKey][0];
 			}
 		}
 	}
@@ -93,12 +96,9 @@ class Userscript implements IUserscriptInstance {
 		return this.#parsedContent;
 	}
 
-	/** 
-	 * return ready-to-run content
-	 * not sure if this electron version supports private getters and setters but oh well
-	 */
+	/** return ready-to-run content */
 	get #content() {
-		if (this.#initialized) { return this.#parsedContent } else { return this.#init(); }
+		if (this.#initialized) return this.#parsedContent; return this.#init();
 	}
 
 	/** runs the userscript */
@@ -113,8 +113,10 @@ class Userscript implements IUserscriptInstance {
 
 			// userscript can return an object with unload and meta properties. use them if it did return
 			if (typeof exported !== 'undefined') {
+				// more stuff to be added here later
 				if ('unload' in exported) this.unload = exported.unload;
 			}
+
 
 			strippedConsole.log(`%c[cs]${this.#hadToTransform ? '%c[esbuilt]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
 				'color: lightblue; font-weight: bold;', this.#hadToTransform ? 'color: orange' : 'color: #62dd4f',
@@ -124,12 +126,14 @@ class Userscript implements IUserscriptInstance {
 			strippedConsole.error(error);
 		}
 
-        strippedConsole.log(this)
+		strippedConsole.log(this);
 	}
 
-    // TODO metadtada won't show when script is not enabled, because it doesen't run and return anything...
-    // TODO run script on turn on
-    // TODO unload script when turned off
+	/*
+	 * TODO metadtada won't show when script is not enabled, because it doesen't run and return anything...
+	 * TODO run script on turn on
+	 * TODO unload script when turned off
+	 */
 
 }
 
