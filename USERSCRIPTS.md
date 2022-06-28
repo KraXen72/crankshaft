@@ -7,32 +7,38 @@ Writing userscripts for crankshaft is easy. You don't need to follow any templat
 
 There are a few example userscripts mentioned in the README you can go off of.
 
-## More functionality
-you can add define `meta` and `unload` on the js *this* object for the userscript. Don't forget to return the *this* object at the end of the userscript.
-
-### Metadata
-your userscript can provide metadata that will be displayed in the settings. export them like this:
+## Metadata
+Crankshaft recognizes standard userscript metadata comment, but only a set of keys. Copy this template to the top of your userscript for crankshaft to recognize it.  
+You can define `@name`, `@author`, `@ersion`, `@desc` and `@src`. You don't have to define all of them.  
+Defining metadata is optional. If no metadata is provided, only information displayed will be the filename.  
   
+### Example
 ```js
-// awesome-userscript.js
+// ==UserScript==
+// @name My Awesome Userscript
+// @author Unlucky1031
+// @version 1.0
+// @desc Adds a ton of awesomness to the game
+// @src https://github.com/Unlucky1031/crankshaft-userscript
+// ==/UserScript==
 
-// your code
-
-// all of these are optional.
-// if you don't define metadata, filename will be used as the name field.
-// any field with the value of false or not a string will not be displayed. 
-// any extra field not here will not be displayed.
-this.meta = { 
-    name: "My awesome userscript",
-	author: "Unlucky1031",
-	version: "1.0", // you can write whatever here. you are encouraged to use semver. it has to be a string.
-	desc: "Adds a ton of awesomness to the game",
-	src: "https://github.com/Unlucky1031/crankshaft-userscript"
-} 
-
-return this
-
+console.log("Everything is awesome! Everything is cool when you're part of a team!")
 ```
+  
+### Template to copy
+```js
+// ==UserScript==
+// @name 
+// @author 
+// @version 
+// @desc 
+// @src 
+// ==/UserScript==
+```
+
+## More functionality
+you can define an `unload` function (more coming soon) on the js *this* object for the userscript.   
+Don't forget to return *this* object at the end of the userscript.
 
 ### Unload function
 if you want users to be able to turn on and off your userscript without reloading the page, please define an unload function. 
