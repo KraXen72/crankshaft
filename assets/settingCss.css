@@ -159,6 +159,11 @@ input:checked + .advancedSlider:hover {
     font-family: inherit !important;
 }
 
+.Crankshaft-settings .settName .s-update:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 /* .crankshaft-settings-codeblock, .crst-cb {
     color: rgb(166, 166, 166);
     border: 1px solid #3b3c3e4d;
