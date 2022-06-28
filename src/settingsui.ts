@@ -107,6 +107,8 @@ class SettingElem {
 
 	updateKey: 'value' | 'checked' | '';
 
+	#wrapper: HTMLElement | false
+
 	constructor(props: RenderReadySetting) {
 		/** @type {Object} save the props from constructor to this class (instance) */
 		this.props = props;
@@ -122,6 +124,8 @@ class SettingElem {
 
 		/** @type {String} is the key to get checked when writing an update, for checkboxes it's checked, for selects its value etc.*/
 		this.updateKey = '';
+
+		this.#wrapper = false
 
 		// /** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
 
@@ -207,58 +211,60 @@ class SettingElem {
 			// you can add custom instant refresh callbacks for settings here
 			if (this.props.key === 'hideAds') toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
 			if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
-
-			/*
-			 * if (this.props.key === "userscripts" && value === true) {
-			 *     //show disclaimer before turning on userscripts
-			 *     const pick = userscriptDisclaimer(false)
-			 *     if (!pick) {
-			 *         userPrefs["userscripts"] = false
-			 *         saveSettings()
-			 *     }
-			 * }
-			 */
 		} else if (callback === 'userscript') {
-			ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
-			su.userscriptTracker[this.props.title] = value;
+			if ('userscriptReference' in this.props) {
+				const userscript = this.props.userscriptReference
+
+				if (value && !userscript.hasRan) {
+					userscript.load()
+				} else if (!value) {
+					if (this.props.instant && typeof userscript.unload === "function") {
+						userscript.unload()
+					} else {
+						elem.querySelector(".setting-desc-new").textContent = `REFRESH PAGE TO SEE CHANGES`
+						target.setAttribute("disabled", '')
+					}
+				}
+				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
+				su.userscriptTracker[userscript.name] = value;
+			} else {
+				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
+				su.userscriptTracker[this.props.title] = value;
+			}
 			saveUserscriptTracker();
 		} else {
 			// eslint-disable-next-line callback-return
-			callback();
+			callback(value);
 		}
-
-		if ('unload' in this.props
-			&& typeof this.props.unload === 'function'
-			&& this.props.type === 'bool'
-			&& value === false) this.props.unload();
 	}
 
 
 	/**
 	 * this initializes the element and its eventlisteners. 
-	 * @returns {Element}
 	 */
-	get elem(): Element {
-		/*
-		 * i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
-		 * w stands for wrapper
-		 */
-		const wrapper = createElement('div', {
-			class: ['setting', 'settName', `safety-${this.props.safety}`, this.props.type],
-			id: `settingElem-${this.props.key}`,
-			innerHTML: this.HTML
-		}); // w stands for wrapper
+	get elem() {
+		if (this.#wrapper !== false) {
+			return this.#wrapper //returnt he element if already initialized
+		} else {
+			// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
+			const wrapper = createElement('div', {
+				class: ['setting', 'settName', `safety-${this.props.safety}`, this.props.type],
+				id: `settingElem-${this.props.key}`,
+				innerHTML: this.HTML
+			});
 
-		if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value; // select value applying is fucky so like fix it i guess
-		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal';
+			if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value; 
+			if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
 
-		// @ts-ignore
-		wrapper[this.updateMethod] = () => {
-			this.update({ elem: wrapper, callback: this.props.callback });
-		};
-		return wrapper; // return the element
+			// @ts-ignore
+			wrapper[this.updateMethod] = () => {
+				this.update({ elem: wrapper, callback: this.props.callback });
+			};
+
+			this.#wrapper = wrapper
+			return wrapper; // return the element
+		}
 	}
-
 }
 
 // i am insane for making this
@@ -294,7 +300,7 @@ const skeleton = {
 };
 
 export function renderSettings() {
-	// strippedConsole.log("renderSettings")
+	// do the settingElem class instances still exist after we close settings?
 	const settHolder = document.getElementById('settHolder');
 	settHolder.textContent = '';
 
@@ -347,6 +353,7 @@ export function renderSettings() {
 					type: 'bool',
 					desc: userscript.fullpath,
 					safety: 0,
+					userscriptReference: userscript,
 					callback: 'userscript'
 				};
 				if (userscript.meta) { // render custom metadata if provided in userscrsipt.exported
@@ -359,12 +366,7 @@ export function renderSettings() {
 						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}`
 					});
 				}
-				if (userscript.unload) { // if userscript has an unload function, add instant icon and register unload function
-					Object.assign(obj, {
-						instant: true,
-						unload: userscript.unload as Function
-					});
-				}
+				if (userscript.unload) { obj.instant = true }
 
 				return obj;
 			});

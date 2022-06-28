@@ -33,12 +33,15 @@ class Userscript implements IUserscriptInstance {
 
 	#initialized: boolean;
 
+	hasRan: boolean
+
 	#hadToTransform: boolean;
 
 	#parsedContent?: string;
 
 	constructor(props: IUserscript) {
 		this.#initialized = false;
+		this.hasRan = false;
 		this.name = props.name;
 		this.fullpath = props.fullpath;
 
@@ -116,8 +119,7 @@ class Userscript implements IUserscriptInstance {
 				// more stuff to be added here later
 				if ('unload' in exported) this.unload = exported.unload;
 			}
-
-
+			
 			strippedConsole.log(`%c[cs]${this.#hadToTransform ? '%c[esbuilt]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
 				'color: lightblue; font-weight: bold;', this.#hadToTransform ? 'color: orange' : 'color: #62dd4f',
 				'color: white;', 'color: lightgreen;');
@@ -128,6 +130,8 @@ class Userscript implements IUserscriptInstance {
 
 		strippedConsole.log(this);
 	}
+
+
 
 	/*
 	 * TODO metadtada won't show when script is not enabled, because it doesen't run and return anything...

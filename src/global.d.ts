@@ -23,9 +23,10 @@ interface IUserscript {
 }
 
 interface IUserscriptInstance extends IUserscript {
-	load: Function;
 	meta: UserscriptMeta | false,
-	unload: Function | false 
+	hasRan: boolean,
+	load: Function;
+	unload: Function | false
 }
 
 interface UserscriptMeta {
@@ -94,7 +95,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 	value: any;
 
 	// an optional unload function (for now for userscripts)
-	unload?: Function;
+	userscriptReference?: IUserscriptInstance
 }
 
 interface CategoryName {
