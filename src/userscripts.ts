@@ -17,6 +17,7 @@ const errAlert = (err: Error, name: string) => {
 	alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`);
 };
 
+// this could be moved into the ipcRenderer eventlistener but i don't like the idea of a class existing only locally in that arrow function...
 /** class for userscripts */
 class Userscript implements IUserscriptInstance {
 
@@ -36,7 +37,7 @@ class Userscript implements IUserscriptInstance {
 
 	#parsedContent?: string;
 
-	constructor(props: IUserscript) {
+	constructor(props: IUserscript ) {
 		this.#initialized = false;
 		this.name = props.name;
 		this.fullpath = props.fullpath;
@@ -45,6 +46,27 @@ class Userscript implements IUserscriptInstance {
 		this.unload = false;
 
 		this.rawContent = readFileSync(this.fullpath, { encoding: 'utf-8' });
+
+		if (this.rawContent.includes("// ==UserScript==")) {
+			const metaParser = require("userscript-meta")
+
+			let chunk: (string[] | string) = this.rawContent.split("\n")
+			const startLine = chunk.findIndex(l => l.includes("// ==UserScript=="))
+			const endLine = chunk.findIndex(l => l.includes("// ==/UserScript=="))
+			strippedConsole.log(chunk, startLine, endLine)
+			chunk = chunk.slice(startLine, endLine + 1).join("\n")
+			
+			strippedConsole.log(chunk)
+			this.meta = metaParser.parse(chunk)
+
+			// if the metadata define some prop twice, the parser turns it into an array.
+			// we check if a value isArray and if yes, take the first item in that array as the new value
+			for (let i = 0; i < Object.keys(this.meta).length; i++) {
+				const metaKey = Object.keys(this.meta)[i];
+				//@ts-ignore
+				if (Array.isArray(this.meta[metaKey])) this.meta[metaKey] = this.meta[metaKey][0]
+			}
+		}
 	}
 
 	/** transform rawContent if needed, add it to this.content and return it */
@@ -75,34 +97,23 @@ class Userscript implements IUserscriptInstance {
 	 * return ready-to-run content
 	 * not sure if this electron version supports private getters and setters but oh well
 	 */
-	#getContent() {
-		if (this.#initialized) return this.#parsedContent;
-
-		return this.#init();
+	get #content() {
+		if (this.#initialized) { return this.#parsedContent } else { return this.#init(); }
 	}
 
 	/** runs the userscript */
 	load() {
 		// eslint-disable-next-line no-new-wrappers
-		const code = new String(this.#getContent());
-
-		const meta = {
-			name: 'Untitled userscript',
-			author: false,
-			version: false,
-			desc: false,
-			src: false
-		};
+		const code = new String(this.#content);
 
 		try {
 			// @ts-ignore
 			// eslint-disable-next-line @typescript-eslint/no-implied-eval
-			const exported = new Function(code).apply({ unload: false, meta });
+			const exported = new Function(code).apply({ unload: false });
 
 			// userscript can return an object with unload and meta properties. use them if it did return
 			if (typeof exported !== 'undefined') {
 				if ('unload' in exported) this.unload = exported.unload;
-				if ('meta' in exported) this.meta = exported.meta;
 			}
 
 			strippedConsole.log(`%c[cs]${this.#hadToTransform ? '%c[esbuilt]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,

@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "discord-rpc": "^4.0.1",
-    "esbuild": "^0.14.47"
+    "esbuild": "^0.14.47",
+    "userscript-meta": "^1.0.1"
   }
 }
