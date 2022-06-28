@@ -20,7 +20,7 @@
 - **secure:** `web security` is on, the `remote` module and `nodeIntegration` are disabled
 - written in typescript
 - no-compromise mac, linux and windows support
-- only 2 dependencies: `esbuild` (for userscripts) and `discord-rpc`. Neither get loaded if not needed.
+<!-- - only 2 dependencies: `esbuild` (for userscripts) and `discord-rpc`. Neither get loaded if not needed. -->
   
 ## userscripts
 - any `.js` file in `Documents/Crankshaft/scripts` will be considered a userscript and executed if enabled in settings.   
