@@ -1,11 +1,60 @@
 # Writing userscripts for crankshaft
-Writing userscripts for crankshaft is easy. You don't need to follow any template. You do need to know javascript.
+Writing userscripts for crankshaft is easy. You don't need to follow any template. You do need to know javascript.  
+There are a few example userscripts mentioned in the README you can go off of.  
 
-## Notes
-- You are encouraged to write your scripts in strict mode (start them with `"use strict"`), because it skips esbuild transforming your code.
-- userscripts are executed *as soon as possible*. If you want to add elements, add a `DOMContentLoaded` eventlistener
+- [Writing userscripts for crankshaft](#writing-userscripts-for-crankshaft)
+  - [Utility functions](#utility-functions)
+    - [Load function](#load-function)
+    - [Unload function](#unload-function)
+  - [Tips / Notes](#tips--notes)
+  - [Metadata](#metadata)
+    - [Example](#example)
+    - [Template to copy](#template-to-copy)
+  - [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
 
-There are a few example userscripts mentioned in the README you can go off of.
+## Utility functions
+you can define some properties on the javascript `this` object for stuff like load function, unload function, etc.
+> These function are not required, but highly recommended.
+  
+### Load function
+if you want to inject elements into the site, define a `this.load` function. This will be ran after document is loaded.
+
+### Unload function
+if you want users to be able to turn on and off your userscript without reloading the page, define a `this.unload` function. 
+This function should **delete all elements you create**, **remove all eventlisteners** and basically **undo the changes you made to the game**.  
+  
+```js
+// example using both an unload and load function
+
+function clickCb() {
+    window.alert("Hello!")
+}
+
+this.load = () => {
+    let myElem = document.createElement("div")
+    myElem.id = "mediocre-element"
+    myElem.style.color = "pink"
+    myElem.style.background = "violet"
+    myElem.textContent = "Hello world!"
+    myElem.addEventListener("click", clickCb) // added some on click action
+
+    document.body.appendChild(myElem) // added the element to body
+}
+
+this.unload = () => {
+    let myElem = document.getElementById("mediocre-element") // get the element by id / queryselector
+    myElem.removeEventListener("click", clickCb) // remove any eventlisteners you added to be safe
+    myElem.remove() // remove the element
+}
+
+return this
+
+``` 
+
+## Tips / Notes
+- if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function)
+- Instead of a DOMContentLoaded eventlistener, define a `this.load`. This will make it so it both runs when DOM is loaded, and also when a user turns on the userscript.
+- You are encouraged to write your scripts in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) (start them with `"use strict"`), because it skips esbuild transforming your code.
 
 ## Metadata
 Crankshaft recognizes standard userscript metadata comment, but only a set of keys. Copy this template to the top of your userscript for crankshaft to recognize it.  
@@ -35,42 +84,6 @@ console.log("Everything is awesome! Everything is cool when you're part of a tea
 // @src 
 // ==/UserScript==
 ```
-
-## More functionality
-you can define an `unload` function (more coming soon) on the js *this* object for the userscript.   
-Don't forget to return *this* object at the end of the userscript.
-
-### Unload function
-if you want users to be able to turn on and off your userscript without reloading the page, please define an unload function. 
-This function should **delete all elements you create**, **remove all eventlisteners** and basically **undo the changes you made to the game**.
-  
-```js
-// mediocre-userscript.js
-
-function clickCb() {
-    window.alert("Hello!")
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    let myElem = document.createElement("div")
-    myElem.id = "mediocre-element"
-    myElem.style.color = "pink"
-    myElem.style.background = "violet"
-    myElem.textContent = "Hello world!"
-    myElem.addEventListener("click", clickCb) // added some on click action
-
-    document.body.appendChild(myElem) // added the element to body
-})
-
-this.unload = () => {
-    let myElem = document.getElementById("mediocre-element") // get the element by id / queryselector
-    myElem.removeEventListener("click", clickCb) // remove any eventlisteners you added to be safe
-    myElem.remove() // remove the element
-}
-
-return this
-
-``` 
 
 ## Enabling and testing your userscript
 
