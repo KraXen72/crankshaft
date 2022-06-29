@@ -33,7 +33,7 @@ class Userscript implements IUserscriptInstance {
 
 	#initialized: boolean;
 
-	hasRan: boolean
+	hasRan: boolean;
 
 	#hadToTransform: boolean;
 
@@ -55,8 +55,8 @@ class Userscript implements IUserscriptInstance {
 			const metaParser = require('userscript-meta');
 
 			let chunk: (string[] | string) = this.rawContent.split('\n');
-			const startLine = chunk.findIndex(l => l.includes('// ==UserScript=='));
-			const endLine = chunk.findIndex(l => l.includes('// ==/UserScript=='));
+			const startLine = chunk.findIndex(line => line.includes('// ==UserScript=='));
+			const endLine = chunk.findIndex(line => line.includes('// ==/UserScript=='));
 			strippedConsole.log(chunk, startLine, endLine);
 			chunk = chunk.slice(startLine, endLine + 1).join('\n');
 
@@ -119,7 +119,7 @@ class Userscript implements IUserscriptInstance {
 				// more stuff to be added here later
 				if ('unload' in exported) this.unload = exported.unload;
 			}
-			
+
 			strippedConsole.log(`%c[cs]${this.#hadToTransform ? '%c[esbuilt]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
 				'color: lightblue; font-weight: bold;', this.#hadToTransform ? 'color: orange' : 'color: #62dd4f',
 				'color: white;', 'color: lightgreen;');
@@ -130,7 +130,6 @@ class Userscript implements IUserscriptInstance {
 
 		strippedConsole.log(this);
 	}
-
 
 
 	/*

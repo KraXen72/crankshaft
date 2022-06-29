@@ -107,7 +107,7 @@ class SettingElem {
 
 	updateKey: 'value' | 'checked' | '';
 
-	#wrapper: HTMLElement | false
+	#wrapper: HTMLElement | false;
 
 	constructor(props: RenderReadySetting) {
 		/** @type {Object} save the props from constructor to this class (instance) */
@@ -125,7 +125,7 @@ class SettingElem {
 		/** @type {String} is the key to get checked when writing an update, for checkboxes it's checked, for selects its value etc.*/
 		this.updateKey = '';
 
-		this.#wrapper = false
+		this.#wrapper = false;
 
 		// /** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
 
@@ -213,16 +213,16 @@ class SettingElem {
 			if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 		} else if (callback === 'userscript') {
 			if ('userscriptReference' in this.props) {
-				const userscript = this.props.userscriptReference
+				const userscript = this.props.userscriptReference;
 
 				if (value && !userscript.hasRan) {
-					userscript.load()
+					userscript.load();
 				} else if (!value) {
-					if (this.props.instant && typeof userscript.unload === "function") {
-						userscript.unload()
+					if (this.props.instant && typeof userscript.unload === 'function') {
+						userscript.unload();
 					} else {
-						elem.querySelector(".setting-desc-new").textContent = `REFRESH PAGE TO SEE CHANGES`
-						target.setAttribute("disabled", '')
+						elem.querySelector('.setting-desc-new').textContent = 'REFRESH PAGE TO SEE CHANGES';
+						target.setAttribute('disabled', '');
 					}
 				}
 				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
@@ -243,28 +243,28 @@ class SettingElem {
 	 * this initializes the element and its eventlisteners. 
 	 */
 	get elem() {
-		if (this.#wrapper !== false) {
-			return this.#wrapper //returnt he element if already initialized
-		} else {
-			// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
-			const wrapper = createElement('div', {
-				class: ['setting', 'settName', `safety-${this.props.safety}`, this.props.type],
-				id: `settingElem-${this.props.key}`,
-				innerHTML: this.HTML
-			});
+		if (this.#wrapper !== false) return this.#wrapper; // returnt he element if already initialized
 
-			if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value; 
-			if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
 
-			// @ts-ignore
-			wrapper[this.updateMethod] = () => {
-				this.update({ elem: wrapper, callback: this.props.callback });
-			};
+		// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
+		const wrapper = createElement('div', {
+			class: ['setting', 'settName', `safety-${this.props.safety}`, this.props.type],
+			id: `settingElem-${this.props.key}`,
+			innerHTML: this.HTML
+		});
 
-			this.#wrapper = wrapper
-			return wrapper; // return the element
-		}
+		if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value;
+		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
+
+		// @ts-ignore
+		wrapper[this.updateMethod] = () => {
+			this.update({ elem: wrapper, callback: this.props.callback });
+		};
+
+		this.#wrapper = wrapper;
+		return wrapper; // return the element
 	}
+
 }
 
 // i am insane for making this
@@ -357,7 +357,7 @@ export function renderSettings() {
 					callback: 'userscript'
 				};
 				if (userscript.meta) { // render custom metadata if provided in userscrsipt.exported
-					const thisMeta = userscript.meta
+					const thisMeta = userscript.meta;
 					Object.assign(obj, {
 						title: 'name' in thisMeta && thisMeta.name ? thisMeta.name : userscript.name,
 						desc: `${'desc' in thisMeta && thisMeta.desc ? thisMeta.desc.slice(0, 60) : ''}
@@ -366,7 +366,7 @@ export function renderSettings() {
 						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}`
 					});
 				}
-				if (userscript.unload) { obj.instant = true }
+				if (userscript.unload) obj.instant = true;
 
 				return obj;
 			});
