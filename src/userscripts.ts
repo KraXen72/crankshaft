@@ -33,7 +33,7 @@ class Userscript implements IUserscriptInstance {
 
 	unload: Function | false;
 
-	hasRan: boolean;
+	hasRan: boolean; // this is public so settings can just show a "reload page" message when needed
 
 	runAt: ('document-start' | 'document-end') = 'document-end';
 
@@ -47,6 +47,7 @@ class Userscript implements IUserscriptInstance {
 	constructor(props: IUserscript) {
 		this.#initialized = false;
 		this.hasRan = false;
+
 		this.name = props.name;
 		this.fullpath = props.fullpath;
 
