@@ -120,7 +120,7 @@ class Userscript implements IUserscriptInstance {
 		try {
 			// @ts-ignore
 			// eslint-disable-next-line @typescript-eslint/no-implied-eval
-			const exported = new Function(code).apply({ unload: false, _console: { ...strippedConsole } });
+			const exported = new Function(code).apply({ unload: false, _console: strippedConsole });
 
 			// userscript can return an object with unload and meta properties. use them if it did return
 			if (typeof exported !== 'undefined') {
@@ -135,8 +135,6 @@ class Userscript implements IUserscriptInstance {
 			errAlert(error, this.name);
 			strippedConsole.error(error);
 		}
-
-		strippedConsole.log(this);
 	}
 
 }

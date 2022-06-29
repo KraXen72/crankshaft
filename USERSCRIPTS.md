@@ -1,5 +1,5 @@
 # Writing userscripts for crankshaft
-Writing userscripts for crankshaft is easy. You don't need to follow any template. You do need to know javascript.  
+Writing userscripts for crankshaft is easy. You don't need to follow any template, but it is recommended you make use of stuff below.  
 There are a few example userscripts mentioned in the README you can go off of.  
 
 - [Writing userscripts for crankshaft](#writing-userscripts-for-crankshaft)
@@ -9,6 +9,7 @@ There are a few example userscripts mentioned in the README you can go off of.
     - [optional @run-at rule](#optional-run-at-rule)
   - [Utility functions](#utility-functions)
     - [Unload function](#unload-function)
+    - [Console access](#console-access)
   - [Tips / Notes](#tips--notes)
   - [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
 
@@ -29,7 +30,7 @@ Defining metadata is optional. If no metadata is provided, only information disp
 // @run-at document-end
 // ==/UserScript==
 
-console.log("Everything is awesome! Everything is cool when you're part of a team!")
+this._console.log("Everything is awesome! Everything is cool when you're part of a team!")
 ```
   
 ### Template to copy
@@ -53,11 +54,12 @@ You can define an optional `@run-at` rule.
   The script executes as soon as possible. `body` most likely won't have any content in it yet.
 
 ## Utility functions
-you can define some properties on the javascript `this` object for stuff like load function, unload function, etc.
-> These function are not required, but highly recommended.
+Userscripts are executed with a custom javascript `this` object. It exposes some utilities and you can define some lifecycle functions. 
   
 ### Unload function
-if you want users to be able to turn on and off your userscript without reloading the page, define a `this.unload` function. 
+if you want users to be able to turn on and off your userscript without reloading the page, define a `this.unload` function.   
+The `this.unload` function is not required, but highly recommended, because users can freely toggle your userscript on and off without reloading the page.  
+That's why it's also important you try to undo all the stuff you do in the userscript.  
 This function should **delete all elements you create**, **remove all eventlisteners** and basically **undo the changes you made to the game**.  
   
 ```js
@@ -77,14 +79,22 @@ myElem.addEventListener("click", clickCb) // added some on click action
 document.body.appendChild(myElem) // added the element to body
 
 this.unload = () => {
-  let myElem = document.getElementById("mediocre-element") // get the element by id / queryselector
-  myElem.removeEventListener("click", clickCb) // remove any eventlisteners you added to be safe
-  myElem.remove() // remove the element
+  let toRemoveElem = document.getElementById("mediocre-element") // get the element by id / queryselector rather than use the myElem reference
+  toRemoveElem.removeEventListener("click", clickCb) // remove any eventlisteners you added to be safe
+  toRemoveElem.remove() // remove the element
 }
 
 return this
 
 ``` 
+
+### Console access
+Krunker disables console methods like `log`, `warn`, `error` and others. If you want to use console, you can access it with `this._console`. It only provides the three basic methods mentioned above: `log`, `warn` and `error`.  
+You do not need to return `this._console`, it will have no effect.
+  
+```js
+this._console.log("everything is awesome!")
+```
 
 ## Tips / Notes
 - if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function)
