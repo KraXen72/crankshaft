@@ -1,4 +1,26 @@
-### [1.5.7](https://github.com/KraXen72/crankshaft/compare/1.5.6...1.5.7) (2022-06-21)
+## [1.6.0](https://github.com/KraXen72/crankshaft/compare/1.5.7...1.6.0) (2022-06-29)
+
+
+### Features
+
+* disabled button css ([ff195ef](https://github.com/KraXen72/crankshaft/commit/ff195ef277c3b3fceeda4fc4ed7b351faea1e27b))
+* implement userscript [@run-at](https://github.com/run-at) ([79d3d40](https://github.com/KraXen72/crankshaft/commit/79d3d407a7a55eb1d2fd6203898b9ad42a0765b0))
+* load userscripts when enabled, unload support ([2e3aefc](https://github.com/KraXen72/crankshaft/commit/2e3aefc792597079c063be00457ef802b30f058a))
+* parse new userscript metadata ([e7c1689](https://github.com/KraXen72/crankshaft/commit/e7c1689b392f7ca66234751152c867fdaa8e4e38))
+* proper userscript metadata docs ([838336c](https://github.com/KraXen72/crankshaft/commit/838336c9d8e518e2d9bf48e94f88142c2bf8cb3e))
+* userscript can provide metadata ([14f5412](https://github.com/KraXen72/crankshaft/commit/14f5412a7bc65c0afea1ebde3bfb745a7059adc2))
+* Userscript class rewrite ([592abac](https://github.com/KraXen72/crankshaft/commit/592abac9c4e3d205cb7f28d33b5da1106e75e992))
+* Userscript rewrite part 2 ([dbd5b58](https://github.com/KraXen72/crankshaft/commit/dbd5b58e5f190f52de9986b541a598307972fbc8))
+* userscripts can log to console ([11c6e55](https://github.com/KraXen72/crankshaft/commit/11c6e559a48607313e16c46ffee5ca1e2a396a63))
+
+
+### Bug Fixes
+
+* formatting 2: electric bogaloo ([6c3c1c6](https://github.com/KraXen72/crankshaft/commit/6c3c1c6941efc0efc2b6bcfba24892cec7a7fe79))
+* Formatting in userscripts.ts ([6b63068](https://github.com/KraXen72/crankshaft/commit/6b63068ed50f04e3814e5e622164cdc879c30c16))
+* remove once: true for domcontentloaded ([cabaff1](https://github.com/KraXen72/crankshaft/commit/cabaff182c4af3c208efde69c4df6e2ce19883f0))
+
+### [1.5.7](https://github.com/KraXen72/crankshaft/compare/1.5.6...1.5.7) (2022-06-22)
 
 
 ### Features
@@ -10,6 +32,7 @@
 
 * add back rpc stuff ([b2917ed](https://github.com/KraXen72/crankshaft/commit/b2917ed802f0983772384e4067e9464256980577))
 * Devtools now work again on linux machines ([e7d37ea](https://github.com/KraXen72/crankshaft/commit/e7d37ea338957fbb11ca3aefd4cd0cc206582a03))
+* memory leak hopefully ([13af632](https://github.com/KraXen72/crankshaft/commit/13af6328b824cf3175ce2056cf1cbb7f7c03ba80))
 * wait 500 ms for devtools regardless of os ([6645128](https://github.com/KraXen72/crankshaft/commit/66451288601acca9810fc5a784d0b7b2ad6f5503))
 
 ### [1.5.6](https://github.com/KraXen72/crankshaft/compare/1.5.5...1.5.6) (2022-06-21)
