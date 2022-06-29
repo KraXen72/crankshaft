@@ -90,6 +90,7 @@ return this
 - if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function)
 - You are encouraged to write your scripts in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) (start them with `"use strict"`), because it skips esbuild transforming your code.
 - If your script would rely on `@run-at document-idle`, just wrap it in a `setTimeout` for a few seconds.
+- As a user, if you want to 100% unload a userscript, it is better to refresh the page/F6, otherwise you just have to rely on the provided `unload` function by the userscript author.
 
 ## Enabling and testing your userscript
 
