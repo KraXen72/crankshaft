@@ -25,7 +25,8 @@ interface IUserscript {
 interface IUserscriptInstance extends IUserscript {
 	meta: UserscriptMeta | false,
 	hasRan: boolean,
-	load: Function;
+	runAt: ('document-start' | 'document-end'),
+	load: Function,
 	unload: Function | false
 }
 
