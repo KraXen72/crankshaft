@@ -15,9 +15,10 @@ There are a few example userscripts mentioned in the README you can go off of.
 
 ## Metadata
 Crankshaft recognizes standard userscript metadata comment, but only a subset of keys.  
-You can define `@name`, `@author`, `@ersion`, `@desc`, `@src` as strings.  
+You can define `@name`, `@author`, `@ersion`, `@desc`, `@src`, `@license` as strings.  
 There is also an optional `@run-at` rule, more about that [here](#optional-run-at-rule)  
-Defining metadata is optional. If no metadata is provided, only information displayed will be the filename.  
+Defining metadata is optional. If no metadata is provided, only information displayed will be the filename.    
+You can define only some of them if you want, for example `@name` and `@desc`  
   
 ### Example
 ```js
@@ -26,6 +27,7 @@ Defining metadata is optional. If no metadata is provided, only information disp
 // @author Unlucky1031
 // @version 1.0
 // @desc Adds a ton of awesomness to the game
+// @license MIT; https://mit-license.org
 // @src https://github.com/Unlucky1031/crankshaft-userscript
 // @run-at document-end
 // ==/UserScript==
