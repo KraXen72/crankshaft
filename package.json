@@ -15,7 +15,7 @@
     "changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
   },
   "author": "KraXen72",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "homepage": "https://github.com/KraXen72/crankshaft",
   "keywords": [
     "Krunker"
