@@ -8,8 +8,9 @@ There are a few example userscripts mentioned in the README you can go off of.
     - [Template to copy](#template-to-copy)
     - [optional @run-at rule](#optional-run-at-rule)
   - [Utility functions](#utility-functions)
-    - [Unload function](#unload-function)
-    - [Console access](#console-access)
+    - [Unload function (version 1.6.0+)](#unload-function-version-160)
+    - [Console access (version 1.6.0+)](#console-access-version-160)
+    - [Insert CSS (version 1.6.1+)](#insert-css-version-161)
   - [Tips / Notes](#tips--notes)
   - [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
 
@@ -58,7 +59,7 @@ You can define an optional `@run-at` rule.
 ## Utility functions
 Userscripts are executed with a custom javascript `this` object. It exposes some utilities and you can define some lifecycle functions. 
   
-### Unload function
+### Unload function (version 1.6.0+)
 if you want users to be able to turn on and off your userscript without reloading the page, define a `this.unload` function.   
 The `this.unload` function is not required, but highly recommended, because users can freely toggle your userscript on and off without reloading the page.  
 That's why it's also important you try to undo all the stuff you do in the userscript.  
@@ -90,12 +91,41 @@ return this
 
 ``` 
 
-### Console access
+### Console access (version 1.6.0+)
 Krunker disables console methods like `log`, `warn`, `error` and others. If you want to use console, you can access it with `this._console`. It only provides the three basic methods mentioned above: `log`, `warn` and `error`.  
 You do not need to return `this._console`, it will have no effect.
   
 ```js
 this._console.log("everything is awesome!")
+``` 
+
+### Insert CSS (version 1.6.1+)
+Electron offers a function to inject (and uninject) css into a page.  
+It has multiple advantages: the page **can't remove the css** and **has no idea who or how it is inserted**. You can utilise this in your userscripts with the `this._css` function. It takes 3 arguments:
+- **css (string)**: the css you want to inject
+- **identifier (string)**: the identifier for this css block, so you can later remove it in the `this.unload` function
+- **value ('toggle' or boolean, optional)**: `true` to inject, `false` to uninject, `toggle` or nothing to toggle
+  
+```js
+// ==UserScript==
+// @name Remove reCaptcha bar on linux
+// @author Commander (modified by KraXen for this example)
+// @run-at document-start
+// ==/UserScript==
+
+// add some css to hide the recaptcha bar on linux
+const cssBody = `body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }`
+this._css(cssBody, 'recaptcha', true)
+
+// remove the css when userscript is unloaded
+this.unload = () => {
+  this._css(cssBody, 'recaptcha', false)
+  // you could even use this._css('', 'recaptcha', false)
+  // as long as you use the correct identifier, the css doesen't matter for removing
+}
+
+// we have to return this since we define an unload function
+return this
 ```
 
 ## Tips / Notes
@@ -103,6 +133,7 @@ this._console.log("everything is awesome!")
 - You are encouraged to write your scripts in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) (start them with `"use strict"`), because it skips esbuild transforming your code.
 - If your script would rely on `@run-at document-idle`, just wrap it in a `setTimeout` for a few seconds.
 - As a user, if you want to 100% unload a userscript, it is better to refresh the page/F6, otherwise you just have to rely on the provided `unload` function by the userscript author.
+- It is highly recommended to always define an `unload` function if all your script does is add some css. It's really easy to do.
 
 ## Enabling and testing your userscript
 

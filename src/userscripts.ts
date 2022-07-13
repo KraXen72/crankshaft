@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { strippedConsole } from './preload';
+import { userscriptToggleCSS } from './utils';
 
 /** sharedUserscriptData */
 export const su = {
@@ -120,7 +121,11 @@ class Userscript implements IUserscriptInstance {
 		try {
 			// @ts-ignore
 			// eslint-disable-next-line @typescript-eslint/no-implied-eval
-			const exported = new Function(code).apply({ unload: false, _console: strippedConsole });
+			const exported = new Function(code).apply({ 
+				unload: false, 
+				_console: strippedConsole, 
+				_css: userscriptToggleCSS 
+			});
 
 			// userscript can return an object with unload and meta properties. use them if it did return
 			if (typeof exported !== 'undefined') {
