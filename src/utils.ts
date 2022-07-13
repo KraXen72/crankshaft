@@ -82,7 +82,7 @@ export function toggleSettingCSS(css: string, identifier: string, value: ('toggl
 }
 
 export function userscriptToggleCSS(css: string, identifier: string, value: ('toggle' | boolean) = 'toggle') {
-	const reservedKeywords = ['menuTimer', 'hideAds']
+	const reservedKeywords = ['menuTimer', 'hideAds', 'hideReCaptcha']
 	if (!reservedKeywords.includes(identifier)) {
 		toggleSettingCSS(css, identifier, value)
 	} else {

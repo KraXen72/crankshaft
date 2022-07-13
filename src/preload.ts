@@ -22,7 +22,8 @@ let lastActiveTab = 0;
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCSS = {
 	hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' }),
-	menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), { encoding: 'utf-8' })
+	menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), { encoding: 'utf-8' }),
+	hideReCaptcha: `body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }`
 };
 
 // Lets us exit the game lmao
@@ -82,7 +83,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
 });
 
-ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, clientSplash, userscripts }, version) => {
+ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, clientSplash, userscripts }, version) => {
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -111,6 +112,7 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, clientSplash, us
 	// TODO rewrite, this is not well scalable
 	if (hideAds) toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
+	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
 	if (userscripts) ipcRenderer.send('preload_requests_userscriptPath');
 });
 

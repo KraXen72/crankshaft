@@ -29,6 +29,7 @@ const settingsSkeleton = {
 	inProcessGPU: false,
 	disableAccelerated2D: false,
 	hideAds: true,
+	hideReCaptcha: true,
 	menuTimer: false,
 	fullscreen: 'windowed', // windowed, maximized, fullscreen, borderless
 	resourceSwapper: true,

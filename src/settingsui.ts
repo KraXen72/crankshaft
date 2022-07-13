@@ -57,6 +57,7 @@ const settingsDesc: SettingsDesc = {
 	userscripts: { title: 'Userscript support', type: 'bool', desc: 'Enable userscript support. place .js files in Documents/Crankshaft/scripts', safety: 1, cat: 0 },
 	hideAds: { title: 'Hide Ads', type: 'bool', safety: 0, cat: 1, instant: true },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
+	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 2 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 2 },
 	safeFlags_removeUselessFeatures: { title: 'Remove useless features', type: 'bool', desc: 'Adds a lot of flags that disable useless features.', safety: 1, cat: 2 },
@@ -211,6 +212,8 @@ class SettingElem {
 			// you can add custom instant refresh callbacks for settings here
 			if (this.props.key === 'hideAds') toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
 			if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
+			if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
+
 		} else if (callback === 'userscript') {
 			if ('userscriptReference' in this.props) {
 				const userscript = this.props.userscriptReference;
