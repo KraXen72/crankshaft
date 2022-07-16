@@ -32,14 +32,15 @@ class Swapper {
 	}
 
 	/**
-	 * Advanced Swapper
+	 * Normal Swapper
 	 */
 	private recursiveSwapNormal = (win: BrowserWindow, prefix = '') => {
 		try {
 			readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
 				if (dirent.isDirectory()) { this.recursiveSwapNormal(win, `${prefix}/${dirent.name}`); } else {
 					const pathname = `${prefix}/${dirent.name}`;
-					this.urls.push(...(/^\/(models|textures|sound)($|\/)/u.test(pathname)
+					this.urls.push(
+						...(/^\/(?:models|scares|sound|textures|videos)\//.test(pathname)
 						? [
 							`*://assets.krunker.io${pathname}`,
 							`*://assets.krunker.io${pathname}?*`
