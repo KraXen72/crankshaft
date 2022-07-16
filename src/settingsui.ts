@@ -2,8 +2,8 @@
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
-import { createElement, toggleSettingCSS } from './utils';
-import { styleSettingsCSS } from './preload';
+import { createElement, toggleSettingCSS, userscriptToggleCSS } from './utils';
+import { strippedConsole, styleSettingsCSS } from './preload';
 import { su } from './userscripts';
 
 /// <reference path="global.d.ts" />
@@ -85,6 +85,8 @@ const categoryNames: CategoryName[] = [
 	{ name: 'Advanced Settings', cat: 'advSettings' }
 ];
 
+const refreshToUnloadMessage = 'REFRESH PAGE TO UNLOAD USERSCRIPT'
+
 function saveSettings() {
 	writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
 	ipcRenderer.send('settingsUI_updates_userPrefs', userPrefs); // send them back to main
@@ -110,6 +112,8 @@ class SettingElem {
 
 	#wrapper: HTMLElement | false;
 
+	#disabled: boolean;
+
 	constructor(props: RenderReadySetting) {
 		/** @type {Object} save the props from constructor to this class (instance) */
 		this.props = props;
@@ -128,6 +132,8 @@ class SettingElem {
 
 		this.#wrapper = false;
 
+		this.#disabled = false
+
 		// /** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
 
 		// general stuff that every setting has
@@ -141,11 +147,18 @@ class SettingElem {
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M12 6v1.79c0 .45.54.67.85.35l2.79-2.79c.2-.2.2-.51 0-.71l-2.79-2.79c-.31-.31-.85-.09-.85.36V4c-4.42 0-8 3.58-8 8 0 1.04.2 2.04.57 2.95.27.67 1.13.85 1.64.34.27-.27.38-.68.23-1.04C6.15 13.56 6 12.79 6 12c0-3.31 2.69-6 6-6zm5.79 2.71c-.27.27-.38.69-.23 1.04.28.7.44 1.46.44 2.25 0 3.31-2.69 6-6 6v-1.79c0-.45-.54-.67-.85-.35l-2.79 2.79c-.2.2-.2.51 0 .71l2.79 2.79c.31.31.85.09.85-.35V20c4.42 0 8-3.58 8-8 0-1.04-.2-2.04-.57-2.95-.27-.67-1.13-.85-1.64-.34z"/></svg>
             </span>`;
 		}
+		if ("userscriptReference" in props) {
+			const userscript = props.userscriptReference;
+			if (userscript.hasRan && !props.instant && props.type === "bool" && props.value === false) {
+				this.#disabled = true
+				this.props.desc = refreshToUnloadMessage
+			}
+		}
 		switch (props.type) {
 			case 'bool':
 				this.HTML += `<span class="setting-title">${props.title}</span> 
                 <label class="switch">
-                    <input class="s-update" type="checkbox" ${props.value ? 'checked' : ''}/>
+                    <input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled':''}/>
                     <div class="slider round"></div>
                 </label>`;
 				this.updateKey = 'checked';
@@ -156,11 +169,9 @@ class SettingElem {
 				break;
 			case 'sel':
 				this.HTML += `<span class="setting-title">${props.title}</span>
-                    <select class="s-update inputGrey2">${
-
-	/* create option tags*/
-	props.opts.map(opt => `<option value ="${opt}">${opt}</option>`).join('')
-}</select>`;
+                    <select class="s-update inputGrey2">
+						${ props.opts.map(opt => `<option value ="${opt}">${opt}</option>`).join('') }
+					</select>`;
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
 				break;
@@ -213,19 +224,23 @@ class SettingElem {
 			if (this.props.key === 'hideAds') toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
 			if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 			if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
-
 		} else if (callback === 'userscript') {
+			let refreshSettings = false;
 			if ('userscriptReference' in this.props) {
 				const userscript = this.props.userscriptReference;
 
-				if (value && !userscript.hasRan) {
+				// either the userscsript has not ran yet, or it's instant
+				if (value && (!userscript.hasRan || this.props.instant)) {
 					userscript.load();
+					if (!userscript.hasRan) refreshSettings = true;
+					userscript.hasRan = true;
 				} else if (!value) {
 					if (this.props.instant && typeof userscript.unload === 'function') {
 						userscript.unload();
 					} else {
-						elem.querySelector('.setting-desc-new').textContent = 'REFRESH PAGE TO SEE CHANGES';
+						elem.querySelector('.setting-desc-new').textContent = refreshToUnloadMessage;
 						target.setAttribute('disabled', '');
+						this.#disabled = true
 					}
 				}
 				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
@@ -235,6 +250,8 @@ class SettingElem {
 				su.userscriptTracker[this.props.title] = value;
 			}
 			saveUserscriptTracker();
+			// krunkers transition takes .4s, this is more reliable than to wait for transitionend
+			if (refreshSettings) setTimeout(renderSettings, 400)
 		} else {
 			// eslint-disable-next-line callback-return
 			callback(value);

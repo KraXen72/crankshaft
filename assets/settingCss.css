@@ -157,9 +157,10 @@ input:checked + .advancedSlider:hover {
 .setting-desc-new a {
     font-size: inherit !important;
     font-family: inherit !important;
-}
+} 
 
-.Crankshaft-settings .settName .s-update:disabled {
+.Crankshaft-settings .settName .s-update:disabled,
+.Crankshaft-settings .settName .s-update:disabled + .slider.round {
     opacity: 0.5;
     pointer-events: none;
 }

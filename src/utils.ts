@@ -89,3 +89,12 @@ export function userscriptToggleCSS(css: string, identifier: string, value: ('to
 		strippedConsole.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`)
 	}
 }
+
+export function debounce(func: Function, timeout = 300){
+	let timer: NodeJS.Timeout;
+	// @ts-ignore
+	return (...args) => {
+	  clearTimeout(timer);
+	  timer = setTimeout(() => { func.apply(this, args); }, timeout);
+	};
+  }
