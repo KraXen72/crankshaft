@@ -32,6 +32,8 @@ nsis:
   differentialPackage: false
 dmg:
   writeUpdateInfo: false
+deb:
+  compression: bzip2
 files:
   - "**/*"
   - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
