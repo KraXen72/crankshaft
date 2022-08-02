@@ -355,8 +355,8 @@ app.on('ready', () => {
 
 		// for comp or hosted game just load it into the mainWindow
 		} else if (url.includes('comp.krunker.io') 
-			|| url.includes('https://krunker.io/?game')
-			|| url.includes('https://krunker.io/?play')
+			|| url.startsWith('https://krunker.io/?game')
+			|| url.startsWith('https://krunker.io/?play')
 			|| (url.includes('?game=') && url.includes('&matchId='))
 		) {
 			event.preventDefault();
