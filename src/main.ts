@@ -124,6 +124,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 	if (addAdditionalSubmenus && Array.isArray(submenu)) {
 		providedMenuTemplate[injectablePosition].submenu = submenu.concat([
 			{ label: 'Copy current url to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(genericWin.webContents.getURL()); } },
+			{ label: 'Debug: Display original url', registerAccelerator: false, click: () => { dialog.showMessageBoxSync(genericWin, { message: url }) } },
 			{ type: 'separator' },
 			{
 				label: 'Go to previous page (Go Back)',
