@@ -352,8 +352,12 @@ app.on('ready', () => {
 				}
 			}
 
-		// for comp just load it into the mainWindow
-		} else if (url.includes('comp.krunker.io') || url.includes('https://krunker.io/?game') || (url.includes('?game=') && url.includes('&matchId='))) {
+		// for comp or hosted game just load it into the mainWindow
+		} else if (url.includes('comp.krunker.io') 
+			|| url.includes('https://krunker.io/?game')
+			|| url.includes('https://krunker.io/?play')
+			|| (url.includes('?game=') && url.includes('&matchId='))
+		) {
 			event.preventDefault();
 			mainWindow.loadURL(url);
 		} else { // for any other link, fall back to creating a custom window with strippedMenu. 
