@@ -85,7 +85,7 @@ const categoryNames: CategoryName[] = [
 	{ name: 'Advanced Settings', cat: 'advSettings' }
 ];
 
-const refreshToUnloadMessage = 'REFRESH PAGE TO UNLOAD USERSCRIPT'
+const refreshToUnloadMessage = 'REFRESH PAGE TO UNLOAD USERSCRIPT';
 
 function saveSettings() {
 	writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
@@ -132,7 +132,7 @@ class SettingElem {
 
 		this.#wrapper = false;
 
-		this.#disabled = false
+		this.#disabled = false;
 
 		// /** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
 
@@ -147,18 +147,18 @@ class SettingElem {
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M12 6v1.79c0 .45.54.67.85.35l2.79-2.79c.2-.2.2-.51 0-.71l-2.79-2.79c-.31-.31-.85-.09-.85.36V4c-4.42 0-8 3.58-8 8 0 1.04.2 2.04.57 2.95.27.67 1.13.85 1.64.34.27-.27.38-.68.23-1.04C6.15 13.56 6 12.79 6 12c0-3.31 2.69-6 6-6zm5.79 2.71c-.27.27-.38.69-.23 1.04.28.7.44 1.46.44 2.25 0 3.31-2.69 6-6 6v-1.79c0-.45-.54-.67-.85-.35l-2.79 2.79c-.2.2-.2.51 0 .71l2.79 2.79c.31.31.85.09.85-.35V20c4.42 0 8-3.58 8-8 0-1.04-.2-2.04-.57-2.95-.27-.67-1.13-.85-1.64-.34z"/></svg>
             </span>`;
 		}
-		if ("userscriptReference" in props) {
+		if ('userscriptReference' in props) {
 			const userscript = props.userscriptReference;
-			if (userscript.hasRan && !props.instant && props.type === "bool" && props.value === false) {
-				this.#disabled = true
-				this.props.desc = refreshToUnloadMessage
+			if (userscript.hasRan && !props.instant && props.type === 'bool' && props.value === false) {
+				this.#disabled = true;
+				this.props.desc = refreshToUnloadMessage;
 			}
 		}
 		switch (props.type) {
 			case 'bool':
 				this.HTML += `<span class="setting-title">${props.title}</span> 
                 <label class="switch">
-                    <input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled':''}/>
+                    <input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled' : ''}/>
                     <div class="slider round"></div>
                 </label>`;
 				this.updateKey = 'checked';
@@ -240,7 +240,7 @@ class SettingElem {
 					} else {
 						elem.querySelector('.setting-desc-new').textContent = refreshToUnloadMessage;
 						target.setAttribute('disabled', '');
-						this.#disabled = true
+						this.#disabled = true;
 					}
 				}
 				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
@@ -250,8 +250,9 @@ class SettingElem {
 				su.userscriptTracker[this.props.title] = value;
 			}
 			saveUserscriptTracker();
+
 			// krunkers transition takes .4s, this is more reliable than to wait for transitionend
-			if (refreshSettings) setTimeout(renderSettings, 400)
+			if (refreshSettings) setTimeout(renderSettings, 400);
 		} else {
 			// eslint-disable-next-line callback-return
 			callback(value);
@@ -320,6 +321,7 @@ const skeleton = {
 };
 
 export function renderSettings() {
+	strippedConsole.time('renderSettings')
 	// do the settingElem class instances still exist after we close settings?
 	const settHolder = document.getElementById('settHolder');
 	settHolder.textContent = '';
@@ -328,7 +330,7 @@ export function renderSettings() {
 	settHolder.appendChild(skeleton.catHedElem(categoryNames[0].name));
 	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].cat, skeleton.notice('These settings need a client restart to work.')));
 
-	const csSettings = document.querySelector('.Crankshaft-settings');
+	const csSettings = new DocumentFragment();
 
 	const settings: RenderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal');
 	for (let i = 0; i < settings.length; i++) {
@@ -340,16 +342,16 @@ export function renderSettings() {
 			const cat = categoryNames[setObj.cat];
 
 			// create the given category if it doesen't exist
-			if (document.querySelector(`.Crankshaft-settings .${cat.cat}`) === null) {
+			if (csSettings.querySelector(`.${cat.cat}`) === null) {
 				csSettings.appendChild(skeleton.catHedElem(cat.name));
 				csSettings.appendChild(skeleton.catBodElem(cat.cat, ('note' in cat) ? skeleton.notice(cat.note) : ''));
 			}
 
 			// add to that category
-			document.querySelector(`.Crankshaft-settings .${cat.cat}`).appendChild(settElemMade);
+			csSettings.querySelector(`.${cat.cat}`).appendChild(settElemMade);
 		} else {
 			// add to default category
-			document.querySelector('.Crankshaft-settings .setBodH.mainSettings').appendChild(settElemMade);
+			csSettings.querySelector('.setBodH.mainSettings').appendChild(settElemMade);
 		}
 	}
 
@@ -391,6 +393,9 @@ export function renderSettings() {
 				return obj;
 			});
 
+		document.querySelector('.Crankshaft-settings').textContent = ''
+		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
+
 		for (let i = 0; i < userscriptSettings.length; i++) {
 			const userSet = new SettingElem(userscriptSettings[i]);
 			document.querySelector('.Crankshaft-settings .setBodH.userscripts').appendChild(userSet.elem);
@@ -412,4 +417,6 @@ export function renderSettings() {
 		try { header.removeEventListener('click', collapseCallback); } catch (e) { }
 		header.addEventListener('click', collapseCallback);
 	});
+
+	// strippedConsole.timeEnd('renderSettings')
 }

@@ -13,7 +13,9 @@ window.OffCliV = true;
 export const strippedConsole = {
 	error: console.error.bind(console),
 	log: console.log.bind(console),
-	warn: console.warn.bind(console)
+	warn: console.warn.bind(console),
+	time: console.time.bind(console),
+	timeEnd: console.timeEnd.bind(console)
 };
 
 const $assets = pathResolve(__dirname, '..', 'assets');
