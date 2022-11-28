@@ -321,7 +321,6 @@ const skeleton = {
 };
 
 export function renderSettings() {
-	strippedConsole.time('renderSettings')
 	// do the settingElem class instances still exist after we close settings?
 	const settHolder = document.getElementById('settHolder');
 	settHolder.textContent = '';
@@ -417,6 +416,4 @@ export function renderSettings() {
 		try { header.removeEventListener('click', collapseCallback); } catch (e) { }
 		header.addEventListener('click', collapseCallback);
 	});
-
-	// strippedConsole.timeEnd('renderSettings')
 }
