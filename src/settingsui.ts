@@ -364,7 +364,6 @@ export function renderSettings() {
 		}
 
 		// <div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
-
 		const userscriptSettings: RenderReadySetting[] = su.userscripts
 			.map(userscript => {
 				const obj: RenderReadySetting = {
@@ -399,6 +398,9 @@ export function renderSettings() {
 			const userSet = new SettingElem(userscriptSettings[i]);
 			document.querySelector('.Crankshaft-settings .setBodH.userscripts').appendChild(userSet.elem);
 		}
+	} else {
+		document.querySelector('.Crankshaft-settings').textContent = ''
+		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
 	}
 
 	function toggleCategory(me: Element) {

@@ -1,105 +1,119 @@
-// "use strict";
 import { readdirSync } from 'fs';
 import { join as pathJoin } from 'path';
-import { BrowserWindow } from 'electron';
+import { existsSync, mkdirSync } from 'fs';
 
-// converted to typescript by KraXen72. original is from idkr: https://github.com/idkr-client/idkr
+const TARGET_GAME_DOMAIN  = "krunker.io";
+
+// thanks for this to Commander/asger-finding, https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/main/resource-swapper.ts
+// i did modify it to fit this client but Commander did most of the heavy lifting
 
 /**
- * Swapping Handler
- *
+ * Swapper
  * @class Swapper
  */
-class Swapper {
+export default class {
 
+	/** Target window. */
+	private browserWindow: Electron.BrowserWindow;
+
+	/** The list of URLs to swap. */
+	private urls: string[] = [];
+
+	/** Has start() been called on the class? */
+	private started = false;
+
+	/** which directory to swap */
+	private swapDir: string;
 
 	/**
-	 * Creates an instance of Swapper.
+	 * Set the target window.
+	 *
+	 * @param browserWindow - The target window.
 	 */
-	win: BrowserWindow;
+	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string) {
+		this.browserWindow = browserWindow;
+		this.swapDir = swapDir
+	}
 
-	swapperMode: string;
+	/** Initialize the resource swapper for the target window.*/
+	public start(): void {
+		if (this.started) return;
 
-	swapDir: string;
+		// If the target directory doesn't exist, create it.
+		if (!existsSync(this.swapDir)) mkdirSync(this.swapDir, { recursive: true });
 
-	urls: string[];
+		this.recursiveSwap('');
 
-	constructor(win: BrowserWindow, swapperMode: string, swapDir: string) {
-		this.win = win;
-		this.swapperMode = swapperMode;
-		this.swapDir = swapDir;
-		this.urls = [];
+		if (this.urls.length) {
+			this.browserWindow.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
+				const path = new URL(details.url).pathname;
+				const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path)
+
+				// Redirect to the local resource.
+				callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
+			});
+		}
+
+		// Fix CORS problem with browserfps.com.
+		this.browserWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, callback) => {
+			for (const key in responseHeaders) {
+				const lowercase = key.toLowerCase();
+
+				// If the credentials mode is 'include', callback normally or the request will error with CORS.
+				if (lowercase === 'access-control-allow-credentials' && responseHeaders[key][0] === 'true') return callback(responseHeaders);
+
+				// Response headers may have varying letter casing, so we need to check in lowercase.
+				if (lowercase === 'access-control-allow-origin') {
+					delete responseHeaders[key];
+					break;
+				}
+			}
+
+			return callback({
+				responseHeaders: {
+					...responseHeaders,
+					'access-control-allow-origin': ['*']
+				}
+			});
+		});
+
+		this.started = true;
 	}
 
 	/**
-	 * Normal Swapper
+	 * Recursively swap all files in the target directory.
+	 *
+	 * @param prefix - The target directory to swap.
 	 */
-	private recursiveSwapNormal = (win: BrowserWindow, prefix = '') => {
+	private recursiveSwap(prefix: string): void {
 		try {
-			readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
-				if (dirent.isDirectory()) { this.recursiveSwapNormal(win, `${prefix}/${dirent.name}`); } else {
-					const pathname = `${prefix}/${dirent.name}`;
-					this.urls.push(
-						...(/^\/(?:models|scares|sound|textures|videos)\//.test(pathname)
-						? [
-							`*://assets.krunker.io${pathname}`,
-							`*://assets.krunker.io${pathname}?*`
-						]
+			for (const dirent of readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true })) {
+				const name = `${ prefix }/${ dirent.name }`;
+
+				// If the file is a directory, swap it recursively.
+				if (dirent.isDirectory()) {
+					this.recursiveSwap(name);
+				} else {
+					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
+					const tests = [
+						`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
+						`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`,
+						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }`,
+						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }?*`
+					];
+					this.urls.push(...(/^\/(?:models|textures|sound|scares|videos)(?:$|\/)/u.test(name)
+						? tests
 						: [
-							`*://krunker.io${pathname}`,
-							`*://krunker.io${pathname}?*`,
-							`*://comp.krunker.io${pathname}`,
-							`*://comp.krunker.io${pathname}?*`
+							...tests,
+							`*://comp.${ TARGET_GAME_DOMAIN }${ name }?*`,
+							`*://comp.${ TARGET_GAME_DOMAIN }/assets/${ name }?*`
 						]
 					));
 				}
-			});
-		} catch (err) {
-			console.error('Failed to swap resources in normal mode', err, prefix);
-		}
-	};
-
-	/**
-	 * Advanced Swapper
-	 */
-	private recursiveSwapHostname = (win: BrowserWindow, prefix = '', hostname = '') => {
-		try {
-			readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true }).forEach(dirent => {
-				if (dirent.isDirectory()) {
-					this.recursiveSwapHostname(win,
-						hostname ? `${prefix}/${dirent.name}` : prefix + dirent.name,
-						hostname || dirent.name);
-				} else if (hostname) { this.urls.push(`*://${prefix}/${dirent.name}`, `*://${prefix}/${dirent.name}?*`); }
-			});
-		} catch (err) {
-			console.error('Failed to swap resources in advanced mode', err, prefix, hostname);
-		}
-	};
-
-	/**
-	 * Initialize the Swapping process
-	 *
-	 * @memberof Swapper
-	 */
-	init() {
-		switch (this.swapperMode) {
-			case 'normal': {
-				this.recursiveSwapNormal(this.win);
-				this.urls.length && this.win.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => callback({ redirectURL: `krunker-resource-swapper:/${ pathJoin(this.swapDir, new URL(details.url).pathname)}` }));
-				break;
 			}
-			case 'advanced': {
-				this.recursiveSwapHostname(this.win);
-				this.urls.length && this.win.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
-					const { hostname, pathname } = new URL(details.url);
-					callback({ redirectURL: `krunker-resource-swapper:/${ pathJoin(this.swapDir, hostname, pathname)}` });
-				});
-				break;
-			}
-			default:
+		} catch (err) {
+			console.error(`Failed to resource-swap with prefix: ${ prefix }`);
 		}
 	}
 
 }
-
-export { Swapper };

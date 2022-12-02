@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
-import { Swapper } from './resourceswapper';
+import Swapper from './resourceswapper';
 
 /// <reference path="global.d.ts" />
 
@@ -388,8 +388,8 @@ app.on('ready', () => {
 
 	// Resource Swapper, thanks idkr
 	if (userPrefs.resourceSwapper) {
-		const CrankshaftSwapInstance = new Swapper(mainWindow, 'normal', swapperPath);
-		CrankshaftSwapInstance.init();
+		const CrankshaftSwapInstance = new Swapper(mainWindow, swapperPath);
+		CrankshaftSwapInstance.start();
 	}
 });
 
