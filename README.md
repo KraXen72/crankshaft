@@ -65,6 +65,7 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 ## contributing
 - you have to have `git`, `nodejs` and `npm` installed.
 - installation: `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i`
+  - if you get an error along the lines of `'openssl_fips' is not defined`, use `npm i --openssl_fips=''`
 - running from source: `npm run dev`/`npm run start`(slower), building: `npm run dist`
 - `npm run dev` is faster but test it also once with `npm run start` because `dev` script is experimental
 - please report any bugs/feature requests in the Issues.   
