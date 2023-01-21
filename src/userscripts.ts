@@ -94,7 +94,7 @@ class Userscript implements IUserscriptInstance {
 		} else {
 			try {
 				// eslint-disable-next-line
-                content = require('esbuild').transformSync(this.rawContent, { minify: true, banner: '"use strict"' });
+				content = require('esbuild').transformSync(this.rawContent, { minify: true, banner: '"use strict"' });
 			} catch (error) { // dummy content will get returned if it fails
 				errAlert(error, this.name);
 				strippedConsole.error(error);

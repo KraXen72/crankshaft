@@ -114,7 +114,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 			spellcheck: false,
 			enableRemoteModule: false,
 			nodeIntegration: false
-		}
+		} as Electron.WebPreferences
 	});
 
 	// add additional submenus to the generic win
