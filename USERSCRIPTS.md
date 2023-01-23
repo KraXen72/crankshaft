@@ -1,4 +1,5 @@
 # Writing userscripts for crankshaft
+
 Writing userscripts for crankshaft is easy. You don't need to follow any template, but it is recommended you make use of stuff below.  
 There are a few example userscripts mentioned in the README you can go off of.  
 
@@ -15,13 +16,16 @@ There are a few example userscripts mentioned in the README you can go off of.
   - [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
 
 ## Metadata
+
 Crankshaft recognizes standard userscript metadata comment, but only a subset of keys.  
 You can define `@name`, `@author`, `@ersion`, `@desc`, `@src`, `@license` as strings.  
 There is also an optional `@run-at` rule, more about that [here](#optional-run-at-rule)  
-Defining metadata is optional. If no metadata is provided, only information displayed will be the filename.    
+Defining metadata is optional. If no metadata is provided, only information displayed will be the filename.
+
 You can define only some of them if you want, for example `@name` and `@desc`  
   
 ### Example
+
 ```js
 // ==UserScript==
 // @name My Awesome Userscript
@@ -37,7 +41,9 @@ this._console.log("Everything is awesome! Everything is cool when you're part of
 ```
   
 ### Template to copy
+
 Copy this template to the top of your userscript for crankshaft to recognize it.  
+
 ```js
 // ==UserScript==
 // @name 
@@ -50,17 +56,21 @@ Copy this template to the top of your userscript for crankshaft to recognize it.
 ```
 
 ### optional @run-at rule
+
 You can define an optional `@run-at` rule.
+
 - `document-end` **(default)**  
   The script executes when DOMContentLoaded is fired. At this time, the basic HTML of the page is ready and other resources like images might still be on the way. This will be picked if no `@run-at` rule is defined.
 - `document-start`
   The script executes as soon as possible. `body` most likely won't have any content in it yet.
 
 ## Utility functions
-Userscripts are executed with a custom javascript `this` object. It exposes some utilities and you can define some lifecycle functions. 
+
+Userscripts are executed with a custom javascript `this` object. It exposes some utilities and you can define some lifecycle functions.
   
 ### Unload function (version 1.6.0+)
-if you want users to be able to turn on and off your userscript without reloading the page, define a `this.unload` function.   
+
+if you want users to be able to turn on and off your userscript without reloading the page, define a `this.unload` function.
 The `this.unload` function is not required, but highly recommended, because users can freely toggle your userscript on and off without reloading the page.  
 That's why it's also important you try to undo all the stuff you do in the userscript.  
 This function should **delete all elements you create**, **remove all eventlisteners** and basically **undo the changes you made to the game**.  
@@ -89,19 +99,22 @@ this.unload = () => {
 
 return this
 
-``` 
+```
 
 ### Console access (version 1.6.0+)
+
 Krunker disables console methods like `log`, `warn`, `error` and others. If you want to use console, you can access it with `this._console`. It only provides the three basic methods mentioned above: `log`, `warn` and `error`.  
 You do not need to return `this._console`, it will have no effect.
   
 ```js
 this._console.log("everything is awesome!")
-``` 
+```
 
 ### Insert CSS (version 1.6.1+)
+
 Electron offers a function to inject (and uninject) css into a page.  
 It has multiple advantages: the page **can't remove the css** and **has no idea who or how it is inserted**. You can utilise this in your userscripts with the `this._css` function. It takes 3 arguments:
+
 - **css (string)**: the css you want to inject
 - **identifier (string)**: the identifier for this css block, so you can later remove it in the `this.unload` function
 - **value ('toggle' or boolean, optional)**: `true` to inject, `false` to uninject, `toggle` or nothing to toggle
@@ -129,6 +142,7 @@ return this
 ```
 
 ## Tips / Notes
+
 - if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function)
 - You are encouraged to write your scripts in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) (start them with `"use strict"`), because it skips esbuild transforming your code.
 - If your script would rely on `@run-at document-idle`, just wrap it in a `setTimeout` for a few seconds.
@@ -138,7 +152,8 @@ return this
 ## Enabling and testing your userscript
 
 save your userscript to `Documents/Crankshaft/scripts/` as a file ending in `.js`
+
 1. in crankshaft settings, enable the setting *Userscript support* and re-launch the client
 2. in crankshaft settings > Userscripts, enable your userscript and refresh the page / F6 (find new game)
   
-every time you make a change to your userscript, just refresh the page / F6 and you should see the changes.  
+every time you make a change to your userscript, just refresh the page / F6 and you should see the changes.

@@ -1,18 +1,23 @@
 {
-    "compilerOptions": {
-      "module": "commonjs",
-      "noImplicitAny": true,
-      "sourceMap": false,
-      "outDir": "app",
-      "baseUrl": ".",
-      "target": "es2020",
-      "strict": false,
-      "paths": {
-        "*": ["node_modules/*"]
-      }
-    },
-    "include": ["src/**/*"],
-    "exclude": [
-        "dist/*", "app/*"
-    ]
-  }
+	"compilerOptions": {
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"sourceMap": false,
+		"outDir": "app",
+		"baseUrl": ".",
+		"target": "es2020",
+		"strict": false,
+		"paths": {
+			"*": [
+				"node_modules/*"
+			]
+		}
+	},
+	"include": [
+		"src/**/*"
+	],
+	"exclude": [
+		"dist/*",
+		"app/*"
+	]
+}
