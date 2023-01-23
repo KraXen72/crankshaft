@@ -2,87 +2,85 @@
 #voiceDisplay,
 #bubbleContainer,
 .button.small.buttonO img,
-.menuSocialB
-.setSugBox2,
+.menuSocialB .setSugBox2,
 #faceItIconM,
 #rankedSoonTm {
-    display: none !important;
+	display: none !important;
 }
-#loadEditrBtn, 
+
+#loadEditrBtn,
 #loadInfoLHolder,
 #loadInfoRHolder {
-    display: none !important;
+	display: none !important;
 }
-html { background: #363636 !important }
-body > #uiBase > #initLoader/*, .Crankshaft-setBodH */ {
-    background-color: #363636 !important;
-    /* background-image: url("https://cdn.discordapp.com/attachments/704792091955429426/959589744906489896/aieGears.png") !important; */
-    background-size: 100px !important;
-    background-repeat: repeat !important;
-    border: none !important;
-    outline: none !important;
-    z-index: 20 !important;
 
-    /* i am aware this is not an ideal solution. 
-        alternative 1) host image on discord: will not work when discord's cdn is down and i couldn't think of a better free cdn
-        alternative 2) register a custom file like protocol to serve the images, similar to what swapper does: for now i couldn't get it to work
-        since the image is pretty small, this is an ok solution. svg data will just be in the html element.
-    */
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAMAAAC8EZcfAAAAclBMVEXE/+IAAAAoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgnJycoKCgoKCgoKCgoKCgnJycoKCgoKCgnJycoKCgoKCgoKCgoKCgoKCgpKSm+1W+6AAAAAXRSTlMAQObYZgAAAfpJREFUeNrt3QGqIjsQRuHD2URW0Pvf4oPHcMMt0j0OXqx/hjoAggX4AdJJbEX+zx3gTj7e+cW9CYKF6Gddfyjks+kLwmbfWbgl3b6zEKuw03cQYoBQ74V4FpIixKMQUoQUUL+vCLEKu31FiFXY7KvCPaUrfRLiV90+jkJsFv5+n+eu1xcorL6z0J12ATlpGn1VCPdCA96DcCuU4gvIb7EfSOkABCSnCpS0CpC8CjBZiOFCVCLbQEgWIkQLSS4eSLdvmqZpmqZpmqZpTj5zuH0z44HZQr+K5SUTLQ3wTWGkI4FXgR6Gi4cGaOmHl7oBon2udQtcKq1d3ndtal++UrrPdJ/GA0335QNN8S0ArlTgkz3At2B33QDXSll8r+NU5XOtQnjy9+xpnnycfX3C62lYnughUiv2buALo/XgiwDC1fkTEGqnkbqafFK6TjOVyMvM4lcr5qSOR2Gjz+txGgDUpyFRwmUoUAVPzZb/TeCci+/6R4CQLVw0tu4vLnCpCR8Qroe17XXf3FBafxlwEdfcM/xR4WKapmmapmmapuDmW8XvZTjQcKDBQNN9mu5zfOPrK9Q3whEGZLhQs4WqYpqweDBV6BcwU+gGZgsxXIipQjcwUmgBBgnL+cg4od/CNGHhYZaw+IAc4dl31riz3QePZsP+ueLg6xX+B4FEGkmLcq6yAAAAAElFTkSuQmCC) !important;
+html {
+	background: #363636 !important;
+}
+
+body>#uiBase>#initLoader {
+	background-color: #363636 !important;
+	background-size: 100px !important;
+	background-repeat: repeat !important;
+	border: none !important;
+	outline: none !important;
+	z-index: 20 !important;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAMAAAC8EZcfAAAAclBMVEXE/+IAAAAoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgnJycoKCgoKCgoKCgoKCgnJycoKCgoKCgnJycoKCgoKCgoKCgoKCgoKCgpKSm+1W+6AAAAAXRSTlMAQObYZgAAAfpJREFUeNrt3QGqIjsQRuHD2URW0Pvf4oPHcMMt0j0OXqx/hjoAggX4AdJJbEX+zx3gTj7e+cW9CYKF6Gddfyjks+kLwmbfWbgl3b6zEKuw03cQYoBQ74V4FpIixKMQUoQUUL+vCLEKu31FiFXY7KvCPaUrfRLiV90+jkJsFv5+n+eu1xcorL6z0J12ATlpGn1VCPdCA96DcCuU4gvIb7EfSOkABCSnCpS0CpC8CjBZiOFCVCLbQEgWIkQLSS4eSLdvmqZpmqZpmqZpTj5zuH0z44HZQr+K5SUTLQ3wTWGkI4FXgR6Gi4cGaOmHl7oBon2udQtcKq1d3ndtal++UrrPdJ/GA0335QNN8S0ArlTgkz3At2B33QDXSll8r+NU5XOtQnjy9+xpnnycfX3C62lYnughUiv2buALo/XgiwDC1fkTEGqnkbqafFK6TjOVyMvM4lcr5qSOR2Gjz+txGgDUpyFRwmUoUAVPzZb/TeCci+/6R4CQLVw0tu4vLnCpCR8Qroe17XXf3FBafxlwEdfcM/xR4WKapmmapmmapuDmW8XvZTjQcKDBQNN9mu5zfOPrK9Q3whEGZLhQs4WqYpqweDBV6BcwU+gGZgsxXIipQjcwUmgBBgnL+cg4od/CNGHhYZaw+IAc4dl31riz3QePZsP+ueLg6xX+B4FEGkmLcq6yAAAAAElFTkSuQmCC) !important;
 }
 
 #crankshaft-logo-holder {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-50%);
-    width: max-content; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: min-content;
-    flex-direction: column;
-    /* top: 3rem; */
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: max-content;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: min-content;
+	flex-direction: column;
 }
 
 #loadGamNm {
-    display: block !important; 
-    bottom: 13rem !important;
-    top: initial !important;
-    font-size: 20px !important;
-    height: min-content !important;
-    color: rgba(255,255,255,.7) !important;
-}
-#loadTipsHolder, .loadTipsHolder { color: rgba(255,255,255,.7) !important; }
-#loadTipsHolder {
-    bottom: 20px !important;
+	display: block !important;
+	bottom: 13rem !important;
+	top: initial !important;
+	font-size: 20px !important;
+	height: min-content !important;
+	color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* we kinda wanna hide the loader and just keep the text. it interferes with the logo */
-#lC-cont, #lC-ico, #initLoader > div:first-child[style*="absolute"] {display: none;}
+#loadTipsHolder,
+.loadTipsHolder {
+	color: rgba(255, 255, 255, 0.7) !important;
+}
+
+#loadTipsHolder {
+	bottom: 20px !important;
+}
+
+#lC-cont,
+#lC-ico,
+#initLoader>div:first-child[style*=absolute] {
+	display: none;
+}
 
 .crankshaft-holder-r {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    font-size: 20px !important;
-    text-align: right;
-    color: rgba(255,255,255,.7);
-    display: block !important;
+	position: absolute;
+	right: 20px;
+	bottom: 20px;
+	font-size: 20px !important;
+	text-align: right;
+	color: rgba(255, 255, 255, 0.7);
+	display: block !important;
 }
+
 .crankshaft-holder-l {
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
-    font-size: 20px !important;
-    text-align: left;
-    color: rgba(255,255,255,.7);
-    display: block !important;
+	position: absolute;
+	left: 20px;
+	bottom: 20px;
+	font-size: 20px !important;
+	text-align: left;
+	color: rgba(255, 255, 255, 0.7);
+	display: block !important;
 }
-
-/* #initLoader > div:first-child[style*="translate"] {
-    bottom: 10% !important;
-    right: 10% !important;
-} */
-
-/* .crankshaft-holder-r, .crankshaft-holder-l, #loadTipsHolder, .loadTipsHolder, #loadGamNm { display: none !important} */
