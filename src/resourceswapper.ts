@@ -1,11 +1,12 @@
-import { readdirSync } from 'fs';
+import { readdirSync, existsSync, mkdirSync } from 'fs';
 import { join as pathJoin } from 'path';
-import { existsSync, mkdirSync } from 'fs';
 
-const TARGET_GAME_DOMAIN  = "krunker.io";
+const TARGET_GAME_DOMAIN = 'krunker.io';
 
-// thanks for this to Commander/asger-finding, https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/main/resource-swapper.ts
-// i did modify it to fit this client but Commander did most of the heavy lifting
+/*
+ * thanks for this to Commander/asger-finding, https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/main/resource-swapper.ts
+ * i did modify it to fit this client but Commander did most of the heavy lifting
+ */
 
 /**
  * Swapper
@@ -32,7 +33,7 @@ export default class {
 	 */
 	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string) {
 		this.browserWindow = browserWindow;
-		this.swapDir = swapDir
+		this.swapDir = swapDir;
 	}
 
 	/** Initialize the resource swapper for the target window.*/
@@ -47,7 +48,7 @@ export default class {
 		if (this.urls.length) {
 			this.browserWindow.webContents.session.webRequest.onBeforeRequest({ urls: this.urls }, (details, callback) => {
 				const path = new URL(details.url).pathname;
-				const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path)
+				const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path);
 
 				// Redirect to the local resource.
 				callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
@@ -88,7 +89,7 @@ export default class {
 	private recursiveSwap(prefix: string): void {
 		try {
 			for (const dirent of readdirSync(pathJoin(this.swapDir, prefix), { withFileTypes: true })) {
-				const name = `${ prefix }/${ dirent.name }`;
+				const name = `${prefix}/${dirent.name}`;
 
 				// If the file is a directory, swap it recursively.
 				if (dirent.isDirectory()) {
@@ -96,23 +97,23 @@ export default class {
 				} else {
 					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
 					const tests = [
-						`*://*.${ TARGET_GAME_DOMAIN }${ name }`,
-						`*://*.${ TARGET_GAME_DOMAIN }${ name }?*`,
-						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }`,
-						`*://*.${ TARGET_GAME_DOMAIN }/assets${ name }?*`
+						`*://*.${TARGET_GAME_DOMAIN}${name}`,
+						`*://*.${TARGET_GAME_DOMAIN}${name}?*`,
+						`*://*.${TARGET_GAME_DOMAIN}/assets${name}`,
+						`*://*.${TARGET_GAME_DOMAIN}/assets${name}?*`
 					];
 					this.urls.push(...(/^\/(?:models|textures|sound|scares|videos)(?:$|\/)/u.test(name)
 						? tests
 						: [
 							...tests,
-							`*://comp.${ TARGET_GAME_DOMAIN }${ name }?*`,
-							`*://comp.${ TARGET_GAME_DOMAIN }/assets/${ name }?*`
+							`*://comp.${TARGET_GAME_DOMAIN}${name}?*`,
+							`*://comp.${TARGET_GAME_DOMAIN}/assets/${name}?*`
 						]
 					));
 				}
 			}
 		} catch (err) {
-			console.error(`Failed to resource-swap with prefix: ${ prefix }`);
+			console.error(`Failed to resource-swap with prefix: ${prefix}`);
 		}
 	}
 

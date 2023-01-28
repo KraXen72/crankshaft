@@ -72,9 +72,8 @@ class Userscript implements IUserscriptInstance {
 			 * if the metadata define some prop twice, the parser turns it into an array.
 			 * we check if a value isArray and if yes, take the first item in that array as the new value
 			 */
-			for (let i = 0; i < Object.keys(this.meta).length; i++) {
-				const metaKey = Object.keys(this.meta)[i];
 
+			for (const metaKey of Object.keys(this.meta)) {
 				// @ts-ignore
 				if (Array.isArray(this.meta[metaKey])) this.meta[metaKey] = this.meta[metaKey][0];
 			}
@@ -116,15 +115,15 @@ class Userscript implements IUserscriptInstance {
 	/** runs the userscript */
 	load() {
 		// eslint-disable-next-line no-new-wrappers
-		const code = new String(this.#content);
+		const code = String(this.#content);
 
 		try {
 			// @ts-ignore
 			// eslint-disable-next-line @typescript-eslint/no-implied-eval
-			const exported = new Function(code).apply({ 
-				unload: false, 
-				_console: strippedConsole, 
-				_css: userscriptToggleCSS 
+			const exported = new Function(code).apply({
+				unload: false,
+				_console: strippedConsole,
+				_css: userscriptToggleCSS
 			});
 
 			// userscript can return an object with unload and meta properties. use them if it did return

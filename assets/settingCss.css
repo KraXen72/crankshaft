@@ -1,10 +1,10 @@
-.crankshaft-gray {
-	color: gray !important;
+:root {
+	--crankshaft-gray: gray !important;
 }
 
 .Crankshaft-settings .settName,
 .Crankshaft-settings .settName .setting-title {
-	color: inherit;
+	color: var(--crankshaft-gray);
 }
 
 .Crankshaft-settings .settName {
