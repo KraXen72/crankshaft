@@ -1,13 +1,6 @@
+.endAHolder,
+#aHider,
 #adCon,
-#aHolder,
-#aMerger,
-#androidDB,
-#braveWarning,
-#iosDB,
-#rightABox,
-#steamDB,
-.adsbygoogle,
-.adsbygoogle-noablate,
-.endAHolder {
+#braveWarning {
     display: none !important
 }
