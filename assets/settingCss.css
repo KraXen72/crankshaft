@@ -1,182 +1,153 @@
-/* this is css requried for this client's settings to work properly. */
+:root {
+	--crankshaft-gray: gray !important;
+}
+
 .Crankshaft-settings .settName,
 .Crankshaft-settings .settName .setting-title {
-    color: inherit;
-}
-
-.Crankshaft-settings .setting.safety-1 .setting-desc {
-    color: #969696;
-    background-color: rgb(99 99 99 / 16%);
-    border: 2px solid rgb(78 78 78 / 81%);
-}
-.Crankshaft-settings .setting.safety-2 .setting-desc {
-    color: #ffd903;
-    background-color: rgba(220, 180, 1, 0.16);
-    border: 2px solid rgba(241, 186, 6, 0.81);
-}
-.Crankshaft-settings .setting.safety-3 .setting-desc {
-    color: #ff9203;
-    background-color: rgba(220, 118, 1, 0.16);
-    border: 2px solid rgba(241, 131, 6, 0.81);
-}
-.Crankshaft-settings .setting.safety-4 .setting-desc {
-    color: #ff0303;
-    background-color: rgba(220, 17, 1, 0.16);
-    border: 2px solid rgba(241, 6, 6, 0.81);
-}
-.Crankshaft-settings .setting .setting-desc.instant {
-    color: #0385ff;
-    background-color: rgba(1, 89, 220, 0.16);
-    border: 2px solid rgba(3, 133, 255, 0.81);
-}
-
-.Crankshaft-settings .setting.safety-1,
-.Crankshaft-settings .setting.safety-1 .setting-desc svg path {
-    color: #969696;
-}
-.Crankshaft-settings .setting.safety-2,
-.Crankshaft-settings .setting.safety-2 .setting-desc svg path {
-    color: #ffd903;
-}
-.Crankshaft-settings .setting.safety-3,
-.Crankshaft-settings .setting.safety-3 .setting-desc svg path {
-    color: #ff9203;
-}
-.Crankshaft-settings .setting.safety-4,
-.Crankshaft-settings .setting.safety-4 .setting-desc svg path {
-    color: #ff0303;
-}
-.Crankshaft-settings .setting .setting-desc.instant svg path {
-    color: #0385ff;
-}
-.Crankshaft-settings .setting .setting-desc svg path {
-    fill: currentColor;
-}
-
-/* .setting.safety-1 .setting-title,
-.setting.safety-2 .setting-title,
-.setting.safety-3 .setting-title,
-.setting.safety-4 .setting-title {
-    transition: border .2s ease-in-out;
-} */
-
-/* .safetyLegend, .sett-note {
-    font-size: 0.8rem;
-} */
-
-.requires-restart {
-    opacity: 0.8;
-}
-.requires-restart {
-    display: none;
-}
-.requires-restart.restart-level-2 {
-    color: #eb5656;
-}
-
-.setting-category-collapsed {
-    display: none;
-}
-
-.setBodH.safetyLegend {
-    padding: 1rem 20px;
+	color: var(--crankshaft-gray);
 }
 
 .Crankshaft-settings .settName {
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-template-columns: 0fr 1fr 0fr;
-    grid-template-areas: "icon title input";
-    grid-template-rows: 0fr;
-    align-items: center;
+	display: grid;
+	grid-auto-columns: 1fr;
+	grid-template-columns: 0fr 1fr 0fr;
+	grid-template-areas: "icon title input";
+	grid-template-rows: 0fr;
+	align-items: center;
 }
 
-/* this is the warning icon now, used to be ? icon*/
-.setting .setting-desc {
-    grid-area: icon;
+.Crankshaft-settings .settName .setting-title {
+	grid-area: title;
+}
 
-    cursor: pointer;
-    font-size: 1rem;
-    width: 2.2rem;
-    height: 2.2rem;
-    line-height: 2.2rem;
-    border-radius: 5px !important;
+.Crankshaft-settings .settName .s-update:disabled,
+.Crankshaft-settings .settName .s-update:disabled+.slider.round {
+	opacity: 0.5;
+	pointer-events: none;
+}
 
-    color: #969696;
-    background-color: rgb(99 99 99 / 16%);
-    border: 2px solid rgb(78 78 78 / 81%);
-    margin-right: 10px;
+.Crankshaft-settings .setting .switch {
+	box-sizing: border-box;
+}
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.Crankshaft-settings .setting .setting-desc {
+	grid-area: icon;
+	cursor: pointer;
+	font-size: 1rem;
+	width: 2.2rem;
+	height: 2.2rem;
+	line-height: 2.2rem;
+	border-radius: 5px !important;
+	color: #969696;
+	background-color: rgba(99, 99, 99, 0.16);
+	border: 2px solid rgba(78, 78, 78, 0.81);
+	margin-right: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.Crankshaft-settings .setting .setting-desc.instant {
+	background-color: rgba(1, 89, 220, 0.16);
+	border: 2px solid rgba(3, 133, 255, 0.81);
+}
+
+.Crankshaft-settings .setting .setting-desc.instant svg path {
+	color: #0385ff;
+	fill: currentColor;
 }
 
 .Crankshaft-settings .setting.settName .inputGrey2,
 .Crankshaft-settings .setting.settName .switch,
 .Crankshaft-settings .setting.settName .cs-input-num {
-    grid-area: input;
+	grid-area: input;
 }
 
-.Crankshaft-settings .settName .setting-title {
-    grid-area: title;
+.Crankshaft-settings .setting.safety-1 .setting-desc {
+	background-color: rgba(99, 99, 99, 0.16);
+	border: 2px solid rgba(78, 78, 78, 0.81);
 }
 
-.Crankshaft-settings .setting .switch {
-    box-sizing: border-box;
+.Crankshaft-settings .setting.safety-1 .setting-desc svg path {
+	color: #969696;
+	fill: currentColor;
 }
 
-input:checked + .advancedSlider {
-    opacity: 0;
-    transition: all 0s !important;
+.Crankshaft-settings .setting.safety-2 .setting-desc {
+	background-color: rgba(220, 180, 1, 0.16);
+	border: 2px solid rgba(241, 186, 6, 0.81);
 }
-input:checked + .advancedSlider:hover {
-    opacity: 1;
-    transition: all 0s !important;
+
+.Crankshaft-settings .setting.safety-2 .setting-desc svg path {
+	color: #ffd903;
+	fill: currentColor;
 }
-.crankshaft-gray {
-    color: gray !important;
+
+.Crankshaft-settings .setting.safety-3 .setting-desc {
+	background-color: rgba(220, 118, 1, 0.16);
+	border: 2px solid rgba(241, 131, 6, 0.81);
 }
+
+.Crankshaft-settings .setting.safety-3 .setting-desc svg path {
+	color: #ff9203;
+	fill: currentColor;
+}
+
+.Crankshaft-settings .setting.safety-4 .setting-desc {
+	background-color: rgba(220, 17, 1, 0.16);
+	border: 2px solid rgba(239, 6, 6, 0.81);
+}
+
+.Crankshaft-settings .setting.safety-4 .setting-desc svg path {
+	color: #ff0303;
+	fill: currentColor;
+}
+
 .setting-desc {
-    position: relative;
+	position: relative;
 }
 
 .setting-desc-new {
-    display: block;
-    width: 750px;
-    word-wrap: break-word;
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.4) !important;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
-    max-height: 0;
-    overflow: hidden;
-    max-height: 500px;
-    margin-top: 5px;
-    grid-area: 2 / 1 / 3 / 4;
+	display: block;
+	width: 750px;
+	word-wrap: break-word;
+	font-size: 20px;
+	color: rgba(255, 255, 255, 0.4) !important;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+	overflow: hidden;
+	max-height: 500px;
+	margin-top: 5px;
+	grid-area: 2/1/3/4;
 }
+
 .setting-desc-new a {
-    font-size: inherit !important;
-    font-family: inherit !important;
-} 
-
-.Crankshaft-settings .settName .s-update:disabled,
-.Crankshaft-settings .settName .s-update:disabled + .slider.round {
-    opacity: 0.5;
-    pointer-events: none;
+	font-size: inherit !important;
+	font-family: inherit !important;
 }
 
-/* .crankshaft-settings-codeblock, .crst-cb {
-    color: rgb(166, 166, 166);
-    border: 1px solid #3b3c3e4d;
-    padding: 0.125rem 0.3rem;
-    background-color: rgb(33, 33, 33);
-    font-family: Consolas,monaco,monospace;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 21.6px;
-    border-radius: 5px;
+.setting-category-collapsed {
+	display: none;
 }
 
-.settings-desc-new em.i, .setting-desc-new strong.b {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-} */
+.setBodH.safetyLegend {
+	padding: 1rem 20px;
+}
+
+.requires-restart {
+	opacity: 0.8;
+	display: none;
+}
+
+.requires-restart.restart-level-2 {
+	color: #eb5656;
+}
+
+input:checked+.advancedSlider {
+	opacity: 0;
+	transition: all 0s !important;
+}
+
+input:checked+.advancedSlider:hover {
+	opacity: 1;
+	transition: all 0s !important;
+}

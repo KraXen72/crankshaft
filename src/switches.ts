@@ -49,7 +49,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		console.log('Applied latency-reducing flags');
 	}
 	if (userPrefs.experimentalFlags_experimental) {
-	// do they crash the game? not for me. do they actually help? ¯\_(ツ)_/¯
+		// do they crash the game? not for me. do they actually help? ¯\_(ツ)_/¯
 		app.commandLine.appendSwitch('disable-low-end-device-mode');
 		app.commandLine.appendSwitch('enable-accelerated-video-decode');
 		app.commandLine.appendSwitch('enable-native-gpu-memory-buffers');
@@ -57,12 +57,13 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		app.commandLine.appendSwitch('ignore-gpu-blacklist');
 		app.commandLine.appendSwitch('no-pings');
 		app.commandLine.appendSwitch('no-proxy-server');
+
 		// disable-canvas-aa
 
 		console.log('Enabled Experiments');
 	}
 	if (userPrefs.safeFlags_gpuRasterizing) {
-	// do they crash the game? not for me. do they actually help? yeah kind of. depending on your gpu etc.
+		// do they crash the game? not for me. do they actually help? yeah kind of. depending on your gpu etc.
 		app.commandLine.appendSwitch('enable-gpu-rasterization');
 		app.commandLine.appendSwitch('enable-oop-rasterization');
 		app.commandLine.appendSwitch('disable-zero-copy'); // this is really important, otherwise the game crashes.
@@ -86,7 +87,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		} else {
 			app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
 
-			console.log(`Using Angle: ${ userPrefs['angle-backend']}`);
+			console.log(`Using Angle: ${userPrefs['angle-backend']}`);
 		}
 	}
 	if (userPrefs.inProcessGPU) {

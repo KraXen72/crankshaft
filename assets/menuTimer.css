@@ -1,38 +1,32 @@
-#uiBase.onMenu div#spectateUI {
-    display: block !important;
+#uiBase.onMenu #spectateUI {
+	display: block;
 }
 
-#uiBase.onMenu div#spectateUI #spectateHUD {
-    width: min-content !important;
-    position: absolute !important;
+#uiBase.onMenu #spectateUI #spectateHUD {
+	width: min-content;
+	position: absolute;
+	left: 50%;
+	top: calc(50% + 2rem);
+	transform: translateX(-50%);
 }
 
-#uiBase.onMenu div#spectateUI #specTeam0,
-#uiBase.onMenu div#spectateUI #spec0,
-#uiBase.onMenu div#spectateUI #spec1,
-#uiBase.onMenu div#spectateUI #specTeam1,
-#uiBase.onMenu div#spectateUI #specGMessage,
-#uiBase.onMenu div#spectateUI #specGameInfo,
-#uiBase.onMenu div#spectateUI #specNames,
-#uiBase.onMenu div#spectateUI #specContr,
-#uiBase.onMenu div#spectateUI #specKPDContr,
-#uiBase.onMenu div#spectateUI #specSUS,
-#uiBase.onMenu div#spectateUI #specStats
-{
-    display: none !important;
+#uiBase.onMenu #spectateUI #specTimer {
+	color: white;
+	opacity: 1;
+	border-radius: 0.5rem;
+	z-index: 2;
 }
 
-#uiBase.onMenu div#spectateUI #specTimer {
-    color: white !important;
-    opacity: 1 !important;
-    border-radius: 0.5rem;
+#uiBase.onMenu #spectateUI #specTeam0,
+#uiBase.onMenu #spectateUI #spec0,
+#uiBase.onMenu #spectateUI #spec1,
+#uiBase.onMenu #spectateUI #specTeam1,
+#uiBase.onMenu #spectateUI #specGMessage,
+#uiBase.onMenu #spectateUI #specGameInfo,
+#uiBase.onMenu #spectateUI #specNames,
+#uiBase.onMenu #spectateUI #specContr,
+#uiBase.onMenu #spectateUI #specKPDContr,
+#uiBase.onMenu #spectateUI #specSUS,
+#uiBase.onMenu #spectateUI #specStats {
+	display: none;
 }
-
-#uiBase.onMenu div#spectateUI #spectateHUD {
-    left: 50%;
-    transform: translateX(-50%);
-}
-#uiBase.onMenu div#spectateUI #spectateHUD {
-    top: calc(50% + 2rem);
-}
-

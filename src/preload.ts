@@ -25,7 +25,7 @@ let lastActiveTab = 0;
 export const styleSettingsCSS = {
 	hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' }),
 	menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), { encoding: 'utf-8' }),
-	hideReCaptcha: `body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }`
+	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
 // Lets us exit the game lmao
@@ -144,7 +144,7 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 
 		const settSearchCallback = () => { updateSettingsTabs(0, hookSearch); };
 
-		try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) {}
+		try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) { }
 		document.getElementById('settSearch').addEventListener('input', settSearchCallback);
 
 		try { document.querySelector('.settingsBtn[onclick*="reset"]').removeEventListener('click', settSearchCallback); } catch (e) { }
@@ -169,7 +169,7 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 
 	if (selectedTab !== clientTab) settHolder.classList.remove('Crankshaft-settings');
 
-	try { clientTab.removeEventListener('click', renderSettings); } catch (e) {}
+	try { clientTab.removeEventListener('click', renderSettings); } catch (e) { }
 	clientTab.addEventListener('click', renderSettings);
 
 	if (selectedTab === clientTab && coldStart) renderSettings();

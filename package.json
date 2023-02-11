@@ -1,44 +1,44 @@
 {
-  "name": "crankshaft",
-  "version": "1.6.0",
-  "description": "Crankshaft Krunker Client by KraXen72",
-  "main": "./app/main.js",
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "start": "npm run build && electron .",
-    "dev": "node esbuilder.js && electron .",
-    "dist": "npm run build && electron-builder",
-    "release": "npm run build && electron-builder --publish always",
-    "postinstall": "electron-builder install-app-deps",
-    "changelog-c": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits -r 0",
-    "changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
-  },
-  "author": "KraXen72",
-  "license": "GPL-3.0",
-  "homepage": "https://github.com/KraXen72/crankshaft",
-  "keywords": [
-    "Krunker"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/KraXen72/crankshaft.git"
-  },
-  "devDependencies": {
-    "@types/discord-rpc": "^4.0.3",
-    "conventional-changelog-cli": "^2.2.2",
-    "electron": "^10.4.7",
-    "electron-builder": "^23.6.0",
-    "eslint": "^8.32.0",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-raven": "^1.0.3",
-    "eslint-plugin-import": "^2.27.5",
-    "typescript": "^4.9.4"
-  },
-  "dependencies": {
-    "compare-versions": "^5.0.3",
-    "discord-rpc": "^4.0.1",
-    "esbuild": "^0.17.3",
-    "userscript-meta": "^1.0.1"
-  }
+	"name": "crankshaft",
+	"version": "1.6.0",
+	"description": "Crankshaft Krunker Client by KraXen72",
+	"main": "./app/main.js",
+	"scripts": {
+		"build": "tsc",
+		"watch": "tsc -w",
+		"start": "npm run build && electron .",
+		"dev": "node esbuilder.js && electron .",
+		"dist": "npm run build && electron-builder",
+		"release": "npm run build && electron-builder --publish always",
+		"postinstall": "electron-builder install-app-deps",
+		"changelog-c": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits -r 0",
+		"changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
+	},
+	"author": "KraXen72",
+	"license": "GPL-3.0",
+	"homepage": "https://github.com/KraXen72/crankshaft",
+	"keywords": [
+		"Krunker"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/KraXen72/crankshaft.git"
+	},
+	"devDependencies": {
+		"@types/discord-rpc": "^4.0.3",
+		"conventional-changelog-cli": "^2.2.2",
+		"electron": "^10.4.7",
+		"electron-builder": "^23.6.0",
+		"eslint": "^8.32.0",
+		"eslint-config-airbnb-typescript": "^17.0.0",
+		"eslint-config-raven": "^1.0.3",
+		"eslint-plugin-import": "^2.27.5",
+		"typescript": "^4.9.4"
+	},
+	"dependencies": {
+		"compare-versions": "^5.0.3",
+		"discord-rpc": "^4.0.1",
+		"esbuild": "^0.17.3",
+		"userscript-meta": "^1.0.1"
+	}
 }

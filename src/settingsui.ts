@@ -332,8 +332,8 @@ export function renderSettings() {
 	const csSettings = new DocumentFragment();
 
 	const settings: RenderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal');
-	for (let i = 0; i < settings.length; i++) {
-		const setObj = settings[i];
+
+	for (const setObj of settings) {
 		const setElem = new SettingElem(setObj);
 		const settElemMade = setElem.elem;
 
@@ -353,6 +353,7 @@ export function renderSettings() {
 			csSettings.querySelector('.setBodH.mainSettings').appendChild(settElemMade);
 		}
 	}
+
 
 	if (userPrefs.userscripts) {
 		csSettings.appendChild(skeleton.catHedElem('Userscripts'));
@@ -391,15 +392,15 @@ export function renderSettings() {
 				return obj;
 			});
 
-		document.querySelector('.Crankshaft-settings').textContent = ''
+		document.querySelector('.Crankshaft-settings').textContent = '';
 		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
 
-		for (let i = 0; i < userscriptSettings.length; i++) {
-			const userSet = new SettingElem(userscriptSettings[i]);
+		for (const i of userscriptSettings) {
+			const userSet = new SettingElem(i);
 			document.querySelector('.Crankshaft-settings .setBodH.userscripts').appendChild(userSet.elem);
 		}
 	} else {
-		document.querySelector('.Crankshaft-settings').textContent = ''
+		document.querySelector('.Crankshaft-settings').textContent = '';
 		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
 	}
 

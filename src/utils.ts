@@ -82,19 +82,18 @@ export function toggleSettingCSS(css: string, identifier: string, value: ('toggl
 }
 
 export function userscriptToggleCSS(css: string, identifier: string, value: ('toggle' | boolean) = 'toggle') {
-	const reservedKeywords = ['menuTimer', 'hideAds', 'hideReCaptcha']
-	if (!reservedKeywords.includes(identifier)) {
-		toggleSettingCSS(css, identifier, value)
-	} else {
-		strippedConsole.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`)
-	}
+	const reservedKeywords = ['menuTimer', 'hideAds', 'hideReCaptcha'];
+	if (!reservedKeywords.includes(identifier)) toggleSettingCSS(css, identifier, value);
+	else strippedConsole.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`);
 }
 
-export function debounce(func: Function, timeout = 300){
+export function debounce(func: Function, timeout = 300) {
+	// eslint-disable-next-line init-declarations
 	let timer: NodeJS.Timeout;
+
 	// @ts-ignore
 	return (...args) => {
-	  clearTimeout(timer);
-	  timer = setTimeout(() => { func.apply(this, args); }, timeout);
+		clearTimeout(timer);
+		timer = setTimeout(() => { func.apply(this, args); }, timeout);
 	};
-  }
+}

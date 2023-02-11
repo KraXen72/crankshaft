@@ -208,4 +208,3 @@
 * re-hook settings after switching to basic settings ([7e4499b](https://github.com/KraXen72/crankshaft/commit/7e4499b8073890445f2fbe5b6fb06427da830b38))
 
 ## 1.0.0 (2022-04-19)
-

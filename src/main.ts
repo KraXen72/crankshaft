@@ -124,7 +124,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 	if (addAdditionalSubmenus && Array.isArray(submenu)) {
 		providedMenuTemplate[injectablePosition].submenu = submenu.concat([
 			{ label: 'Copy current url to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(genericWin.webContents.getURL()); } },
-			{ label: 'Debug: Display original url', accelerator: 'CommandOrControl+F1', click: () => { dialog.showMessageBoxSync(genericWin, { message: url }) } },
+			{ label: 'Debug: Display original url', accelerator: 'CommandOrControl+F1', click: () => { dialog.showMessageBoxSync(genericWin, { message: url }); } },
 			{ type: 'separator' },
 			{
 				label: 'Go to previous page (Go Back)',
@@ -353,8 +353,8 @@ app.on('ready', () => {
 				}
 			}
 
-		// for comp or hosted game just load it into the mainWindow
-		} else if (url.includes('comp.krunker.io') 
+			// for comp or hosted game just load it into the mainWindow
+		} else if (url.includes('comp.krunker.io')
 			|| url.startsWith('https://krunker.io/?game')
 			|| url.startsWith('https://krunker.io/?play')
 			|| (url.includes('?game=') && url.includes('&matchId='))
