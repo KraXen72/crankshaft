@@ -36,7 +36,7 @@ document.addEventListener('keydown', event => {
 // Settings Stuff
 document.addEventListener('DOMContentLoaded', () => {
 	// Side Menu Settings Thing
-	const settingsSideMenu = document.querySelectorAll('.menuItem')[6];
+	const settingsSideMenu = document.querySelector('.menuItem[onclick*="showWindow(1)"]');
 	settingsSideMenu.addEventListener('click', () => { updateSettingsTabs(lastActiveTab, true, true); });
 
 	// @ts-ignore cba to add it to the window interface
