@@ -36,7 +36,7 @@ const settingsSkeleton = {
 	userscripts: false,
 	clientSplash: true,
 	discordRPC: false,
-	extendedRPC: false,
+	extendedRPC: true,
 	'angle-backend': 'default',
 	logDebugToConsole: false,
 	alwaysWaitForDevTools: false,
@@ -250,7 +250,7 @@ app.on('ready', () => {
 					startTimestamp,
 					largeImageKey: 'logo',
 					largeImageText: 'Playing Krunker',
-					instance: false
+					instance: true
 				};
 				if (userPrefs.extendedRPC) {
 					Object.assign(data, {
