@@ -1,4 +1,3 @@
-
 type UserPrefs = {
 	[preference: string]: boolean | string;
 };
@@ -109,6 +108,11 @@ interface CategoryName {
 // discord rpc
 type RPCargs = { details: string, state: string };
 
+/** 
+ * return type of window.getGameActivity()
+ * we can't ensure krunker doesen't change or fail to return this exact object
+ * this should be consumed as `Partial<GameInfo>` with fallbacks from elements for properties you are using 
+ */
 interface GameInfo {
 
 	/** example: FRA:h83cx */
@@ -135,7 +139,7 @@ interface GameInfo {
 	mode: string,
 
 	/** example: false */
-	custom: false,
+	custom: boolean,
 
 	/** added by us, example: Baller */
 	skin?: string
