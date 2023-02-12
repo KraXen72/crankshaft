@@ -4,16 +4,20 @@ Writing userscripts for crankshaft is easy. You don't need to follow any templat
 There are a few example userscripts mentioned in the README you can go off of.  
 
 - [Writing userscripts for crankshaft](#writing-userscripts-for-crankshaft)
-  - [Metadata](#metadata)
-    - [Example](#example)
-    - [Template to copy](#template-to-copy)
-    - [optional @run-at rule](#optional-run-at-rule)
-  - [Utility functions](#utility-functions)
-    - [Unload function (version 1.6.0+)](#unload-function-version-160)
-    - [Console access (version 1.6.0+)](#console-access-version-160)
-    - [Insert CSS (version 1.6.1+)](#insert-css-version-161)
-  - [Tips / Notes](#tips--notes)
-  - [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
+	- [Metadata](#metadata)
+		- [Example](#example)
+		- [Template to copy](#template-to-copy)
+		- [optional @run-at rule](#optional-run-at-rule)
+	- [Utility functions](#utility-functions)
+		- [Unload function (version 1.6.0+)](#unload-function-version-160)
+		- [Console access (version 1.6.0+)](#console-access-version-160)
+		- [Insert CSS (version 1.6.1+)](#insert-css-version-161)
+	- [Tips / Notes](#tips--notes)
+	- [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
+  
+> Warning: Goes without saying, but you should never write userscipts that break [Krunker's Terms & Conditions](https://krunker.io/docs/terms.txt), like hacks or selfbots. Crankshaft maintainers are not responsible for scripts YOU write and your account can get banned.
+  
+> Note: Userscripts written before 20th January 2023 may not work if not updated, because krunker changed some things related to script injection.
 
 ## Metadata
 
