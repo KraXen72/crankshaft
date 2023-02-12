@@ -2,8 +2,8 @@
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
-import { createElement, toggleSettingCSS, userscriptToggleCSS } from './utils';
-import { strippedConsole, styleSettingsCSS } from './preload';
+import { createElement, toggleSettingCSS } from './utils';
+import { styleSettingsCSS } from './preload';
 import { su } from './userscripts';
 
 /// <reference path="global.d.ts" />

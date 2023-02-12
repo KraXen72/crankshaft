@@ -41,6 +41,7 @@ interface UserscriptMeta {
 interface Window {
 	errAlert: Function;
 	OffCliV: boolean;
+	getGameActivity: Function
 }
 
 /*
@@ -107,3 +108,35 @@ interface CategoryName {
 
 // discord rpc
 type RPCargs = { details: string, state: string };
+
+interface GameInfo {
+
+	/** example: FRA:h83cx */
+	id: string,
+
+	/** example: 126 */
+	time: number,
+
+	/** example: KraXen72 */
+	user: string,
+	class: {
+
+		/** example: Triggerman */
+		name: string,
+
+		/** example: "0"*/
+		index?: string
+	},
+
+	/** example: Subzero */
+	map: string,
+
+	/** example: Free for All */
+	mode: string,
+
+	/** example: false */
+	custom: false,
+
+	/** added by us, example: Baller */
+	skin?: string
+}

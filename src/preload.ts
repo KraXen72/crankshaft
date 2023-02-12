@@ -6,7 +6,7 @@ import { renderSettings } from './settingsui';
 
 /// <reference path="global.d.ts" />
 
-// get rid of client unsupported message
+// get rid of client unsupported message 
 window.OffCliV = true;
 
 // save some console methods from krunker
@@ -46,28 +46,35 @@ document.addEventListener('DOMContentLoaded', () => {
 ipcRenderer.on('initDiscordRPC', () => {
 	// let areHiddenClassesHooked = false
 	function updateRPC() {
+		/** eslint correct Object.hasOwnProperty helper */
+		const has = (object: Object, key: string) => Object.prototype.hasOwnProperty.call(object, key);
+
 		strippedConsole.log('> updated RPC');
 		const classElem = document.getElementById('menuClassName');
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo');
 
-		let gameMode = '';
-		let map = '';
-		if (mapElem !== null) {
-			const parts = mapElem.textContent.split('_', 2); // ffa_undergrowth 
-			gameMode = parts[0].toUpperCase(); // get gamemode (FFA for example)
-			map = parts[1]; // get the remainder (map name)
+		let gameActivity = window.getGameActivity() as Partial<GameInfo>;
+		if (typeof gameActivity === 'undefined') gameActivity = {};
+		if (!has(gameActivity, 'class')) gameActivity.class = { name: classElem === null ? '' : classElem.textContent };
+		if (!has(gameActivity, 'map') || !has(gameActivity, ('mode'))) {
+			if (mapElem !== null) {
+				const parts = mapElem.textContent.split('_', 2); // ffa_undergrowth 
+				if (!has(gameActivity, 'mode')) gameActivity.mode = parts[0].toUpperCase(); // get gamemode (FFA for example)
+				if (!has(gameActivity, 'map')) gameActivity.map = parts[1]; // get the remainder (map name)
+			} else {
+				gameActivity.map = '';
+				gameActivity.mode = '';
+			}
 		}
 
 		const data: RPCargs = {
-			details: `${gameMode} on ${map}`,
-			state: `${classElem === null ? '' : classElem.textContent} • ${skinElem === null ? '' : skinElem.textContent}`
+			details: `${gameActivity.mode} on ${gameActivity.map}`,
+			state: `${gameActivity.class.name} • ${skinElem === null ? '' : skinElem.textContent}`
 		};
-		if (!gameMode || !map || !classElem || !skinElem) {
-			// send dummy state
+		if (!gameActivity.mode || !gameActivity.map || !classElem || !skinElem) { // send dummy state - krunker is probably still loading
 			ipcRenderer.send('preload_updates_DiscordRPC', { details: 'Loading krunker...', state: 'github.com/KraXen72/crankshaft' });
 		} else {
-			// send actual data
 			ipcRenderer.send('preload_updates_DiscordRPC', data);
 		}
 	}
