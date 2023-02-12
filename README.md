@@ -57,7 +57,7 @@ If you want to write a userscript, please read the [Documentation](./USERSCRIPTS
 - doesen't affect performance in any way when disabled
 - only updates the presence while you're not actively in-game.
 - you can enable "Extended Discord RPC" to also add Discord and Github buttons/links under your rich presence in discord
-- uses the lightweight discord-rpc librarly, not the entire discord.js
+- uses the lightweight discord-rpc library, not the entire discord.js
 
 ## hotkeys
 
