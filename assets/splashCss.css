@@ -1,13 +1,4 @@
 /* Removal - modified from https://envyxyz.github.io/removal/removal.css */
-#voiceDisplay,
-#bubbleContainer,
-.button.small.buttonO img,
-.menuSocialB .setSugBox2,
-#faceItIconM,
-#rankedSoonTm {
-	display: none !important;
-}
-
 #loadEditrBtn,
 #loadInfoLHolder,
 #loadInfoRHolder {
@@ -18,7 +9,7 @@ html {
 	background: #363636 !important;
 }
 
-body>#uiBase>#initLoader {
+body > #uiBase > #initLoader {
 	background-color: #363636 !important;
 	background-size: 100px !important;
 	background-repeat: repeat !important;
@@ -61,7 +52,7 @@ body>#uiBase>#initLoader {
 
 #lC-cont,
 #lC-ico,
-#initLoader>div:first-child[style*=absolute] {
+#initLoader > div:first-child[style*="absolute"] {
 	display: none;
 }
 

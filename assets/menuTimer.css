@@ -1,5 +1,5 @@
 #uiBase.onMenu #spectateUI {
-	display: block;
+	display: block !important;
 }
 
 #uiBase.onMenu #spectateUI #spectateHUD {
@@ -28,5 +28,5 @@
 #uiBase.onMenu #spectateUI #specKPDContr,
 #uiBase.onMenu #spectateUI #specSUS,
 #uiBase.onMenu #spectateUI #specStats {
-	display: none;
+	display: none !important;
 }
