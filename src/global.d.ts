@@ -60,8 +60,11 @@ interface SettingItemGeneric {
 	// category
 	cat?: number;
 
-	// true means setting should show autorenew icon
+	/** applies instantly */
 	instant?: boolean;
+
+	/** only refresh, not full restart required */
+	refreshOnly?: boolean;
 }
 
 // sel has to have an opts with a string array

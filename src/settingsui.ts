@@ -50,10 +50,10 @@ const settingsDesc: SettingsDesc = {
 	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', 'borderless'] },
 	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'd3d11', 'd3d9', 'd3d11on12', 'vulkan'], cat: 0 },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
-	clientSplash: { title: 'Client Splash Screen', type: 'bool', desc: 'Show a custom bg and logo (splash screen) while krunker is loading', safety: 0, cat: 0 },
+	clientSplash: { title: 'Client Splash Screen', type: 'bool', desc: 'Show a custom bg and logo (splash screen) while krunker is loading', safety: 0, cat: 0, refreshOnly: true },
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper', safety: 0, cat: 0 },
 	discordRPC: { title: 'Discord Rich Presence', type: 'bool', desc: 'Enable Discord Rich Presence. Shows Gamemode, Map, Class and Skin', safety: 0, cat: 0 },
-	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC (likely only in profile popout). Requires RPC.', safety: 0, cat: 0 },
+	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC. No effect if RPC is off.', safety: 0, cat: 0 },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: 'Enable userscript support. place .js files in Documents/Crankshaft/scripts', safety: 1, cat: 0 },
 	hideAds: { title: 'Hide Ads', type: 'bool', safety: 0, cat: 1, instant: true },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -137,16 +137,9 @@ class SettingElem {
 		// /** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
 
 		// general stuff that every setting has
-		if (this.props.safety > 0) {
-			this.HTML += `<span class="setting-desc desc-icon" title="${safetyDesc[this.props.safety]}">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M12 12.5ZM3.425 20.5Q2.9 20.5 2.65 20.05Q2.4 19.6 2.65 19.15L11.2 4.35Q11.475 3.9 12 3.9Q12.525 3.9 12.8 4.35L21.35 19.15Q21.6 19.6 21.35 20.05Q21.1 20.5 20.575 20.5ZM12 10.2Q11.675 10.2 11.463 10.412Q11.25 10.625 11.25 10.95V14.45Q11.25 14.75 11.463 14.975Q11.675 15.2 12 15.2Q12.325 15.2 12.538 14.975Q12.75 14.75 12.75 14.45V10.95Q12.75 10.625 12.538 10.412Q12.325 10.2 12 10.2ZM12 17.8Q12.35 17.8 12.575 17.575Q12.8 17.35 12.8 17Q12.8 16.65 12.575 16.425Q12.35 16.2 12 16.2Q11.65 16.2 11.425 16.425Q11.2 16.65 11.2 17Q11.2 17.35 11.425 17.575Q11.65 17.8 12 17.8ZM4.45 19H19.55L12 6Z"/></svg>
-            </span>`;
-		} else if (this.props.instant) {
-			this.HTML += `
-            <span class="setting-desc desc-icon instant" title="Refreshes instantly!">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M12 6v1.79c0 .45.54.67.85.35l2.79-2.79c.2-.2.2-.51 0-.71l-2.79-2.79c-.31-.31-.85-.09-.85.36V4c-4.42 0-8 3.58-8 8 0 1.04.2 2.04.57 2.95.27.67 1.13.85 1.64.34.27-.27.38-.68.23-1.04C6.15 13.56 6 12.79 6 12c0-3.31 2.69-6 6-6zm5.79 2.71c-.27.27-.38.69-.23 1.04.28.7.44 1.46.44 2.25 0 3.31-2.69 6-6 6v-1.79c0-.45-.54-.67-.85-.35l-2.79 2.79c-.2.2-.2.51 0 .71l2.79 2.79c.31.31.85.09.85-.35V20c4.42 0 8-3.58 8-8 0-1.04-.2-2.04-.57-2.95-.27-.67-1.13-.85-1.64-.34z"/></svg>
-            </span>`;
-		}
+		if (this.props.safety > 0) this.HTML += skeleton.safetyIcon(safetyDesc[this.props.safety]);
+		else if (this.props.instant || this.props.refreshOnly) this.HTML += skeleton.refreshIcon(this.props.instant ? 'instant' : 'refresh-icon');
+
 		if ('userscriptReference' in props) {
 			const userscript = props.userscriptReference;
 			if (userscript.hasRan && !props.instant && props.type === 'bool' && props.value === false) {
@@ -296,16 +289,35 @@ class SettingElem {
 const skeleton = {
 	/** make a setting cateogry */
 	category: (title: string, innerHTML: string, elemClass = 'mainSettings') => `
-        <div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}</div>
-        <div class="setBodH Crankshaft-setBodH ${elemClass}">
-            ${innerHTML}
-        </div>`,
+	<div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}</div>
+	<div class="setBodH Crankshaft-setBodH ${elemClass}">
+			${innerHTML}
+	</div>`,
 
-	/** make a setting with some text (notice) */
-	notice: (notice: string, desc?: string) => `<div class="settName setting">
-            <span class="setting-title crankshaft-gray">${notice}</span>
-            ${typeof desc !== 'undefined' ? `<div class="setting-desc-new">${desc}</div>` : ''}
-        </div>`,
+	/** 
+	 * make a setting with some text (notice) 
+	 * @param desc description of the notice 
+	 * @param opts desc => description, iconHTML => icon's html, generate through skeleton's *icon methods
+	 * 
+	 */
+	notice: (notice: string, opts?: { desc?: string, iconHTML?: string }) => `
+	<div class="settName setting">
+		${(opts?.iconHTML ?? false) ? opts.iconHTML : '' }
+		<span class="setting-title crankshaft-gray">${notice}</span>
+		${(opts?.desc ?? false) ? `<div class="setting-desc-new">${opts.desc}</div>` : ''}
+	</div>`,
+
+	/** wrapped safety warning icon (color gets applied through css) */
+	safetyIcon: (safety: string) => `
+	<span class="setting-desc desc-icon" title="${safety}">
+		<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M12 12.5ZM3.425 20.5Q2.9 20.5 2.65 20.05Q2.4 19.6 2.65 19.15L11.2 4.35Q11.475 3.9 12 3.9Q12.525 3.9 12.8 4.35L21.35 19.15Q21.6 19.6 21.35 20.05Q21.1 20.5 20.575 20.5ZM12 10.2Q11.675 10.2 11.463 10.412Q11.25 10.625 11.25 10.95V14.45Q11.25 14.75 11.463 14.975Q11.675 15.2 12 15.2Q12.325 15.2 12.538 14.975Q12.75 14.75 12.75 14.45V10.95Q12.75 10.625 12.538 10.412Q12.325 10.2 12 10.2ZM12 17.8Q12.35 17.8 12.575 17.575Q12.8 17.35 12.8 17Q12.8 16.65 12.575 16.425Q12.35 16.2 12 16.2Q11.65 16.2 11.425 16.425Q11.2 16.65 11.2 17Q11.2 17.35 11.425 17.575Q11.65 17.8 12 17.8ZM4.45 19H19.55L12 6Z"/></svg>
+	</span>`,
+
+	/** wrapped refresh icon (color gets applied through css) */
+	refreshIcon: (mode: 'instant' | 'refresh-icon') => `
+	<span class="setting-desc desc-icon ${mode}" title="${mode === 'instant' ? 'Applies instantly! (No refresh of page required)' : 'Refresh page to see changes'}">
+		<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M12 6v1.79c0 .45.54.67.85.35l2.79-2.79c.2-.2.2-.51 0-.71l-2.79-2.79c-.31-.31-.85-.09-.85.36V4c-4.42 0-8 3.58-8 8 0 1.04.2 2.04.57 2.95.27.67 1.13.85 1.64.34.27-.27.38-.68.23-1.04C6.15 13.56 6 12.79 6 12c0-3.31 2.69-6 6-6zm5.79 2.71c-.27.27-.38.69-.23 1.04.28.7.44 1.46.44 2.25 0 3.31-2.69 6-6 6v-1.79c0-.45-.54-.67-.85-.35l-2.79 2.79c-.2.2-.2.51 0 .71l2.79 2.79c.31.31.85.09.85-.35V20c4.42 0 8-3.58 8-8 0-1.04-.2-2.04-.57-2.95-.27-.67-1.13-.85-1.64-.34z"/></svg>
+	</span>`,
 
 	/** make a settings category header element */
 	catHedElem: (title: string) => createElement('div', {
@@ -358,10 +370,10 @@ export function renderSettings() {
 	if (userPrefs.userscripts) {
 		csSettings.appendChild(skeleton.catHedElem('Userscripts'));
 		if (su.userscripts.length > 0) {
-			csSettings.appendChild(skeleton.catBodElem('userscripts', skeleton.notice('NOTE: refresh page to see changes')));
+			csSettings.appendChild(skeleton.catBodElem('userscripts', skeleton.notice('NOTE: refresh page to see changes', { iconHTML: skeleton.refreshIcon('refresh-icon') })));
 		} else {
 			csSettings.appendChild(skeleton.catBodElem('userscripts', skeleton.notice('No userscripts...',
-				'Go to the Crankshaft <a href="https://github.com/KraXen72/crankshaft#userscripts">README.md</a> to download some made by the client dev.')));
+				{ desc: 'Go to the Crankshaft <a href="https://github.com/KraXen72/crankshaft#userscripts">README.md</a> to download some made by the client dev.' })));
 		}
 
 		// <div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>

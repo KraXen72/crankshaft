@@ -63,12 +63,14 @@
 	grid-area: input;
 }
 
-.Crankshaft-settings .setting.safety-1 .setting-desc {
+.Crankshaft-settings .setting.safety-1 .setting-desc,
+.Crankshaft-settings .setting .setting-desc.refresh-icon {
 	background-color: rgba(99, 99, 99, 0.16);
 	border: 2px solid rgba(78, 78, 78, 0.81);
 }
 
-.Crankshaft-settings .setting.safety-1 .setting-desc svg path {
+.Crankshaft-settings .setting.safety-1 .setting-desc svg path,
+.Crankshaft-settings .setting .setting-desc.refresh-icon svg path {
 	color: #969696;
 	fill: currentColor;
 }
