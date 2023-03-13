@@ -7,6 +7,7 @@
 		"build": "node esbuilder.js --build",
 		"start": "node esbuilder.js && electron .",
 		"dev": "npm run start",
+		"testbuild": "npm run build && electron .",
 		"dist": "npm run build && electron-builder",
 		"release": "npm run build && electron-builder --publish always",
 		"postinstall": "electron-builder install-app-deps",
