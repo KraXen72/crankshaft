@@ -4,10 +4,9 @@
 	"description": "Crankshaft Krunker Client by KraXen72",
 	"main": "./app/main.js",
 	"scripts": {
-		"build": "tsc",
-		"watch": "tsc -w",
-		"start": "npm run build && electron .",
-		"dev": "node esbuilder.js && electron .",
+		"build": "node esbuilder.js --build",
+		"start": "node esbuilder.js && electron .",
+		"dev": "npm run start",
 		"dist": "npm run build && electron-builder",
 		"release": "npm run build && electron-builder --publish always",
 		"postinstall": "electron-builder install-app-deps",
