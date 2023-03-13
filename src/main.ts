@@ -296,10 +296,12 @@ app.on('ready', () => {
 					if (copiedText.includes('https://krunker.io/?game')) mainWindow.webContents.loadURL(copiedText);
 				}
 			},
-			{ label: 'Relaunch Client', accelerator: 'F10', click: () => { app.relaunch(); app.exit(); } },
 			{ type: 'separator' },
 			...constructDevtoolsSubmenu(mainWindow, userPrefs.alwaysWaitForDevTools || null)
 		]
+
+		// you can add a relaunch command with: { label: 'Relaunch Client', accelerator: 'F10', click: () => { app.relaunch(); app.exit(); } }
+		// it is not recommended! - it is prone to cause memory leaks & does not restart the client fully
 	};
 
 	if (process.platform !== 'darwin') csMenuTemplate.push({ label: 'About', submenu: aboutSubmenu });
