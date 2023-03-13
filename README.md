@@ -69,18 +69,22 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 - `F6`: find a new match,
 - `F7`: copy game link,
 - `Ctrl+F7`: join game from clipboard
-- `F10`: relaunch
 - `F12`: devtools (alternative hotkey)
 
-## contributing
-
-- you have to have `git`, `nodejs` and `npm` installed.
-- installation: `git clone https://github.com/KraXen72/crankshaft`, `cd crankshaft`, `npm i`
-  - if you get an error along the lines of `'openssl_fips' is not defined`, use `npm i --openssl_fips=''`
-- running from source: `npm run dev`/`npm run start`(slower), building: `npm run dist`
-- `npm run dev` is faster but test it also once with `npm run start` because `dev` script is experimental
+## building from source
+1. you have to have [`git`](https://git-scm.com/downloads) and [`nodejs`](https://nodejs.org/en/download/) (with `npm`, by default) installed.
+2. installation:
+   - `git clone https://github.com/KraXen72/crankshaft`
+   - `cd crankshaft`
+   - `npm i --openssl_fips=''`
+3. **building from source**: `npm run dist`
+### contributing
+1. follow previous steps 1 & 2
+2. make your changes + running from source: `npm run dev`/`npm run start`
+   - make sure to run the code through the configured eslint before contributing. (vs code will enable it if you have the extension)
+3. after your changes, try it out with `npm run testbuild` - this will minify the code & run the app.
+   - until automated tests are added, try to manually test it works even after the code is minified. if it does not, you're probably doing something wrong
 - please report any bugs/feature requests in the Issues.
-- make sure to run the code through the configured eslint before contributing. (vs code will enable it if you have the extension)
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.
 
 ## where to download?
