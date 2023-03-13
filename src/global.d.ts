@@ -13,7 +13,6 @@ interface InsertedCSS {
 interface IUserscript {
 	name: string;
 	fullpath: string;
-	rawContent?: string;
 	content?: string;
 	exported?: {
 		meta?: UserscriptMeta | false,
@@ -37,6 +36,7 @@ interface UserscriptMeta {
 	src: string;
 }
 
+/** krunker injects these into the window object */
 interface Window {
 	errAlert: Function;
 	OffCliV: boolean;

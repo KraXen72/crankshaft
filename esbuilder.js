@@ -1,20 +1,24 @@
+// crankshaft's build script. uses esbuild, which is a fast js build tool written in go.
+
+const args = process.argv.filter(a => a.startsWith("--"))
 require('esbuild').buildSync({
+	// keep this manually in-sync!
 	entryPoints: [
 		'src/main.ts',
+		'src/menu.ts',
 		'src/preload.ts',
 		'src/resourceswapper.ts',
 		'src/settingsui.ts',
-		'src/utils.ts',
-		'src/menu.ts',
-		'src/userscripts.ts',
 		'src/switches.ts',
+		'src/userscripts.ts',
+		'src/utils.ts',
 	],
 	bundle: false,
+	minify: args.includes("--build"),
+	sourcemap: !args.includes("--build"),
 	format: 'cjs',
-	minify: false,
 	platform: 'node',
-	target: "es2020",
-	sourcemap: false,
+	target: "es2020", // electron 10.4.7 => chromium 85 => released in 2020
 	banner: {
 		js: "\"use strict\";"
 	},

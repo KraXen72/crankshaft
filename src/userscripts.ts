@@ -27,7 +27,7 @@ class Userscript implements IUserscriptInstance {
 
 	fullpath: string;
 
-	rawContent?: string;
+	content?: string;
 
 	// parsed metadata, unload function and @run-at
 	meta: UserscriptMeta | false;
@@ -36,18 +36,16 @@ class Userscript implements IUserscriptInstance {
 
 	hasRan: boolean; // this is public so settings can just show a "reload page" message when needed
 
+	#strictMode: boolean
+
+	#initialized: boolean
+
 	runAt: ('document-start' | 'document-end') = 'document-end';
 
-	// private stuff
-	#hadToTransform: boolean;
-
-	#initialized: boolean; // if we transformed content with esbuild
-
-	#parsedContent?: string; // after content is transformed with esbuild, it is saved here
-
 	constructor(props: IUserscript) {
-		this.#initialized = false;
 		this.hasRan = false;
+		this.#initialized = false
+		this.#strictMode = false
 
 		this.name = props.name;
 		this.fullpath = props.fullpath;
@@ -55,61 +53,49 @@ class Userscript implements IUserscriptInstance {
 		this.meta = false;
 		this.unload = false;
 
-		this.rawContent = readFileSync(this.fullpath, { encoding: 'utf-8' });
-
-		if (this.rawContent.includes('// ==UserScript==') && this.rawContent.includes('// ==/UserScript==')) {
+		this.content = readFileSync(this.fullpath, { encoding: 'utf-8' });
+		if (this.content.includes('// ==UserScript==') && this.content.includes('// ==/UserScript==')) {
 			// eslint-disable-next-line
 			const metaParser = require('userscript-meta');
 
-			let chunk: (string[] | string) = this.rawContent.split('\n');
+			let chunk: (string[] | string) = this.content.split('\n');
+			chunk = (chunk.length === 1 ? [ chunk ] : chunk) as string[] // ensure it's an array
 			const startLine = chunk.findIndex(line => line.includes('// ==UserScript=='));
 			const endLine = chunk.findIndex(line => line.includes('// ==/UserScript=='));
-			chunk = chunk.slice(startLine, endLine + 1).join('\n');
 
-			this.meta = metaParser.parse(chunk) as UserscriptMeta; // assume this.meta is not false when parsing
+			if (startLine === -1 && endLine !== -1) {
+				chunk = chunk.slice(startLine, endLine + 1).join('\n');
+				this.meta = metaParser.parse(chunk) as UserscriptMeta; // assume this.meta is not false when parsing
 
-			/*
-			 * if the metadata define some prop twice, the parser turns it into an array.
-			 * we check if a value isArray and if yes, take the first item in that array as the new value
-			 */
+				/*
+				* if the metadata define some prop twice, the parser turns it into an array.
+				* we check if a value isArray and if yes, take the last item in that array as the new value
+				*/
 
-			for (const metaKey of Object.keys(this.meta)) {
-				// @ts-ignore
-				if (Array.isArray(this.meta[metaKey])) this.meta[metaKey] = this.meta[metaKey][0];
+				let metaKey: keyof UserscriptMeta
+				//@ts-ignore
+				for (metaKey of Object.keys(this.meta)) {
+					const m = this.meta[metaKey]
+					if (Array.isArray(m)) this.meta[metaKey] = m[m.length -1];
+				}
+
+				if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';
 			}
-
-			if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';
+			
 		}
 	}
 
-	/** transform rawContent if needed, add it to this.#parsedContent and return it */
+	/** determine if script is in strictmode or no */
 	#init() {
-		let content: { code: string, warnings: string[] } = { code: '', warnings: [] }; // dummy content
-		this.#hadToTransform = true;
-
-		if (this.rawContent.startsWith('"use strict"')) {
-			content = { code: this.rawContent, warnings: [] };
-			this.#hadToTransform = false;
-		} else {
-			try {
-				// eslint-disable-next-line
-				content = require('esbuild').transformSync(this.rawContent, { minify: true, banner: '"use strict"' });
-			} catch (error) { // dummy content will get returned if it fails
-				errAlert(error, this.name);
-				strippedConsole.error(error);
-			}
-		}
-
-		if (content.warnings.length > 0) strippedConsole.warn(`'${this.name}' compiled with warnings: `, content.warnings);
-		this.#parsedContent = content.code; // save to #parsedContent
+		if (this.content.startsWith('"use strict"')) this.#strictMode = true
 		this.#initialized = true;
 
-		return this.#parsedContent;
+		return this.content;
 	}
 
 	/** return ready-to-run content */
 	get #content() {
-		if (this.#initialized) return this.#parsedContent; return this.#init();
+		if (this.#initialized) return this.content; return this.#init();
 	}
 
 	/** runs the userscript */
@@ -132,8 +118,8 @@ class Userscript implements IUserscriptInstance {
 				if ('unload' in exported) this.unload = exported.unload;
 			}
 
-			strippedConsole.log(`%c[cs]${this.#hadToTransform ? '%c[esbuilt]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
-				'color: lightblue; font-weight: bold;', this.#hadToTransform ? 'color: orange' : 'color: #62dd4f',
+			strippedConsole.log(`%c[cs]${this.#strictMode? '%c[non-strict]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
+				'color: lightblue; font-weight: bold;', this.#strictMode ? 'color: orange' : 'color: #62dd4f',
 				'color: white;', 'color: lightgreen;');
 		} catch (error) {
 			errAlert(error, this.name);

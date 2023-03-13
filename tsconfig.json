@@ -5,7 +5,7 @@
 		"sourceMap": false,
 		"outDir": "app",
 		"baseUrl": ".",
-		"target": "es2020",
+		"target": "es2021",
 		"strict": false,
 		"paths": {
 			"*": [
