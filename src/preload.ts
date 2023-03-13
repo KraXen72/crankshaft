@@ -3,6 +3,7 @@ import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { createElement, injectSettingsCSS, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
+import { compareVersions } from 'compare-versions';
 
 /// <reference path="global.d.ts" />
 
@@ -19,6 +20,7 @@ export const strippedConsole = {
 };
 
 const $assets = pathResolve(__dirname, '..', 'assets');
+const repoID = 'KraXen72/crankshaft';
 let lastActiveTab = 0;
 
 /** actual css for settings that are style-based (hide ads, etc)*/
@@ -41,6 +43,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// @ts-ignore cba to add it to the window interface
 	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
+});
+
+ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
+	const releases = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`);
+	const response = await releases.json();
+	const latestVersion = response.tag_name;
+	const comparison = compareVersions(currentVersion, latestVersion); // -1 === new version available
+
+	let updateElement: HTMLElement;
+	if (comparison === -1) {
+		updateElement = createElement('a', { class: 'crankshaft-holder-update', id: '#loadInfoUpdateHolder', text: `New update! Download ${latestVersion}` });
+
+		const callback = () => { ipcRenderer.send('openExternal', `https://github.com/${repoID}/releases/latest`); };
+		try { updateElement.removeEventListener('click', callback); } catch (e) { }
+		updateElement.addEventListener('click', callback);
+	} else {
+		updateElement = createElement('div', { class: 'crankshaft-holder-update', id: '#loadInfoUpdateHolder', text: 'No new updates.' });
+	}
+
+	const initLoader = document.getElementById('initLoader');
+	if (initLoader === null) throw "Krunker didn't create #initLoader";
+	initLoader.appendChild(updateElement);
+
+	// strippedConsole.log(currentVersion, latestVersion, comparison)
 });
 
 ipcRenderer.on('initDiscordRPC', () => {

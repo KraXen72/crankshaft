@@ -56,22 +56,37 @@ body > #uiBase > #initLoader {
 	display: none;
 }
 
-.crankshaft-holder-r {
+.crankshaft-holder-l,
+.crankshaft-holder-r, 
+.crankshaft-holder-update {
 	position: absolute;
-	right: 20px;
-	bottom: 20px;
 	font-size: 20px !important;
-	text-align: right;
 	color: rgba(255, 255, 255, 0.7);
 	display: block !important;
 }
 
+.crankshaft-holder-r {
+	right: 20px;
+	bottom: 20px;
+	text-align: right;
+}
+
 .crankshaft-holder-l {
-	position: absolute;
 	left: 20px;
 	bottom: 20px;
-	font-size: 20px !important;
 	text-align: left;
-	color: rgba(255, 255, 255, 0.7);
-	display: block !important;
+}
+
+.crankshaft-holder-update {
+	top: 20px;
+	left: 20px;
+	background-color: black;
+	padding: 1rem;
+	border-radius: 0.5rem;
+}
+a.crankshaft-holder-update {
+	color: rgba(155, 155, 255, 0.7);
+	text-decoration: underline;
+	text-underline-position: below;
+	cursor: pointer;
 }

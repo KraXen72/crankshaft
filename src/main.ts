@@ -99,6 +99,9 @@ ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 	// mainWindow.setFullScreen(userPrefs.fullscreen);
 });
 
+// allow perload opening links in default browser
+ipcMain.on('openExternal', (event, url: string) => { shell.openExternal(url); });
+
 const $assets = pathResolve(__dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
 
@@ -232,6 +235,7 @@ app.on('ready', () => {
 	mainWindow.on('ready-to-show', () => {
 		mainWindow.show();
 		if (userPrefs.fullscreen === 'maximized') mainWindow.maximize();
+		mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
 		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); });
 
@@ -300,8 +304,10 @@ app.on('ready', () => {
 			...constructDevtoolsSubmenu(mainWindow, userPrefs.alwaysWaitForDevTools || null)
 		]
 
-		// you can add a relaunch command with: { label: 'Relaunch Client', accelerator: 'F10', click: () => { app.relaunch(); app.exit(); } }
-		// it is not recommended! - it is prone to cause memory leaks & does not restart the client fully
+		/*
+		 * you can add a relaunch command with: { label: 'Relaunch Client', accelerator: 'F10', click: () => { app.relaunch(); app.exit(); } }
+		 * it is not recommended! - it is prone to cause memory leaks & does not restart the client fully
+		 */
 	};
 
 	if (process.platform !== 'darwin') csMenuTemplate.push({ label: 'About', submenu: aboutSubmenu });

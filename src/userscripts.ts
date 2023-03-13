@@ -36,16 +36,16 @@ class Userscript implements IUserscriptInstance {
 
 	hasRan: boolean; // this is public so settings can just show a "reload page" message when needed
 
-	#strictMode: boolean
+	#strictMode: boolean;
 
-	#initialized: boolean
+	#initialized: boolean;
 
 	runAt: ('document-start' | 'document-end') = 'document-end';
 
 	constructor(props: IUserscript) {
 		this.hasRan = false;
-		this.#initialized = false
-		this.#strictMode = false
+		this.#initialized = false;
+		this.#strictMode = false;
 
 		this.name = props.name;
 		this.fullpath = props.fullpath;
@@ -59,7 +59,7 @@ class Userscript implements IUserscriptInstance {
 			const metaParser = require('userscript-meta');
 
 			let chunk: (string[] | string) = this.content.split('\n');
-			chunk = (chunk.length === 1 ? [ chunk ] : chunk) as string[] // ensure it's an array
+			chunk = (chunk.length === 1 ? [chunk] : chunk) as string[]; // ensure it's an array
 			const startLine = chunk.findIndex(line => line.includes('// ==UserScript=='));
 			const endLine = chunk.findIndex(line => line.includes('// ==/UserScript=='));
 
@@ -68,26 +68,26 @@ class Userscript implements IUserscriptInstance {
 				this.meta = metaParser.parse(chunk) as UserscriptMeta; // assume this.meta is not false when parsing
 
 				/*
-				* if the metadata define some prop twice, the parser turns it into an array.
-				* we check if a value isArray and if yes, take the last item in that array as the new value
-				*/
+				 * if the metadata define some prop twice, the parser turns it into an array.
+				 * we check if a value isArray and if yes, take the last item in that array as the new value
+				 */
 
-				let metaKey: keyof UserscriptMeta
-				//@ts-ignore
+				let metaKey: keyof UserscriptMeta;
+
+				// @ts-ignore
 				for (metaKey of Object.keys(this.meta)) {
-					const m = this.meta[metaKey]
-					if (Array.isArray(m)) this.meta[metaKey] = m[m.length -1];
+					const m = this.meta[metaKey];
+					if (Array.isArray(m)) this.meta[metaKey] = m[m.length - 1];
 				}
 
 				if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';
 			}
-			
 		}
 	}
 
 	/** determine if script is in strictmode or no */
 	#init() {
-		if (this.content.startsWith('"use strict"')) this.#strictMode = true
+		if (this.content.startsWith('"use strict"')) this.#strictMode = true;
 		this.#initialized = true;
 
 		return this.content;
@@ -118,7 +118,7 @@ class Userscript implements IUserscriptInstance {
 				if ('unload' in exported) this.unload = exported.unload;
 			}
 
-			strippedConsole.log(`%c[cs]${this.#strictMode? '%c[non-strict]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
+			strippedConsole.log(`%c[cs]${this.#strictMode ? '%c[non-strict]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
 				'color: lightblue; font-weight: bold;', this.#strictMode ? 'color: orange' : 'color: #62dd4f',
 				'color: white;', 'color: lightgreen;');
 		} catch (error) {
