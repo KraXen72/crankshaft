@@ -1,3 +1,44 @@
+## [1.7.0](https://github.com/KraXen72/crankshaft/compare/1.6.0...v1.7.0) (2023-04-13)
+
+
+### Features
+
+* add debug url display ([1711d9f](https://github.com/KraXen72/crankshaft/commit/1711d9f04445f192d4e11f1b3ad280da67b222c5))
+* add hideReCaptcha ([6a30710](https://github.com/KraXen72/crankshaft/commit/6a307103955ab9161431341ef9fcd7475571d880))
+* client restart notifications for settings ([1a90193](https://github.com/KraXen72/crankshaft/commit/1a901934be1bb085d4a668690d0d927f86553403))
+* discordRPC now uses window.getGameActivity() ([779f5c7](https://github.com/KraXen72/crankshaft/commit/779f5c7ba162f7399f72489d905bca74703e9171))
+* due to discord, extendedRPC only affects profile popout ([e50f702](https://github.com/KraXen72/crankshaft/commit/e50f702f4030092c6a2cf1bdd78a64b290f5b390))
+* expose userscriptToggleCSS ([7218bb2](https://github.com/KraXen72/crankshaft/commit/7218bb26c16c0c900214816fb746ad20e9164ce2))
+* extendedRPC is on by default ([980eda0](https://github.com/KraXen72/crankshaft/commit/980eda0857c96075319c2a7f4f827aac2454541b))
+* github update notifications ([8564891](https://github.com/KraXen72/crankshaft/commit/856489138013f2355de65e92ba3019264fdbce79))
+* more command line switches ([0494ccb](https://github.com/KraXen72/crankshaft/commit/0494ccb6958ff4727fa5ab16df3916ab0c933cb4))
+* more flags enabled for new users ([133b70f](https://github.com/KraXen72/crankshaft/commit/133b70fdc597c46b0d25a9845f2915e7d84c5105))
+* remove relaunch hotkey, it was buggy ([32def7d](https://github.com/KraXen72/crankshaft/commit/32def7d16cbf06b02bd219a6696db4f78fcd297c))
+* remove unused devDependency ([cc6e35a](https://github.com/KraXen72/crankshaft/commit/cc6e35a8a6c731886e1d5599d848a55bfcceed96))
+* settings now show if you only need to refresh page ([47bf87c](https://github.com/KraXen72/crankshaft/commit/47bf87c02ef1f64a057bd45aafe314614417ba01))
+
+
+### Bug Fixes
+
+* add accelerator for debug url display ([caaa8d7](https://github.com/KraXen72/crankshaft/commit/caaa8d711300140527595768ce234f164ca19e95))
+* apply Mixaz's swapper fix (videos and scares) ([597b3e9](https://github.com/KraXen72/crankshaft/commit/597b3e93db4fe25c1d85e3552714a5a1e058d989))
+* better explanation of extendedRPC ([0a2e48a](https://github.com/KraXen72/crankshaft/commit/0a2e48a05022283e7660a323e367be2896157ab1))
+* CSS issues with menu timer & changed color of settings ([#14](https://github.com/KraXen72/crankshaft/issues/14)) ([a4f5d2e](https://github.com/KraXen72/crankshaft/commit/a4f5d2e9f5fc971294db73d0cbe88375f7274b8f))
+* playing custom games no longer opens a new window ([243d0ad](https://github.com/KraXen72/crankshaft/commit/243d0ad31e90ce2edf98114ae55bfdbd4d52c957))
+* settings properly inject again ([1e16d9a](https://github.com/KraXen72/crankshaft/commit/1e16d9a746c8d80738213e01446132bbf86ae0ac))
+* swapper ([c21d1d6](https://github.com/KraXen72/crankshaft/commit/c21d1d645c9114a053f1b8bfbc1560ee8dbac3e9))
+* typo ([02199ce](https://github.com/KraXen72/crankshaft/commit/02199cec9ff33b3bd7c3462f0bf406837ba0d412))
+* url.startsWith instead of .includes ([a3af83b](https://github.com/KraXen72/crankshaft/commit/a3af83b15260c07a2bc9be0b4c80bcc6fedff337))
+
+
+### Performance Improvements
+
+* add compression for deb ([0e20588](https://github.com/KraXen72/crankshaft/commit/0e205881e3c9b9852a0610bfeb63c6c13f89039c))
+* disable blockmaps ([6d65464](https://github.com/KraXen72/crankshaft/commit/6d654644c5f1d6919ef01b391f3160db6d6ea170))
+* disable blockmaps part 2 ([1ea3658](https://github.com/KraXen72/crankshaft/commit/1ea36580c176e31c71b879cf0ba97b8fa338014f))
+* removed esbuild from normal dependencies ([ecca09b](https://github.com/KraXen72/crankshaft/commit/ecca09bdf759178093a7454581f1c2ec1096f64a))
+* settings rendering now uses DocumentFragment ([63300d6](https://github.com/KraXen72/crankshaft/commit/63300d62fc6c6af69b8e3ad907d64d9c16515e5a))
+
 ## [1.6.0](https://github.com/KraXen72/crankshaft/compare/1.5.7...1.6.0) (2022-06-29)
 
 
@@ -208,3 +249,4 @@
 * re-hook settings after switching to basic settings ([7e4499b](https://github.com/KraXen72/crankshaft/commit/7e4499b8073890445f2fbe5b6fb06427da830b38))
 
 ## 1.0.0 (2022-04-19)
+
