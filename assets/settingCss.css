@@ -153,3 +153,71 @@ input:checked+.advancedSlider:hover {
 	opacity: 1;
 	transition: all 0s !important;
 }
+
+/* floating toasts css that is required */
+.crankshaft-holder-l,
+.crankshaft-holder-r, 
+.crankshaft-holder-update {
+	position: absolute;
+	font-size: 20px !important;
+	color: rgba(255, 255, 255, 0.7);
+	display: block !important;
+}
+
+.crankshaft-holder-r {
+	right: 20px;
+	bottom: 20px;
+	text-align: right;
+}
+
+.crankshaft-holder-l {
+	left: 20px;
+	bottom: 20px;
+	text-align: left;
+}
+.crankshaft-holder-update {
+	top: 20px;
+	left: 20px;
+	background-color: black;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	width: max-content;
+}
+a.crankshaft-holder-update {
+	color: rgba(155, 155, 255, 0.7);
+	text-decoration: underline;
+	text-underline-position: below;
+	cursor: pointer;
+}
+/* settings refresh popup */
+.refresh-popup {
+	height: min-content;
+	left: 50%;
+	transform: translateX(-50%);
+}
+.refresh-popup span {
+	display: flex;
+	align-items: center;
+	column-gap: 0.5rem;
+}
+.refresh-popup, 
+.refresh-popup span {
+	vertical-align: middle;
+	font-size: .8rem;
+	line-height: .8rem;
+	z-index: 12;
+	color: rgba(255,255,255,0.6)
+}
+.refresh-popup svg {
+	fill: rgba(255,255,255,0.6);
+}
+.refresh-popup code {
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+	font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    background-color: #232323;
+    padding: 0.08rem 0.4rem;
+    border-radius: 3px;
+    border: 2px solid #333333
+}

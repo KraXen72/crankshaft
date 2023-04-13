@@ -72,12 +72,13 @@ class Userscript implements IUserscriptInstance {
 				 * we check if a value isArray and if yes, take the last item in that array as the new value
 				 */
 
+				// eslint-disable-next-line init-declarations
 				let metaKey: keyof UserscriptMeta;
 
 				// @ts-ignore
-				for (metaKey of Object.keys(this.meta)) {
-					const m = this.meta[metaKey];
-					if (Array.isArray(m)) this.meta[metaKey] = m[m.length - 1];
+				for ((metaKey) of Object.keys(this.meta)) {
+					const meta = this.meta[metaKey];
+					if (Array.isArray(meta)) this.meta[metaKey] = meta[meta.length - 1];
 				}
 
 				if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';

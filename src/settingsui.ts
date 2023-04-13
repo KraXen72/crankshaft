@@ -7,10 +7,18 @@ import { styleSettingsCSS } from './preload';
 import { su } from './userscripts';
 
 /// <reference path="global.d.ts" />
+enum RefreshEnum {
+	notNeeded = 0,
+	refresh,
+	reloadApp
+}
 
 /* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
+let userPrefsCache: UserPrefs; // the userprefs on path
+let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
+let refreshNotifElement: HTMLElement;
 /* eslint-disable init-declarations */
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
@@ -19,6 +27,7 @@ ipcRenderer.on('main_sends_userPrefs', (event, recieved_userPrefsPath: string, r
 	// main sends us the path to settings and also settings themselves on initial load.
 	userPrefsPath = recieved_userPrefsPath;
 	userPrefs = recieved_userPrefs;
+	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
 });
 
 /** * joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -90,6 +99,26 @@ const refreshToUnloadMessage = 'REFRESH PAGE TO UNLOAD USERSCRIPT';
 function saveSettings() {
 	writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
 	ipcRenderer.send('settingsUI_updates_userPrefs', userPrefs); // send them back to main
+}
+
+function recalculateRefreshNeeded() {
+	refreshNeeded = RefreshEnum.notNeeded;
+	for (let i = 0; i < Object.keys(userPrefs).length; i++) {
+		const key = Object.keys(userPrefs)[i];
+		const descObj = settingsDesc[key];
+		const setting = userPrefs[key];
+		const cachedSetting = userPrefsCache[key];
+
+		if (setting !== cachedSetting) {
+			if (descObj?.instant) {
+				continue;
+			} else if (descObj?.refreshOnly) {
+				if (refreshNeeded < RefreshEnum.refresh) refreshNeeded = RefreshEnum.refresh;
+			} else {
+				refreshNeeded = RefreshEnum.reloadApp;
+			}
+		}
+	}
 }
 
 function saveUserscriptTracker() {
@@ -250,6 +279,15 @@ class SettingElem {
 			// eslint-disable-next-line callback-return
 			callback(value);
 		}
+		recalculateRefreshNeeded();
+		try { refreshNotifElement.remove(); } catch (e) { }
+		if (refreshNeeded > 0) {
+			refreshNotifElement = createElement('div', {
+				class: ['crankshaft-holder-update', 'refresh-popup'],
+				innerHTML: skeleton.refreshElem(refreshNeeded)
+			});
+			document.body.appendChild(refreshNotifElement);
+		}
 	}
 
 
@@ -302,7 +340,7 @@ const skeleton = {
 	 */
 	notice: (notice: string, opts?: { desc?: string, iconHTML?: string }) => `
 	<div class="settName setting">
-		${(opts?.iconHTML ?? false) ? opts.iconHTML : '' }
+		${(opts?.iconHTML ?? false) ? opts.iconHTML : ''}
 		<span class="setting-title crankshaft-gray">${notice}</span>
 		${(opts?.desc ?? false) ? `<div class="setting-desc-new">${opts.desc}</div>` : ''}
 	</div>`,
@@ -329,7 +367,19 @@ const skeleton = {
 	catBodElem: (elemClass: string, content: string) => createElement('div', {
 		class: `setBodH Crankshaft-setBodH ${elemClass}`.split(' '),
 		innerHTML: content
-	})
+	}),
+
+	refreshElem: (level: RefreshEnum) => {
+		switch (level) {
+			case RefreshEnum.reloadApp:
+				return '<span class="restart-msg">Restart client fully to see changes</span>';
+			case RefreshEnum.refresh:
+				return `<span class="reload-msg">${skeleton.refreshIcon('refresh-icon')}Reload page with <code>F5</code> or <code>F6</code> to see changes</span>`;
+			case RefreshEnum.notNeeded:
+			default:
+				return '';
+		}
+	}
 };
 
 export function renderSettings() {

@@ -55,38 +55,3 @@ body > #uiBase > #initLoader {
 #initLoader > div:first-child[style*="absolute"] {
 	display: none;
 }
-
-.crankshaft-holder-l,
-.crankshaft-holder-r, 
-.crankshaft-holder-update {
-	position: absolute;
-	font-size: 20px !important;
-	color: rgba(255, 255, 255, 0.7);
-	display: block !important;
-}
-
-.crankshaft-holder-r {
-	right: 20px;
-	bottom: 20px;
-	text-align: right;
-}
-
-.crankshaft-holder-l {
-	left: 20px;
-	bottom: 20px;
-	text-align: left;
-}
-
-.crankshaft-holder-update {
-	top: 20px;
-	left: 20px;
-	background-color: black;
-	padding: 1rem;
-	border-radius: 0.5rem;
-}
-a.crankshaft-holder-update {
-	color: rgba(155, 155, 255, 0.7);
-	text-decoration: underline;
-	text-underline-position: below;
-	cursor: pointer;
-}
