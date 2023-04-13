@@ -1,10 +1,11 @@
 # crankshaft
 
+[![Github All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)](https://github.com/KraXen72/crankshaft/releases/latest) [![Latest release](https://img.shields.io/github/downloads/KraXen72/crankshaft/latest/total)](https://github.com/KraXen72/crankshaft/releases/latest) [![Chat](https://img.shields.io/discord/966300714060116008)](https://discord.gg/ZeVuxG7gQJ)  
+
 > a sensible krunker client built on the ashes of [Gatoclient](https://github.com/Gatohost/gatoclient) and [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite)
 
 ![splash](assets/blank_splash.png)
-
-[![Github All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)](https://github.com/KraXen72/crankshaft/releases/latest) [![Latest release](https://img.shields.io/github/downloads/KraXen72/crankshaft/latest/total)](https://github.com/KraXen72/crankshaft/releases/latest) [![Chat](https://img.shields.io/discord/966300714060116008)](https://discord.gg/ZeVuxG7gQJ)
+**Download:** [Windows (x64)](https://github.com/KraXen72/crankshaft/releases/download/latest/crankshaft-setup-win-x64.exe) - [Mac (x64)](https://github.com/KraXen72/crankshaft/releases/download/latest/crankshaft-portable-mac-x64.dmg) - [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/download/latest/crankshaft-portable-linux-x86_64.AppImage) - [Linux (i386 AppImage)](https://github.com/KraXen72/crankshaft/releases/download/latest/crankshaft-portable-linux-i386.AppImage) - [Other](https://github.com/KraXen72/crankshaft/releases/latest)
 
 ## client features
 
@@ -86,10 +87,3 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
    - until automated tests are added, try to manually test it works even after the code is minified. if it does not, you're probably doing something wrong
 - please report any bugs/feature requests in the Issues.
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.
-
-## where to download?
-
-- releases tab.
-- it is generally recommended to use the installer version (for example `crankshaft-setup-win-x64.exe`) rather than portable, because portable version has bad performance
-- almost always use the 64 bit version (ends in `-x64`), rather than a general or 32bit one, unless your computer is 32bit. (it most likely isn't)
-- if you're having trouble with the installer, report the troubles in Issues and try running from source
