@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const settingsSideMenu = document.querySelector('.menuItem[onclick*="showWindow(1)"]');
 	settingsSideMenu.addEventListener('click', () => { updateSettingsTabs(lastActiveTab, true, true); });
 
+	// FIXME currently, if user clicks too fast, while krunker is still loading, settings might not be hooked - investigate & fix
+
 	// @ts-ignore cba to add it to the window interface
 	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
 });
@@ -50,26 +52,26 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 	const latestVersion = response.tag_name;
 	const comparison = compareVersions(currentVersion, latestVersion); // -1 === new version available
 
-	let updateElement = createElement('div', {
+	const updateElement = createElement('div', {
 		class: ['crankshaft-holder-update', 'refresh-popup'],
 		id: '#loadInfoUpdateHolder'
 	});
 
 	if (comparison === -1) {
-		updateElement.appendChild(createElement('a', { text: `New update! Download ${latestVersion}` }))
+		updateElement.appendChild(createElement('a', { text: `New update! Download ${latestVersion}` }));
 
 		const callback = () => { ipcRenderer.send('openExternal', `https://github.com/${repoID}/releases/latest`); };
 		try { updateElement.removeEventListener('click', callback); } catch (e) { }
 		updateElement.addEventListener('click', callback);
 	} else {
-		updateElement.appendChild(createElement('span', { text: 'No new updates' }))
+		updateElement.appendChild(createElement('span', { text: 'No new updates' }));
 	}
 
 	// TODO remove this when user clicks play
 	document.body.appendChild(updateElement);
-	let hideTimeout = setTimeout(() => updateElement.remove(), 5000)
-	updateElement.onmouseenter = () => clearTimeout(hideTimeout)
-	updateElement.onmouseleave = () => hideTimeout = setTimeout(() => updateElement.remove(), 5000)
+	let hideTimeout = setTimeout(() => updateElement.remove(), 5000);
+	updateElement.onmouseenter = () => clearTimeout(hideTimeout);
+	updateElement.onmouseleave = () => { hideTimeout = setTimeout(() => updateElement.remove(), 5000); };
 });
 
 ipcRenderer.on('initDiscordRPC', () => {
@@ -83,8 +85,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo'); // TODO update this fallback
 
-		let gameActivity = window.getGameActivity() as Partial<GameInfo>;
-		if (typeof gameActivity === 'undefined') gameActivity = {};
+		let gameActivity = window?.getGameActivity() ?? {} as Partial<GameInfo>;
 		if (!has(gameActivity, 'class')) gameActivity.class = { name: classElem === null ? '' : classElem.textContent };
 		if (!has(gameActivity, 'map') || !has(gameActivity, ('mode'))) {
 			if (mapElem !== null) {
@@ -132,19 +133,33 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, c
 		const splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), { encoding: 'utf-8' });
 		injectSettingsCSS(splashCSS, splashId);
 
-		const initLoader = document.getElementById('initLoader');
-		if (initLoader === null) throw "Krunker didn't create #initLoader";
+		const instructionHider = document.getElementById('instructionHider');
+		if (instructionHider === null) throw "Krunker didn't create #instructionHider";
 
-		initLoader.appendChild(createElement('svg', {
+		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
-			innerHTML: readFileSync(pathJoin($assets, 'Frame_1Logo-minText.svg'), { encoding: 'utf-8' })
-		}));
+			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })
+		})
 
-		// make our won bottom corner holders incase krunker changes it's shit. we only rely on the loading text from krunker.
-		try { document.querySelector('#loadInfoRHolder').remove(); } catch (e) { strippedConsole.warn("didn't remove right info holder, doesen't exist"); }
-		try { document.querySelector('#loadInfoLHolder').remove(); } catch (e) { strippedConsole.warn("didn't remove left info holder, doesen't exist"); }
-		initLoader.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: '#loadInfoLHolder', text: `v${version}` }));
-		initLoader.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: '#loadInfoRHolder', text: 'Client by KraXen72' }));
+		instructionHider.appendChild(logoSVG);
+
+		// i am not sure if you should be injecting more elements into a svg element, but it seems to work. feel free to pr a better version tho.
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: '#loadInfoLHolder', text: `v${version}` }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: '#loadInfoRHolder', text: 'Client by KraXen72' }));
+
+		const observerConfig = { attributes: true, childList: true, subtree: true };
+
+		const callback = (mutationList: MutationRecord[], observer: MutationObserver) => {
+			for (const mutation of mutationList) {
+				if (mutation.type === 'childList') {
+					logoSVG.remove();
+					observer.disconnect();
+				}
+			}
+		};
+
+		const observer = new MutationObserver(callback);
+		observer.observe(document.getElementById('instructions'), observerConfig);
 	}
 
 	// TODO rewrite, this is not well scalable
@@ -152,10 +167,6 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, c
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
 	if (userscripts) ipcRenderer.send('preload_requests_userscriptPath');
-
-	// slightly hacky, but #phonePop causes a wierd re-layout, so we hide it initially and show after 5 seconds
-	toggleSettingCSS(`#phonePop { display: none !important; } body { background: black }`, 'relayout', true)
-	setTimeout(() => toggleSettingCSS('', 'relayout', false), 4000)
 });
 
 /**

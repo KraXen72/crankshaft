@@ -5,13 +5,13 @@ import { OpenDevToolsOptions } from 'electron/main';
 
 // Menu
 /** submenu to replace the About screen */
-export const aboutSubmenu = [
+export const aboutSubmenu: MenuItemConstructorOptions[] = [
 	{ label: 'Consider supporting development by donating <3', enabled: false },
-	{ label: 'Donate: liberapay (recurring)', registerAccelerator: false, click: () => { shell.openExternal('https://liberapay.com/KraXen72') }},
-	{ label: 'Donate: ko-fi (one time)', registerAccelerator: false, click: () => { shell.openExternal('https://ko-fi.com/kraxen72') }},
+	{ label: 'Donate: liberapay (recurring)', registerAccelerator: false, click: () => shell.openExternal('https://liberapay.com/KraXen72') },
+	{ label: 'Donate: ko-fi (one time)', registerAccelerator: false, click: () => shell.openExternal('https://ko-fi.com/kraxen72') },
 	{ type: 'separator' },
-	{ label: 'Github repo', registerAccelerator: false, click: () => { shell.openExternal('https://github.com/KraXen72/crankshaft'); } },
-	{ label: 'Client Discord', registerAccelerator: false, click: () => { shell.openExternal('https://discord.gg/ZeVuxG7gQJ'); } }
+	{ label: 'Github repo', registerAccelerator: false, click: () => shell.openExternal('https://github.com/KraXen72/crankshaft') },
+	{ label: 'Client Discord', registerAccelerator: false, click: () => shell.openExternal('https://discord.gg/ZeVuxG7gQJ') }
 ];
 
 /** the menu with the app name on mac (array, to be spread) */

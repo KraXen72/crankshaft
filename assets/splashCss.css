@@ -9,49 +9,22 @@ html {
 	background: #363636 !important;
 }
 
-body > #uiBase > #initLoader {
+#crankshaft-logo-holder {
 	background-color: #363636 !important;
 	background-size: 100px !important;
 	background-repeat: repeat !important;
-	border: none !important;
-	outline: none !important;
-	z-index: 20 !important;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAMAAAC8EZcfAAAAclBMVEXE/+IAAAAoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgnJycoKCgoKCgoKCgoKCgnJycoKCgoKCgnJycoKCgoKCgoKCgoKCgoKCgpKSm+1W+6AAAAAXRSTlMAQObYZgAAAfpJREFUeNrt3QGqIjsQRuHD2URW0Pvf4oPHcMMt0j0OXqx/hjoAggX4AdJJbEX+zx3gTj7e+cW9CYKF6Gddfyjks+kLwmbfWbgl3b6zEKuw03cQYoBQ74V4FpIixKMQUoQUUL+vCLEKu31FiFXY7KvCPaUrfRLiV90+jkJsFv5+n+eu1xcorL6z0J12ATlpGn1VCPdCA96DcCuU4gvIb7EfSOkABCSnCpS0CpC8CjBZiOFCVCLbQEgWIkQLSS4eSLdvmqZpmqZpmqZpTj5zuH0z44HZQr+K5SUTLQ3wTWGkI4FXgR6Gi4cGaOmHl7oBon2udQtcKq1d3ndtal++UrrPdJ/GA0335QNN8S0ArlTgkz3At2B33QDXSll8r+NU5XOtQnjy9+xpnnycfX3C62lYnughUiv2buALo/XgiwDC1fkTEGqnkbqafFK6TjOVyMvM4lcr5qSOR2Gjz+txGgDUpyFRwmUoUAVPzZb/TeCci+/6R4CQLVw0tu4vLnCpCR8Qroe17XXf3FBafxlwEdfcM/xR4WKapmmapmmapuDmW8XvZTjQcKDBQNN9mu5zfOPrK9Q3whEGZLhQs4WqYpqweDBV6BcwU+gGZgsxXIipQjcwUmgBBgnL+cg4od/CNGHhYZaw+IAc4dl31riz3QePZsP+ueLg6xX+B4FEGkmLcq6yAAAAAElFTkSuQmCC) !important;
-}
 
-#crankshaft-logo-holder {
 	position: absolute;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
+	z-index: 20;
+
+	padding: 5rem 2rem;
+	border-radius: 10px;
+	
 	width: max-content;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	height: min-content;
-	flex-direction: column;
 }
 
-#loadGamNm {
-	display: block !important;
-	bottom: 13rem !important;
-	top: initial !important;
-	font-size: 20px !important;
-	height: min-content !important;
-	color: rgba(255, 255, 255, 0.7) !important;
-}
-
-#loadTipsHolder,
-.loadTipsHolder {
-	color: rgba(255, 255, 255, 0.7) !important;
-}
-
-#loadTipsHolder {
-	bottom: 20px !important;
-}
-
-#lC-cont,
-#lC-ico,
-#initLoader > div:first-child[style*="absolute"] {
-	display: none;
-}
