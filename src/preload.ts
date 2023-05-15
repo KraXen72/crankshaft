@@ -35,7 +35,6 @@ document.addEventListener('keydown', event => {
 	if (event.code === 'Escape') document.exitPointerLock();
 });
 
-// Settings Stuff
 document.addEventListener('DOMContentLoaded', () => {
 	// Side Menu Settings Thing
 	const settingsSideMenu = document.querySelector('.menuItem[onclick*="showWindow(1)"]');
@@ -51,22 +50,26 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 	const latestVersion = response.tag_name;
 	const comparison = compareVersions(currentVersion, latestVersion); // -1 === new version available
 
-	let updateElement: HTMLElement;
+	let updateElement = createElement('div', {
+		class: ['crankshaft-holder-update', 'refresh-popup'],
+		id: '#loadInfoUpdateHolder'
+	});
+
 	if (comparison === -1) {
-		updateElement = createElement('a', { class: 'crankshaft-holder-update', id: '#loadInfoUpdateHolder', text: `New update! Download ${latestVersion}` });
+		updateElement.appendChild(createElement('a', { text: `New update! Download ${latestVersion}` }))
 
 		const callback = () => { ipcRenderer.send('openExternal', `https://github.com/${repoID}/releases/latest`); };
 		try { updateElement.removeEventListener('click', callback); } catch (e) { }
 		updateElement.addEventListener('click', callback);
 	} else {
-		updateElement = createElement('div', { class: 'crankshaft-holder-update', id: '#loadInfoUpdateHolder', text: 'No new updates.' });
+		updateElement.appendChild(createElement('span', { text: 'No new updates' }))
 	}
 
-	const initLoader = document.getElementById('initLoader');
-	if (initLoader === null) throw "Krunker didn't create #initLoader";
-	initLoader.appendChild(updateElement);
-
-	// strippedConsole.log(currentVersion, latestVersion, comparison)
+	// TODO remove this when user clicks play
+	document.body.appendChild(updateElement);
+	let hideTimeout = setTimeout(() => updateElement.remove(), 5000)
+	updateElement.onmouseenter = () => clearTimeout(hideTimeout)
+	updateElement.onmouseleave = () => hideTimeout = setTimeout(() => updateElement.remove(), 5000)
 });
 
 ipcRenderer.on('initDiscordRPC', () => {
@@ -78,7 +81,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 		strippedConsole.log('> updated RPC');
 		const classElem = document.getElementById('menuClassName');
 		const skinElem = document.querySelector('#menuClassSubtext > span');
-		const mapElem = document.getElementById('mapInfo');
+		const mapElem = document.getElementById('mapInfo'); // TODO update this fallback
 
 		let gameActivity = window.getGameActivity() as Partial<GameInfo>;
 		if (typeof gameActivity === 'undefined') gameActivity = {};
@@ -149,6 +152,10 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, c
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
 	if (userscripts) ipcRenderer.send('preload_requests_userscriptPath');
+
+	// slightly hacky, but #phonePop causes a wierd re-layout, so we hide it initially and show after 5 seconds
+	toggleSettingCSS(`#phonePop { display: none !important; } body { background: black }`, 'relayout', true)
+	setTimeout(() => toggleSettingCSS('', 'relayout', false), 4000)
 });
 
 /**

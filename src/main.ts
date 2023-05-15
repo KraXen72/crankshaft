@@ -199,7 +199,8 @@ app.on('ready', () => {
 			enableRemoteModule: false,
 			spellcheck: false,
 			nodeIntegration: false
-		}
+		},
+		backgroundColor: '#000000'
 	};
 
 	// userPrefs.fullscreen = maximized gets handled later
@@ -229,12 +230,12 @@ app.on('ready', () => {
 
 	mainWindow = new BrowserWindow(mainWindowProps);
 	if (userPrefs.fullscreen === 'borderless') mainWindow.moveTop();
-
-
+	
 	// general ready to show, runs when window refreshes or loads url
 	mainWindow.on('ready-to-show', () => {
-		mainWindow.show();
-		if (userPrefs.fullscreen === 'maximized') mainWindow.maximize();
+		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize()
+		if (mainWindow.webContents.getURL().endsWith("dummy.html")) { mainWindow.loadURL('https://krunker.io'); return; }
+		
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
 		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); });
@@ -273,7 +274,8 @@ app.on('ready', () => {
 		}
 	});
 
-	mainWindow.loadURL('https://krunker.io');
+	mainWindow.loadFile("../assets/dummy.html")
+	// mainWindow.loadURL('https://krunker.io')
 
 	if (userPrefs.logDebugToConsole) {
 		console.log('GPU INFO BEGIN');

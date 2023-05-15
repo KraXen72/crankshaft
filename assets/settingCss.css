@@ -182,35 +182,30 @@ input:checked+.advancedSlider:hover {
 	padding: 1rem;
 	border-radius: 0.5rem;
 	width: max-content;
-}
-a.crankshaft-holder-update {
-	color: rgba(155, 155, 255, 0.7);
-	text-decoration: underline;
-	text-underline-position: below;
-	cursor: pointer;
+	z-index: 10;
 }
 /* settings refresh popup */
 .refresh-popup {
 	height: min-content;
 	left: 50%;
 	transform: translateX(-50%);
+	color: rgba(255,255,255,0.6)
 }
 .refresh-popup span {
 	display: flex;
 	align-items: center;
 	column-gap: 0.5rem;
+	color: rgba(255,255,255,0.6);
 }
 .refresh-popup, 
-.refresh-popup span {
+.refresh-popup span,
+.refresh-popup a {
 	vertical-align: middle;
 	font-size: .8rem;
 	line-height: .8rem;
 	z-index: 12;
-	color: rgba(255,255,255,0.6)
 }
-.refresh-popup svg {
-	fill: rgba(255,255,255,0.6);
-}
+.refresh-popup svg { fill: rgba(255,255,255,0.6); }
 .refresh-popup code {
     color: white;
     font-size: 1.2rem;
