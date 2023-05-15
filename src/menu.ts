@@ -6,6 +6,10 @@ import { OpenDevToolsOptions } from 'electron/main';
 // Menu
 /** submenu to replace the About screen */
 export const aboutSubmenu = [
+	{ label: 'Consider supporting development by donating <3', enabled: false },
+	{ label: 'Donate: liberapay (recurring)', registerAccelerator: false, click: () => { shell.openExternal('https://liberapay.com/KraXen72') }},
+	{ label: 'Donate: ko-fi (one time)', registerAccelerator: false, click: () => { shell.openExternal('https://ko-fi.com/kraxen72') }},
+	{ type: 'separator' },
 	{ label: 'Github repo', registerAccelerator: false, click: () => { shell.openExternal('https://github.com/KraXen72/crankshaft'); } },
 	{ label: 'Client Discord', registerAccelerator: false, click: () => { shell.openExternal('https://discord.gg/ZeVuxG7gQJ'); } }
 ];
