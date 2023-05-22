@@ -1,3 +1,19 @@
+### [1.7.1](https://github.com/KraXen72/crankshaft/compare/1.7.0...v1.7.1) (2023-05-22)
+
+
+### Features
+
+* add donate links to about submenu ([c024365](https://github.com/KraXen72/crankshaft/commit/c02436523020f795d94ac2e8734f6c9527ceaae7))
+* more stable RPC and fixed client settings hooking ([6ccb587](https://github.com/KraXen72/crankshaft/commit/6ccb587b8803e0e1a1e834ea315ada24b7683b5f))
+* new inline splash screen ([e7387d8](https://github.com/KraXen72/crankshaft/commit/e7387d8be3807b97a814791c3a9718534443f363))
+
+
+### Bug Fixes
+
+* increase fallback timeout for settings ([c8dc467](https://github.com/KraXen72/crankshaft/commit/c8dc467e6e0d7e2c1840534adf0a99b290e42939))
+* more safeguards on settings injections ([ecf94f4](https://github.com/KraXen72/crankshaft/commit/ecf94f40c31b03f7012e503006bfa17198b317c6))
+* re-layout on load & update toast ([de27bab](https://github.com/KraXen72/crankshaft/commit/de27babe3951045d27ac1eec1455272a72c8bdec))
+
 ## [1.7.0](https://github.com/KraXen72/crankshaft/compare/1.6.0...v1.7.0) (2023-04-13)
 
 
