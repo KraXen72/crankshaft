@@ -40,8 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	const settingsSideMenu = document.querySelector('.menuItem[onclick*="showWindow(1)"]');
 	settingsSideMenu.addEventListener('click', () => { updateSettingsTabs(lastActiveTab, true, true); });
 
-	// FIXME currently, if user clicks too fast, while krunker is still loading, settings might not be hooked - investigate & fix
-
 	// @ts-ignore cba to add it to the window interface
 	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
 });
@@ -67,11 +65,12 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 		updateElement.appendChild(createElement('span', { text: 'No new updates' }));
 	}
 
-	// TODO remove this when user clicks play
 	document.body.appendChild(updateElement);
+
 	let hideTimeout = setTimeout(() => updateElement.remove(), 5000);
 	updateElement.onmouseenter = () => clearTimeout(hideTimeout);
 	updateElement.onmouseleave = () => { hideTimeout = setTimeout(() => updateElement.remove(), 5000); };
+	document.addEventListener('pointerlockchange', () => { clearTimeout(hideTimeout); updateElement.remove() }, { once: true });
 });
 
 ipcRenderer.on('initDiscordRPC', () => {
@@ -83,26 +82,18 @@ ipcRenderer.on('initDiscordRPC', () => {
 		strippedConsole.log('> updated RPC');
 		const classElem = document.getElementById('menuClassName');
 		const skinElem = document.querySelector('#menuClassSubtext > span');
-		const mapElem = document.getElementById('mapInfo'); // TODO update this fallback
+		const mapElem = document.getElementById('mapInfo');
 
-		let gameActivity = window?.getGameActivity() ?? {} as Partial<GameInfo>;
+		const gameActivity = has(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
+		let overWriteDetails: string | false = false
 		if (!has(gameActivity, 'class')) gameActivity.class = { name: classElem === null ? '' : classElem.textContent };
-		if (!has(gameActivity, 'map') || !has(gameActivity, ('mode'))) {
-			if (mapElem !== null) {
-				const parts = mapElem.textContent.split('_', 2); // ffa_undergrowth 
-				if (!has(gameActivity, 'mode')) gameActivity.mode = parts[0].toUpperCase(); // get gamemode (FFA for example)
-				if (!has(gameActivity, 'map')) gameActivity.map = parts[1]; // get the remainder (map name)
-			} else {
-				gameActivity.map = '';
-				gameActivity.mode = '';
-			}
-		}
+		if (!has(gameActivity, 'map') || !has(gameActivity, ('mode'))) overWriteDetails = (mapElem !== null) ? mapElem.textContent : 'Loading game...'
 
 		const data: RPCargs = {
-			details: `${gameActivity.mode} on ${gameActivity.map}`,
+			details: overWriteDetails || `${gameActivity.mode} on ${gameActivity.map}`,
 			state: `${gameActivity.class.name} • ${skinElem === null ? '' : skinElem.textContent}`
 		};
-		if (!gameActivity.mode || !gameActivity.map || !classElem || !skinElem) { // send dummy state - krunker is probably still loading
+		if (!skinElem) { // as long as we have skinElem, we can fill in the other blanks
 			ipcRenderer.send('preload_updates_DiscordRPC', { details: 'Loading krunker...', state: 'github.com/KraXen72/crankshaft' });
 		} else {
 			ipcRenderer.send('preload_updates_DiscordRPC', data);
@@ -139,7 +130,7 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, c
 		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
 			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })
-		})
+		});
 
 		instructionHider.appendChild(logoSVG);
 
@@ -176,17 +167,16 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, c
  * @param coldStart if client tab is selected upon launch of settings themselved, also call renderSettings()
  */
 function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
-	strippedConsole.log("update settings tabs")
+	strippedConsole.log('update settings tabs');
 	const activeClass = 'tabANew';
 	const settHolder = document.getElementById('settHolder');
 
 	// @ts-ignore
 	if (window?.windows[0]?.settingsType === 'basic') window.windows[0].toggleType({ checked: true });
 
-	/**
-	 * only hook search ONCE to ensure the client settings still work while searching. 
-	 * it will not yield the client settings tho, that's pain to implement 
-	 */
+	// FIXME currently, if user clicks too fast, while krunker is still loading, settings might not be hooked - investigate & fix
+
+	// only hook search ONCE to ensure the client settings still work while searching - it will not yield the client settings
 	if (hookSearch) {
 		// eslint-disable-next-line no-param-reassign
 		hookSearch = false;
@@ -200,7 +190,7 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 			try { document.querySelector('.settingsBtn[onclick*="reset"]').removeEventListener('click', settSearchCallback); } catch (e) { }
 			document.querySelector('.settingsBtn[onclick*="reset"]').addEventListener('click', settSearchCallback);
 		} catch (e) {
-			strippedConsole.error("failed to hook search!", e)
+			strippedConsole.error('failed to hook search!', e);
 		}
 	}
 
@@ -217,32 +207,33 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 		try { advSliderElem.removeEventListener('change', advSwitchCallback); } catch (e) { }
 		advSliderElem.addEventListener('change', advSwitchCallback);
 	} catch (e) {
-		strippedConsole.error("failed to hook advSlider!", e)
+		strippedConsole.error('failed to hook advSlider!', e);
 	}
-	
 
-	// modifications we do the the dom:
-	// TODO if document.getElementById('settingsTabLayout') fails, retry again in 2 seconds
-	const tabs = [...document.getElementById('settingsTabLayout').children];
-	const clientTab = tabs[tabs.length - 1];
-	strippedConsole.log(tabs, clientTab)
-	const selectedTab = document.querySelector(`#settingsTabLayout .${activeClass}`);
+	const settingsLoader = document.querySelector("#genericPop.loadingPop")
+	if (document.getElementById('settingsTabLayout') === null && settingsLoader && (settingsLoader as HTMLElement).style.display === "block") {
+		// TODO change this from a hard-coded timeout to a MutationObserver
+		setTimeout(() => updateSettingsTabs(activeTab, hookSearch, coldStart), 3500)
+	} else {
+		const tabs = [...document.getElementById('settingsTabLayout').children];
+		const clientTab = tabs[tabs.length - 1];
+		const selectedTab = document.querySelector(`#settingsTabLayout .${activeClass}`);
 
-	if (selectedTab !== clientTab) settHolder.classList.remove('Crankshaft-settings');
+		if (selectedTab !== clientTab) settHolder.classList.remove('Crankshaft-settings');
 
-	try { clientTab.removeEventListener('click', renderSettings); } catch (e) { }
-	clientTab.addEventListener('click', renderSettings);
+		try { clientTab.removeEventListener('click', renderSettings); } catch (e) { }
+		clientTab.addEventListener('click', renderSettings);
+		if (selectedTab === clientTab && coldStart) renderSettings();
 
-	if (selectedTab === clientTab && coldStart) renderSettings();
+		for (let i = 0; i < tabs.length; i++) {
+			const currentTabCallback = () => { updateSettingsTabs(i, hookSearch); };
+			try { tabs[i].removeEventListener('click', currentTabCallback); } catch (e) { }
+			tabs[i].addEventListener('click', currentTabCallback);
 
-	for (let i = 0; i < tabs.length; i++) {
-		const currentTabCallback = () => { updateSettingsTabs(i, hookSearch); };
-		try { tabs[i].removeEventListener('click', currentTabCallback); } catch (e) { }
-		tabs[i].addEventListener('click', currentTabCallback);
-
-		if (i === activeTab) { // if the current selected tab is our settings, just add active class
-			lastActiveTab = i;
-			tabs[i].classList.add(activeClass);
+			if (i === activeTab) { // if the current selected tab is our settings, just add active class
+				lastActiveTab = i;
+				tabs[i].classList.add(activeClass);
+			}
 		}
 	}
 }
