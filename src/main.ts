@@ -236,8 +236,6 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
-		mainWindow.webContents.openDevTools()
-
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
 		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); });

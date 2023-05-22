@@ -70,7 +70,7 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 	let hideTimeout = setTimeout(() => updateElement.remove(), 5000);
 	updateElement.onmouseenter = () => clearTimeout(hideTimeout);
 	updateElement.onmouseleave = () => { hideTimeout = setTimeout(() => updateElement.remove(), 5000); };
-	document.addEventListener('pointerlockchange', () => { clearTimeout(hideTimeout); updateElement.remove() }, { once: true });
+	document.addEventListener('pointerlockchange', () => { clearTimeout(hideTimeout); updateElement.remove(); }, { once: true });
 });
 
 ipcRenderer.on('initDiscordRPC', () => {
@@ -85,9 +85,9 @@ ipcRenderer.on('initDiscordRPC', () => {
 		const mapElem = document.getElementById('mapInfo');
 
 		const gameActivity = has(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
-		let overWriteDetails: string | false = false
+		let overWriteDetails: string | false = false;
 		if (!has(gameActivity, 'class')) gameActivity.class = { name: classElem === null ? '' : classElem.textContent };
-		if (!has(gameActivity, 'map') || !has(gameActivity, ('mode'))) overWriteDetails = (mapElem !== null) ? mapElem.textContent : 'Loading game...'
+		if (!has(gameActivity, 'map') || !has(gameActivity, ('mode'))) overWriteDetails = (mapElem !== null) ? mapElem.textContent : 'Loading game...';
 
 		const data: RPCargs = {
 			details: overWriteDetails || `${gameActivity.mode} on ${gameActivity.map}`,
@@ -210,10 +210,10 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 		strippedConsole.error('failed to hook advSlider!', e);
 	}
 
-	const settingsLoader = document.querySelector("#genericPop.loadingPop")
-	if (document.getElementById('settingsTabLayout') === null && settingsLoader && (settingsLoader as HTMLElement).style.display === "block") {
+	const settingsLoader = document.querySelector('#genericPop.loadingPop');
+	if (document.getElementById('settingsTabLayout') === null && settingsLoader && (settingsLoader as HTMLElement).style.display === 'block') {
 		// TODO change this from a hard-coded timeout to a MutationObserver
-		setTimeout(() => updateSettingsTabs(activeTab, hookSearch, coldStart), 3500)
+		setTimeout(() => updateSettingsTabs(activeTab, hookSearch, coldStart), 4250);
 	} else {
 		const tabs = [...document.getElementById('settingsTabLayout').children];
 		const clientTab = tabs[tabs.length - 1];
