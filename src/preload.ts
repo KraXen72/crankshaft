@@ -176,14 +176,12 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, c
  * @param coldStart if client tab is selected upon launch of settings themselved, also call renderSettings()
  */
 function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
-	// strippedConsole.log("update settings tabs")
+	strippedConsole.log("update settings tabs")
 	const activeClass = 'tabANew';
 	const settHolder = document.getElementById('settHolder');
 
 	// @ts-ignore
-	if (window.windows[0].settingsType === 'basic') window.windows[0].toggleType({ checked: true });
-
-	// document.querySelector(".advancedSwitch").style.display = "none"
+	if (window?.windows[0]?.settingsType === 'basic') window.windows[0].toggleType({ checked: true });
 
 	/**
 	 * only hook search ONCE to ensure the client settings still work while searching. 
@@ -195,27 +193,39 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 
 		const settSearchCallback = () => { updateSettingsTabs(0, hookSearch); };
 
-		try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) { }
-		document.getElementById('settSearch').addEventListener('input', settSearchCallback);
+		try {
+			try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) { }
+			document.getElementById('settSearch').addEventListener('input', settSearchCallback);
 
-		try { document.querySelector('.settingsBtn[onclick*="reset"]').removeEventListener('click', settSearchCallback); } catch (e) { }
-		document.querySelector('.settingsBtn[onclick*="reset"]').addEventListener('click', settSearchCallback);
+			try { document.querySelector('.settingsBtn[onclick*="reset"]').removeEventListener('click', settSearchCallback); } catch (e) { }
+			document.querySelector('.settingsBtn[onclick*="reset"]').addEventListener('click', settSearchCallback);
+		} catch (e) {
+			strippedConsole.error("failed to hook search!", e)
+		}
 	}
 
-	const advSliderElem = document.querySelector('.advancedSwitch input#typeBtn');
-	const advSwitchCallback = () => {
-		advSliderElem.setAttribute('disabled', 'disabled');
-		setTimeout(() => {
-			advSliderElem.removeAttribute('disabled');
-			updateSettingsTabs(0, true);
-		}, 700);
-	};
-	try { advSliderElem.removeEventListener('change', advSwitchCallback); } catch (e) { }
-	advSliderElem.addEventListener('change', advSwitchCallback);
+	try {
+		const advSliderElem = document.querySelector('.advancedSwitch input#typeBtn');
+		const advSwitchCallback = () => {
+			advSliderElem.setAttribute('disabled', 'disabled');
+			setTimeout(() => {
+				advSliderElem.removeAttribute('disabled');
+				updateSettingsTabs(0, true);
+			}, 700);
+		};
+
+		try { advSliderElem.removeEventListener('change', advSwitchCallback); } catch (e) { }
+		advSliderElem.addEventListener('change', advSwitchCallback);
+	} catch (e) {
+		strippedConsole.error("failed to hook advSlider!", e)
+	}
+	
 
 	// modifications we do the the dom:
+	// TODO if document.getElementById('settingsTabLayout') fails, retry again in 2 seconds
 	const tabs = [...document.getElementById('settingsTabLayout').children];
 	const clientTab = tabs[tabs.length - 1];
+	strippedConsole.log(tabs, clientTab)
 	const selectedTab = document.querySelector(`#settingsTabLayout .${activeClass}`);
 
 	if (selectedTab !== clientTab) settHolder.classList.remove('Crankshaft-settings');
