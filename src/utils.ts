@@ -96,4 +96,33 @@ export function debounce(func: Function, timeout = 300) {
 		clearTimeout(timer);
 		timer = setTimeout(() => { func.apply(this, args); }, timeout);
 	};
+} 
+ 
+export function hiddenClassesImages(classNumberFallback: number) {
+	const wrapper = document.getElementById("hiddenClasses")
+	const prepend = (wrapper ? (wrapper.firstChild as HTMLElement).id : "menuClassPicker0").slice(0, -1)
+	const count = wrapper ? wrapper.children.length : classNumberFallback
+	const wrapperFull = wrapper !== null && wrapper.children.length > 0
+
+	let css = '';
+	// 810 is krunker's set middle element size
+	// for each gap (count - 1) we substract 4px for gap
+	// Math.min is a safety measure in case the buttons would be < 50px
+	const buttonSize = Math.min(Math.round( (810 - 4*(count-1)) / count), 50);
+	css += `#hiddenClasses [id^="menuClassPicker"] {
+		width: ${buttonSize}px; height: ${buttonSize}px;
+		background-size: ${buttonSize - 6}px ${buttonSize - 6}px; 
+	}`
+
+	if (wrapperFull) {
+		[...wrapper.children].forEach(child => {
+			css += `${child.id} { background-image: url("https://assets.krunker.io/textures/classes/icon_${child.id.replace(prepend, '')}.png"); } \n`
+		});
+	} else { // the fallback is almost always used...
+		for (let i = 0; i < count; i++) {
+			css += `#${prepend}${i} { background-image: url("https://assets.krunker.io/textures/classes/icon_${i}.png"); } \n`
+		}
+	}
+
+	return css
 }

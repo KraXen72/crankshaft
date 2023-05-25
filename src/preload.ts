@@ -1,7 +1,7 @@
 ﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
-import { createElement, injectSettingsCSS, toggleSettingCSS } from './utils';
+import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
 
@@ -27,6 +27,7 @@ let lastActiveTab = 0;
 export const styleSettingsCSS = {
 	hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' }),
 	menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), { encoding: 'utf-8' }),
+	quickClassPicker: readFileSync(pathJoin($assets, 'quickClassPicker.css'), { encoding: 'utf-8' }) + hiddenClassesImages(16),
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
@@ -113,7 +114,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
 });
 
-ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, clientSplash, userscripts }, version) => {
+ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts }, version) => {
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -153,9 +154,15 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, hideReCaptcha, c
 		observer.observe(document.getElementById('instructions'), observerConfig);
 	}
 
+	strippedConsole.log(styleSettingsCSS.quickClassPicker)
+
 	// TODO rewrite, this is not well scalable
-	if (hideAds) toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
+	if (hideAds) {
+		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
+		document.getElementById("hiddenClasses").style.bottom = '40px';
+	}
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
+	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true)
 	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
 	if (userscripts) ipcRenderer.send('preload_requests_userscriptPath');
 });

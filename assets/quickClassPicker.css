@@ -1,0 +1,41 @@
+#hiddenClasses {
+	display: flex !important;
+	justify-content: space-evenly;
+	align-items: center;
+	column-gap: 4px;
+
+	position: absolute;
+	bottom: 300px;
+    left: 50%;	
+    transform: translate(-50%,0) scale(.95);
+
+    pointer-events: all;
+	min-width: 810px;
+	width: min-content;
+}
+
+#hiddenClasses [id^="menuClassPicker"] {
+	/* width: 46px;
+    height: 46px; */
+	border-radius: 5px;
+	display: block;
+	pointer-events: all;
+
+	background-position: center;
+	background-repeat: no-repeat;
+	/* background-size: 40px 40px; */
+	image-rendering: pixelated;
+	border: 2px solid transparent;
+
+	cursor: pointer;
+	transition: background-color 0.2s, border 0.2s;
+}
+
+#hiddenClasses [id^="menuClassPicker"]:hover {
+	background-color: #262626;
+	border-color: #313131;
+}
+#hiddenClasses [id^="menuClassPicker"]:active {
+	background-color: #393939;
+	border-color: #a3a5aa;
+}
