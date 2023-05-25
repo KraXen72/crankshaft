@@ -235,7 +235,7 @@ app.on('ready', () => {
 	// general ready to show, runs when window refreshes or loads url
 	mainWindow.on('ready-to-show', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
-		if (!mainWindow.isVisible()) mainWindow.show()
+		if (!mainWindow.isVisible()) mainWindow.show();
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());

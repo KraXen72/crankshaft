@@ -66,7 +66,7 @@ const settingsDesc: SettingsDesc = {
 	hideAds: { title: 'Hide Ads', type: 'bool', safety: 0, cat: 1, instant: true },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
-	quickClassPicker: { title: "Quick Class Picker", type: 'bool', safety: 0, cat: 1, instant: true, desc: 'Shows krunker\'s hiddenClasses picker' },
+	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true, desc: 'Shows krunker\'s hiddenClasses picker' },
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 2 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 2 },
 	safeFlags_removeUselessFeatures: { title: 'Remove useless features', type: 'bool', desc: 'Adds a lot of flags that disable useless features.', safety: 1, cat: 2 },
@@ -245,7 +245,7 @@ class SettingElem {
 			// you can add custom instant refresh callbacks for settings here
 			if (this.props.key === 'hideAds') {
 				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
-				document.getElementById("hiddenClasses").style.bottom = value ? classPickerBottom : null;
+				document.getElementById('hiddenClasses').style.bottom = value ? classPickerBottom : null;
 			}
 			if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 			if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);

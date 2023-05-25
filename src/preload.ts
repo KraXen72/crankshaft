@@ -19,7 +19,7 @@ export const strippedConsole = {
 	timeEnd: console.timeEnd.bind(console)
 };
 
-export const classPickerBottom = '80px'
+export const classPickerBottom = '80px';
 const $assets = pathResolve(__dirname, '..', 'assets');
 const repoID = 'KraXen72/crankshaft';
 let lastActiveTab = 0;
@@ -155,15 +155,15 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, quickClassPicker
 		observer.observe(document.getElementById('instructions'), observerConfig);
 	}
 
-	strippedConsole.log(styleSettingsCSS.quickClassPicker)
+	strippedConsole.log(styleSettingsCSS.quickClassPicker);
 
 	// TODO rewrite, this is not well scalable
 	if (hideAds) {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
-		document.getElementById("hiddenClasses").style.bottom = classPickerBottom;
+		document.getElementById('hiddenClasses').style.bottom = classPickerBottom;
 	}
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
-	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true)
+	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true);
 	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
 	if (userscripts) ipcRenderer.send('preload_requests_userscriptPath');
 });
