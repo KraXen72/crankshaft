@@ -1,9 +1,8 @@
-
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, toggleSettingCSS } from './utils';
-import { styleSettingsCSS } from './preload';
+import { styleSettingsCSS, classPickerBottom } from './preload';
 import { su } from './userscripts';
 
 /// <reference path="global.d.ts" />
@@ -246,7 +245,7 @@ class SettingElem {
 			// you can add custom instant refresh callbacks for settings here
 			if (this.props.key === 'hideAds') {
 				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
-				document.getElementById("hiddenClasses").style.bottom = value ? '40px' : null;
+				document.getElementById("hiddenClasses").style.bottom = value ? classPickerBottom : null;
 			}
 			if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 			if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);
