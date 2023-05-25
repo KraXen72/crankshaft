@@ -1,3 +1,16 @@
+### [1.7.2](https://github.com/KraXen72/crankshaft/compare/1.7.1...v1.7.2) (2023-05-25)
+
+
+### Features
+
+* hiddenClasses quick switcher initial ([9ce1360](https://github.com/KraXen72/crankshaft/commit/9ce136054b335f4943148a1ebfbc2a26a13cfb34))
+
+
+### Bug Fixes
+
+* hidden window if not maximized ([d02f15d](https://github.com/KraXen72/crankshaft/commit/d02f15d4a600f93cf922dddf1d3e851ea74090cc))
+* positioning of quick class switcher ([c13638f](https://github.com/KraXen72/crankshaft/commit/c13638fed71e52776e837ade9595fb6b6b15a45d))
+
 ### [1.7.1](https://github.com/KraXen72/crankshaft/compare/1.7.0...v1.7.1) (2023-05-22)
 
 
