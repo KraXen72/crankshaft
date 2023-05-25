@@ -22,6 +22,7 @@
 
 - no artificial "splash screens" that increase load time, splash shows over krunker actually loading
 - _hides_ ads by default (can be turned off)
+- quick class switcher using krunker's `#hiddenClasses` (optional)
 - doesen't automatically open free spin urls, prompts you before
 - **secure:** `web security` is on, the `remote` module and `nodeIntegration` are disabled
 - written in typescript
