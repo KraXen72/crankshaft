@@ -155,8 +155,6 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, quickClassPicker
 		observer.observe(document.getElementById('instructions'), observerConfig);
 	}
 
-	strippedConsole.log(styleSettingsCSS.quickClassPicker);
-
 	// TODO rewrite, this is not well scalable
 	if (hideAds) {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
