@@ -8,11 +8,16 @@ There are a few example userscripts mentioned in the README you can go off of.
 		- [Example](#example)
 		- [Template to copy](#template-to-copy)
 		- [optional @run-at rule](#optional-run-at-rule)
+	- [Waiting for a function to exist](#waiting-for-a-function-to-exist)
+		- [Explanation/notes](#explanationnotes)
+		- [Template to copy](#template-to-copy-1)
 	- [Utility functions](#utility-functions)
 		- [Unload function (version 1.6.0+)](#unload-function-version-160)
 		- [Console access (version 1.6.0+)](#console-access-version-160)
 		- [Insert CSS (version 1.6.1+)](#insert-css-version-161)
 	- [Tips / Notes](#tips--notes)
+		- [removing an eventListener easily:](#removing-an-eventlistener-easily)
+		- ['once' attribute on eventlisteners](#once-attribute-on-eventlisteners)
 	- [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
   
 > Warning: Goes without saying, but you should never write userscipts that break [Krunker's Terms & Conditions](https://krunker.io/docs/terms.txt), like hacks or selfbots. Crankshaft maintainers are not responsible for scripts YOU write and your account can get banned.
@@ -67,6 +72,62 @@ You can define an optional `@run-at` rule.
   The script executes when DOMContentLoaded is fired. At this time, the basic HTML of the page is ready and other resources like images might still be on the way. This will be picked if no `@run-at` rule is defined.
 - `document-start`
   The script executes as soon as possible. `body` most likely won't have any content in it yet.
+
+## Waiting for a function to exist
+While krunker is loading, you might already have existing dom elements, (`@run-at` is set to `document-end` by default) but the functions in their `onclick`'s don't exist yet. You can do something like this:
+```js
+// ==UserScript==
+// @name auto-spectate
+// @author KraXen72
+// @version 2.0.0
+// @desc automatically switch to spectator mode	
+// @run-at document-end 
+// ==/UserScript==
+
+
+const has = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+let interval = null
+
+function checkSpect() {
+	if (has(globalThis, "setSpect") && typeof globalThis.setSpect === 'function') {
+		globalThis.setSpect(true)
+		clearInterval(interval)
+		this._console.log("sucessfully set spectator mode!")
+	}
+}
+
+interval = setInterval(() => checkSpect.apply(this), 250)
+
+this.unload = () => clearInterval(interval) 
+return this
+```
+### Explanation/notes
+- `globalThis` **can be used interchangably with** `window` **in this case.** - [more details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis)
+- **we use a custom `has` function to check if a function exists on window**. <u>**you can just copy-paste it**</u>, but here's a technical explanation for those interested:
+  - Unlike the `in` operator, this method does not check for the specified property in the object's prototype chain. - [source (MDN)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty#description)
+  - ideally, we'd use `Object.hasOwn`, but that's supported only in chrome >= 93 (not our case)
+  - you *can* use `window`/`globalThis.hasOwnProperty('key')`, however, `hasOwnProperty` is not a protected keyword - [more details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty#using_hasownproperty_as_a_property_name)
+  - thus, we have to use `Object.prototype.hasOwnProperty.call(object, key)`, which always sources the function from the `Object.prototype`
+  - if you're thinking this is too paranoid, even eslint yells at you about using `hasOwnProperty` from a source other than `Object.prototype`
+- **clear the interval after you run your stuff!!!** `setInterval` is one of the most performance heavy function. it literally schedules a function to be ran every x ms. ***unless*** that's what you want to do, clear the interval after you're done.
+- **unless your callback is an arrow function, use `callback.apply(this)`.** we have to run `checkSpect.apply(this)` instead of just `checkSpect()` because in that case the `this` keyword will no longer have our helper functions like `_css`, `_console`, etc.
+- if you want to wait for more functions, you can define more intervals & callback under different names. but honestly once 1 function exists, others probably exist too. so you should be fine only waiting for 1 of them.
+- i think normal functions technically get hoisted to the top so doing `const interval = setInterval` without the initial let definition *should* also work, but i haven't tested it.
+  
+### Template to copy
+```js
+const has = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+let interval = null
+
+function callback() {
+	clearInterval(interval)
+}
+interval = setInterval(() => callback.apply(this), 250)
+
+this.unload = () => clearInterval(interval) 
+return this
+```
+
 
 ## Utility functions
 
@@ -147,11 +208,19 @@ return this
 
 ## Tips / Notes
 
-- if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function)
+### removing an eventListener easily:
+if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function).  
+### 'once' attribute on eventlisteners
+you might want to use the `once: true` eventlistener option, that way if you only run it at the page load, you don't need to remove it. 
+```js
+myElem.addEventListener("DOMContentLoaded", () => { /* ... */ }, { once: true })
+```
+however, you shouldn't need to use this at all - `@run-at` is `document-end` by default. you can assume the dom elements will exist
+
+- **It is highly recommended to always define an `unload` function if all your script does is add some css. It's really easy to do.**
 - You are encouraged to write your scripts in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) (start them with `"use strict"`), because it skips esbuild transforming your code.
 - If your script would rely on `@run-at document-idle`, just wrap it in a `setTimeout` for a few seconds.
 - As a user, if you want to 100% unload a userscript, it is better to refresh the page/F6, otherwise you just have to rely on the provided `unload` function by the userscript author.
-- It is highly recommended to always define an `unload` function if all your script does is add some css. It's really easy to do.
 
 ## Enabling and testing your userscript
 
