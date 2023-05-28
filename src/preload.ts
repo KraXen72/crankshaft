@@ -67,6 +67,8 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 		updateElement.appendChild(createElement('span', { text: 'No new updates' }));
 	}
 
+	strippedConsole.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
+
 	document.body.appendChild(updateElement);
 
 	let hideTimeout = setTimeout(() => updateElement.remove(), 5000);
