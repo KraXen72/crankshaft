@@ -191,7 +191,7 @@ class SettingElem {
 				break;
 			case 'sel':
 				this.HTML += `<span class="setting-title">${props.title}</span>
-                    <select class="s-update inputGrey2">
+          <select class="s-update inputGrey2">
 						${props.opts.map(opt => `<option value ="${opt}">${opt}</option>`).join('')}
 					</select>`;
 				this.updateKey = 'value';
