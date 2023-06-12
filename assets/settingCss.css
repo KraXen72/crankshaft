@@ -70,8 +70,8 @@
 
 .Crankshaft-settings .setting.settName .inputGrey2,
 .Crankshaft-settings .setting.settName .switch,
-.Crankshaft-settings .setting.settName .cs-input-num,
-.Crankshaft-settings .setting.settName .crankshaft-multisel-parent {
+.Crankshaft-settings .setting.settName .crankshaft-multisel-parent,
+.Crankshaft-settings .setting.settName .setting-input-wrapper {
 	grid-area: input;
 }
 
@@ -239,16 +239,19 @@ input:checked+.advancedSlider:hover {
 	padding: .2rem;
 	border-radius: 10px;
 }
-.crankshaft-multisel-parent label {
-	padding: .2rem;
-	border-radius: 5px;
-	background: #393939;
-	color: #a3a5aa;
-	position: relative;
+.crankshaft-multisel-parent label.hostOpt {
+	width: 100%;
+	margin: 0;
+	box-sizing: border-box;
+}
+/*
+.crankshaft-multisel-parent label input {
+	visibility: hidden;
 }
 .crankshaft-multisel-parent label input::after {
 	content: "";
-	background: transparent;
+	visibility: visible;
+	border: 2px solid rgba(128, 0, 0, 0.466);
 	display: block;
 	position: absolute;
 	width: 100%;
@@ -258,5 +261,5 @@ input:checked+.advancedSlider:hover {
 	border-radius: 5px;
 }
 .crankshaft-multisel-parent label input:checked::after {
-	background-color: rgba(0, 128, 0, 0.466);
-}
+	border-color: rgba(0, 128, 0, 0.466);
+} */

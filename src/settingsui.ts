@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
-import { createElement, toggleSettingCSS } from './utils';
-import { styleSettingsCSS, classPickerBottom } from './preload';
+import { createElement, haveSameContents, toggleSettingCSS } from './utils';
+import { styleSettingsCSS, classPickerBottom, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -70,13 +70,13 @@ const settingsDesc: SettingsDesc = {
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
 
-	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2 },
-	matchmaker_F6: { title: 'Use F6 as Matchmaker hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
-	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 8 },
-	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4 },
-	matchmaker_minRemainingTime: { title: 'Minimum temaining time', type: 'num', min: 0, max: 3600, safety: 0, cat: 2  },
-	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2  },
-	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2  },
+	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2, refreshOnly: true },
+	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2, refreshOnly: true },
+	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 8, refreshOnly: true },
+	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, refreshOnly: true },
+	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 3600, safety: 0, cat: 2, refreshOnly: true },
+	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, refreshOnly: true },
+	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, refreshOnly: true },
 
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 3 },
@@ -116,12 +116,19 @@ function saveSettings() {
 function recalculateRefreshNeeded() {
 	refreshNeeded = RefreshEnum.notNeeded;
 	for (let i = 0; i < Object.keys(userPrefs).length; i++) {
+		const cache = (item: any | any[]) => (Array.isArray(item) ? [...item] : item);
 		const key = Object.keys(userPrefs)[i];
 		const descObj = settingsDesc[key];
-		const setting = userPrefs[key];
-		const cachedSetting = userPrefsCache[key];
+		const setting = cache(userPrefs[key]);
+		const cachedSetting = cache(userPrefsCache[key]);
 
-		if (setting !== cachedSetting) {
+		const settingsEqual = Array.isArray(setting) && Array.isArray(cachedSetting)
+			? haveSameContents(setting, cachedSetting)
+			: setting === cachedSetting;
+
+		strippedConsole.log(settingsEqual, setting, cachedSetting);
+
+		if (!settingsEqual) {
 			if (descObj?.instant) {
 				continue;
 			} else if (descObj?.refreshOnly) {
@@ -209,7 +216,7 @@ class SettingElem {
 			case 'num':
 				this.HTML += `<span class="setting-title">${props.title}</span>
 				<span class="setting-input-wrapper">
-					<input type="number" class="rb-input s-update cs-input-num" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
+					<input type="number" class="rb-input s-update sliderVal" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
 				</span>`;
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
@@ -228,9 +235,13 @@ class SettingElem {
 			case 'multisel':
 				this.HTML = `<span class="setting-title">${props.title}</span>
 					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : '' }>
-					${props.opts.map(opt => `<label><input type="checkbox" name="${opt}"/>${opt}</label>`).join('')}
-					</div>`
-				this.updateKey = 'value';
+						${props.opts.map(opt => `<label class="hostOpt">
+							<span class="optName">${opt}</span>
+							<input type="checkbox" name="${opt}" ${props.value.includes(opt) ? 'checked' : ''} />
+							<div class="optCheck"></div>
+						</label>`).join('')}
+					</div>`;
+				this.updateKey = 'value'; // this is bypassed anyway, because type === 'multisel'. '' throws
 				this.updateMethod = 'onchange';
 				break;
 			default:
@@ -250,10 +261,11 @@ class SettingElem {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	update({ elem, callback }: { elem: Element; callback: 'normal' | 'userscript' | Function; }) {
 		if (this.updateKey === '') throw 'Invalid update key';
-		const target = elem.getElementsByClassName('s-update')[0];
+		const target = elem.querySelector('.s-update') as HTMLInputElement;
 
-		// @ts-ignore
-		const value = target[this.updateKey];
+		const value = this.props.type === 'multisel'
+			? [...target.children].filter(child => child.querySelector('input:checked')).map(child => child.querySelector('.optName').textContent)
+			: target[this.updateKey];
 
 		if (callback === 'normal') {
 			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}: ${value}`);
@@ -261,42 +273,48 @@ class SettingElem {
 			saveSettings();
 
 			// you can add custom instant refresh callbacks for settings here
-			if (this.props.key === 'hideAds') {
-				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
-				document.getElementById('hiddenClasses').style.bottom = value ? classPickerBottom : null;
-			}
-			if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
-			if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);
-			if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
-		} else if (callback === 'userscript') {
-			let refreshSettings = false;
-			if ('userscriptReference' in this.props) {
-				const userscript = this.props.userscriptReference;
-
-				// either the userscsript has not ran yet, or it's instant
-				if (value && (!userscript.hasRan || this.props.instant)) {
-					userscript.load();
-					if (!userscript.hasRan) refreshSettings = true;
-					userscript.hasRan = true;
-				} else if (!value) {
-					if (this.props.instant && typeof userscript.unload === 'function') {
-						userscript.unload();
-					} else {
-						elem.querySelector('.setting-desc-new').textContent = refreshToUnloadMessage;
-						target.setAttribute('disabled', '');
-						this.#disabled = true;
-					}
+			if (typeof value === 'boolean') {
+				if (this.props.key === 'hideAds') {
+					toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
+					document.getElementById('hiddenClasses').style.bottom = value ? classPickerBottom : null;
 				}
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
-				su.userscriptTracker[userscript.name] = value;
-			} else {
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
-				su.userscriptTracker[this.props.title] = value;
+				if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
+				if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);
+				if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
 			}
-			saveUserscriptTracker();
+		} else if (callback === 'userscript') {
+			if (typeof value === 'boolean') {
+				let refreshSettings = false;
+				if ('userscriptReference' in this.props) {
+					const userscript = this.props.userscriptReference;
 
-			// krunkers transition takes .4s, this is more reliable than to wait for transitionend
-			if (refreshSettings) setTimeout(renderSettings, 400);
+					// either the userscsript has not ran yet, or it's instant
+					if (value && (!userscript.hasRan || this.props.instant)) {
+						userscript.load();
+						if (!userscript.hasRan) refreshSettings = true;
+						userscript.hasRan = true;
+					} else if (!value) {
+						if (this.props.instant && typeof userscript.unload === 'function') {
+							userscript.unload();
+						} else {
+							elem.querySelector('.setting-desc-new').textContent = refreshToUnloadMessage;
+							target.setAttribute('disabled', '');
+							this.#disabled = true;
+						}
+					}
+					ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
+					su.userscriptTracker[userscript.name] = value;
+				} else {
+					ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
+					su.userscriptTracker[this.props.title] = value;
+				}
+				saveUserscriptTracker();
+
+				// krunkers transition takes .4s, this is more reliable than to wait for transitionend
+				if (refreshSettings) setTimeout(renderSettings, 400);
+			} else {
+				throw `Callback cannot be "userscript" for non-boolean values, like: ${ value.toString()}`;
+			}
 		} else {
 			// eslint-disable-next-line callback-return
 			callback(value);
@@ -318,7 +336,6 @@ class SettingElem {
 	 */
 	get elem() {
 		if (this.#wrapper !== false) return this.#wrapper; // returnt he element if already initialized
-
 
 		// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
 		const wrapper = createElement('div', {
@@ -358,7 +375,6 @@ const skeleton = {
 	 * make a setting with some text (notice) 
 	 * @param desc description of the notice 
 	 * @param opts desc => description, iconHTML => icon's html, generate through skeleton's *icon methods
-	 * 
 	 */
 	notice: (notice: string, opts?: { desc?: string, iconHTML?: string }) => `
 	<div class="settName setting">

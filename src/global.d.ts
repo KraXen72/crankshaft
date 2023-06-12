@@ -155,10 +155,13 @@ interface GameInfo {
 interface IMatchmakerCriteria {
 	minPlayers: number,
 	maxPlayers: number,
+
 	/** e.g. FRA */
 	regions: string[],
+
 	/** e.g. 'Free for All' */
 	gameModes: string[],
+
 	/** remaining time in seconds */
 	minRemainingTime: number,
 }

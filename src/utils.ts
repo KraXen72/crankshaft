@@ -135,3 +135,10 @@ export function secondsToTimestring(num: number) {
 	if (minutes < 1) return `${num}s`;
 	return `${minutes}m ${seconds}s`;
 }
+
+// https://www.30secondsofcode.org/js/s/arrays-have-same-contents/
+export const haveSameContents = (array1: any[], array2: any[]) => {
+	for (const value of new Set([...array1, ...array2])) if (array1.filter(e => e === value).length !== array2.filter(e => e === value).length) return false;
+
+	return true;
+};
