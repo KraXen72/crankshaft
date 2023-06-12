@@ -14,6 +14,7 @@ require('esbuild').buildSync({
 		'src/settingsui.ts',
 		'src/switches.ts',
 		'src/userscripts.ts',
+		'src/matchmaker.ts',
 		'src/utils.ts',
 	],
 	bundle: false,

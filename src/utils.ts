@@ -127,3 +127,11 @@ export function hiddenClassesImages(classNumberFallback: number) {
 
 	return css;
 }
+
+export function secondsToTimestring(num: number) {
+	const minutes = Math.floor(num / 60);
+	const seconds = num % 60;
+
+	if (minutes < 1) return `${num}s`;
+	return `${minutes}m ${seconds}s`;
+}

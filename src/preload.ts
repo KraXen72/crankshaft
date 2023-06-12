@@ -1,6 +1,7 @@
 ﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
+import { fetchGame } from './matchmaker';
 import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
@@ -35,6 +36,7 @@ export const styleSettingsCSS = {
 // Lets us exit the game lmao
 document.addEventListener('keydown', event => {
 	if (event.code === 'Escape') document.exitPointerLock();
+	if (event.key === 'F1') fetchGame();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
