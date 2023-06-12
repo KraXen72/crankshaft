@@ -283,38 +283,36 @@ class SettingElem {
 				if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
 			}
 		} else if (callback === 'userscript') {
-			if (typeof value === 'boolean') {
-				let refreshSettings = false;
-				if ('userscriptReference' in this.props) {
-					const userscript = this.props.userscriptReference;
+			if (typeof value !== 'boolean') throw `Callback cannot be "userscript" for non-boolean values, like: ${value.toString()}`;
 
-					// either the userscsript has not ran yet, or it's instant
-					if (value && (!userscript.hasRan || this.props.instant)) {
-						userscript.load();
-						if (!userscript.hasRan) refreshSettings = true;
-						userscript.hasRan = true;
-					} else if (!value) {
-						if (this.props.instant && typeof userscript.unload === 'function') {
-							userscript.unload();
-						} else {
-							elem.querySelector('.setting-desc-new').textContent = refreshToUnloadMessage;
-							target.setAttribute('disabled', '');
-							this.#disabled = true;
-						}
+			let refreshSettings = false;
+			if ('userscriptReference' in this.props) {
+				const userscript = this.props.userscriptReference;
+
+				// either the userscsript has not ran yet, or it's instant
+				if (value && (!userscript.hasRan || this.props.instant)) {
+					userscript.load();
+					if (!userscript.hasRan) refreshSettings = true;
+					userscript.hasRan = true;
+				} else if (!value) {
+					if (this.props.instant && typeof userscript.unload === 'function') {
+						userscript.unload();
+					} else {
+						elem.querySelector('.setting-desc-new').textContent = refreshToUnloadMessage;
+						target.setAttribute('disabled', '');
+						this.#disabled = true;
 					}
-					ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
-					su.userscriptTracker[userscript.name] = value;
-				} else {
-					ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
-					su.userscriptTracker[this.props.title] = value;
 				}
-				saveUserscriptTracker();
-
-				// krunkers transition takes .4s, this is more reliable than to wait for transitionend
-				if (refreshSettings) setTimeout(renderSettings, 400);
+				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
+				su.userscriptTracker[userscript.name] = value;
 			} else {
-				throw `Callback cannot be "userscript" for non-boolean values, like: ${ value.toString()}`;
+				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
+				su.userscriptTracker[this.props.title] = value;
 			}
+			saveUserscriptTracker();
+
+			// krunkers transition takes .4s, this is more reliable than to wait for transitionend
+			if (refreshSettings) setTimeout(renderSettings, 400);
 		} else {
 			// eslint-disable-next-line callback-return
 			callback(value);
