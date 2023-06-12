@@ -46,8 +46,17 @@ const settingsSkeleton = {
 	safeFlags_gpuRasterizing: false,
 	experimentalFlags_increaseLimits: false,
 	experimentalFlags_lowLatency: false,
-	experimentalFlags_experimental: false
+	experimentalFlags_experimental: false,
+	matchmaker: false,
+	matchmaker_F6: false,
+	matchmaker_regions: [] as string[],
+	matchmaker_gamemodes: [] as string[],
+	matchmaker_minPlayers: 1,
+	matchmaker_maxPlayers: 6,
+	matchmaker_minRemainingTime: 120
 };
+
+// export type settingsKeys = keyof typeof settingsSkeleton
 
 if (!existsSync(swapperPath)) mkdirSync(swapperPath, { recursive: true });
 if (!existsSync(userscriptsPath)) mkdirSync(userscriptsPath, { recursive: true });

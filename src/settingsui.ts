@@ -4,6 +4,7 @@ import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, toggleSettingCSS } from './utils';
 import { styleSettingsCSS, classPickerBottom } from './preload';
 import { su } from './userscripts';
+import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
 /// <reference path="global.d.ts" />
 enum RefreshEnum {
@@ -62,20 +63,30 @@ const settingsDesc: SettingsDesc = {
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper', safety: 0, cat: 0 },
 	discordRPC: { title: 'Discord Rich Presence', type: 'bool', desc: 'Enable Discord Rich Presence. Shows Gamemode, Map, Class and Skin', safety: 0, cat: 0 },
 	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC. No effect if RPC is off.', safety: 0, cat: 0, instant: true },
+
 	userscripts: { title: 'Userscript support', type: 'bool', desc: 'Enable userscript support. place .js files in Documents/Crankshaft/scripts', safety: 1, cat: 0 },
 	hideAds: { title: 'Hide Ads', type: 'bool', safety: 0, cat: 1, instant: true },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
-	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 2 },
-	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 2 },
-	safeFlags_removeUselessFeatures: { title: 'Remove useless features', type: 'bool', desc: 'Adds a lot of flags that disable useless features.', safety: 1, cat: 2 },
-	safeFlags_gpuRasterizing: { title: 'GPU rasterization', type: 'bool', desc: 'Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable', safety: 2, cat: 2 },
-	safeFlags_helpfulFlags: { title: '(Potentially) useful flags', type: 'bool', desc: 'Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.', safety: 3, cat: 2 },
-	disableAccelerated2D: { title: 'Disable Accelerated 2D canvas', type: 'bool', desc: '', safety: 3, cat: 2 },
-	experimentalFlags_increaseLimits: { title: 'Increase limits flags', type: 'bool', desc: 'Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist', safety: 4, cat: 2 },
-	experimentalFlags_lowLatency: { title: 'Lower Latency flags', type: 'bool', desc: 'Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas', safety: 4, cat: 2 },
-	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server', safety: 4, cat: 2 }
+
+	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2 },
+	matchmaker_F6: { title: 'Use F6 as Matchmaker hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
+	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 8 },
+	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4 },
+	matchmaker_minRemainingTime: { title: 'Minimum temaining time', type: 'num', min: 0, max: 3600, safety: 0, cat: 2  },
+	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2  },
+	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2  },
+
+	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
+	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 3 },
+	safeFlags_removeUselessFeatures: { title: 'Remove useless features', type: 'bool', desc: 'Adds a lot of flags that disable useless features.', safety: 1, cat: 3 },
+	safeFlags_gpuRasterizing: { title: 'GPU rasterization', type: 'bool', desc: 'Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable', safety: 2, cat: 3 },
+	safeFlags_helpfulFlags: { title: '(Potentially) useful flags', type: 'bool', desc: 'Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.', safety: 3, cat: 3 },
+	disableAccelerated2D: { title: 'Disable Accelerated 2D canvas', type: 'bool', desc: '', safety: 3, cat: 3 },
+	experimentalFlags_increaseLimits: { title: 'Increase limits flags', type: 'bool', desc: 'Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist', safety: 4, cat: 3 },
+	experimentalFlags_lowLatency: { title: 'Lower Latency flags', type: 'bool', desc: 'Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas', safety: 4, cat: 3 },
+	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server', safety: 4, cat: 3 }
 };
 
 /** index-based safety descriptions. goes in title attribute */
@@ -91,6 +102,7 @@ const safetyDesc = [
 const categoryNames: CategoryName[] = [
 	{ name: 'Client Settings', cat: 'mainSettings' },
 	{ name: 'Visual Settings', cat: 'styleSettings' },
+	{ name: 'Matchmaker', cat: 'matchmakerSettings' },
 	{ name: 'Advanced Settings', cat: 'advSettings' }
 ];
 
@@ -131,7 +143,7 @@ class SettingElem {
 	// s-update is the class for element to watch
 	props: RenderReadySetting;
 
-	type: 'bool' | 'sel' | 'heading' | 'text' | 'num';
+	type: ValidTypes;
 
 	HTML: string;
 
@@ -179,11 +191,27 @@ class SettingElem {
 		switch (props.type) {
 			case 'bool':
 				this.HTML += `<span class="setting-title">${props.title}</span> 
-                <label class="switch">
-                    <input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled' : ''}/>
-                    <div class="slider round"></div>
-                </label>`;
+					<label class="switch">
+							<input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled' : ''}/>
+							<div class="slider round"></div>
+					</label>`;
 				this.updateKey = 'checked';
+				this.updateMethod = 'onchange';
+				break;
+			case 'text':
+				this.HTML += `<span class="setting-title">${props.title}</span>
+					<span class="setting-input-wrapper">
+							<input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}">
+					</span>`;
+				this.updateKey = 'value';
+				this.updateMethod = 'oninput';
+				break;
+			case 'num':
+				this.HTML += `<span class="setting-title">${props.title}</span>
+				<span class="setting-input-wrapper">
+					<input type="number" class="rb-input s-update cs-input-num" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
+				</span>`;
+				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
 				break;
 			case 'heading':
@@ -197,21 +225,11 @@ class SettingElem {
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
 				break;
-			case 'text':
-				this.HTML += `<span class="setting-title">${props.title}
-                </span>
-                <span class="setting-input-wrapper">
-                    <input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}">
-                </span>
-                `;
-				this.updateKey = 'value';
-				this.updateMethod = 'oninput';
-				break;
-			case 'num':
-				this.HTML += `<span class="setting-title">${props.title}</span><span>
-                    <input type="number" class="rb-input marright s-update cs-input-num" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
-                </span>
-                `;
+			case 'multisel':
+				this.HTML = `<span class="setting-title">${props.title}</span>
+					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : '' }>
+					${props.opts.map(opt => `<label><input type="checkbox" name="${opt}"/>${opt}</label>`).join('')}
+					</div>`
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
 				break;

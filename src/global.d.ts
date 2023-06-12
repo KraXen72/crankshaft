@@ -1,5 +1,5 @@
 type UserPrefs = {
-	[preference: string]: boolean | string;
+	[preference: string]: boolean | string | string[] | number;
 };
 
 interface UserscriptTracker {
@@ -49,7 +49,7 @@ interface Window {
  */
 
 type Callbacks = 'normal' | 'userscript' | Function;
-type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'num';
+type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'num';
 
 interface SettingItemGeneric {
 	title: string;
@@ -70,10 +70,13 @@ interface SettingItemGeneric {
 // sel has to have an opts with a string array
 interface SelectSettingDescItem extends SettingItemGeneric { type: 'sel', opts?: string[] }
 
+interface MultiselectSettingDescItem extends SettingItemGeneric { type: 'multisel', opts?: string[], cols: number }
+
 // num has to have a min and max
 interface NumSettingItem extends SettingItemGeneric { type: 'num', min?: number, max?: number }
 
-type SettingsDescItem = (SettingItemGeneric | NumSettingItem | SelectSettingDescItem);
+
+type SettingsDescItem = (SettingItemGeneric | NumSettingItem | SelectSettingDescItem | MultiselectSettingDescItem);
 
 /** array of SettingDescItem objects */
 interface SettingsDesc {
@@ -86,6 +89,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 
 	// for sel
 	opts?: string[];
+	cols?: number;
 
 	// for num
 	min?: number;

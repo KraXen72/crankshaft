@@ -1,11 +1,11 @@
 import { secondsToTimestring } from "./utils";
-import { strippedConsole } from "./preload";
+// import { strippedConsole } from "./preload";
 // matchmaker code originally by wa#3991 / paintingofblue
 
 
 // https://greasyfork.org/en/scripts/468482-kraxen-s-krunker-utils
-const MATCHMAKER_REGIONS = [ "MBI", "NY", "FRA", "SIN", "DAL", "SYD", "MIA", "BHN", "TOK", "BRZ", "AFR", "LON", "CHI", "SV", "STL", "MX" ]
-const MATCHMAKER_GAMEMODES = [ "Free for All", "Team Deathmatch", "Hardpoint", "Capture the Flag", "Parkour", "Hide & Seek", "Infected", "Race", "Last Man Standing", "Simon Says", "Gun Game", "Prop Hunt", "Boss Hunt", "Classic FFA", "Deposit", "Stalker", "King of the Hill", "One in the Chamber", "Trade", "Kill Confirmed", "Defuse", "Sharp Shooter", "Traitor", "Raid", "Blitz", "Domination", "Squad Deathmatch", "Kranked FFA", "Team Defender", "Deposit FFA", "Chaos Snipers", "Bighead FFA" ]
+export const MATCHMAKER_REGIONS = [ "MBI", "NY", "FRA", "SIN", "DAL", "SYD", "MIA", "BHN", "TOK", "BRZ", "AFR", "LON", "CHI", "SV", "STL", "MX" ]
+export const MATCHMAKER_GAMEMODES = [ "Free for All", "Team Deathmatch", "Hardpoint", "Capture the Flag", "Parkour", "Hide & Seek", "Infected", "Race", "Last Man Standing", "Simon Says", "Gun Game", "Prop Hunt", "Boss Hunt", "Classic FFA", "Deposit", "Stalker", "King of the Hill", "One in the Chamber", "Trade", "Kill Confirmed", "Defuse", "Sharp Shooter", "Traitor", "Raid", "Blitz", "Domination", "Squad Deathmatch", "Kranked FFA", "Team Defender", "Deposit FFA", "Chaos Snipers", "Bighead FFA" ]
 
 function getGameMode(num: number) {
 	return MATCHMAKER_GAMEMODES[num]
