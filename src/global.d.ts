@@ -165,3 +165,13 @@ interface IMatchmakerCriteria {
 	/** remaining time in seconds */
 	minRemainingTime: number,
 }
+
+interface IMatchmakerGame {
+	gameID: string;
+	region: string;
+	playerCount: number;
+	playerLimit: number;
+	map: string;
+	gamemode: string;
+	remainingTime: number;
+}

@@ -14,8 +14,9 @@
 - no unnecesarry built-in features that can't be turned off
 - maintained & open source
 - a lot of customisation options (settings)
-- userscript support (can be disabled)
-- discord rpc support (can be disabled)
+- userscript support (off by default)
+- discord rpc support (off by default)
+- customisable matchmaker (off by default)
 - built-in hotkeys: [more about them here](https://github.com/KraXen72/crankshaft#hotkeys)
 
 ## quality of life
@@ -28,6 +29,16 @@
 - written in typescript
 - no-compromise mac, linux and windows support
 - dependencies only get imported when they are actually used
+
+## matchmaker (beta)
+
+- a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6`
+- you can enable specific regions & game modes to look for
+- set the minimum & maximum amount of players
+- set the minimum time left on a game
+- choose between `F1` or `F6` hotkey
+- the code is heavily based on matchmaker userscript by wa / @paintingofblue
+- the matchmaker is in beta, so please report any issues with it
 
 ## userscripts
 

@@ -12,6 +12,8 @@ import Swapper from './resourceswapper';
  *	Gato/creepycats - Gatoclient
  *	LukeTheDuke - Gatoclient-lite
  *	Mixaz and IDKR team - https://github.com/idkr-client/idkr
+ * 	wa#3991 / paintingofblue - matchmaker implementation
+ * 	Commander/asger-finding (AKC client) - resource swapper implementation
  *	Giant - JANREX client
  *	Tae - logo for the client <3
  */
@@ -105,8 +107,6 @@ ipcMain.on('preload_requests_userscriptPath', () => {
 // preload is sending back updated settings
 ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 	Object.assign(userPrefs, data);
-
-	// mainWindow.setFullScreen(userPrefs.fullscreen);
 });
 
 // allow perload opening links in default browser
@@ -304,7 +304,14 @@ app.on('ready', () => {
 		label: 'Game',
 		submenu: [
 			{ label: 'Reload this game', accelerator: 'F5', click: () => { mainWindow.reload(); } },
-			{ label: 'Find new Lobby', accelerator: 'F6', click: () => { mainWindow.loadURL('https://krunker.io'); } },
+			{
+				label: 'Find new Lobby',
+				accelerator: 'F6',
+				click: () => {
+					if (userPrefs.matchmaker && userPrefs.matchmaker_F6) mainWindow.webContents.send('matchmakerRedirect', userPrefs);
+					else mainWindow.loadURL('https://krunker.io');
+				}
+			},
 			{ label: 'Copy game link to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(mainWindow.webContents.getURL()); } },
 			{
 				label: 'Join game link from clipboard',

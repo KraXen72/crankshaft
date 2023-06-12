@@ -3,11 +3,6 @@ import { join as pathJoin } from 'path';
 
 const TARGET_GAME_DOMAIN = 'krunker.io';
 
-/*
- * thanks for this to Commander/asger-finding, https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/main/resource-swapper.ts
- * i did modify it to fit this client but Commander did most of the heavy lifting
- */
-
 /**
  * Swapper
  * @class Swapper

@@ -137,8 +137,9 @@ export function secondsToTimestring(num: number) {
 }
 
 // https://www.30secondsofcode.org/js/s/arrays-have-same-contents/
+
+// eslint-disable-next-line
 export const haveSameContents = (array1: any[], array2: any[]) => {
 	for (const value of new Set([...array1, ...array2])) if (array1.filter(e => e === value).length !== array2.filter(e => e === value).length) return false;
-
 	return true;
 };

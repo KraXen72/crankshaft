@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS } from './utils';
-import { styleSettingsCSS, classPickerBottom, strippedConsole } from './preload';
+import { styleSettingsCSS, classPickerBottom } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -71,12 +71,12 @@ const settingsDesc: SettingsDesc = {
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
 
 	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2, refreshOnly: true },
-	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2, refreshOnly: true },
-	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 8, refreshOnly: true },
+	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
+	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, refreshOnly: true },
 	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, refreshOnly: true },
 	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 3600, safety: 0, cat: 2, refreshOnly: true },
 	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, refreshOnly: true },
-	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, refreshOnly: true },
+	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, refreshOnly: true, desc: 'if you set the criteria too strictly, matchmaker won\'t find anything.' },
 
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 3 },
@@ -116,7 +116,7 @@ function saveSettings() {
 function recalculateRefreshNeeded() {
 	refreshNeeded = RefreshEnum.notNeeded;
 	for (let i = 0; i < Object.keys(userPrefs).length; i++) {
-		const cache = (item: any | any[]) => (Array.isArray(item) ? [...item] : item);
+		const cache = (item: UserPrefs[keyof UserPrefs]) => (Array.isArray(item) ? [...item] : item);
 		const key = Object.keys(userPrefs)[i];
 		const descObj = settingsDesc[key];
 		const setting = cache(userPrefs[key]);
@@ -125,8 +125,6 @@ function recalculateRefreshNeeded() {
 		const settingsEqual = Array.isArray(setting) && Array.isArray(cachedSetting)
 			? haveSameContents(setting, cachedSetting)
 			: setting === cachedSetting;
-
-		strippedConsole.log(settingsEqual, setting, cachedSetting);
 
 		if (!settingsEqual) {
 			if (descObj?.instant) {
@@ -233,7 +231,7 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			case 'multisel':
-				this.HTML = `<span class="setting-title">${props.title}</span>
+				this.HTML += `<span class="setting-title">${props.title}</span>
 					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : '' }>
 						${props.opts.map(opt => `<label class="hostOpt">
 							<span class="optName">${opt}</span>
@@ -359,7 +357,7 @@ class SettingElem {
 // i am insane for making this
 
 /** 
- * a settings generation helper. has some skeleton elements and methods that make them. purpose: prevent's code duplication 
+ * a settings generation helper. has some skeleton elements and methods that make them. purpose: prevents code duplication 
  */
 const skeleton = {
 	/** make a setting cateogry */

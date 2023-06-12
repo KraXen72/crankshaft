@@ -33,12 +33,6 @@ export const styleSettingsCSS = {
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
-// Lets us exit the game lmao
-document.addEventListener('keydown', event => {
-	if (event.code === 'Escape') document.exitPointerLock();
-	if (event.key === 'F1') fetchGame();
-});
-
 document.addEventListener('DOMContentLoaded', () => {
 	// Side Menu Settings Thing
 	const settingsSideMenu = document.querySelector('.menuItem[onclick*="showWindow(1)"]');
@@ -119,7 +113,18 @@ ipcRenderer.on('initDiscordRPC', () => {
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
 });
 
-ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts }, version) => {
+ipcRenderer.on('matchmakerRedirect', (event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
+
+ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
+	// eslint-disable-next-line
+	const { matchmaker, matchmaker_F6 } = _userPrefs;
+
+	document.addEventListener('keydown', event => {
+		if (event.code === 'Escape') document.exitPointerLock();
+		if (event.code === 'F1' && matchmaker && !matchmaker_F6) fetchGame(_userPrefs);
+	});
+
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts } = _userPrefs;
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -159,7 +164,6 @@ ipcRenderer.on('injectClientCSS', (event, { hideAds, menuTimer, quickClassPicker
 		observer.observe(document.getElementById('instructions'), observerConfig);
 	}
 
-	// TODO rewrite, this is not well scalable
 	if (hideAds) {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
 		document.getElementById('hiddenClasses').style.bottom = classPickerBottom;
