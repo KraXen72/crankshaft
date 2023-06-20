@@ -121,7 +121,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
 
 	document.addEventListener('keydown', event => {
 		if (event.code === 'Escape') document.exitPointerLock();
-		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send("matchmaker_requests_userPrefs")
+		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
 	});
 
 	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts } = _userPrefs;
@@ -149,7 +149,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
 		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: '#loadInfoLHolder', text: `v${version}` }));
 		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: '#loadInfoRHolder', text: 'Client by KraXen72' }));
 
-		const observerConfig = { attributes: true, childList: true, subtree: true };''
+		const observerConfig = { attributes: true, childList: true, subtree: true };
 		const callback = (mutationList: MutationRecord[], observer: MutationObserver) => {
 			for (const mutation of mutationList) {
 				if (mutation.type === 'childList') {
