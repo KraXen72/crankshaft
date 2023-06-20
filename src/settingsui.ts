@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS } from './utils';
-import { styleSettingsCSS, classPickerBottom, strippedConsole } from './preload';
+import { styleSettingsCSS, classPickerBottom } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -468,7 +468,6 @@ export function renderSettings() {
 					callback: 'userscript'
 				};
 				if (userscript.meta) { // render custom metadata if provided
-					strippedConsole.log(`${userscript.name} has metadata:`, userscript.meta);
 					const thisMeta = userscript.meta;
 					Object.assign(obj, {
 						title: 'name' in thisMeta && thisMeta.name ? thisMeta.name : userscript.name,

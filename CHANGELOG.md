@@ -1,4 +1,27 @@
-### [1.7.2](https://github.com/KraXen72/crankshaft/compare/1.7.1...v1.7.2) (2023-05-25)
+## [1.8.0](https://github.com/KraXen72/crankshaft/compare/1.7.2...1.8.0) (2023-06-20)
+
+
+### Features
+
+* better css for advancedSlider ([cc1e4b4](https://github.com/KraXen72/crankshaft/commit/cc1e4b4a5a0831fa76b3fb9634e1664789464798))
+* cleanup in all files, fixed userscript meta & advSlider ([cedb501](https://github.com/KraXen72/crankshaft/commit/cedb501c7b94e13cd2aa13c845f92f07a12f8d08))
+* finish matchmaker ([1edd003](https://github.com/KraXen72/crankshaft/commit/1edd003e29ef1867ff3bc3d35072b69b68fdf7ca))
+* gui for matchmaker progress ([9fb7492](https://github.com/KraXen72/crankshaft/commit/9fb74921e490a3ad02a5aaa3ee5fdbffc7c6ad8e))
+* improve matchmaker ([b4cda59](https://github.com/KraXen72/crankshaft/commit/b4cda59b5c4cb2374c05e404505981b6aa20499f))
+* log client version to console ([fc5f867](https://github.com/KraXen72/crankshaft/commit/fc5f867ed61300896de95a131a8e7a05e77811b6))
+* matchmaker GUI & array settings support ([9d86189](https://github.com/KraXen72/crankshaft/commit/9d86189573e31cff2172fd63ae651ed28ea2b72d))
+* matchmaker settings are now instant ([0e9adab](https://github.com/KraXen72/crankshaft/commit/0e9adab24b429d12e463f41fb86cea0cc50142aa))
+* matchmaker WIP ([4ad83a5](https://github.com/KraXen72/crankshaft/commit/4ad83a565c0b36e0af207119897d6432e492ec17))
+
+
+### Bug Fixes
+
+* html syntax & step value on setting inputs ([9fc9a90](https://github.com/KraXen72/crankshaft/commit/9fc9a90956d0c5fedbc638d9c51b3a1314a7e499))
+* remove unnecessary description ([867081b](https://github.com/KraXen72/crankshaft/commit/867081b813db1f093a83cef661ad9e99ead4ef19))
+* remove unneeded console.log ([fb1e145](https://github.com/KraXen72/crankshaft/commit/fb1e1457ae21ce8bb837a80e34c964d63a2edbda))
+
+
+## [1.7.2](https://github.com/KraXen72/crankshaft/compare/1.7.1...v1.7.2) (2023-05-25)
 
 
 ### Features
@@ -11,7 +34,8 @@
 * hidden window if not maximized ([d02f15d](https://github.com/KraXen72/crankshaft/commit/d02f15d4a600f93cf922dddf1d3e851ea74090cc))
 * positioning of quick class switcher ([c13638f](https://github.com/KraXen72/crankshaft/commit/c13638fed71e52776e837ade9595fb6b6b15a45d))
 
-### [1.7.1](https://github.com/KraXen72/crankshaft/compare/1.7.0...v1.7.1) (2023-05-22)
+
+## [1.7.1](https://github.com/KraXen72/crankshaft/compare/1.7.0...v1.7.1) (2023-05-22)
 
 
 ### Features
@@ -90,7 +114,7 @@
 * Formatting in userscripts.ts ([6b63068](https://github.com/KraXen72/crankshaft/commit/6b63068ed50f04e3814e5e622164cdc879c30c16))
 * remove once: true for domcontentloaded ([cabaff1](https://github.com/KraXen72/crankshaft/commit/cabaff182c4af3c208efde69c4df6e2ce19883f0))
 
-### [1.5.7](https://github.com/KraXen72/crankshaft/compare/1.5.6...1.5.7) (2022-06-22)
+## [1.5.7](https://github.com/KraXen72/crankshaft/compare/1.5.6...1.5.7) (2022-06-22)
 
 
 ### Features
@@ -105,7 +129,7 @@
 * memory leak hopefully ([13af632](https://github.com/KraXen72/crankshaft/commit/13af6328b824cf3175ce2056cf1cbb7f7c03ba80))
 * wait 500 ms for devtools regardless of os ([6645128](https://github.com/KraXen72/crankshaft/commit/66451288601acca9810fc5a784d0b7b2ad6f5503))
 
-### [1.5.6](https://github.com/KraXen72/crankshaft/compare/1.5.5...1.5.6) (2022-06-21)
+## [1.5.6](https://github.com/KraXen72/crankshaft/compare/1.5.5...1.5.6) (2022-06-21)
 
 
 ### Features
@@ -115,14 +139,14 @@
 * refactor esbuilder.js ([152c71b](https://github.com/KraXen72/crankshaft/commit/152c71b4c913d2e9617429179fc2cb979b76bdf2))
 * rpc prepare + add instagram as freespin ([36a39ab](https://github.com/KraXen72/crankshaft/commit/36a39ab27f94fdde194ab3efa82bc1ce94f2d5ce))
 
-### [1.5.5](https://github.com/KraXen72/crankshaft/compare/1.5.4...1.5.5) (2022-05-28)
+## [1.5.5](https://github.com/KraXen72/crankshaft/compare/1.5.4...1.5.5) (2022-05-28)
 
 
 ### Features
 
 * add borderless fullscreen mode ([a76ad10](https://github.com/KraXen72/crankshaft/commit/a76ad10f30d9736949941a9f0da732a2eed197af))
 
-### [1.5.4](https://github.com/KraXen72/crankshaft/compare/1.5.3...1.5.4) (2022-05-10)
+## [1.5.4](https://github.com/KraXen72/crankshaft/compare/1.5.3...1.5.4) (2022-05-10)
 
 
 ### Features
@@ -136,14 +160,14 @@
 * client settings don't load after "reset settings" ([978424a](https://github.com/KraXen72/crankshaft/commit/978424afd5087ad1fafbfdbd58740ccba75c7b7a))
 * small source cleanup ([c5c54b4](https://github.com/KraXen72/crankshaft/commit/c5c54b41a5293e2f02c45fbe5931c2f278cdf639))
 
-### [1.5.3](https://github.com/KraXen72/crankshaft/compare/1.5.2...1.5.3) (2022-05-08)
+## [1.5.3](https://github.com/KraXen72/crankshaft/compare/1.5.2...1.5.3) (2022-05-08)
 
 
 ### Features
 
 * macOS fix (part3), menuRewrite (part3) ([8d78078](https://github.com/KraXen72/crankshaft/commit/8d780789c9f4927f3a796b129b7d2f92e36f5101))
 
-### [1.5.2](https://github.com/KraXen72/crankshaft/compare/1.5.1...1.5.2) (2022-05-08)
+## [1.5.2](https://github.com/KraXen72/crankshaft/compare/1.5.1...1.5.2) (2022-05-08)
 
 
 ### Bug Fixes
@@ -154,7 +178,7 @@
 * **internal:** longer names for CategoryName in defs ([7f37d91](https://github.com/KraXen72/crankshaft/commit/7f37d91f179432940b0d65d93ef986d0d23f7d47))
 * longer param names in utils ([325d179](https://github.com/KraXen72/crankshaft/commit/325d17948635a066f15227c3fa63a594ae7182a7))
 
-### [1.5.1](https://github.com/KraXen72/crankshaft/compare/1.5.0...1.5.1) (2022-05-05)
+## [1.5.1](https://github.com/KraXen72/crankshaft/compare/1.5.0...1.5.1) (2022-05-05)
 
 
 ### Bug Fixes
@@ -234,7 +258,7 @@
 * splash no longer uses any remote fonts ([503abbd](https://github.com/KraXen72/crankshaft/commit/503abbd29691d05fd6159483b3f434fd1e9f0e99))
 * use strict in dev (esbuild) ([719e527](https://github.com/KraXen72/crankshaft/commit/719e527fdae28670ae827c417bfb6bcf73cf8547))
 
-### [1.3.1](https://github.com/KraXen72/crankshaft/compare/1.3.0...1.3.1) (2022-04-21)
+## [1.3.1](https://github.com/KraXen72/crankshaft/compare/1.3.0...1.3.1) (2022-04-21)
 
 
 ### Bug Fixes

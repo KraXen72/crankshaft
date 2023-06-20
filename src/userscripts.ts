@@ -40,7 +40,6 @@ class Userscript implements IUserscriptInstance {
 	runAt: ('document-start' | 'document-end') = 'document-end';
 
 	constructor(props: IUserscript) {
-		strippedConsole.log('constructor for new userscript', props);
 		this.hasRan = false;
 		this.#strictMode = false;
 
