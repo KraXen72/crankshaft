@@ -17,9 +17,9 @@
 ### Bug Fixes
 
 * html syntax & step value on setting inputs ([9fc9a90](https://github.com/KraXen72/crankshaft/commit/9fc9a90956d0c5fedbc638d9c51b3a1314a7e499))
+* remove unnecessary console.logs 2 ([c8ccf57](https://github.com/KraXen72/crankshaft/commit/c8ccf57d8bb4ac49912c844f860fefc6582a6162))
 * remove unnecessary description ([867081b](https://github.com/KraXen72/crankshaft/commit/867081b813db1f093a83cef661ad9e99ead4ef19))
 * remove unneeded console.log ([fb1e145](https://github.com/KraXen72/crankshaft/commit/fb1e1457ae21ce8bb837a80e34c964d63a2edbda))
-
 
 ## [1.7.2](https://github.com/KraXen72/crankshaft/compare/1.7.1...v1.7.2) (2023-05-25)
 
@@ -33,7 +33,6 @@
 
 * hidden window if not maximized ([d02f15d](https://github.com/KraXen72/crankshaft/commit/d02f15d4a600f93cf922dddf1d3e851ea74090cc))
 * positioning of quick class switcher ([c13638f](https://github.com/KraXen72/crankshaft/commit/c13638fed71e52776e837ade9595fb6b6b15a45d))
-
 
 ## [1.7.1](https://github.com/KraXen72/crankshaft/compare/1.7.0...v1.7.1) (2023-05-22)
 
