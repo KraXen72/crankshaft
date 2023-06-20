@@ -1,44 +1,36 @@
 # crankshaft
 
-[![Github All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)](https://github.com/KraXen72/crankshaft/releases/latest) [![Latest release](https://img.shields.io/github/downloads/KraXen72/crankshaft/latest/total)](https://github.com/KraXen72/crankshaft/releases/latest) [![Chat](https://img.shields.io/discord/966300714060116008)](https://discord.gg/ZeVuxG7gQJ) [![Recurring donation via Liberapay](https://img.shields.io/badge/donate-liberapay-%23f6c915?logo=liberapay)](https://liberapay.com/KraXen72)
-[![One-time donation via ko-fi.com](https://img.shields.io/badge/donate-ko--fi-%23ff5e5b?logo=kofi)](https://ko-fi.com/kraxen72)
+[![GitHub All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)](https://github.com/KraXen72/crankshaft/releases/latest) [![Latest release](https://img.shields.io/github/downloads/KraXen72/crankshaft/latest/total)](https://github.com/KraXen72/crankshaft/releases/latest) [![Chat](https://img.shields.io/discord/966300714060116008)](https://discord.gg/ZeVuxG7gQJ) [![Recurring donation via Liberapay](https://img.shields.io/badge/donate-liberapay-%23f6c915?logo=liberapay)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://img.shields.io/badge/donate-ko--fi-%23ff5e5b?logo=kofi)](https://ko-fi.com/kraxen72)
 
-> a sensible krunker client built on the ashes of [Gatoclient](https://github.com/Gatohost/gatoclient) and [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite)
-
+> a fast, feature-rich krunker client written in typescript
+  
+**Download:** [Windows (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-setup-win-x64.exe) - [Mac (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-x64.dmg) - [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) - [Linux (i386 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-i386.AppImage) - [Other](https://github.com/KraXen72/crankshaft/releases/latest)  
 ![splash](assets/blank_splash.png)
-**Download:** [Windows (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-setup-win-x64.exe) - [Mac (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-x64.dmg) - [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) - [Linux (i386 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-i386.AppImage) - [Other](https://github.com/KraXen72/crankshaft/releases/latest)
 
 ## client features
-
 - very good performance with additional performance enhancing settings
-- no unnecesarry built-in features that can't be turned off
+- highly customisable, many different settings
+- _hides_ ads by default (can be disabled)
+- resource swapper (css, sounds & all other assets)
+- userscript support
+- discord RPC (gamemode, map, class & skin)
+- customisable matchmaker (Gamemode, Region, Min/Max players, Time)
+- quick class switcher using `#hiddenClasses`
+- built-in hotkeys: [more about them here](#hotkeys)
 - maintained & open source
-- a lot of customisation options (settings)
-- userscript support (off by default)
-- discord rpc support (off by default)
-- customisable matchmaker (off by default)
-- built-in hotkeys: [more about them here](https://github.com/KraXen72/crankshaft#hotkeys)
 
 ## quality of life
-
-- no artificial "splash screens" that increase load time, splash shows over krunker actually loading
-- _hides_ ads by default (can be turned off)
-- quick class switcher using krunker's `#hiddenClasses` (optional)
-- doesen't automatically open free spin urls, prompts you before
+- all client specific **features can be turned off** to ensure **maximum performance**
+  - once a feature is disabled, none of it code runs
+  - for example, while 'Discord RPC' is off, crankshaft does not even import the [discord-rpc](https://github.com/discordjs/RPC) library.
+- **written in typescript**
 - **secure:** `web security` is on, the `remote` module and `nodeIntegration` are disabled
-- written in typescript
+- splash screen is not a separate window, shows only while krunker is actually loading.
+- doesn't automatically open free spin urls in browser
+  - you can open them in a new window, in browser or not open them at all
+- Discord RPC: if enabled, only updates while you're not actually in game. Does not use `setInterval` like other clients.
 - no-compromise mac, linux and windows support
-- dependencies only get imported when they are actually used
-
-## matchmaker (beta)
-
-- a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6`
-- you can enable specific regions & game modes to look for
-- set the minimum & maximum amount of players
-- set the minimum time left on a game
-- choose between `F1` or `F6` hotkey
-- the code is heavily based on matchmaker userscript by wa / @paintingofblue
-- the matchmaker is in beta, so please report any issues with it
+- only 3 dependencies & they get imported only when needed
 
 ## userscripts
 
@@ -46,33 +38,13 @@
 - There are a few official/example userscripts:
   - [keystrokes.js](https://gist.github.com/KraXen72/2ea1332440b0c66b83ca9b73afc38269): shows WASD, shift, space and 2 configurable keys on screen.
   - [autospectate.js](https://gist.github.com/KraXen72/270b2b8f28dda974f9e643b384e87a68): automatically joins game as spectator if turned on
-
-Feel free to download them and put them into the `/scripts` directory.
-
-### features
-
-- no overcomplicated format required for userscripts. just make sure it is valid js code.
 - all userscripts are disabled when they are first added.
-- refresh the page to see userscript changes.
-
-### notes
-
-- when _userscript support_ is disabled in settings, no code related to this feature will run inside or outside the client. => doesen't have any performance impact on the client if disabled
-- DO NOT DELETE `Documents/Crankshaft/scripts/tracker.json`, it is used to keep track of enabled and disabled userscripts
-
-> Use userscripts at your own risk, the author(s) of this client are not responsible for any damage done with userscripts because the user is the author of the script.
-> Enabling any userscript you don't trust and know how it works is NOT RECOMMENDED
-
-If you want to write a userscript, please read the [Documentation](./USERSCRIPTS.md)
-
-## discord rich presence
-
-- enable discord rich presence to show off your gamemode, map, class and skin to your discord friends!
-- doesen't affect performance in any way when disabled
-- only updates the presence while you're not actively in-game.
-- you can enable "Extended Discord RPC" to also add Discord and Github buttons/links under your rich presence in discord
-- uses the lightweight discord-rpc library, not the entire discord.js
-
+- `Documents/Crankshaft/scripts/tracker.json` is used to keep track of enabled userscripts.
+  
+If you want to write a userscript or learn more about them, read the [Documentation](./USERSCRIPTS.md)  
+> **Use userscripts at your own risk**, the author(s) of this client are **not responsible for any damage done** with userscripts because the user is the author of the script.
+> **Do not write or use any userscripts which would give the user a competitive advantage.**
+  
 ## hotkeys
 
 Press `Alt` to show electron menu. Here you can find all hotkeys.  
@@ -84,6 +56,11 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 - `F7`: copy game link,
 - `Ctrl+F7`: join game from clipboard
 - `F12`: devtools (alternative hotkey)
+
+## matchmaker
+- a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6`
+- the code is heavily based on matchmaker userscript by wa / @paintingofblue
+![matchmaker](./assets/matchmaker_screenshot.png)
 
 ## building from source
 1. you have to have [`git`](https://git-scm.com/downloads) and [`nodejs`](https://nodejs.org/en/download/) (with `npm`, by default) installed.
@@ -100,8 +77,18 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
    - until automated tests are added, try to manually test it works even after the code is minified. if it does not, you're probably doing something wrong
 - please report any bugs/feature requests in the Issues.
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.
-### support development
-[![Recurring donation via Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/KraXen72)
-[![One-time donation via ko-fi.com](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/kraxen72)
+
+### credits
+- [Creepycats](https://github.com/creepycats) released [Gatoclient](https://github.com/Gatohost/gatoclient), which was based on top of [idkr](https://github.com/idkr-client/idkr).
+- Crankshaft was built on top of [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite), an `app.asar` mod optimizing Gatoclient by [LukeTheDuke](https://github.com/LukeTheDuke240).
+- Very little code remains, as Crankshaft was rewritten in typescript & more features were added.
+- Gatoclient was later rewritten, implementing some code from Crankshaft too.
+- **other acknowledgments**
+  - [wa/paintingofblue](https://github.com/paintingofblue) - matchmaker implementation
+  - [Commander/asger-finding](https://github.com/asger-finding) (AKC client) - resource swapper implementation
+  - [Tae](https://github.com/whuuayu) - awesome logo for the client <3
+
+## support development
+[![Recurring donation via Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/kraxen72)
   
 You can support ongoing development & maintainance by donating. All donations are highly appreciated! <3
