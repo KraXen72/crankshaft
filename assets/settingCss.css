@@ -159,10 +159,11 @@
 input:checked+.advancedSlider {
 	opacity: 0;
 	transition: all 0s !important;
+	filter: grayscale(1);
 }
 
 input:checked+.advancedSlider:hover {
-	opacity: 1;
+	opacity: .8;
 	transition: all 0s !important;
 }
 
