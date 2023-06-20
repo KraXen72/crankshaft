@@ -91,20 +91,24 @@ let mainWindow: BrowserWindow;
 let socialWindowReference: BrowserWindow;
 /* eslint-disable init-declarations */
 
-// console log to electron console because krunker turns browser console off
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
-
-// send settings to preload
-ipcMain.on('settingsUI_requests_userPrefs', () => {
-	mainWindow.webContents.send('main_sends_userPrefs', settingsPath, userPrefs);
-});
 
 // send usercript path to preload
 ipcMain.on('preload_requests_userscriptPath', () => {
 	mainWindow.webContents.send('main_sends_userscriptPath', userscriptsPath, __dirname);
 });
 
-// preload is sending back updated settings
+// initial request of settings to populate the settingsUI
+ipcMain.on('settingsUI_requests_userPrefs', () => {
+	mainWindow.webContents.send('m_userPrefs_for_settingsUI', settingsPath, userPrefs);
+});
+
+// preload requests the latest settings to feed into matchmaker. IPC is probably faster than an I/O read? not that it really matters.
+ipcMain.on('matchmaker_requests_userPrefs', () => {
+	mainWindow.webContents.send('matchmakerRedirect', userPrefs);
+});
+
+// settingsui is sending back updated settings (user changed the settings in ui) - writing new settings is already handles
 ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 	Object.assign(userPrefs, data);
 });

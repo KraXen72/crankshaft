@@ -23,14 +23,14 @@ let refreshNotifElement: HTMLElement;
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
-ipcRenderer.on('main_sends_userPrefs', (event, recieved_userPrefsPath: string, recieved_userPrefs: UserPrefs) => {
+ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_userPrefsPath: string, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
 	userPrefsPath = recieved_userPrefsPath;
 	userPrefs = recieved_userPrefs;
 	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
 });
 
-/** * joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
+/** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
 function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: Callbacks): RenderReadySetting[] {
 	const renderReadySettings = Object.keys(desc)
 		.map(key => ({ key, ...desc[key] })) // embeds key into the original object: hideAds: {title: 'Hide Ads', ...} => {key: 'hideAds', title: 'Hide Ads', ...}
@@ -42,17 +42,14 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 /*
  * this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
  * they are modified & extended to fit krunker
- */
-
-// note by KraXen: this might look scary, but it's just extra info needed to make a nice gui
-/*
- *  each setting has these things: title, type: {'bool' | 'sel' | 'heading' | 'text' | 'num'}, desc and safety(0-4)
- *  some have some extra stuff, like selects have opts for options. 
- * 	you should get typescript autocomplete for those telling you what extra stuff is required.
  * 
- *  cat (category) is optional, omitting it will put it in the first (0th) category
- *  desc (description) is optional, omitting it or leaving it "" will not render any description
- *  simplest way to create a new setting is to add setting: {} as SettingsDescItem and you will get autocomplete for all needed stuff
+ * each setting has these things: title, type: {'bool' | 'sel' | 'heading' | 'text' | 'num'}, desc and safety(0-4)
+ * some have some extra stuff, like selects have opts for options. 
+ * you should get typescript autocomplete for those telling you what extra stuff is required.
+ * 
+ * cat (category) is optional, omitting it will put it in the first (0th) category
+ * desc (description) is optional, omitting it or leaving it "" will not render any description
+ * simplest way to create a new setting is to add setting: {} as SettingsDescItem and you will get autocomplete for all needed stuff
  */
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
@@ -72,11 +69,11 @@ const settingsDesc: SettingsDesc = {
 
 	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2, refreshOnly: true },
 	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
-	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, refreshOnly: true },
-	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, refreshOnly: true },
-	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 3600, safety: 0, cat: 2, refreshOnly: true },
-	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, refreshOnly: true },
-	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, refreshOnly: true, desc: 'if you set the criteria too strictly, matchmaker won\'t find anything.' },
+	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, instant: true },
+	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, instant: true },
+	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 3600, safety: 0, cat: 2, instant: true },
+	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true },
+	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true, desc: 'if you set the criteria too strictly, matchmaker won\'t find anything' },
 
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 3 },
