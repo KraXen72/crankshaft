@@ -36,14 +36,18 @@ rules:
   '@typescript-eslint/ban-types': 0
 
   # general
-  "prefer-destructuring": ["error", {"object": true, "array": false}]
+  "prefer-destructuring": [error, {"object": true, "array": false}]
   no-trailing-spaces: [error, { ignoreComments: true }]
   prefer-named-capture-group: 0
   linebreak-style: 0
   no-console: 0 
-  no-empty: ["error", { "allowEmptyCatch": true }]
-  init-declarations: ["warn", "always"]
+  no-empty: [error, { "allowEmptyCatch": true }]
+  # init-declarations: ["warn", "always"]
+  init-declarations: 0
   complexity: 0
+
+  # stuff i deliberately use
+  no-void: 0
 
   # COMMENTS
   # i tried configuring these so it's either inline or above, not both, but couldn't figure it out
