@@ -94,6 +94,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 	// for num
 	min?: number;
 	max?: number;
+	step?: number;
 
 	// the data
 	key: string;

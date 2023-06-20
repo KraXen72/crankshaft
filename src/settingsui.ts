@@ -203,7 +203,7 @@ class SettingElem {
 			case 'text':
 				this.HTML += `<span class="setting-title">${props.title}</span>
 					<span class="setting-input-wrapper">
-							<input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}">
+							<input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}"/>
 					</span>`;
 				this.updateKey = 'value';
 				this.updateMethod = 'oninput';
@@ -211,7 +211,10 @@ class SettingElem {
 			case 'num':
 				this.HTML += `<span class="setting-title">${props.title}</span>
 				<span class="setting-input-wrapper">
-					<input type="number" class="rb-input s-update sliderVal" name="${props.key}" autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}">
+					<input type="number" class="rb-input s-update sliderVal" name="${props.key}" 
+						autocomplete="off" value="${props.value}" 
+						min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
+					/>
 				</span>`;
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
