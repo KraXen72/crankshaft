@@ -9,16 +9,12 @@ const TARGET_GAME_DOMAIN = 'krunker.io';
  */
 export default class {
 
-	/** Target window. */
 	private browserWindow: Electron.BrowserWindow;
 
-	/** The list of URLs to swap. */
 	private urls: string[] = [];
 
-	/** Has start() been called on the class? */
 	private started = false;
 
-	/** which directory to swap */
 	private swapDir: string;
 
 	/**

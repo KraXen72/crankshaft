@@ -7,17 +7,6 @@ import Swapper from './resourceswapper';
 
 /// <reference path="global.d.ts" />
 
-// Credits / mentions (if not mentioned on github)
-/*
- *	Gato/creepycats - Gatoclient
- *	LukeTheDuke - Gatoclient-lite
- *	Mixaz and IDKR team - https://github.com/idkr-client/idkr
- * 	wa#3991 / paintingofblue - matchmaker implementation
- * 	Commander/asger-finding (AKC client) - resource swapper implementation
- *	Giant - JANREX client
- *	Tae - logo for the client <3
- */
-
 const docsPath = app.getPath('documents');
 const swapperPath = pathJoin(docsPath, 'Crankshaft/swapper');
 const settingsPath = pathJoin(docsPath, 'Crankshaft/settings.json');
@@ -58,8 +47,6 @@ const settingsSkeleton = {
 	matchmaker_minRemainingTime: 120
 };
 
-// export type settingsKeys = keyof typeof settingsSkeleton
-
 if (!existsSync(swapperPath)) mkdirSync(swapperPath, { recursive: true });
 if (!existsSync(userscriptsPath)) mkdirSync(userscriptsPath, { recursive: true });
 if (!existsSync(userscriptTrackerPath)) writeFileSync(userscriptTrackerPath, '{}', { encoding: 'utf-8' });
@@ -67,15 +54,13 @@ if (!existsSync(userscriptTrackerPath)) writeFileSync(userscriptTrackerPath, '{}
 // Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
 if (!existsSync(settingsPath)) writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: 'utf-8', flag: 'wx' });
 
-
-// Read settings to apply them to the command line arguments
 const userPrefs = settingsSkeleton;
 Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, { encoding: 'utf-8' })));
 
 // convert legacy settings files to newer formats
 let modifiedSettings = false;
 
-// fullscreen was a true/false, now it's "windowed", "fullscreen" or "borderless"
+// initially, fullscreen was a true/false, now it's "windowed", "fullscreen" or "borderless"
 if (typeof userPrefs.fullscreen === 'boolean') {
 	modifiedSettings = true;
 	if (userPrefs.fullscreen === true) userPrefs.fullscreen = 'fullscreen'; else userPrefs.fullscreen = 'windowed';
@@ -84,18 +69,14 @@ if (typeof userPrefs.fullscreen === 'boolean') {
 // write the new settings format to the settings.json file right after the conversion
 if (modifiedSettings) writeFileSync(settingsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
 
-
-// Window definitions
-/* eslint-disable init-declarations */
 let mainWindow: BrowserWindow;
 let socialWindowReference: BrowserWindow;
-/* eslint-disable init-declarations */
 
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 // send usercript path to preload
-ipcMain.on('preload_requests_userscriptPath', () => {
-	mainWindow.webContents.send('main_sends_userscriptPath', userscriptsPath, __dirname);
+ipcMain.on('initializeUserscripts', () => {
+	mainWindow.webContents.send('main_initializes_userscripts', userscriptsPath, __dirname);
 });
 
 // initial request of settings to populate the settingsUI
@@ -161,7 +142,6 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 			...constructDevtoolsSubmenu(genericWin, userPrefs.alwaysWaitForDevTools || null)
 		]);
 	}
-
 
 	const thisMenu = Menu.buildFromTemplate(providedMenuTemplate);
 
@@ -253,7 +233,7 @@ app.on('ready', () => {
 
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
-		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); });
+		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); }); // only used to updateRPC in preload with real data
 
 		if (userPrefs.discordRPC) {
 			// eslint-disable-next-line
@@ -291,8 +271,6 @@ app.on('ready', () => {
 
 	mainWindow.loadFile(pathJoin($assets, 'dummy.html'));
 
-	// mainWindow.loadURL('https://krunker.io')
-
 	if (userPrefs.logDebugToConsole) {
 		console.log('GPU INFO BEGIN');
 		app.getGPUInfo('complete').then(completeObj => {
@@ -328,11 +306,6 @@ app.on('ready', () => {
 			{ type: 'separator' },
 			...constructDevtoolsSubmenu(mainWindow, userPrefs.alwaysWaitForDevTools || null)
 		]
-
-		/*
-		 * you can add a relaunch command with: { label: 'Relaunch Client', accelerator: 'F10', click: () => { app.relaunch(); app.exit(); } }
-		 * it is not recommended! - it is prone to cause memory leaks & does not restart the client fully
-		 */
 	};
 
 	if (process.platform !== 'darwin') csMenuTemplate.push({ label: 'About', submenu: aboutSubmenu });
@@ -352,7 +325,6 @@ app.on('ready', () => {
 		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com'];
 
 		// sanity check, if social window is destroyed but the reference still exists
-		// eslint-disable-next-line no-void
 		if (typeof socialWindowReference !== 'undefined' && socialWindowReference.isDestroyed()) socialWindowReference = void 0;
 
 		if (url.includes('https://krunker.io/social.html') && typeof socialWindowReference !== 'undefined') {
@@ -396,6 +368,7 @@ app.on('ready', () => {
 			mainWindow.loadURL(url);
 		} else { // for any other link, fall back to creating a custom window with strippedMenu. 
 			event.preventDefault();
+			console.log(`genericWindow created for ${url}`, socialWindowReference);
 			const genericWin = customGenericWin(url, strippedMenuTemplate);
 			event.newGuest = genericWin;
 
@@ -417,19 +390,13 @@ app.on('ready', () => {
 		}
 	});
 
-	// mainWindow.webContents.on("will-navigate", (event: Event, url: string) => { console.log(url) })
-
-	// Resource Swapper, thanks idkr
 	if (userPrefs.resourceSwapper) {
 		const CrankshaftSwapInstance = new Swapper(mainWindow, swapperPath);
 		CrankshaftSwapInstance.start();
 	}
 });
 
-/*
- * for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic
- * when all windows close, the app should exit itself
- */
+// for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic - when all windows close, the app should exit itself
 // eslint-disable-next-line consistent-return
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') return app.quit(); // don't quit on mac systems unless user explicitly quits

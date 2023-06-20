@@ -37,9 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Side Menu Settings Thing
 	const settingsSideMenu = document.querySelector('.menuItem[onclick*="showWindow(1)"]');
 	settingsSideMenu.addEventListener('click', () => { updateSettingsTabs(lastActiveTab, true, true); });
-
-	// @ts-ignore cba to add it to the window interface
-	try { window.windows[0].toggleType({ checked: true }); } catch (err) { strippedConsole.warn("couldn't toggle Advanced slider"); }
 });
 
 ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
@@ -113,9 +110,9 @@ ipcRenderer.on('initDiscordRPC', () => {
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
 });
 
-ipcRenderer.on('matchmakerRedirect', (event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
+ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
 
-ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
+ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string) => {
 	// eslint-disable-next-line
 	const { matchmaker, matchmaker_F6 } = _userPrefs;
 
@@ -143,6 +140,15 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
 			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })
 		});
 
+		const clearSplash = (_observer: MutationObserver) => {
+			try {
+				logoSVG.remove();
+				_observer.disconnect();
+			} catch (e) {
+				console.log('splash screen was already cleared.');
+			}
+		};
+
 		instructionHider.appendChild(logoSVG);
 
 		// i am not sure if you should be injecting more elements into a svg element, but it seems to work. feel free to pr a better version tho.
@@ -151,16 +157,12 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
 
 		const observerConfig = { attributes: true, childList: true, subtree: true };
 		const callback = (mutationList: MutationRecord[], observer: MutationObserver) => {
-			for (const mutation of mutationList) {
-				if (mutation.type === 'childList') {
-					logoSVG.remove();
-					observer.disconnect();
-				}
-			}
+			for (const mutation of mutationList) if (mutation.type === 'childList') clearSplash(observer);
 		};
 
 		const observer = new MutationObserver(callback);
 		observer.observe(document.getElementById('instructions'), observerConfig);
+		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
 
 	if (hideAds) {
@@ -170,8 +172,9 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true);
 	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
-	if (userscripts) ipcRenderer.send('preload_requests_userscriptPath');
+	if (userscripts) ipcRenderer.send('initializeUserscripts');
 });
+
 
 /**
  * make sure our setting tab is always called as it should be and has the proper onclick
@@ -180,12 +183,14 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version) => {
  * @param coldStart if client tab is selected upon launch of settings themselved, also call renderSettings()
  */
 function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
-	strippedConsole.log('update settings tabs');
 	const activeClass = 'tabANew';
 	const settHolder = document.getElementById('settHolder');
 
-	// @ts-ignore
-	if (window?.windows[0]?.settingsType === 'basic') window.windows[0].toggleType({ checked: true });
+	if (window?.windows[0]?.settingType === 'basic') {
+		window.windows[0].toggleType({ checked: true });
+		setTimeout(() => updateSettingsTabs(activeTab, hookSearch, coldStart), 700);
+		return;
+	}
 
 	// FIXME currently, if user clicks too fast, while krunker is still loading, settings might not be hooked - investigate & fix
 
@@ -194,7 +199,7 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 		// eslint-disable-next-line no-param-reassign
 		hookSearch = false;
 
-		const settSearchCallback = () => { updateSettingsTabs(0, hookSearch); };
+		const settSearchCallback = () => updateSettingsTabs(0, hookSearch);
 
 		try {
 			try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) { }
@@ -208,14 +213,11 @@ function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = fa
 	}
 
 	try {
-		const advSliderElem = document.querySelector('.advancedSwitch input#typeBtn');
-		const advSwitchCallback = () => {
-			advSliderElem.setAttribute('disabled', 'disabled');
-			setTimeout(() => {
-				advSliderElem.removeAttribute('disabled');
-				updateSettingsTabs(0, true);
-			}, 700);
-		};
+		const advSliderElem: HTMLInputElement = document.querySelector('.advancedSwitch input#typeBtn');
+		advSliderElem.disabled = true;
+		advSliderElem.nextElementSibling.setAttribute('title', 'Crankshaft auto-enables advanced settings mode');
+
+		const advSwitchCallback = () => updateSettingsTabs(0, true);
 
 		try { advSliderElem.removeEventListener('change', advSwitchCallback); } catch (e) { }
 		advSliderElem.addEventListener('change', advSwitchCallback);

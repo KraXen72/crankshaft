@@ -41,6 +41,10 @@ interface Window {
 	errAlert: Function;
 	OffCliV: boolean;
 	getGameActivity: Function
+	windows: [ {
+		settingType: 'basic' | 'advanced';
+		toggleType: Function;
+	}, ...Object[]];
 }
 
 /*

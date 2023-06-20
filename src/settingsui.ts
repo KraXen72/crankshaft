@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS } from './utils';
-import { styleSettingsCSS, classPickerBottom } from './preload';
+import { styleSettingsCSS, classPickerBottom, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -254,10 +254,9 @@ class SettingElem {
 
 	/**
 	 * update the settings when you change something in the gui
-	 * @param {{elem: Element, callback: 'normal'|Function}} elemAndCb
+	 * @param {{elem: HTMLElement, callback: 'normal'|Function}} elemAndCb
 	 */
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	update({ elem, callback }: { elem: Element; callback: 'normal' | 'userscript' | Function; }) {
+	update({ elem, callback }: { elem: HTMLElement; callback: 'normal' | 'userscript' | Function; }) {
 		if (this.updateKey === '') throw 'Invalid update key';
 		const target = elem.querySelector('.s-update') as HTMLInputElement;
 
@@ -327,9 +326,7 @@ class SettingElem {
 	}
 
 
-	/**
-	 * this initializes the element and its eventlisteners. 
-	 */
+	/** this initializes the element and its eventlisteners.*/
 	get elem() {
 		if (this.#wrapper !== false) return this.#wrapper; // returnt he element if already initialized
 
@@ -356,9 +353,7 @@ class SettingElem {
 
 // i am insane for making this
 
-/** 
- * a settings generation helper. has some skeleton elements and methods that make them. purpose: prevents code duplication 
- */
+/** a settings generation helper. has some skeleton elements and methods that make them. purpose: prevents code duplication */
 const skeleton = {
 	/** make a setting cateogry */
 	category: (title: string, innerHTML: string, elemClass = 'mainSettings') => `
@@ -460,7 +455,6 @@ export function renderSettings() {
 				{ desc: 'Go to the Crankshaft <a href="https://github.com/KraXen72/crankshaft#userscripts">README.md</a> to download some made by the client dev.' })));
 		}
 
-		// <div class="settingsBtn" id="userscript-disclaimer" style="width: auto;">DISCLAIMER</div>
 		const userscriptSettings: RenderReadySetting[] = su.userscripts
 			.map(userscript => {
 				const obj: RenderReadySetting = {
@@ -473,12 +467,13 @@ export function renderSettings() {
 					userscriptReference: userscript,
 					callback: 'userscript'
 				};
-				if (userscript.meta) { // render custom metadata if provided in userscrsipt.exported
+				if (userscript.meta) { // render custom metadata if provided
+					strippedConsole.log(`${userscript.name} has metadata:`, userscript.meta);
 					const thisMeta = userscript.meta;
 					Object.assign(obj, {
 						title: 'name' in thisMeta && thisMeta.name ? thisMeta.name : userscript.name,
 						desc: `${'desc' in thisMeta && thisMeta.desc ? thisMeta.desc.slice(0, 60) : ''}
-						${'author' in thisMeta && thisMeta.author ? `&#8226; by ${thisMeta.author}` : ''}
+						${'author' in thisMeta && thisMeta.author ? `&#8226; ${thisMeta.author}` : ''}
 						${'version' in thisMeta && thisMeta.version ? `&#8226; v${thisMeta.version}` : ''}
 						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}`
 					});

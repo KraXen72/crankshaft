@@ -22,12 +22,11 @@ const errAlert = (err: Error, name: string) => {
 /** class for userscripts */
 class Userscript implements IUserscriptInstance {
 
-	// stuff we are initialized with
 	name: string;
 
 	fullpath: string;
 
-	content?: string;
+	content: string;
 
 	// parsed metadata, unload function and @run-at
 	meta: UserscriptMeta | false;
@@ -38,13 +37,11 @@ class Userscript implements IUserscriptInstance {
 
 	#strictMode: boolean;
 
-	#initialized: boolean;
-
 	runAt: ('document-start' | 'document-end') = 'document-end';
 
 	constructor(props: IUserscript) {
+		strippedConsole.log('constructor for new userscript', props);
 		this.hasRan = false;
-		this.#initialized = false;
 		this.#strictMode = false;
 
 		this.name = props.name;
@@ -54,6 +51,7 @@ class Userscript implements IUserscriptInstance {
 		this.unload = false;
 
 		this.content = readFileSync(this.fullpath, { encoding: 'utf-8' });
+		if (this.content.startsWith('"use strict"')) this.#strictMode = true;
 		if (this.content.includes('// ==UserScript==') && this.content.includes('// ==/UserScript==')) {
 			// eslint-disable-next-line
 			const metaParser = require('userscript-meta');
@@ -63,7 +61,7 @@ class Userscript implements IUserscriptInstance {
 			const startLine = chunk.findIndex(line => line.includes('// ==UserScript=='));
 			const endLine = chunk.findIndex(line => line.includes('// ==/UserScript=='));
 
-			if (startLine === -1 && endLine !== -1) {
+			if (startLine !== -1 && endLine !== -1) {
 				chunk = chunk.slice(startLine, endLine + 1).join('\n');
 				this.meta = metaParser.parse(chunk) as UserscriptMeta; // assume this.meta is not false when parsing
 
@@ -72,11 +70,7 @@ class Userscript implements IUserscriptInstance {
 				 * we check if a value isArray and if yes, take the last item in that array as the new value
 				 */
 
-				// eslint-disable-next-line init-declarations
-				let metaKey: keyof UserscriptMeta;
-
-				// @ts-ignore
-				for ((metaKey) of Object.keys(this.meta)) {
+				for (const metaKey of Object.keys(this.meta) as Array<keyof UserscriptMeta>) {
 					const meta = this.meta[metaKey];
 					if (Array.isArray(meta)) this.meta[metaKey] = meta[meta.length - 1];
 				}
@@ -86,28 +80,12 @@ class Userscript implements IUserscriptInstance {
 		}
 	}
 
-	/** determine if script is in strictmode or no */
-	#init() {
-		if (this.content.startsWith('"use strict"')) this.#strictMode = true;
-		this.#initialized = true;
-
-		return this.content;
-	}
-
-	/** return ready-to-run content */
-	get #content() {
-		if (this.#initialized) return this.content; return this.#init();
-	}
-
 	/** runs the userscript */
 	load() {
-		// eslint-disable-next-line no-new-wrappers
-		const code = String(this.#content);
-
 		try {
 			// @ts-ignore
 			// eslint-disable-next-line @typescript-eslint/no-implied-eval
-			const exported = new Function(code).apply({
+			const exported = new Function(this.content).apply({
 				unload: false,
 				_console: strippedConsole,
 				_css: userscriptToggleCSS
@@ -119,8 +97,8 @@ class Userscript implements IUserscriptInstance {
 				if ('unload' in exported) this.unload = exported.unload;
 			}
 
-			strippedConsole.log(`%c[cs]${this.#strictMode ? '%c[non-strict]' : '%c[strict]'} %cran %c'${this.name.toString()}' `,
-				'color: lightblue; font-weight: bold;', this.#strictMode ? 'color: orange' : 'color: #62dd4f',
+			strippedConsole.log(`%c[cs]${this.#strictMode ? '%c[strict]' : '%c[non-strict]'} %cran %c'${this.name.toString()}' `,
+				'color: lightblue; font-weight: bold;', this.#strictMode ? 'color: #62dd4f' : 'color: orange',
 				'color: white;', 'color: lightgreen;');
 		} catch (error) {
 			errAlert(error, this.name);
@@ -130,13 +108,11 @@ class Userscript implements IUserscriptInstance {
 
 }
 
-ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: string) => {
+ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscriptsPath: string) => {
 	su.userscriptsPath = recieved_userscriptsPath;
 	su.userscriptTrackerPath = pathResolve(su.userscriptsPath, 'tracker.json');
 
 	// init the userscripts (read, map and set up tracker)
-
-	// remove get all .js files, map to {name, fullpath}
 	su.userscripts = readdirSync(su.userscriptsPath, { withFileTypes: true })
 		.filter(entry => entry.name.endsWith('.js'))
 		.map(entry => new Userscript({ name: entry.name, fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
@@ -153,7 +129,7 @@ ipcRenderer.on('main_sends_userscriptPath', (event, recieved_userscriptsPath: st
 			if (u.runAt === 'document-start') {
 				u.load();
 			} else {
-				const callback = () => { u.load(); };
+				const callback = () => u.load();
 				try { document.removeEventListener('DOMContentLoaded', callback); } catch (e) { }
 				document.addEventListener('DOMContentLoaded', callback, { once: true });
 			}
