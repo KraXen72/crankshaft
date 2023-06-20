@@ -58,9 +58,7 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 - `F12`: devtools (alternative hotkey)
 
 ## matchmaker
-- a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6`
-- the code is heavily based on matchmaker userscript by wa / @paintingofblue
-  
+a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6` 
 ![matchmaker](./assets/matchmaker_screenshot.png)
 
 ## building from source
