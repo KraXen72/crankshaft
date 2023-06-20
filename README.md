@@ -60,6 +60,7 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 ## matchmaker
 - a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6`
 - the code is heavily based on matchmaker userscript by wa / @paintingofblue
+  
 ![matchmaker](./assets/matchmaker_screenshot.png)
 
 ## building from source
