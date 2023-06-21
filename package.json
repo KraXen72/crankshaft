@@ -27,7 +27,7 @@
 	"devDependencies": {
 		"conventional-changelog-cli": "^3.0.0",
 		"electron": "^10.4.7",
-		"electron-builder": "^24.4.0",
+		"electron-builder": "^23.6.0",
 		"esbuild": "^0.18.5",
 		"eslint": "^8.43.0",
 		"eslint-config-airbnb-typescript": "^17.0.0",
