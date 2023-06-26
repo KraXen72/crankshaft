@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
-import { createElement, haveSameContents, toggleSettingCSS } from './utils';
-import { styleSettingsCSS, classPickerBottom } from './preload';
+import { classListSet, createElement, haveSameContents, toggleSettingCSS, hasOwn } from './utils';
+import { styleSettingsCSS } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -151,7 +151,7 @@ class SettingElem {
 
 	updateMethod: 'onchange' | 'oninput' | '';
 
-	updateKey: 'value' | 'checked' | '';
+	updateKey: 'value' | 'checked' | 'valueAsNumber' | '';
 
 	#wrapper: HTMLElement | false;
 
@@ -216,7 +216,7 @@ class SettingElem {
 						min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
 					/>
 				</span>`;
-				this.updateKey = 'value';
+				this.updateKey = 'valueAsNumber';
 				this.updateMethod = 'onchange';
 				break;
 			case 'heading':
@@ -260,9 +260,23 @@ class SettingElem {
 		if (this.updateKey === '') throw 'Invalid update key';
 		const target = elem.querySelector('.s-update') as HTMLInputElement;
 
-		const value = this.props.type === 'multisel'
-			? [...target.children].filter(child => child.querySelector('input:checked')).map(child => child.querySelector('.optName').textContent)
-			: target[this.updateKey];
+		// parse & sanitize the value from our input element
+		let dirtyValue: UserPrefs[keyof UserPrefs] = target[this.updateKey];
+		if (this.props.type === 'multisel') {
+			dirtyValue = [...target.children]
+				.filter(child => child.querySelector('input:checked'))
+				.map(child => child.querySelector('.optName').textContent);
+		}
+		if (typeof dirtyValue === 'number') {
+			const updateUI = () => { target.value = dirtyValue.toString() };
+			if (Number.isNaN(dirtyValue)) { 
+				target.value = userPrefs[this.props.key].toString();
+				return; // revert UI and don't apply this change;
+			}
+			if (hasOwn(this.props, 'min') && dirtyValue < this.props.min) { dirtyValue = this.props.min; updateUI(); }
+			if (hasOwn(this.props, 'max') && dirtyValue > this.props.max) { dirtyValue = this.props.max; updateUI(); }
+		}
+		const value = dirtyValue; // so we don't accidentally mutate it later
 
 		if (callback === 'normal') {
 			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}: ${value}`);
@@ -273,7 +287,7 @@ class SettingElem {
 			if (typeof value === 'boolean') {
 				if (this.props.key === 'hideAds') {
 					toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
-					document.getElementById('hiddenClasses').style.bottom = value ? classPickerBottom : null;
+					classListSet(document.getElementById('hiddenClasses'), value, 'hiddenClasses-hideAds-bottomOffset');
 				}
 				if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 				if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);

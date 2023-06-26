@@ -1,3 +1,4 @@
+/* this css gets injected regardless of userPrefs, because it is required for settings to render correctly */
 :root {
 	--crankshaft-gray: rgba(255,255,255,.6);
 }
@@ -19,6 +20,23 @@
 	grid-template-rows: min-content 1fr;
 	grid-template-columns: 0fr 1fr;
 	grid-template-areas: "icon title" "input input";
+}
+
+/* multiple select */
+.crankshaft-multisel-parent {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	grid-auto-rows: 1fr;
+	gap: .25rem;
+
+	background: #232323;
+	border-radius: 10px;
+	margin-top: 0.8rem;
+}
+.crankshaft-multisel-parent label.hostOpt {
+	width: 100%;
+	margin: 0;
+	box-sizing: border-box;
 }
 
 .Crankshaft-settings .settName .setting-title {
@@ -197,6 +215,7 @@ input:checked+.advancedSlider:hover {
 	width: max-content;
 	z-index: 10;
 }
+
 /* settings refresh popup */
 .refresh-popup {
 	height: min-content;
@@ -230,37 +249,4 @@ input:checked+.advancedSlider:hover {
     border: 2px solid #333333
 }
 
-.crankshaft-multisel-parent {
-	display: grid;
-	grid-template-columns: repeat(5, 1fr);
-	grid-auto-rows: 1fr;
-	gap: .25rem;
-
-	background: #232323;
-	border-radius: 10px;
-	margin-top: 0.8rem;
-}
-.crankshaft-multisel-parent label.hostOpt {
-	width: 100%;
-	margin: 0;
-	box-sizing: border-box;
-}
-/*
-.crankshaft-multisel-parent label input {
-	visibility: hidden;
-}
-.crankshaft-multisel-parent label input::after {
-	content: "";
-	visibility: visible;
-	border: 2px solid rgba(128, 0, 0, 0.466);
-	display: block;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	border-radius: 5px;
-}
-.crankshaft-multisel-parent label input:checked::after {
-	border-color: rgba(0, 128, 0, 0.466);
-} */
+.hiddenClasses-hideAds-bottomOffset { bottom: 80px !important; }

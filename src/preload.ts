@@ -2,7 +2,7 @@
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
-import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS } from './utils';
+import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
 
@@ -20,7 +20,6 @@ export const strippedConsole = {
 	timeEnd: console.timeEnd.bind(console)
 };
 
-export const classPickerBottom = '80px';
 const $assets = pathResolve(__dirname, '..', 'assets');
 const repoID = 'KraXen72/crankshaft';
 let lastActiveTab = 0;
@@ -73,18 +72,15 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 ipcRenderer.on('initDiscordRPC', () => {
 	// let areHiddenClassesHooked = false
 	function updateRPC() {
-		/** eslint correct Object.hasOwnProperty helper */
-		const has = (object: Object, key: string) => Object.prototype.hasOwnProperty.call(object, key);
-
 		strippedConsole.log('> updated RPC');
 		const classElem = document.getElementById('menuClassName');
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo');
 
-		const gameActivity = has(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
+		const gameActivity = hasOwn(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
 		let overWriteDetails: string | false = false;
-		if (!has(gameActivity, 'class')) gameActivity.class = { name: classElem === null ? '' : classElem.textContent };
-		if (!has(gameActivity, 'map') || !has(gameActivity, ('mode'))) overWriteDetails = (mapElem !== null) ? mapElem.textContent : 'Loading game...';
+		if (!hasOwn(gameActivity, 'class')) gameActivity.class = { name: classElem === null ? '' : classElem.textContent };
+		if (!hasOwn(gameActivity, 'map') || !hasOwn(gameActivity, ('mode'))) overWriteDetails = (mapElem !== null) ? mapElem.textContent : 'Loading game...';
 
 		const data: RPCargs = {
 			details: overWriteDetails || `${gameActivity.mode} on ${gameActivity.map}`,
@@ -167,7 +163,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 	if (hideAds) {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
-		document.getElementById('hiddenClasses').style.bottom = classPickerBottom;
+		document.getElementById('hiddenClasses').classList.add("hiddenClasses-hideAds-bottomOffset")
 	}
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true);

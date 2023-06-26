@@ -98,32 +98,20 @@ export function debounce(func: Function, timeout = 300) {
 	};
 }
 
-export function hiddenClassesImages(classNumberFallback: number) {
-	const wrapper = document.getElementById('hiddenClasses');
-	const prepend = (wrapper ? (wrapper.firstChild as HTMLElement).id : 'menuClassPicker0').slice(0, -1);
-	const count = wrapper ? wrapper.children.length : classNumberFallback;
-	const wrapperFull = wrapper !== null && wrapper.children.length > 0;
+/** @param classesCount how many classes krunker currently has (custom-only) included */
+export function hiddenClassesImages(classesCount: number) {
+	const prepend = 'menuClassPicker0'.slice(0, -1);
 
-	let css = '';
+	const gaps = (4 * (classesCount - 1)); // for each gap (classesCount - 1) we substract 4px
+	const theoreticalButtonSize = Math.round((810 - gaps) / classesCount); // 810 is krunker's hardcoded middle element width
+	const buttonSize = Math.min(theoreticalButtonSize, 50); // safety measure in case the buttons would be < 50px
 
-	/*
-	 * 810 is krunker's set middle element size
-	 * for each gap (count - 1) we substract 4px for gap
-	 * Math.min is a safety measure in case the buttons would be < 50px
-	 */
-	const buttonSize = Math.min(Math.round((810 - (4 * (count - 1))) / count), 50);
-	css += `#hiddenClasses [id^="menuClassPicker"] {
+	let css = `#hiddenClasses [id^="menuClassPicker"] {
 		width: ${buttonSize}px; height: ${buttonSize}px;
 		background-size: ${buttonSize - 6}px ${buttonSize - 6}px; 
-	}`;
+	}\n`;
 
-	if (wrapperFull) {
-		[...wrapper.children].forEach(child => {
-			css += `${child.id} { background-image: url("https://assets.krunker.io/textures/classes/icon_${child.id.replace(prepend, '')}.png"); } \n`;
-		});
-	} else { // the fallback is almost always used...
-		for (let i = 0; i < count; i++) css += `#${prepend}${i} { background-image: url("https://assets.krunker.io/textures/classes/icon_${i}.png"); } \n`;
-	}
+	for (let i = 0; i < classesCount; i++) css += `#${prepend}${i} { background-image: url("https://assets.krunker.io/textures/classes/icon_${i}.png"); } \n`;
 
 	return css;
 }
@@ -139,7 +127,18 @@ export function secondsToTimestring(num: number) {
 // https://www.30secondsofcode.org/js/s/arrays-have-same-contents/
 
 // eslint-disable-next-line
-export const haveSameContents = (array1: any[], array2: any[]) => {
+export function haveSameContents(array1: any[], array2: any[]) {
 	for (const value of new Set([...array1, ...array2])) if (array1.filter(e => e === value).length !== array2.filter(e => e === value).length) return false;
 	return true;
 };
+
+/** add/remove class(es) to/from an element based on a boolean*/
+export function classListSet(element: HTMLElement, value: boolean, ...classNames: string[]) {
+	if (value) {
+		element.classList.add(...classNames)
+	} else { 
+		element.classList.remove(...classNames)
+	}
+}
+
+export const hasOwn = (object: Object, key: string) => Object.prototype.hasOwnProperty.call(object, key);
