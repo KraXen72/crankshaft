@@ -37,14 +37,35 @@ interface UserscriptMeta {
 }
 
 /** krunker injects these into the window object */
+type SettingsTab = {
+	name: string;
+	categories: string[];
+};
+
+// a shim of krunker's modified window object
 interface Window {
-	errAlert: Function;
+
+	// krunker's stuff
 	OffCliV: boolean;
-	getGameActivity: Function
-	windows: [ {
+	getGameActivity: Function;
+	showWindow: Function;
+	windows: [ { // settings window
 		settingType: 'basic' | 'advanced';
+		tabIndex: number;
+		tabs: {
+			basic: SettingsTab[];
+			advanced: SettingsTab[];
+		}
+		getTabs: Function;
+		changeTab: Function;
+		genList: Function;
 		toggleType: Function;
+		getSettings: Function;
+
 	}, ...Object[]];
+
+	// crankshaft's stuff
+	errAlert: Function;
 }
 
 /*

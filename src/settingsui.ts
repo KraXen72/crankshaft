@@ -268,8 +268,8 @@ class SettingElem {
 				.map(child => child.querySelector('.optName').textContent);
 		}
 		if (typeof dirtyValue === 'number') {
-			const updateUI = () => { target.value = dirtyValue.toString() };
-			if (Number.isNaN(dirtyValue)) { 
+			const updateUI = () => { target.value = dirtyValue.toString(); };
+			if (Number.isNaN(dirtyValue)) {
 				target.value = userPrefs[this.props.key].toString();
 				return; // revert UI and don't apply this change;
 			}

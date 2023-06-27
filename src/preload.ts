@@ -22,7 +22,6 @@ export const strippedConsole = {
 
 const $assets = pathResolve(__dirname, '..', 'assets');
 const repoID = 'KraXen72/crankshaft';
-let lastActiveTab = 0;
 
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCSS = {
@@ -33,9 +32,7 @@ export const styleSettingsCSS = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-	// Side Menu Settings Thing
-	const settingsSideMenu = document.querySelector('.menuItem[onclick*="showWindow(1)"]');
-	settingsSideMenu.addEventListener('click', () => { updateSettingsTabs(lastActiveTab, true, true); });
+	patchSettings();
 });
 
 ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
@@ -163,7 +160,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 	if (hideAds) {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
-		document.getElementById('hiddenClasses').classList.add("hiddenClasses-hideAds-bottomOffset")
+		document.getElementById('hiddenClasses').classList.add('hiddenClasses-hideAds-bottomOffset');
 	}
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true);
@@ -171,80 +168,65 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	if (userscripts) ipcRenderer.send('initializeUserscripts');
 });
 
+function patchSettings() {
+	// hooking & binding: credit to commander/asger-finding https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/preload/game-settings.ts
+	let interval: number | NodeJS.Timer = null;
 
-/**
- * make sure our setting tab is always called as it should be and has the proper onclick
- * @param activeTab the tab that should get active class
- * @param hookSearch if true, it will also add an eventlistener to search and reset settings
- * @param coldStart if client tab is selected upon launch of settings themselved, also call renderSettings()
- */
-function updateSettingsTabs(activeTab: number, hookSearch = true, coldStart = false) {
-	const activeClass = 'tabANew';
-	const settHolder = document.getElementById('settHolder');
+	function hookSettings() {
+		const settingsWindow = window.windows[0];
+		let selectedTab = settingsWindow.tabIndex;
 
-	if (window?.windows[0]?.settingType === 'basic') {
-		window.windows[0].toggleType({ checked: true });
-		setTimeout(() => updateSettingsTabs(activeTab, hookSearch, coldStart), 700);
-		return;
+		const isClientTab = () => {
+			const allTabsCount = settingsWindow.tabs[settingsWindow.settingType].length - 1;
+			return selectedTab === allTabsCount;
+		};
+
+		const showWindowHook = window.showWindow.bind(window);
+		const changeTabHook = settingsWindow.changeTab.bind(settingsWindow);
+
+		// coldStart: settings window is launched while clientTab === true
+		window.showWindow = (...args: unknown[]) => {
+			const result = showWindowHook(...args);
+
+			// ensure Advanced Settings because i decided so
+			if (settingsWindow.settingType === 'basic') settingsWindow.toggleType({ checked: true });
+			const advSliderElem: HTMLInputElement = document.querySelector('.advancedSwitch input#typeBtn');
+			advSliderElem.disabled = true;
+			advSliderElem.nextElementSibling.setAttribute('title', 'Crankshaft auto-enables advanced settings mode');
+
+			if (args[0] === 1 && isClientTab()) renderSettings();
+
+			return result;
+		};
+
+		// whenever we change tabs, if it's client tab, run renderSettings, otherwise remove our class
+		settingsWindow.changeTab = (...args: unknown[]) => {
+			const result = changeTabHook(...args);
+			selectedTab = settingsWindow.tabIndex;
+
+			const settHolder = document.getElementById('settHolder');
+			if (!isClientTab() && settHolder !== null) settHolder.classList.remove('Crankshaft-settings');
+			if (isClientTab()) renderSettings();
+
+			return result;
+		};
 	}
 
-	// FIXME currently, if user clicks too fast, while krunker is still loading, settings might not be hooked - investigate & fix
-
-	// only hook search ONCE to ensure the client settings still work while searching - it will not yield the client settings
-	if (hookSearch) {
-		// eslint-disable-next-line no-param-reassign
-		hookSearch = false;
-
-		const settSearchCallback = () => updateSettingsTabs(0, hookSearch);
-
-		try {
-			try { document.getElementById('settSearch').removeEventListener('input', settSearchCallback); } catch (e) { }
-			document.getElementById('settSearch').addEventListener('input', settSearchCallback);
-
-			try { document.querySelector('.settingsBtn[onclick*="reset"]').removeEventListener('click', settSearchCallback); } catch (e) { }
-			document.querySelector('.settingsBtn[onclick*="reset"]').addEventListener('click', settSearchCallback);
-		} catch (e) {
-			strippedConsole.error('failed to hook search!', e);
+	function waitForWindow0() {
+		if (
+			hasOwn(window, 'showWindow')
+			&& typeof window.showWindow === 'function'
+			&& hasOwn(window, 'windows')
+			&& Array.isArray(window.windows)
+			&& window.windows.length >= 0
+			&& typeof window.windows[0] !== 'undefined'
+			&& typeof window.windows[0].changeTab === 'function'
+		) {
+			clearInterval(interval);
+			hookSettings();
 		}
 	}
 
-	try {
-		const advSliderElem: HTMLInputElement = document.querySelector('.advancedSwitch input#typeBtn');
-		advSliderElem.disabled = true;
-		advSliderElem.nextElementSibling.setAttribute('title', 'Crankshaft auto-enables advanced settings mode');
-
-		const advSwitchCallback = () => updateSettingsTabs(0, true);
-
-		try { advSliderElem.removeEventListener('change', advSwitchCallback); } catch (e) { }
-		advSliderElem.addEventListener('change', advSwitchCallback);
-	} catch (e) {
-		strippedConsole.error('failed to hook advSlider!', e);
-	}
-
-	const settingsLoader = document.querySelector('#genericPop.loadingPop');
-	if (document.getElementById('settingsTabLayout') === null && settingsLoader && (settingsLoader as HTMLElement).style.display === 'block') {
-		// TODO change this from a hard-coded timeout to a MutationObserver
-		setTimeout(() => updateSettingsTabs(activeTab, hookSearch, coldStart), 4250);
-	} else {
-		const tabs = [...document.getElementById('settingsTabLayout').children];
-		const clientTab = tabs[tabs.length - 1];
-		const selectedTab = document.querySelector(`#settingsTabLayout .${activeClass}`);
-
-		if (selectedTab !== clientTab) settHolder.classList.remove('Crankshaft-settings');
-
-		try { clientTab.removeEventListener('click', renderSettings); } catch (e) { }
-		clientTab.addEventListener('click', renderSettings);
-		if (selectedTab === clientTab && coldStart) renderSettings();
-
-		for (let i = 0; i < tabs.length; i++) {
-			const currentTabCallback = () => { updateSettingsTabs(i, hookSearch); };
-			try { tabs[i].removeEventListener('click', currentTabCallback); } catch (e) { }
-			tabs[i].addEventListener('click', currentTabCallback);
-
-			if (i === activeTab) { // if the current selected tab is our settings, just add active class
-				lastActiveTab = i;
-				tabs[i].classList.add(activeClass);
-			}
-		}
-	}
+	interval = setInterval(waitForWindow0, 250);
 }
+
