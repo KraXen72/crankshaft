@@ -205,6 +205,13 @@ this.unload = () => {
 // we have to return this since we define an unload function
 return this
 ```
+example 2 (selectable chat):
+```js
+"use strict";
+this._css(".chatItem * { user-select: text; }", "select-chat", true);
+this.unload = () => { this._css('', 'select-chat', false); };
+return this;
+```
 
 ## Tips / Notes
 
