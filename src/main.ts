@@ -45,8 +45,7 @@ const settingsSkeleton = {
 	matchmaker_minPlayers: 1,
 	matchmaker_maxPlayers: 6,
 	matchmaker_minRemainingTime: 120,
-	blockAds: true,
-	blockTrackers: false,
+	hideAds: 'hide',
 	customFilters: false
 };
 
@@ -76,6 +75,12 @@ let modifiedSettings = false;
 if (typeof userPrefs.fullscreen === 'boolean') {
 	modifiedSettings = true;
 	if (userPrefs.fullscreen === true) userPrefs.fullscreen = 'fullscreen'; else userPrefs.fullscreen = 'windowed';
+}
+
+// initially, hideAds was a true/false, now it's "block", "hide" or "off"
+if (typeof userPrefs.hideAds === 'boolean') {
+	modifiedSettings = true;
+	if (userPrefs.hideAds === true) userPrefs.hideAds = 'hide'; else userPrefs.hideAds = 'off';
 }
 
 // write the new settings format to the settings.json file right after the conversion
@@ -163,10 +168,10 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 
 	// if hideAds is enabled, hide them. then show the window
 	genericWin.once('ready-to-show', () => {
-		if (userPrefs.blockAds) genericWin.webContents.insertCSS(hideAdsCSS);
+		if (userPrefs.hideAds === 'hide' || userPrefs.hideAds === 'block') genericWin.webContents.insertCSS(hideAdsCSS);
 		genericWin.show();
 	});
-	if (userPrefs.blockAds) {
+	if (userPrefs.hideAds === 'hide' || userPrefs.hideAds === 'block') {
 		// re-inject hide ads even when going back and forth in history
 		genericWin.webContents.on('did-navigate', () => { genericWin.webContents.insertCSS(hideAdsCSS); });
 	}
@@ -242,8 +247,7 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
 		const filter: WebRequestFilter = { urls: [] };
-		const adFilters = ['*://apis.google.com/js/platform.js', '*://imasdk.googleapis.com/*'];
-		const trackerFilters = [
+		const blockFilters = [
 			'*://*.pollfish.com/*',
 			'*://www.paypalobjects.com/*',
 			'*://fran-cdn.frvr.com/prebid*',
@@ -255,10 +259,11 @@ app.on('ready', () => {
 			'*://*.cookiepro.com/*',
 			'*://www.googletagmanager.com/*',
 			'*://storage.googleapis.com/pollfish_production/*',
-			'*://krunker.io/libs/frvr-channel-web*'
+			'*://krunker.io/libs/frvr-channel-web*',
+			'*://apis.google.com/js/platform.js',
+			'*://imasdk.googleapis.com/*'
 		];
-		if (userPrefs.blockAds) filter.urls.push(...adFilters);
-		if (userPrefs.blockTrackers) filter.urls.push(...trackerFilters);
+		if (userPrefs.hideAds === 'block') filter.urls.push(...blockFilters);
 		if (userPrefs.customFilters) {
 			let conf = readFileSync(filtersPath, 'utf8').split('\n');
 
@@ -267,7 +272,7 @@ app.on('ready', () => {
 			for (const item of conf) filter.urls.push(item);
 		}
 		mainWindow.webContents.session.webRequest.onBeforeRequest(filter, (details, callback) => {
-			if (!userPrefs.blockAds && !userPrefs.blockTrackers) {
+			if (userPrefs.hideAds !== 'block') {
 				callback({ cancel: false });
 				return;
 			}
