@@ -250,3 +250,4 @@ input:checked+.advancedSlider:hover {
 }
 
 .hiddenClasses-hideAds-bottomOffset { bottom: 80px !important; }
+#editorBtnM[src$="client.png"] { display: none; } /* don't promote official client in a custom client lol */
