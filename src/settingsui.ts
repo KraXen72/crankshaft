@@ -342,7 +342,7 @@ class SettingElem {
 
 	/** this initializes the element and its eventlisteners.*/
 	get elem() {
-		if (this.#wrapper !== false) return this.#wrapper; // returnt he element if already initialized
+		if (this.#wrapper !== false) return this.#wrapper; // return the element if already initialized
 
 		// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
 		const wrapper = createElement('div', {
