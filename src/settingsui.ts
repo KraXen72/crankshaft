@@ -283,13 +283,14 @@ class SettingElem {
 			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}: ${value}`);
 			userPrefs[this.props.key] = value;
 			saveSettings();
+			if (this.props.key === 'hideAds') {
+				const adsHidden = value === 'hide' || value === 'block';
+				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, adsHidden);
+				classListSet(document.getElementById('hiddenClasses'), adsHidden, 'hiddenClasses-hideAds-bottomOffset');
+			}
 
 			// you can add custom instant refresh callbacks for settings here
 			if (typeof value === 'boolean') {
-				if (this.props.key === 'hideAds') {
-					toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
-					classListSet(document.getElementById('hiddenClasses'), value, 'hiddenClasses-hideAds-bottomOffset');
-				}
 				if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 				if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);
 				if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
