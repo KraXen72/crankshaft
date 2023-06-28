@@ -201,3 +201,8 @@ interface IMatchmakerGame {
 	gamemode: string;
 	remainingTime: number;
 }
+type ValidRequestTypes = 'mainFrame' | 'subFrame' | 'stylesheet' | 'script' | 'image' | 'font' | 'object' | 'xhr' | 'ping' | 'cspReport' | 'media' | 'webSocket';
+interface WebRequestFilter {
+	urls: string[];
+	types?: ValidRequestTypes[];
+}

@@ -10,6 +10,7 @@ import Swapper from './resourceswapper';
 const docsPath = app.getPath('documents');
 const swapperPath = pathJoin(docsPath, 'Crankshaft/swapper');
 const settingsPath = pathJoin(docsPath, 'Crankshaft/settings.json');
+const filtersPath = pathJoin(docsPath, 'Crankshaft/filters.txt');
 const userscriptsPath = pathJoin(docsPath, 'Crankshaft/scripts');
 const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
 
@@ -19,7 +20,6 @@ const settingsSkeleton = {
 	fpsUncap: true,
 	inProcessGPU: false,
 	disableAccelerated2D: false,
-	hideAds: true,
 	hideReCaptcha: true,
 	menuTimer: false,
 	quickClassPicker: false,
@@ -44,12 +44,24 @@ const settingsSkeleton = {
 	matchmaker_gamemodes: [] as string[],
 	matchmaker_minPlayers: 1,
 	matchmaker_maxPlayers: 6,
-	matchmaker_minRemainingTime: 120
+	matchmaker_minRemainingTime: 120,
+	blockAds: true,
+	blockTrackers: false,
+	customFilters: false
 };
 
 if (!existsSync(swapperPath)) mkdirSync(swapperPath, { recursive: true });
 if (!existsSync(userscriptsPath)) mkdirSync(userscriptsPath, { recursive: true });
 if (!existsSync(userscriptTrackerPath)) writeFileSync(userscriptTrackerPath, '{}', { encoding: 'utf-8' });
+if (!existsSync(filtersPath)) {
+	writeFileSync(filtersPath,
+		`# Welcome to the filters file! Filters follow the URL pattern format:
+# https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
+# Hashtags are used for comments, and each line is a new filter.
+# Here's an example of a filter that blocks the cosmetic bundle popup audio:
+# *://assets.krunker.io/sound/bundle_*.mp3*
+`);
+}
 
 // Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
 if (!existsSync(settingsPath)) writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: 'utf-8', flag: 'wx' });
@@ -151,10 +163,10 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 
 	// if hideAds is enabled, hide them. then show the window
 	genericWin.once('ready-to-show', () => {
-		if (userPrefs.hideAds) genericWin.webContents.insertCSS(hideAdsCSS);
+		if (userPrefs.blockAds) genericWin.webContents.insertCSS(hideAdsCSS);
 		genericWin.show();
 	});
-	if (userPrefs.hideAds) {
+	if (userPrefs.blockAds) {
 		// re-inject hide ads even when going back and forth in history
 		genericWin.webContents.on('did-navigate', () => { genericWin.webContents.insertCSS(hideAdsCSS); });
 	}
@@ -229,6 +241,40 @@ app.on('ready', () => {
 	mainWindow.on('ready-to-show', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
+		const filter: WebRequestFilter = { urls: [] };
+		const adFilters = ['*://apis.google.com/js/platform.js', '*://imasdk.googleapis.com/*'];
+		const trackerFilters = [
+			'*://*.pollfish.com/*',
+			'*://www.paypalobjects.com/*',
+			'*://fran-cdn.frvr.com/prebid*',
+			'*://fran-cdn.frvr.com/gpt_*',
+			'*://c.amazon-adsystem.com/*',
+			'*://fran-cdn.frvr.com/pubads_*',
+			'*://platform.twitter.com/*',
+			'*://cookiepro.com/*',
+			'*://*.cookiepro.com/*',
+			'*://www.googletagmanager.com/*',
+			'*://storage.googleapis.com/pollfish_production/*',
+			'*://krunker.io/libs/frvr-channel-web*'
+		];
+		if (userPrefs.blockAds) filter.urls.push(...adFilters);
+		if (userPrefs.blockTrackers) filter.urls.push(...trackerFilters);
+		if (userPrefs.customFilters) {
+			let conf = readFileSync(filtersPath, 'utf8').split('\n');
+
+			for (let i = 0; i < conf.length; i++) conf[i] = conf[i].split('#')[0];
+			conf = conf.filter(line => line.trim().length > 0);
+			for (const item of conf) filter.urls.push(item);
+		}
+		mainWindow.webContents.session.webRequest.onBeforeRequest(filter, (details, callback) => {
+			if (!userPrefs.blockAds && !userPrefs.blockTrackers) {
+				callback({ cancel: false });
+				return;
+			}
+			console.log(`Blocked ${details.url}`);
+			callback({ cancel: true });
+		});
+
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
