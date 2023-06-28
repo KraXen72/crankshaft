@@ -188,13 +188,14 @@ function patchSettings() {
 		window.showWindow = (...args: unknown[]) => {
 			const result = showWindowHook(...args);
 
-			// ensure Advanced Settings because i decided so
-			if (settingsWindow.settingType === 'basic') settingsWindow.toggleType({ checked: true });
-			const advSliderElem: HTMLInputElement = document.querySelector('.advancedSwitch input#typeBtn');
-			advSliderElem.disabled = true;
-			advSliderElem.nextElementSibling.setAttribute('title', 'Crankshaft auto-enables advanced settings mode');
+			if (args[0] === 1) {
+				if (settingsWindow.settingType === 'basic') settingsWindow.toggleType({ checked: true });
+				const advSliderElem: HTMLInputElement = document.querySelector('.advancedSwitch input#typeBtn');
+				advSliderElem.disabled = true;
+				advSliderElem.nextElementSibling.setAttribute('title', 'Crankshaft auto-enables advanced settings mode');
 
-			if (args[0] === 1 && isClientTab()) renderSettings();
+				if (isClientTab()) renderSettings();
+			}
 
 			return result;
 		};
