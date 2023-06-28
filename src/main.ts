@@ -231,7 +231,6 @@ app.on('ready', () => {
 		if (!mainWindow.isVisible()) mainWindow.show();
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
-		mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
 		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); }); // only used to updateRPC in preload with real data
 
@@ -268,6 +267,7 @@ app.on('ready', () => {
 			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
 		}
 	});
+	mainWindow.once('ready-to-show', () => mainWindow.webContents.send('checkForUpdates', app.getVersion()));
 
 	mainWindow.loadFile(pathJoin($assets, 'dummy.html'));
 
