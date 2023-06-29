@@ -60,9 +60,10 @@ const settingsDesc: SettingsDesc = {
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper', safety: 0, cat: 0 },
 	discordRPC: { title: 'Discord Rich Presence', type: 'bool', desc: 'Enable Discord Rich Presence. Shows Gamemode, Map, Class and Skin', safety: 0, cat: 0 },
 	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC. No effect if RPC is off.', safety: 0, cat: 0, instant: true },
+	hideAds: { title: 'Hide/Block Ads', type: 'sel', desc: 'Use \'hide\' if you want to be able to claim free KR. Using \'block\' also blocks tracker scripts.', safety: 0, cat: 0, refreshOnly: true, opts: ['block', 'hide', 'off'] },
+	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. Reads Documents/Crankshaft/filters.txt', safety: 0, cat: 0, refreshOnly: true },
 
 	userscripts: { title: 'Userscript support', type: 'bool', desc: 'Enable userscript support. place .js files in Documents/Crankshaft/scripts', safety: 1, cat: 0 },
-	hideAds: { title: 'Hide Ads', type: 'bool', safety: 0, cat: 1, instant: true },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -282,13 +283,14 @@ class SettingElem {
 			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}: ${value}`);
 			userPrefs[this.props.key] = value;
 			saveSettings();
+			if (this.props.key === 'hideAds') {
+				const adsHidden = value === 'hide' || value === 'block';
+				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, adsHidden);
+				classListSet(document.getElementById('hiddenClasses'), adsHidden, 'hiddenClasses-hideAds-bottomOffset');
+			}
 
 			// you can add custom instant refresh callbacks for settings here
 			if (typeof value === 'boolean') {
-				if (this.props.key === 'hideAds') {
-					toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, value);
-					classListSet(document.getElementById('hiddenClasses'), value, 'hiddenClasses-hideAds-bottomOffset');
-				}
 				if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 				if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);
 				if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);

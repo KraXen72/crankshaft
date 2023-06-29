@@ -158,7 +158,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
 
-	if (hideAds) {
+	if (hideAds === 'block' || hideAds === 'hide') {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
 		document.getElementById('hiddenClasses').classList.add('hiddenClasses-hideAds-bottomOffset');
 	}
