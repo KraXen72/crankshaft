@@ -37,6 +37,7 @@
 	},
 	"dependencies": {
 		"compare-versions": "^5.0.3",
+		"dayjs": "^1.11.8",
 		"discord-rpc": "^4.0.1",
 		"userscript-meta": "^1.0.1"
 	}

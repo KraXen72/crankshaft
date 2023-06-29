@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { ipcRenderer } from 'electron'; // add app if crashes
 import { classListSet, createElement, haveSameContents, toggleSettingCSS, hasOwn } from './utils';
-import { styleSettingsCSS } from './preload';
+import { styleSettingsCSS, getTimezoneByRegionKey } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -70,7 +70,7 @@ const settingsDesc: SettingsDesc = {
 
 	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2, refreshOnly: true },
 	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
-	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, instant: true },
+	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 8, instant: true },
 	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, instant: true },
 	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 3600, safety: 0, cat: 2, instant: true },
 	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true },
@@ -178,11 +178,11 @@ class SettingElem {
 
 		this.#disabled = false;
 
-		// /** @type {Number | String} (only for 'sel' type) if Number, parseInt before assigning to Container */
-
 		// general stuff that every setting has
 		if (this.props.safety > 0) this.HTML += skeleton.safetyIcon(safetyDesc[this.props.safety]);
 		else if (this.props.instant || this.props.refreshOnly) this.HTML += skeleton.refreshIcon(this.props.instant ? 'instant' : 'refresh-icon');
+
+		if (this.props.key === 'matchmaker_regions') this.props.optDescriptions = MATCHMAKER_REGIONS.map(regionCode => getTimezoneByRegionKey('code', regionCode))
 
 		if ('userscriptReference' in props) {
 			const userscript = props.userscriptReference;
@@ -232,10 +232,13 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			case 'multisel':
+				const hasValidDescriptions = hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length
+				if (hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`)
 				this.HTML += `<span class="setting-title">${props.title}</span>
 					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : '' }>
-						${props.opts.map(opt => `<label class="hostOpt">
+						${props.opts.map((opt, i) => `<label class="hostOpt">
 							<span class="optName">${opt}</span>
+							${hasValidDescriptions ? `<span class="optDescription">${this.props.optDescriptions[i]}</span>` : ''}
 							<input type="checkbox" name="${opt}" ${props.value.includes(opt) ? 'checked' : ''} />
 							<div class="optCheck"></div>
 						</label>`).join('')}
@@ -437,7 +440,6 @@ export function renderSettings() {
 	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].cat, skeleton.notice('These settings need a client restart to work.')));
 
 	const csSettings = new DocumentFragment();
-
 	const settings: RenderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal');
 
 	for (const setObj of settings) {

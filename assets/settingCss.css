@@ -38,6 +38,13 @@
 	margin: 0;
 	box-sizing: border-box;
 }
+span.optDescription {
+    color: #fff;
+    z-index: 2;
+    font-size: 14px;
+    position: relative;
+    right: 0;
+}
 
 .Crankshaft-settings .settName .setting-title {
 	grid-area: title;

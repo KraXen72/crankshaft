@@ -30,7 +30,7 @@
   - you can open them in a new window, in browser or not open them at all
 - Discord RPC: if enabled, only updates while you're not actually in game. Does not use `setInterval` like other clients.
 - no-compromise mac, linux and windows support
-- only 3 dependencies & they get imported only when needed
+- only 4 dependencies & they get imported only when needed
 
 ## userscripts
 
