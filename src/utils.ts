@@ -98,7 +98,7 @@ export function debounce(func: Function, timeout = 300) {
 	};
 }
 
-/** @param classesCount how many classes krunker currently has (custom-only) included */
+/** @param classesCount how many classes krunker currently has (custom-only included) */
 export function hiddenClassesImages(classesCount: number) {
 	const prepend = 'menuClassPicker0'.slice(0, -1);
 
@@ -130,15 +130,12 @@ export function secondsToTimestring(num: number) {
 export function haveSameContents(array1: any[], array2: any[]) {
 	for (const value of new Set([...array1, ...array2])) if (array1.filter(e => e === value).length !== array2.filter(e => e === value).length) return false;
 	return true;
-};
+}
 
 /** add/remove class(es) to/from an element based on a boolean*/
 export function classListSet(element: HTMLElement, value: boolean, ...classNames: string[]) {
-	if (value) {
-		element.classList.add(...classNames)
-	} else { 
-		element.classList.remove(...classNames)
-	}
+	if (value) element.classList.add(...classNames);
+	else element.classList.remove(...classNames);
 }
 
 export const hasOwn = (object: Object, key: string) => Object.prototype.hasOwnProperty.call(object, key);

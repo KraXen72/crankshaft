@@ -44,6 +44,7 @@ type SettingsTab = {
 
 // a shim of krunker's modified window object
 interface Window {
+
 	// krunker's stuff
 	OffCliV: boolean;
 	getGameActivity: Function;
@@ -94,12 +95,13 @@ interface SettingItemGeneric {
 // sel has to have an opts with a string array
 interface SelectSettingDescItem extends SettingItemGeneric { type: 'sel', opts?: string[] }
 
-interface MultiselectSettingDescItem extends SettingItemGeneric { 
-	type: 'multisel', 
-	opts: string[], 
+interface MultiselectSettingDescItem extends SettingItemGeneric {
+	type: 'multisel',
+	opts: string[],
+
 	/** optDescriptions.length must equal opts.length! */
-	optDescriptions?: string[], 
-	cols: number 
+	optDescriptions?: string[],
+	cols: number
 }
 
 // num has to have a min and max

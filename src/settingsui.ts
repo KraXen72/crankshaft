@@ -56,21 +56,22 @@ const settingsDesc: SettingsDesc = {
 	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', 'borderless'] },
 	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'd3d11', 'd3d9', 'd3d11on12', 'vulkan'], cat: 0 },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
-	clientSplash: { title: 'Client Splash Screen', type: 'bool', desc: 'Show a custom bg and logo (splash screen) while krunker is loading', safety: 0, cat: 0, refreshOnly: true },
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper', safety: 0, cat: 0 },
 	discordRPC: { title: 'Discord Rich Presence', type: 'bool', desc: 'Enable Discord Rich Presence. Shows Gamemode, Map, Class and Skin', safety: 0, cat: 0 },
 	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC. No effect if RPC is off.', safety: 0, cat: 0, instant: true },
-	hideAds: { title: 'Hide/Block Ads', type: 'sel', desc: 'Use \'hide\' if you want to be able to claim free KR. Using \'block\' also blocks tracker scripts.', safety: 0, cat: 0, refreshOnly: true, opts: ['block', 'hide', 'off'] },
+	hideAds: { title: 'Hide/Block Ads', type: 'sel', desc: 'With \'hide\' you can still claim free KR. Using \'block\' also blocks trackers.', safety: 0, cat: 0, refreshOnly: true, opts: ['block', 'hide', 'off'] },
 	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. Reads Documents/Crankshaft/filters.txt', safety: 0, cat: 0, refreshOnly: true },
-
 	userscripts: { title: 'Userscript support', type: 'bool', desc: 'Enable userscript support. place .js files in Documents/Crankshaft/scripts', safety: 1, cat: 0 },
+
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
+	clientSplash: { title: 'Client Splash Screen', type: 'bool', safety: 0, cat: 1, refreshOnly: true },
+	regionTimezones: { title: 'Region Picker Timezones', type: 'bool', desc: 'Adds local time to all region pickers', safety: 0, cat: 1, refreshOnly: true },
 
 	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2, refreshOnly: true },
 	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
-	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 8, instant: true },
+	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, instant: true },
 	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, instant: true },
 	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 3600, safety: 0, cat: 2, instant: true },
 	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true },
@@ -182,7 +183,10 @@ class SettingElem {
 		if (this.props.safety > 0) this.HTML += skeleton.safetyIcon(safetyDesc[this.props.safety]);
 		else if (this.props.instant || this.props.refreshOnly) this.HTML += skeleton.refreshIcon(this.props.instant ? 'instant' : 'refresh-icon');
 
-		if (this.props.key === 'matchmaker_regions') this.props.optDescriptions = MATCHMAKER_REGIONS.map(regionCode => getTimezoneByRegionKey('code', regionCode))
+		if (this.props.key === 'matchmaker_regions' && userPrefs.regionTimezones) {
+			this.props.cols = 8;
+			this.props.optDescriptions = MATCHMAKER_REGIONS.map(regionCode => getTimezoneByRegionKey('code', regionCode));
+		}
 
 		if ('userscriptReference' in props) {
 			const userscript = props.userscriptReference;
@@ -231,11 +235,11 @@ class SettingElem {
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
 				break;
-			case 'multisel':
-				const hasValidDescriptions = hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length
-				if (hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`)
+			case 'multisel': {
+				const hasValidDescriptions = hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length;
+				if (hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`);
 				this.HTML += `<span class="setting-title">${props.title}</span>
-					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : '' }>
+					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : ''}>
 						${props.opts.map((opt, i) => `<label class="hostOpt">
 							<span class="optName">${opt}</span>
 							${hasValidDescriptions ? `<span class="optDescription">${this.props.optDescriptions[i]}</span>` : ''}
@@ -246,6 +250,7 @@ class SettingElem {
 				this.updateKey = 'value'; // this is bypassed anyway, because type === 'multisel'. '' throws
 				this.updateMethod = 'onchange';
 				break;
+			}
 			default:
 				// @ts-ignore
 				this.HTML = `<span class="setting-title">${props.title}</span><span>Unknown setting type</span>`;

@@ -46,7 +46,8 @@ const settingsSkeleton = {
 	matchmaker_maxPlayers: 6,
 	matchmaker_minRemainingTime: 120,
 	hideAds: 'hide',
-	customFilters: false
+	customFilters: false,
+	regionTimezones: false
 };
 
 if (!existsSync(swapperPath)) mkdirSync(swapperPath, { recursive: true });
@@ -283,7 +284,6 @@ app.on('ready', () => {
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
-		mainWindow.webContents.on('did-finish-load', () => { mainWindow.webContents.send('main_did-finish-load'); }); // only used to updateRPC in preload with real data
 
 		if (userPrefs.discordRPC) {
 			// eslint-disable-next-line
@@ -318,7 +318,12 @@ app.on('ready', () => {
 			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
 		}
 	});
-	mainWindow.once('ready-to-show', () => mainWindow.webContents.send('checkForUpdates', app.getVersion()));
+
+	// only runs on client start
+	mainWindow.once('ready-to-show', () => {
+		mainWindow.webContents.send('checkForUpdates', app.getVersion());
+		mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
+	});
 
 	mainWindow.loadFile(pathJoin($assets, 'dummy.html'));
 

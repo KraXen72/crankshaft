@@ -5,12 +5,13 @@ import { fetchGame } from './matchmaker';
 import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
+
+// TODO if super border rewrite these to dynamic require's. For now i have not done it because i don't want to dynamically require in exported function
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 /// <reference path="global.d.ts" />
-
-dayjs.extend(utc)
 
 // get rid of client unsupported message 
 window.OffCliV = true;
@@ -35,9 +36,7 @@ export const styleSettingsCSS = {
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-	patchSettings();
-});
+ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => patchSettings(_userPrefs));
 
 ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 	const releases = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`);
@@ -71,7 +70,6 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 });
 
 ipcRenderer.on('initDiscordRPC', () => {
-	// let areHiddenClassesHooked = false
 	function updateRPC() {
 		strippedConsole.log('> updated RPC');
 		const classElem = document.getElementById('menuClassName');
@@ -174,41 +172,40 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 // warning: timezone calculation may be slighty innacurate: no special logic for DST and approx. offsets for BRZ, BHN and AFR
 export const regionMappings = [
-	{ "name": "Frankfurt", "id": "de-fra", "code": "FRA", "offset": 2 },
-	{ "name": "Silicon Valley", "id": "us-ca-sv", "code": "SV", "offset": -7 },
-	{ "name": "Sydney", "id": "au-syd", "code": "SYD", "offset": 10 },
-	{ "name": "Tokyo", "id": "jb-hnd", "code": "TOK", "offset": 9 },
-	{ "name": "Miami", "id": "us-fl", "code": "MIA", "offset": -4 },
-	{ "name": "Singapore", "id": "sgp", "code": "SIN", "offset": 8 },
-	{ "name": "New York", "id": "us-nj", "code": "NY", "offset": -4 },
-	{ "name": "Mumbai", "id": "as-mb", "code": "MBI", "offset": 5.5 },
-	{ "name": "Dallas", "id": "us-tx", "code": "DAL", "offset": -5 },
-	{ "name": "Brazil", "id": "brz", "code": "BRZ", "offset": -3 }, // approximate, BRT
-	{ "name": "Middle East", "id": "me-bhn", "code": "BHN", "offset": 3 }, // approximate, Saudi arabia
-	{ "name": "South Africa", "id": "af-ct", "code": "AFR", "offset": 2 }, // approximate, SAST
+	{ name: 'Frankfurt', id: 'de-fra', code: 'FRA', offset: 2 },
+	{ name: 'Silicon Valley', id: 'us-ca-sv', code: 'SV', offset: -7 },
+	{ name: 'Sydney', id: 'au-syd', code: 'SYD', offset: 10 },
+	{ name: 'Tokyo', id: 'jb-hnd', code: 'TOK', offset: 9 },
+	{ name: 'Miami', id: 'us-fl', code: 'MIA', offset: -4 },
+	{ name: 'Singapore', id: 'sgp', code: 'SIN', offset: 8 },
+	{ name: 'New York', id: 'us-nj', code: 'NY', offset: -4 },
+	{ name: 'Mumbai', id: 'as-mb', code: 'MBI', offset: 5.5 },
+	{ name: 'Dallas', id: 'us-tx', code: 'DAL', offset: -5 },
+	{ name: 'Brazil', id: 'brz', code: 'BRZ', offset: -3 }, // approximate, BRT
+	{ name: 'Middle East', id: 'me-bhn', code: 'BHN', offset: 3 }, // approximate, Saudi arabia
+	{ name: 'South Africa', id: 'af-ct', code: 'AFR', offset: 2 }, // approximate, SAST
 	// found in matchmaker, but not region picker
-	{ "name": "China (hidden)", "id": '', "code": "CHI", "offset": 8 }, // approximate, Beijing
-	{ "name": "London (hidden)", "id": '', "code": "LON", "offset": 1 },
-	{ "name": "Seattle (hidden)", "id": '', "code": "STL", "offset": -7 },
-	{ "name": "Mexico (hidden)", "id": '', "code": "MX", "offset": -6 }
-
-]
+	{ name: 'China (hidden)', id: '', code: 'CHI', offset: 8 }, // approximate, Beijing
+	{ name: 'London (hidden)', id: '', code: 'LON', offset: 1 },
+	{ name: 'Seattle (hidden)', id: '', code: 'STL', offset: -7 },
+	{ name: 'Mexico (hidden)', id: '', code: 'MX', offset: -6 }
+];
 
 // find option elements of the region setting, + select closing tag
-const regionOptionsRegex = new RegExp('\s*<option value=.*(de-fra).*(us-ca-sv).*<\/option>', 'g') 
+const regionOptionsRegex = new RegExp('s*<option value=.*(de-fra).*(us-ca-sv).*</option>', 'gu');
 
 /** get a timezone in format '[HH:mm]' for a region by it's 3-letter code (e.g. FRA) or id (e.g. de-fra) */
 export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
-	if (key === 'id' && value === '') throw new Error('getTimezoneByRegionKey: forbidden to get regions by id with empty id, would match multiple hidden regions')
-	const date = dayjs().utc()
-	const possibleRegions = regionMappings.filter(reg => reg[key] === value)
-	if (possibleRegions.length === 0) throw new Error(`getTimezoneByRegionKey: couldn't get region object for '${key}' === '${value}'`)
-	const region = possibleRegions[0]
-	const localDate = region.offset > 0 ? date.add(region.offset, 'hour') : date.subtract(Math.abs(region.offset), 'hour')
-	return `[${localDate.format('HH:mm')}]`
+	if (key === 'id' && value === '') throw new Error('getTimezoneByRegionKey: forbidden to get regions by id with empty id, would match multiple hidden regions');
+	const date = dayjs().utc();
+	const possibleRegions = regionMappings.filter(reg => reg[key] === value);
+	if (possibleRegions.length === 0) throw new Error(`getTimezoneByRegionKey: couldn't get region object for '${key}' === '${value}'`);
+	const region = possibleRegions[0];
+	const localDate = region.offset > 0 ? date.add(region.offset, 'hour') : date.subtract(Math.abs(region.offset), 'hour');
+	return `[${localDate.format('HH:mm')}]`;
 }
 
-function patchSettings() {
+function patchSettings(_userPrefs: UserPrefs) {
 	// hooking & binding credit: https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/preload/game-settings.ts
 	let interval: number | NodeJS.Timer = null;
 
@@ -255,25 +252,26 @@ function patchSettings() {
 
 		settingsWindow.getSettings = (...args: unknown[]) => {
 			const result: string = getSettingsHook(...args);
-			
+			if (!_userPrefs.regionTimezones) return result;
+
 			if (result.includes('window.setSetting("defaultRegion"') && result.match(regionOptionsRegex).length > 0) {
-				const optionsHTML = result.match(regionOptionsRegex)[0]
-				const optionElements = [...createElement('div', { innerHTML: optionsHTML }).children] as HTMLOptionElement[]
-				
+				const optionsHTML = result.match(regionOptionsRegex)[0];
+				const optionElements = [...createElement('div', { innerHTML: optionsHTML }).children] as HTMLOptionElement[];
+
 				for (let i = 0; i < optionElements.length; i++) {
 					const opt = optionElements[i];
-					opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`
+					opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
 				}
 
-				const tempHolder = document.createElement('div')
-				optionElements.forEach(opt => tempHolder.appendChild(opt))
+				const tempHolder = document.createElement('div');
+				optionElements.forEach(opt => tempHolder.appendChild(opt));
 
-				const patchedHTML = tempHolder.innerHTML
-				return result.replace(optionsHTML, patchedHTML )
+				const patchedHTML = tempHolder.innerHTML;
+				return result.replace(optionsHTML, patchedHTML);
 			}
 
-			return result
-		}
+			return result;
+		};
 	}
 
 	function waitForWindow0() {
