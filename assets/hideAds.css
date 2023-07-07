@@ -2,7 +2,8 @@
 #aHider,
 #adCon,
 #rightABox,
-#aContainer
+#aContainer,
+div#aContainer,
 #braveWarning {
     display: none !important
 }
