@@ -39,13 +39,20 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 	return renderReadySettings;
 }
 
-/*
- * this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
- * they are modified & extended to fit krunker
+/**
+ * each setting is defined here as a SettingsDesc object. check typescript intelliSense to see if you have all required props.
+ * some setting types, like 'sel' will have more required props, for example 'opts'.
+ * note: for each key in userPrefs, there should exist an entry under the same key here.
  * 
- * cat (category) is optional, omitting it will put it in the first (0th) category
- * desc (description) is optional, omitting it or leaving it "" will not render any description
- * simplest way to create a new setting is to add setting: {} as SettingsDescItem and you will get autocomplete for all needed stuff
+ * optional props and their defaults:
+ * desc (description): omitting it or leaving it "" will not render any description
+ * cat (category): omitting will put the setting in the first (0th) category
+ * instant: ommiting will not render an instant icon.
+ * refreshOnly: ommiting will not render a refresh-only icon
+ * 
+ * note: instant and refreshOnly are exclusive. only use one at a time
+ * note: settings will get rendered in the order you define them.
+ * based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
  */
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
@@ -137,7 +144,7 @@ function saveUserscriptTracker() {
 	writeFileSync(su.userscriptTrackerPath, JSON.stringify(su.userscriptTracker, null, 2), { encoding: 'utf-8' });
 }
 
-/** * creates a new Setting element */
+/** creates a new Setting element */
 class SettingElem {
 
 	// s-update is the class for element to watch
@@ -220,8 +227,7 @@ class SettingElem {
 					<input type="number" class="rb-input s-update sliderVal" name="${props.key}" 
 						autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
 					/>
-				</span>
-				`;
+				</span>`;
 				this.updateKey = 'valueAsNumber';
 				this.updateMethod = 'onchange';
 				break;
@@ -272,15 +278,17 @@ class SettingElem {
 
 		// parse & sanitize the value from our input element
 		let dirtyValue: UserPrefs[keyof UserPrefs] = target[this.updateKey];
+
 		if (this.props.type === 'multisel') {
 			dirtyValue = [...target.children]
 				.filter(child => child.querySelector('input:checked'))
 				.map(child => child.querySelector('.optName').textContent);
 		}
-		if (typeof dirtyValue === 'number') {
-			dirtyValue = Boolean(event) ? (event.target as HTMLInputElement).valueAsNumber : target.valueAsNumber;
+
+		if (this.props.type === 'num') {
+			dirtyValue = event ? (event.target as HTMLInputElement).valueAsNumber : target.valueAsNumber;
 			const slider = elem.querySelector('.s-update-secondary') as HTMLInputElement;
-			const setVal = (val: string) => { target.value = val; slider.value = val; }
+			const setVal = (val: string) => { target.value = val; slider.value = val; };
 			const updateUI = () => setVal(dirtyValue.toString());
 			if (Number.isNaN(dirtyValue)) {
 				setVal(userPrefs[this.props.key].toString());
@@ -288,8 +296,9 @@ class SettingElem {
 			}
 			if (hasOwn(this.props, 'min') && dirtyValue < this.props.min) { dirtyValue = this.props.min; updateUI(); }
 			if (hasOwn(this.props, 'max') && dirtyValue > this.props.max) { dirtyValue = this.props.max; updateUI(); }
-			updateUI();
+			updateUI(); // synchronize slider and number inputs visually
 		}
+
 		const value = dirtyValue; // so we don't accidentally mutate it later
 
 		if (callback === 'normal') {
