@@ -43,10 +43,6 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
  * this is based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
  * they are modified & extended to fit krunker
  * 
- * each setting has these things: title, type: {'bool' | 'sel' | 'heading' | 'text' | 'num'}, desc and safety(0-4)
- * some have some extra stuff, like selects have opts for options. 
- * you should get typescript autocomplete for those telling you what extra stuff is required.
- * 
  * cat (category) is optional, omitting it will put it in the first (0th) category
  * desc (description) is optional, omitting it or leaving it "" will not render any description
  * simplest way to create a new setting is to add setting: {} as SettingsDescItem and you will get autocomplete for all needed stuff
@@ -73,7 +69,7 @@ const settingsDesc: SettingsDesc = {
 	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
 	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, instant: true },
 	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, instant: true },
-	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 3600, safety: 0, cat: 2, instant: true },
+	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 480, safety: 0, cat: 2, instant: true },
 	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true },
 	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true, desc: 'if you set the criteria too strictly, matchmaker won\'t find anything' },
 
@@ -216,11 +212,16 @@ class SettingElem {
 			case 'num':
 				this.HTML += `<span class="setting-title">${props.title}</span>
 				<span class="setting-input-wrapper">
+					<div class="slidecontainer">
+						<input type="range" class="sliderM s-update-secondary" name="${props.key}"
+							value="${props.value}" min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
+						/>
+					</div>
 					<input type="number" class="rb-input s-update sliderVal" name="${props.key}" 
-						autocomplete="off" value="${props.value}" 
-						min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
+						autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
 					/>
-				</span>`;
+				</span>
+				`;
 				this.updateKey = 'valueAsNumber';
 				this.updateMethod = 'onchange';
 				break;
@@ -263,9 +264,9 @@ class SettingElem {
 
 	/**
 	 * update the settings when you change something in the gui
-	 * @param {{elem: HTMLElement, callback: 'normal'|Function}} elemAndCb
+	 * not sure if you can currently synthetically update the settings, but at that point just change userPrefs and re-render?
 	 */
-	update({ elem, callback }: { elem: HTMLElement; callback: 'normal' | 'userscript' | Function; }) {
+	update(elem: HTMLElement, callback: 'normal' | 'userscript' | Function, event?: InputEvent) {
 		if (this.updateKey === '') throw 'Invalid update key';
 		const target = elem.querySelector('.s-update') as HTMLInputElement;
 
@@ -277,13 +278,17 @@ class SettingElem {
 				.map(child => child.querySelector('.optName').textContent);
 		}
 		if (typeof dirtyValue === 'number') {
-			const updateUI = () => { target.value = dirtyValue.toString(); };
+			dirtyValue = Boolean(event) ? (event.target as HTMLInputElement).valueAsNumber : target.valueAsNumber;
+			const slider = elem.querySelector('.s-update-secondary') as HTMLInputElement;
+			const setVal = (val: string) => { target.value = val; slider.value = val; }
+			const updateUI = () => setVal(dirtyValue.toString());
 			if (Number.isNaN(dirtyValue)) {
-				target.value = userPrefs[this.props.key].toString();
+				setVal(userPrefs[this.props.key].toString());
 				return; // revert UI and don't apply this change;
 			}
 			if (hasOwn(this.props, 'min') && dirtyValue < this.props.min) { dirtyValue = this.props.min; updateUI(); }
 			if (hasOwn(this.props, 'max') && dirtyValue > this.props.max) { dirtyValue = this.props.max; updateUI(); }
+			updateUI();
 		}
 		const value = dirtyValue; // so we don't accidentally mutate it later
 
@@ -365,8 +370,8 @@ class SettingElem {
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
 
 		// @ts-ignore
-		wrapper[this.updateMethod] = () => {
-			this.update({ elem: wrapper, callback: this.props.callback });
+		wrapper[this.updateMethod] = (event: InputEvent) => {
+			this.update(wrapper, this.props.callback, event);
 		};
 
 		this.#wrapper = wrapper;
@@ -374,8 +379,6 @@ class SettingElem {
 	}
 
 }
-
-// i am insane for making this
 
 /** a settings generation helper. has some skeleton elements and methods that make them. purpose: prevents code duplication */
 const skeleton = {
@@ -400,13 +403,13 @@ const skeleton = {
 
 	/** wrapped safety warning icon (color gets applied through css) */
 	safetyIcon: (safety: string) => `
-	<span class="setting-desc desc-icon" title="${safety}">
+	<span class="desc-icon" title="${safety}">
 		<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M12 12.5ZM3.425 20.5Q2.9 20.5 2.65 20.05Q2.4 19.6 2.65 19.15L11.2 4.35Q11.475 3.9 12 3.9Q12.525 3.9 12.8 4.35L21.35 19.15Q21.6 19.6 21.35 20.05Q21.1 20.5 20.575 20.5ZM12 10.2Q11.675 10.2 11.463 10.412Q11.25 10.625 11.25 10.95V14.45Q11.25 14.75 11.463 14.975Q11.675 15.2 12 15.2Q12.325 15.2 12.538 14.975Q12.75 14.75 12.75 14.45V10.95Q12.75 10.625 12.538 10.412Q12.325 10.2 12 10.2ZM12 17.8Q12.35 17.8 12.575 17.575Q12.8 17.35 12.8 17Q12.8 16.65 12.575 16.425Q12.35 16.2 12 16.2Q11.65 16.2 11.425 16.425Q11.2 16.65 11.2 17Q11.2 17.35 11.425 17.575Q11.65 17.8 12 17.8ZM4.45 19H19.55L12 6Z"/></svg>
 	</span>`,
 
 	/** wrapped refresh icon (color gets applied through css) */
 	refreshIcon: (mode: 'instant' | 'refresh-icon') => `
-	<span class="setting-desc desc-icon ${mode}" title="${mode === 'instant' ? 'Applies instantly! (No refresh of page required)' : 'Refresh page to see changes'}">
+	<span class="desc-icon ${mode}" title="${mode === 'instant' ? 'Applies instantly! (No refresh of page required)' : 'Refresh page to see changes'}">
 		<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M12 6v1.79c0 .45.54.67.85.35l2.79-2.79c.2-.2.2-.51 0-.71l-2.79-2.79c-.31-.31-.85-.09-.85.36V4c-4.42 0-8 3.58-8 8 0 1.04.2 2.04.57 2.95.27.67 1.13.85 1.64.34.27-.27.38-.68.23-1.04C6.15 13.56 6 12.79 6 12c0-3.31 2.69-6 6-6zm5.79 2.71c-.27.27-.38.69-.23 1.04.28.7.44 1.46.44 2.25 0 3.31-2.69 6-6 6v-1.79c0-.45-.54-.67-.85-.35l-2.79 2.79c-.2.2-.2.51 0 .71l2.79 2.79c.31.31.85.09.85-.35V20c4.42 0 8-3.58 8-8 0-1.04-.2-2.04-.57-2.95-.27-.67-1.13-.85-1.64-.34z"/></svg>
 	</span>`,
 

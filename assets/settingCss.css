@@ -22,7 +22,15 @@
 	grid-template-areas: "icon title" "input input";
 }
 
-/* multiple select */
+/* type: num */
+.Crankshaft-settings .settName.num .setting-input-wrapper {
+	display: flex;
+}
+.Crankshaft-settings .settName.num .setting-input-wrapper .slidecontainer {
+	margin-top: -8px;
+}
+
+/* type: multisel */
 .crankshaft-multisel-parent {
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
@@ -46,14 +54,16 @@ span.optDescription {
     right: 0;
 }
 
-.Crankshaft-settings .settName .setting-title {
-	grid-area: title;
-}
 .Crankshaft-settings .settName.multisel label {
 	font-size: 1.1rem;
 }
 .Crankshaft-settings .settName.multisel input {
 	margin-left: .25rem;
+}
+
+/* general settings */
+.Crankshaft-settings .settName .setting-title {
+	grid-area: title;
 }
 
 .Crankshaft-settings .settName .s-update:disabled,
@@ -66,7 +76,7 @@ span.optDescription {
 	box-sizing: border-box;
 }
 
-.Crankshaft-settings .setting .setting-desc {
+.Crankshaft-settings .setting .desc-icon {
 	grid-area: icon;
 	cursor: pointer;
 	font-size: 1rem;
@@ -83,12 +93,12 @@ span.optDescription {
 	align-items: center;
 }
 
-.Crankshaft-settings .setting .setting-desc.instant {
+.Crankshaft-settings .setting .desc-icon.instant {
 	background-color: rgba(1, 89, 220, 0.16);
 	border: 2px solid rgba(3, 133, 255, 0.81);
 }
 
-.Crankshaft-settings .setting .setting-desc.instant svg path {
+.Crankshaft-settings .setting .desc-icon.instant svg path {
 	color: #0385ff;
 	fill: currentColor;
 }
@@ -100,49 +110,49 @@ span.optDescription {
 	grid-area: input;
 }
 
-.Crankshaft-settings .setting.safety-1 .setting-desc,
-.Crankshaft-settings .setting .setting-desc.refresh-icon {
+.Crankshaft-settings .setting.safety-1 .desc-icon,
+.Crankshaft-settings .setting .desc-icon.refresh-icon {
 	background-color: rgba(99, 99, 99, 0.16);
 	border: 2px solid rgba(78, 78, 78, 0.81);
 }
 
-.Crankshaft-settings .setting.safety-1 .setting-desc svg path,
-.Crankshaft-settings .setting .setting-desc.refresh-icon svg path {
+.Crankshaft-settings .setting.safety-1 .desc-icon svg path,
+.Crankshaft-settings .setting .desc-icon.refresh-icon svg path {
 	color: #969696;
 	fill: currentColor;
 }
 
-.Crankshaft-settings .setting.safety-2 .setting-desc {
+.Crankshaft-settings .setting.safety-2 .desc-icon {
 	background-color: rgba(220, 180, 1, 0.16);
 	border: 2px solid rgba(241, 186, 6, 0.81);
 }
 
-.Crankshaft-settings .setting.safety-2 .setting-desc svg path {
+.Crankshaft-settings .setting.safety-2 .desc-icon svg path {
 	color: #ffd903;
 	fill: currentColor;
 }
 
-.Crankshaft-settings .setting.safety-3 .setting-desc {
+.Crankshaft-settings .setting.safety-3 .desc-icon {
 	background-color: rgba(220, 118, 1, 0.16);
 	border: 2px solid rgba(241, 131, 6, 0.81);
 }
 
-.Crankshaft-settings .setting.safety-3 .setting-desc svg path {
+.Crankshaft-settings .setting.safety-3 .desc-icon svg path {
 	color: #ff9203;
 	fill: currentColor;
 }
 
-.Crankshaft-settings .setting.safety-4 .setting-desc {
+.Crankshaft-settings .setting.safety-4 .desc-icon {
 	background-color: rgba(220, 17, 1, 0.16);
 	border: 2px solid rgba(239, 6, 6, 0.81);
 }
 
-.Crankshaft-settings .setting.safety-4 .setting-desc svg path {
+.Crankshaft-settings .setting.safety-4 .desc-icon svg path {
 	color: #ff0303;
 	fill: currentColor;
 }
 
-.setting-desc {
+.desc-icon {
 	position: relative;
 }
 
