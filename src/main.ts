@@ -273,7 +273,7 @@ app.on('ready', () => {
 			for (const item of conf) filter.urls.push(item);
 		}
 		mainWindow.webContents.session.webRequest.onBeforeRequest(filter, (details, callback) => {
-			if (userPrefs.hideAds !== 'block') {
+			if (userPrefs.hideAds !== 'block' || filter.urls.length === 0) {
 				callback({ cancel: false });
 				return;
 			}
