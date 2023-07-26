@@ -208,7 +208,7 @@ export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
 function patchSettings(_userPrefs: UserPrefs) {
 	// hooking & binding credit: https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/preload/game-settings.ts
 	let interval: number | NodeJS.Timer = null;
-	strippedConsole.log('waiting to hook settings...')
+	strippedConsole.log('waiting to hook settings...');
 
 	function hookSettings() {
 		const settingsWindow = window.windows[0];
