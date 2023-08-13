@@ -62,7 +62,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 ![matchmaker](./assets/matchmaker_screenshot.png)
 
 ## building from source
-1. **you have to have [git](https://git-scm.com/downloads) and [nodejs](https://nodejs.org/en/download/) installed**.
+1. **you have to have [git](https://git-scm.com/downloads) and [nodejs](https://nodejs.org/en/download/) 12+ installed**.
    - if you're planning on contributing and not just building from source, use `pnpm` ([link](https://pnpm.io) or `npm i -g pnpm`) instead of `npm`.
    - for `pnpm`, you don't have to pass `--openssl_fips=''` when installing
 2. **installation**:
