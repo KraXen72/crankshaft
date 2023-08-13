@@ -62,22 +62,23 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 ![matchmaker](./assets/matchmaker_screenshot.png)
 
 ## building from source
-1. you have to have [`git`](https://git-scm.com/downloads), [`nodejs`](https://nodejs.org/en/download/) installed.
-   - if you're planning on contributing and not just building from source, use `pnpm` ([link](https://pnpm.io) or `npm i -g pnpm`) instead of `npm`
-2. installation:
+1. **you have to have [git](https://git-scm.com/downloads) and [nodejs](https://nodejs.org/en/download/) installed**.
+   - if you're planning on contributing and not just building from source, use `pnpm` ([link](https://pnpm.io) or `npm i -g pnpm`) instead of `npm`.
+   - for `pnpm`, you don't have to pass `--openssl_fips=''` when installing
+2. **installation**:
    - `git clone https://github.com/KraXen72/crankshaft`
    - `cd crankshaft`
-   - `npm i ` if you're only building, not contributing
+   - `npm i --openssl_fips=''`
 3. **building from source**: `npm run dist`
+  
 ### contributing
 1. follow previous steps 1 & 2
-2. make your changes + running from source: `npm run dev`/`npm run start`
+2. make your changes + running from source: `pnpm dev`/`pnpm start`
    - make sure to run the code through the configured eslint before contributing. (vs code will enable it if you have the extension)
-3. after your changes, try it out with `npm run testbuild` - this will minify the code & run the app.
+3. after your changes, try it out with `pnpm testbuild` - this will minify the code & run the app.
    - until automated tests are added, try to manually test it works even after the code is minified. if it does not, you're probably doing something wrong
 - please report any bugs/feature requests in the Issues.
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.
-- note: you don't necesarily have to use `pnpm` over `npm` if building from source, but no support will be provided unless you are using `pnpm`. You have to use `pnpm` if you did anyth
 
 ### credits
 - [Creepycats](https://github.com/creepycats) released [Gatoclient](https://github.com/Gatohost/gatoclient), which was based on top of [idkr](https://github.com/idkr-client/idkr).
