@@ -73,7 +73,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
   
 ### contributing
 1. follow previous steps 1 & 2
-2. make your changes + running from source: `pnpm dev`/`pnpm start`
+2. make your changes + running from source: `pnpm start`/`pnpm dev` (rebuilds on changes, refresh krunker with `F6`)
    - make sure to run the code through the configured eslint before contributing. (vs code will enable it if you have the extension)
 3. after your changes, try it out with `pnpm testbuild` - this will minify the code & run the app.
    - until automated tests are added, try to manually test it works even after the code is minified. if it does not, you're probably doing something wrong
