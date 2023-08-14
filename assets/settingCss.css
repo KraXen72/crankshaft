@@ -22,6 +22,16 @@
 	grid-template-areas: "icon title" "input input";
 }
 
+.Crankshaft-settings .settName.crankshaft-button-holder { 
+	grid-template-columns: 1fr;
+	grid-auto-columns: min-content;
+	column-gap: 0.25rem;
+	grid-template-areas: unset;
+	grid-auto-flow: column;
+}
+.Crankshaft-settings .crankshaft-button-holder .buttons-title, .material-icons { color: inherit; }
+.Crankshaft-settings .crankshaft-button-holder .settingsBtn { width: max-content }
+
 /* type: num */
 .Crankshaft-settings .settName.num .setting-input-wrapper {
 	display: flex;

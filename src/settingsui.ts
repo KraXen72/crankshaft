@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
-import { ipcRenderer } from 'electron'; // add app if crashes
+import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { classListSet, createElement, haveSameContents, toggleSettingCSS, hasOwn } from './utils';
-import { styleSettingsCSS, getTimezoneByRegionKey } from './preload';
+import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -12,6 +12,7 @@ enum RefreshEnum {
 	refresh,
 	reloadApp
 }
+interface IPaths { [path: string]: string }
 
 /* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
@@ -19,13 +20,15 @@ let userPrefsPath: string;
 let userPrefsCache: UserPrefs; // the userprefs on path
 let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
 let refreshNotifElement: HTMLElement;
+let paths: IPaths;
 /* eslint-disable init-declarations */
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
-ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_userPrefsPath: string, recieved_userPrefs: UserPrefs) => {
+ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
-	userPrefsPath = recieved_userPrefsPath;
+	userPrefsPath = recieved_paths.settingsPath;
+	paths = recieved_paths;
 	userPrefs = recieved_userPrefs;
 	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
 });
@@ -444,6 +447,16 @@ const skeleton = {
 			default:
 				return '';
 		}
+	},
+
+	settingButton: (icon: string, text: string, callback: (e?: MouseEvent) => void, customTitle?: string ) => {
+		const button = createElement('div', {
+			innerHTML: `<span class="material-icons">${icon}</span> ${text}`,
+			class: ['settingsBtn'],
+			title: customTitle ?? text
+		})
+		button.addEventListener('click', callback)
+		return button
 	}
 };
 
@@ -453,6 +466,7 @@ export function renderSettings() {
 	settHolder.textContent = '';
 
 	settHolder.classList.add('Crankshaft-settings');
+
 	settHolder.appendChild(skeleton.catHedElem(categoryNames[0].name));
 	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].cat, skeleton.notice('These settings need a client restart to work.')));
 
@@ -479,7 +493,6 @@ export function renderSettings() {
 			csSettings.querySelector('.setBodH.mainSettings').appendChild(settElemMade);
 		}
 	}
-
 
 	if (userPrefs.userscripts) {
 		csSettings.appendChild(skeleton.catHedElem('Userscripts'));
@@ -544,4 +557,17 @@ export function renderSettings() {
 		try { header.removeEventListener('click', collapseCallback); } catch (e) { }
 		header.addEventListener('click', collapseCallback);
 	});
+
+	function _openPath(e: MouseEvent, path: string) {
+		e.stopPropagation();
+		shell.openPath(path)
+	}
+
+	const buttonsHolder = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<span class="buttons-title">Quick open:</span>` })
+	buttonsHolder.appendChild(skeleton.settingButton('file_open', 'Settings file', (e) => _openPath(e, userPrefsPath)))
+	buttonsHolder.appendChild(skeleton.settingButton('filter_list', 'Filters file', (e) => _openPath(e, paths.filtersPath)))
+	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Swapper', (e) => _openPath(e, paths.swapperPath)))
+	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Scripts', (e) => _openPath(e, paths.userscriptsPath)))
+	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Crankshaft folder', (e) => _openPath(e, paths.configPath)))
+	document.querySelector(`.setBodH.Crankshaft-setBodH`).prepend(buttonsHolder)
 }

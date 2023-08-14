@@ -1,5 +1,6 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { copySync, emptyDirSync, unlinkSync } from 'fs-extra';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
@@ -7,11 +8,32 @@ import Swapper from './resourceswapper';
 
 /// <reference path="global.d.ts" />
 
-const docsPath = app.getPath('documents');
-const swapperPath = pathJoin(docsPath, 'Crankshaft/swapper');
-const settingsPath = pathJoin(docsPath, 'Crankshaft/settings.json');
-const filtersPath = pathJoin(docsPath, 'Crankshaft/filters.txt');
-const userscriptsPath = pathJoin(docsPath, 'Crankshaft/scripts');
+const userData = pathJoin(app.getPath('userData'), 'Crankshaft');
+const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 settings path
+let configPath = docsPath;
+
+// TODO test & implement
+// TODO change paths in docs
+// TODO make crankshaft server announcement about backup
+// TODO mention minor breaking change in changelog & mention backup
+// let migratingSettingsPath = false;
+// if (existsSync(docsPath) && !existsSync(pathJoin(docsPath, 'settings have been moved.txt'))) {
+// 	console.log(`Migrating old settings to new path ${userData}`)
+
+// 	copySync(docsPath, userData)
+// 	emptyDirSync(docsPath)
+// 	writeFileSync(pathJoin(
+// 		docsPath, 'settings have been moved.txt'), 
+// 		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.
+// 		Settings, userscripts and swapper have been moved to '${userData}'.
+// 		You can verify that they are indeed there, and then safely delete this directory.`
+// 	)
+// }
+
+const swapperPath = pathJoin(configPath, 'swapper');
+const settingsPath = pathJoin(configPath, 'settings.json');
+const filtersPath = pathJoin(configPath, 'filters.txt');
+const userscriptsPath = pathJoin(configPath, 'scripts');
 const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
 
 app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36';
@@ -50,6 +72,11 @@ const settingsSkeleton = {
 	regionTimezones: false
 };
 
+const userPrefs = settingsSkeleton;
+
+if (!existsSync(configPath)) mkdirSync(configPath, { recursive: true });
+if (!existsSync(settingsPath)) writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: 'utf-8', flag: 'wx' });
+
 if (!existsSync(swapperPath)) mkdirSync(swapperPath, { recursive: true });
 if (!existsSync(userscriptsPath)) mkdirSync(userscriptsPath, { recursive: true });
 if (!existsSync(userscriptTrackerPath)) writeFileSync(userscriptTrackerPath, '{}', { encoding: 'utf-8' });
@@ -63,11 +90,8 @@ if (!existsSync(filtersPath)) {
 `);
 }
 
-// Before we can read the settings, we need to make sure they exist, if they don't, then we create a template
-if (!existsSync(settingsPath)) writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: 'utf-8', flag: 'wx' });
-
-const userPrefs = settingsSkeleton;
 Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, { encoding: 'utf-8' })));
+
 
 // convert legacy settings files to newer formats
 let modifiedSettings = false;
@@ -99,7 +123,8 @@ ipcMain.on('initializeUserscripts', () => {
 
 // initial request of settings to populate the settingsUI
 ipcMain.on('settingsUI_requests_userPrefs', () => {
-	mainWindow.webContents.send('m_userPrefs_for_settingsUI', settingsPath, userPrefs);
+	const paths = { settingsPath, swapperPath, filtersPath, configPath, userscriptsPath }
+	mainWindow.webContents.send('m_userPrefs_for_settingsUI', paths, userPrefs);
 });
 
 // preload requests the latest settings to feed into matchmaker. IPC is probably faster than an I/O read? not that it really matters.
