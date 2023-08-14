@@ -41,7 +41,7 @@ const buildOptions = {
 
 async function watch(extraOptions) {
 	const ctx = await esbuild.context(Object.assign(buildOptions, extraOptions))
-	await ctx.watch({  })
+	await ctx.watch()
 }
 
 if (watching) {
