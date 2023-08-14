@@ -15,8 +15,8 @@ dependencies:
     specifier: ^4.0.1
     version: 4.0.1
   fs-extra:
-    specifier: ^11.1.1
-    version: 11.1.1
+    specifier: 10.1.0
+    version: 10.1.0
   userscript-meta:
     specifier: ^1.0.1
     version: 1.0.1
@@ -32,10 +32,10 @@ devDependencies:
     specifier: ^3.0.0
     version: 3.0.0
   electron:
-    specifier: ^10.4.7
+    specifier: 10.4.7
     version: 10.4.7
   electron-builder:
-    specifier: ^23.6.0
+    specifier: 23.6.0
     version: 23.6.0
   esbuild:
     specifier: ^0.18.5
@@ -2187,16 +2187,6 @@ packages:
       graceful-fs: 4.2.11
       jsonfile: 6.1.0
       universalify: 2.0.0
-    dev: true
-
-  /fs-extra@11.1.1:
-    resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
-    engines: {node: '>=14.14'}
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 6.1.0
-      universalify: 2.0.0
-    dev: false
 
   /fs-extra@8.1.0:
     resolution: {integrity: sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==}
