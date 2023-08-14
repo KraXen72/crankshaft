@@ -36,17 +36,16 @@ const buildOptions = {
 		js: "\"use strict\";"
 	},
 	outdir: 'app',
-	tsconfig: 'tsconfig.json',
-	plugins: [ buildLogger ]
+	tsconfig: 'tsconfig.json'
 }
 
-async function watch() {
-	const ctx = await esbuild.context(buildOptions)
+async function watch(extraOptions) {
+	const ctx = await esbuild.context(Object.assign(buildOptions, extraOptions))
 	await ctx.watch({  })
 }
 
 if (watching) {
-	watch();
+	watch({ plugins: [ buildLogger ] });
 } else {
 	esbuild.buildSync(buildOptions)
 }
