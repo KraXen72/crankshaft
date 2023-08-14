@@ -10,16 +10,18 @@ import Swapper from './resourceswapper';
 
 const userData = pathJoin(app.getPath('userData'), 'config');
 const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 settings path
-let configPath = userData;
+const configPath = userData;
 
-// TODO change paths in docs
-// TODO make crankshaft server announcement about backup
-// TODO mention minor breaking change in changelog & mention backup
+/*
+ * TODO change paths in docs
+ * TODO make crankshaft server announcement about backup
+ * TODO mention minor breaking change in changelog & mention backup
+ */
 function migrateSettings() {
 	if (existsSync(pathJoin(docsPath, 'settings moved.txt'))) return;
 	if (readdirSync(docsPath).length === 0) return;
 
-	console.log(`Migrating old settings to new path ${userData}`)
+	console.log(`Migrating old settings to new path ${userData}`);
 	if (existsSync(userData) && readdirSync(userData).length !== 0) {
 		const error = new Error(`Cannot migrate settings!\n
 		From (old folder): ${docsPath}
@@ -30,22 +32,20 @@ function migrateSettings() {
 		
 		Crankshaft v${app.getVersion()} no longer supports settings in Documents due to inconsistent permissions.
 		
-		Restart crankshaft afterwards.`)
+		Restart crankshaft afterwards.`);
 		error.stack = null;
 		throw error;
 	}
 
 	emptyDirSync(docsPath);
 	copySync(docsPath, userData);
-	writeFileSync(pathJoin(
-		docsPath, 'settings moved.txt'), 
+	writeFileSync(pathJoin(docsPath, 'settings moved.txt'),
 		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.\n
 Settings, userscripts and swapper have been moved to '${userData}'.\n
-You can verify that they are indeed there, and then safely delete this directory.`
-	)
+You can verify that they are indeed there, and then safely delete this directory.`);
 }
 
-if (existsSync(docsPath)) migrateSettings()
+if (existsSync(docsPath)) migrateSettings();
 
 const swapperPath = pathJoin(configPath, 'swapper');
 const settingsPath = pathJoin(configPath, 'settings.json');
@@ -140,7 +140,7 @@ ipcMain.on('initializeUserscripts', () => {
 
 // initial request of settings to populate the settingsUI
 ipcMain.on('settingsUI_requests_userPrefs', () => {
-	const paths = { settingsPath, swapperPath, filtersPath, configPath, userscriptsPath }
+	const paths = { settingsPath, swapperPath, filtersPath, configPath, userscriptsPath };
 	mainWindow.webContents.send('m_userPrefs_for_settingsUI', paths, userPrefs);
 });
 

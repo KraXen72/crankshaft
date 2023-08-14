@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { classListSet, createElement, haveSameContents, toggleSettingCSS, hasOwn } from './utils';
-import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
+import { styleSettingsCSS, getTimezoneByRegionKey } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -449,14 +449,14 @@ const skeleton = {
 		}
 	},
 
-	settingButton: (icon: string, text: string, callback: (e?: MouseEvent) => void, customTitle?: string ) => {
+	settingButton: (icon: string, text: string, callback: (e?: MouseEvent) => void, customTitle?: string) => {
 		const button = createElement('div', {
 			innerHTML: `<span class="material-icons">${icon}</span> ${text}`,
 			class: ['settingsBtn'],
 			title: customTitle ?? text
-		})
-		button.addEventListener('click', callback)
-		return button
+		});
+		button.addEventListener('click', callback);
+		return button;
 	}
 };
 
@@ -558,16 +558,16 @@ export function renderSettings() {
 		header.addEventListener('click', collapseCallback);
 	});
 
-	function _openPath(e: MouseEvent, path: string) {
+	function openPath(e: MouseEvent, path: string) {
 		e.stopPropagation();
-		shell.openPath(path)
+		shell.openPath(path);
 	}
 
-	const buttonsHolder = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<span class="buttons-title">Quick open:</span>` })
-	buttonsHolder.appendChild(skeleton.settingButton('file_open', 'Settings file', (e) => _openPath(e, userPrefsPath)))
-	buttonsHolder.appendChild(skeleton.settingButton('filter_list', 'Filters file', (e) => _openPath(e, paths.filtersPath)))
-	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Swapper', (e) => _openPath(e, paths.swapperPath)))
-	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Scripts', (e) => _openPath(e, paths.userscriptsPath)))
-	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Crankshaft folder', (e) => _openPath(e, paths.configPath)))
-	document.querySelector(`.setBodH.Crankshaft-setBodH`).prepend(buttonsHolder)
+	const buttonsHolder = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: '<span class="buttons-title">Quick open:</span>' });
+	buttonsHolder.appendChild(skeleton.settingButton('file_open', 'Settings file', e => openPath(e, userPrefsPath)));
+	buttonsHolder.appendChild(skeleton.settingButton('filter_list', 'Filters file', e => openPath(e, paths.filtersPath)));
+	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Swapper', e => openPath(e, paths.swapperPath)));
+	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Scripts', e => openPath(e, paths.userscriptsPath)));
+	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Crankshaft folder', e => openPath(e, paths.configPath)));
+	document.querySelector('.setBodH.Crankshaft-setBodH').prepend(buttonsHolder);
 }
