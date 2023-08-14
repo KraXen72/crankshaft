@@ -8,7 +8,8 @@
 		"postinstall": "electron-builder install-app-deps",
 		"build": "node esbuilder.js --build",
 		"start": "node esbuilder.js && electron .",
-		"dev": "pnpm run start",
+		"watch": "node esbuilder.js --watch",
+		"dev": "concurrently --kill-others \"node esbuilder.js --watch\" \"electron .\"",
 		"testbuild": "pnpm run build && electron .",
 		"dist": "pnpm run build && electron-builder",
 		"release": "pnpm run build && electron-builder --publish always",
@@ -26,6 +27,8 @@
 		"url": "https://github.com/KraXen72/crankshaft.git"
 	},
 	"devDependencies": {
+		"@types/fs-extra": "^11.0.1",
+		"concurrently": "^8.2.0",
 		"conventional-changelog-cli": "^3.0.0",
 		"electron": "^10.4.7",
 		"electron-builder": "^23.6.0",
@@ -40,6 +43,7 @@
 		"compare-versions": "^5.0.3",
 		"dayjs": "^1.11.8",
 		"discord-rpc": "^4.0.1",
+		"fs-extra": "^11.1.1",
 		"userscript-meta": "^1.0.1"
 	}
 }
