@@ -13,22 +13,24 @@ jobs:
     steps:
       - name: Install g++-multilib
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt update && sudo apt install g++-multilib
+        run: |
+          sudo apt update
+          sudo apt install g++-multilib
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '16.14.2'
+          node-version: 'latest'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install --global pnpm
+          pnpm install
 
       - name: Build and release if the draft exists
-        run: npm run dist
+        run: pnpm run dist
         env:
           GH_TOKEN: ${{ secrets.github_token }}
-  
-  
