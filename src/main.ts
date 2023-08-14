@@ -1,6 +1,6 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { copySync, emptyDirSync, unlinkSync } from 'fs-extra';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
+import { copySync, emptyDirSync } from 'fs-extra';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
@@ -8,27 +8,44 @@ import Swapper from './resourceswapper';
 
 /// <reference path="global.d.ts" />
 
-const userData = pathJoin(app.getPath('userData'), 'Crankshaft');
+const userData = pathJoin(app.getPath('userData'), 'config');
 const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 settings path
-let configPath = docsPath;
+let configPath = userData;
 
-// TODO test & implement
 // TODO change paths in docs
 // TODO make crankshaft server announcement about backup
 // TODO mention minor breaking change in changelog & mention backup
-// let migratingSettingsPath = false;
-// if (existsSync(docsPath) && !existsSync(pathJoin(docsPath, 'settings have been moved.txt'))) {
-// 	console.log(`Migrating old settings to new path ${userData}`)
+function migrateSettings() {
+	if (existsSync(pathJoin(docsPath, 'settings moved.txt'))) return;
+	if (readdirSync(docsPath).length === 0) return;
 
-// 	copySync(docsPath, userData)
-// 	emptyDirSync(docsPath)
-// 	writeFileSync(pathJoin(
-// 		docsPath, 'settings have been moved.txt'), 
-// 		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.
-// 		Settings, userscripts and swapper have been moved to '${userData}'.
-// 		You can verify that they are indeed there, and then safely delete this directory.`
-// 	)
-// }
+	console.log(`Migrating old settings to new path ${userData}`)
+	if (existsSync(userData) && readdirSync(userData).length !== 0) {
+		const error = new Error(`Cannot migrate settings!\n
+		From (old folder): ${docsPath}
+		To (new folder): ${userData}
+
+		There are files in both directories!
+		Make sure your actual settings, swapper & scripts are in the new folder & delete stuff from the old one.
+		
+		Crankshaft v${app.getVersion()} no longer supports settings in Documents due to inconsistent permissions.
+		
+		Restart crankshaft afterwards.`)
+		error.stack = null;
+		throw error;
+	}
+
+	emptyDirSync(docsPath);
+	copySync(docsPath, userData);
+	writeFileSync(pathJoin(
+		docsPath, 'settings moved.txt'), 
+		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.\n
+Settings, userscripts and swapper have been moved to '${userData}'.\n
+You can verify that they are indeed there, and then safely delete this directory.`
+	)
+}
+
+if (existsSync(docsPath)) migrateSettings()
 
 const swapperPath = pathJoin(configPath, 'swapper');
 const settingsPath = pathJoin(configPath, 'settings.json');
