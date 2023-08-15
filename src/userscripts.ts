@@ -4,6 +4,8 @@ import { ipcRenderer } from 'electron';
 import { strippedConsole } from './preload';
 import { userscriptToggleCSS } from './utils';
 
+/// <reference path="global.d.ts" />
+
 /** sharedUserscriptData */
 export const su = {
 	userscriptsPath: '',
