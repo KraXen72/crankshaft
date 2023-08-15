@@ -24,6 +24,7 @@ const buildOptions = {
 		'src/switches.ts',
 		'src/userscripts.ts',
 		'src/matchmaker.ts',
+		'src/utils_node.ts',
 		'src/utils.ts',
 	],
 	bundle: false,

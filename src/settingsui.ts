@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { writeFileSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
-import { classListSet, createElement, haveSameContents, toggleSettingCSS, hasOwn } from './utils';
+import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
@@ -31,6 +31,10 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	paths = recieved_paths;
 	userPrefs = recieved_userPrefs;
 	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
+
+	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) }
+	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) }
+	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) }
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -40,6 +44,11 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 		.map(obj => ({ callback, value: data[obj.key], ...obj })); // adds value (from the data object) and callback ('normal' by default)
 
 	return renderReadySettings;
+}
+
+function openPath(e: MouseEvent, path: string) {
+	e.stopPropagation();
+	shell.openPath(path);
 }
 
 /**
@@ -62,12 +71,12 @@ const settingsDesc: SettingsDesc = {
 	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'd3d11', 'd3d9', 'd3d11on12', 'vulkan'], cat: 0 },
 	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', 'borderless'] },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
-	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. Reads Documents/Crankshaft/swapper', safety: 0, cat: 0 },
+	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. ', safety: 0, cat: 0 },
 	discordRPC: { title: 'Discord Rich Presence', type: 'bool', desc: 'Enable Discord Rich Presence. Shows Gamemode, Map, Class and Skin', safety: 0, cat: 0 },
 	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC. No effect if RPC is off.', safety: 0, cat: 0, instant: true },
 	hideAds: { title: 'Hide/Block Ads', type: 'sel', desc: 'With \'hide\' you can still claim free KR. Using \'block\' also blocks trackers.', safety: 0, cat: 0, refreshOnly: true, opts: ['block', 'hide', 'off'] },
-	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. Reads Documents/Crankshaft/filters.txt', safety: 0, cat: 0, refreshOnly: true },
-	userscripts: { title: 'Userscript support', type: 'bool', desc: 'Enable userscript support. place .js files in Documents/Crankshaft/scripts', safety: 1, cat: 0 },
+	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. ', safety: 0, cat: 0, refreshOnly: true },
+	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety:1, cat:0 },
 
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -166,6 +175,7 @@ class SettingElem {
 	#disabled: boolean;
 
 	constructor(props: RenderReadySetting) {
+
 		/** @type {Object} save the props from constructor to this class (instance) */
 		this.props = props;
 
@@ -311,7 +321,7 @@ class SettingElem {
 			if (this.props.key === 'hideAds') {
 				const adsHidden = value === 'hide' || value === 'block';
 				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, adsHidden);
-				classListSet(document.getElementById('hiddenClasses'), adsHidden, 'hiddenClasses-hideAds-bottomOffset');
+				document.getElementById('hiddenClasses').classList.toggle('hiddenClasses-hideAds-bottomOffset', adsHidden);
 			}
 
 			// you can add custom instant refresh callbacks for settings here
@@ -372,12 +382,19 @@ class SettingElem {
 		if (this.#wrapper !== false) return this.#wrapper; // return the element if already initialized
 
 		// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
+		const classes = ['setting', 'settName', `safety-${this.props.safety}`, this.type ]
+		if (this.props.button) classes.push('has-button')
+
 		const wrapper = createElement('div', {
-			class: ['setting', 'settName', `safety-${this.props.safety}`, this.props.type],
+			class: classes,
 			id: `settingElem-${this.props.key}`,
 			innerHTML: this.HTML
 		});
 
+		if (this.props.button) {  
+			const { icon, text, callback } = this.props.button;
+			wrapper.appendChild(skeleton.settingButton(icon, text, callback, this.props.button.customTitle ?? void 0)) 
+		}
 		if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value;
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
 
@@ -500,7 +517,7 @@ export function renderSettings() {
 			csSettings.appendChild(skeleton.catBodElem('userscripts', skeleton.notice('NOTE: refresh page to see changes', { iconHTML: skeleton.refreshIcon('refresh-icon') })));
 		} else {
 			csSettings.appendChild(skeleton.catBodElem('userscripts', skeleton.notice('No userscripts...',
-				{ desc: 'Go to the Crankshaft <a href="https://github.com/KraXen72/crankshaft#userscripts">README.md</a> to download some made by the client dev.' })));
+				{ desc: `Go to the Crankshaft <a href="https://github.com/${repoID}#userscripts">README.md</a> to download some made by the client dev.` })));
 		}
 
 		const userscriptSettings: RenderReadySetting[] = su.userscripts
@@ -558,16 +575,8 @@ export function renderSettings() {
 		header.addEventListener('click', collapseCallback);
 	});
 
-	function openPath(e: MouseEvent, path: string) {
-		e.stopPropagation();
-		shell.openPath(path);
-	}
-
 	const buttonsHolder = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: '<span class="buttons-title">Quick open:</span>' });
 	buttonsHolder.appendChild(skeleton.settingButton('file_open', 'Settings file', e => openPath(e, userPrefsPath)));
-	buttonsHolder.appendChild(skeleton.settingButton('filter_list', 'Filters file', e => openPath(e, paths.filtersPath)));
-	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Swapper', e => openPath(e, paths.swapperPath)));
-	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Scripts', e => openPath(e, paths.userscriptsPath)));
 	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Crankshaft folder', e => openPath(e, paths.configPath)));
 	document.querySelector('.setBodH.Crankshaft-setBodH').prepend(buttonsHolder);
 }

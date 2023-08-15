@@ -27,7 +27,6 @@
 		"url": "https://github.com/KraXen72/crankshaft.git"
 	},
 	"devDependencies": {
-		"@types/fs-extra": "^11.0.1",
 		"concurrently": "^8.2.0",
 		"conventional-changelog-cli": "^3.0.0",
 		"electron": "10.4.7",
@@ -43,7 +42,6 @@
 		"compare-versions": "^6.1.0",
 		"dayjs": "^1.11.9",
 		"discord-rpc": "^4.0.1",
-		"fs-extra": "11.1.1",
 		"userscript-meta": "^1.0.1"
 	}
 }

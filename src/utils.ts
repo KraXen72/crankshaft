@@ -11,6 +11,9 @@ export const injectSettingsCSS = (css: string, identifier = 'settings') => {
 	webFrame.insertCSS(css);
 };
 
+export const hasOwn = (object: Object, key: string) => Object.prototype.hasOwnProperty.call(object, key);
+export const repoID = 'KraXen72/crankshaft';
+
 // create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js
 /**
  * create a dom element given an object of properties
@@ -131,11 +134,3 @@ export function haveSameContents(array1: any[], array2: any[]) {
 	for (const value of new Set([...array1, ...array2])) if (array1.filter(e => e === value).length !== array2.filter(e => e === value).length) return false;
 	return true;
 }
-
-/** add/remove class(es) to/from an element based on a boolean*/
-export function classListSet(element: HTMLElement, value: boolean, ...classNames: string[]) {
-	if (value) element.classList.add(...classNames);
-	else element.classList.remove(...classNames);
-}
-
-export const hasOwn = (object: Object, key: string) => Object.prototype.hasOwnProperty.call(object, key);

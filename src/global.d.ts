@@ -76,13 +76,21 @@ interface Window {
 type Callbacks = 'normal' | 'userscript' | Function;
 type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'num';
 
+interface settingExtraButton { 
+	icon: string, 
+	text: string, 
+	callback: (e?: MouseEvent) => void, 
+	customTitle?: string
+}
+
 interface SettingItemGeneric {
 	title: string;
 	desc?: string;
 	safety: number;
 	type: ValidTypes;
+	button?: settingExtraButton;
 
-	// category
+	/** category */
 	cat?: number;
 
 	/** applies instantly */
@@ -135,7 +143,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 	key: string;
 	callback: Callbacks;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-anya
 	value: any;
 
 	// an optional unload function (for now for userscripts)

@@ -12,14 +12,28 @@
 	display: grid;
 	grid-auto-columns: 1fr;
 	grid-template-columns: 0fr 1fr 0fr;
-	grid-template-areas: "icon title input";
-	grid-template-rows: 0fr;
+	grid-template-areas: 
+	"icon title input"
+	"desc desc desc";
+	grid-template-rows: 0fr min-content;
 	align-items: center;
 }
 .Crankshaft-settings .settName.multisel {
 	grid-template-rows: min-content 1fr;
 	grid-template-columns: 0fr 1fr;
-	grid-template-areas: "icon title" "input input";
+	grid-template-areas: 
+	"icon title" 
+	"input input";
+}
+.Crankshaft-settings .settName.has-button {
+	grid-template-areas: 
+	"icon title button input"
+	"desc desc desc desc";
+	grid-template-columns: 0fr 1fr min-content 0fr;
+}
+.Crankshaft-settings .settName.has-button .settingsBtn { 
+	grid-area: button;
+	margin: 0 .5rem;
 }
 
 .Crankshaft-settings .settName.crankshaft-button-holder { 
@@ -27,10 +41,14 @@
 	grid-auto-columns: min-content;
 	column-gap: 0.25rem;
 	grid-template-areas: unset;
+	grid-template-rows: 0fr;
 	grid-auto-flow: column;
 }
 .Crankshaft-settings .crankshaft-button-holder .buttons-title, .material-icons { color: inherit; }
-.Crankshaft-settings .crankshaft-button-holder .settingsBtn { width: max-content }
+.Crankshaft-settings .crankshaft-button-holder .settingsBtn, 
+.Crankshaft-settings .settName.has-button .settingsBtn { 
+	width: max-content 
+}
 
 /* type: num */
 .Crankshaft-settings .settName.num .setting-input-wrapper {
@@ -176,7 +194,7 @@ span.optDescription {
 	overflow: hidden;
 	max-height: 500px;
 	margin-top: 5px;
-	grid-area: 2/1/3/4;
+	grid-area: desc;
 }
 
 .setting-desc-new a {

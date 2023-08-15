@@ -1,6 +1,6 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
-import { copySync, emptyDirSync } from 'fs-extra';
+import { moveFolderSync } from './utils_node';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
@@ -13,13 +13,12 @@ const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 
 const configPath = userData;
 
 /*
- * TODO change paths in docs
  * TODO make crankshaft server announcement about backup
  * TODO mention minor breaking change in changelog & mention backup
  */
 function migrateSettings() {
-	if (existsSync(pathJoin(docsPath, 'settings moved.txt'))) return;
-	if (readdirSync(docsPath).length === 0) return;
+	if (existsSync(pathJoin(docsPath, 'settings moved.txt')) || readdirSync(docsPath).length === 0) return;
+	if (!existsSync(userData)) mkdirSync(userData)
 
 	console.log(`Migrating old settings to new path ${userData}`);
 	if (existsSync(userData) && readdirSync(userData).length !== 0) {
@@ -36,9 +35,8 @@ function migrateSettings() {
 		error.stack = null;
 		throw error;
 	}
-
-	emptyDirSync(docsPath);
-	copySync(docsPath, userData);
+	moveFolderSync(docsPath, userData)
+	if (!existsSync(docsPath)) mkdirSync(docsPath)
 	writeFileSync(pathJoin(docsPath, 'settings moved.txt'),
 		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.\n
 Settings, userscripts and swapper have been moved to '${userData}'.\n
@@ -420,7 +418,7 @@ app.on('ready', () => {
 
 	mainWindow.webContents.on('new-window', (event, url) => {
 		console.log('url trying to open:', url, 'socialWindowReference:', typeof socialWindowReference);
-		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com'];
+		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com', 'github.com'];
 
 		// sanity check, if social window is destroyed but the reference still exists
 		if (typeof socialWindowReference !== 'undefined' && socialWindowReference.isDestroyed()) socialWindowReference = void 0;

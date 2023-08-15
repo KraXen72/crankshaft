@@ -2,7 +2,7 @@
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
-import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS } from './utils';
+import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
 
@@ -26,7 +26,6 @@ export const strippedConsole = {
 };
 
 const $assets = pathResolve(__dirname, '..', 'assets');
-const repoID = 'KraXen72/crankshaft';
 
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCSS = {
@@ -223,7 +222,6 @@ function patchSettings(_userPrefs: UserPrefs) {
 		const getSettingsHook = settingsWindow.getSettings.bind(settingsWindow);
 		const changeTabHook = settingsWindow.changeTab.bind(settingsWindow);
 
-		// coldStart: settings window is launched while clientTab === true
 		window.showWindow = (...args: unknown[]) => {
 			const result = showWindowHook(...args);
 
