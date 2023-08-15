@@ -34,12 +34,12 @@
 
 ## userscripts
 
-- any `.js` file in `Documents/Crankshaft/scripts` will be considered a userscript and executed if enabled in settings.
+- any `.js` file in `%APPDATA%/crankshaft/config/scripts` will be considered a userscript and executed if enabled in settings.
 - There are a few official/example userscripts:
   - [keystrokes.js](https://gist.github.com/KraXen72/2ea1332440b0c66b83ca9b73afc38269): shows WASD, shift, space and 2 configurable keys on screen.
   - [autospectate.js](https://gist.github.com/KraXen72/270b2b8f28dda974f9e643b384e87a68): automatically joins game as spectator if turned on
 - all userscripts are disabled when they are first added.
-- `Documents/Crankshaft/scripts/tracker.json` is used to keep track of enabled userscripts.
+- `%APPDATA%/crankshaft/config/tracker.json` is used to keep track of enabled userscripts.
   
 If you want to write a userscript or learn more about them, read the [Documentation](./USERSCRIPTS.md)  
 > **Use userscripts at your own risk**, the author(s) of this client are **not responsible for any damage done** with userscripts because the user is the author of the script.
@@ -60,6 +60,14 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 ## matchmaker
 a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6` 
 ![matchmaker](./assets/matchmaker_screenshot.png)
+
+## upcoming breaking change
+- **from version `1.9.0`, crankshaft will no longer support `Documents/Crankshaft` for configuration.**
+- **make a backup of `Documents/Crankshaft` before updating.**
+- **crankshaft 1.9.0 will auto-migrate the folder**, but there's a *very small chance* it could fail while moving/copying/deleting the files, and you'd lose your settings, swapper & scripts.
+- this is due to inconsistent read/write permissions for users whose Documents directory lives inside of OneDrive or has been otherwise moved.
+- crankshaft 1.9.0 will add quick-open buttons for the new directories & files, as they are harder to access.
+![quick-open](assets/quick_open_screenshot.png)
 
 ## building from source
 1. **you have to have [git](https://git-scm.com/downloads) and [nodejs](https://nodejs.org/en/download/) 12+ installed**.

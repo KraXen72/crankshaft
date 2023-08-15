@@ -19,6 +19,8 @@ There are a few example userscripts mentioned in the README you can go off of.
 		- [removing an eventListener easily:](#removing-an-eventlistener-easily)
 		- ['once' attribute on eventlisteners](#once-attribute-on-eventlisteners)
 	- [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
+		- [crankshaft version 1.9.0+](#crankshaft-version-190)
+		- [crankshaft version \<1.9.0](#crankshaft-version-190-1)
   
 > Warning: Goes without saying, but you should never write userscipts that break [Krunker's Terms & Conditions](https://krunker.io/docs/terms.txt), like hacks or selfbots. Crankshaft maintainers are not responsible for scripts YOU write and your account can get banned.
   
@@ -231,7 +233,15 @@ however, you shouldn't need to use this at all - `@run-at` is `document-end` by 
 
 ## Enabling and testing your userscript
 
-save your userscript to `Documents/Crankshaft/scripts/` as a file ending in `.js`
+### crankshaft version 1.9.0+
+save your userscript to `<userData>/crankshaft/config/scripts/` as a file ending in `.js`,
+with `<userData>` being:
+- `%APPDATA%` on **Windows**
+- `$XDG_CONFIG_HOME or ~/.config` on **Linux**
+- `~/Library/Application Support` on **macOS**
+
+### crankshaft version <1.9.0
+save your userscript to `Documents/crankshaft/scripts/` as a file ending in `.js`
 
 1. in crankshaft settings, enable the setting *Userscript support* and re-launch the client
 2. in crankshaft settings > Userscripts, enable your userscript and refresh the page / F6 (find new game)
