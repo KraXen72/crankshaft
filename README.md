@@ -67,7 +67,6 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 - **crankshaft 1.9.0 will auto-migrate the folder**, but there's a *very small chance* it could fail while moving/copying/deleting the files, and you'd lose your settings, swapper & scripts.
 - this is due to inconsistent read/write permissions for users whose Documents directory lives inside of OneDrive or has been otherwise moved.
 - crankshaft 1.9.0 will add quick-open buttons for the new directories & files, as they are harder to access.
-![quick-open](assets/quick_open_screenshot.png)
 
 ## building from source
 1. **you have to have [git](https://git-scm.com/downloads) and [nodejs](https://nodejs.org/en/download/) 12+ installed**.
