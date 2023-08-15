@@ -22,14 +22,14 @@ export function copyFolderSync(from: string, to: string) {
 }
 
 /**
- * remove directory recursively (modified from SO)
+ * recursive synchronous folder remove (modified from SO)
  * @link https://stackoverflow.com/a/42505874/3027390
  */
 export function removeFolderSync(folderPath: string) {
 	if (!existsSync(folderPath)) return;
 	readdirSync(folderPath).forEach(element => {
 		const elementAbs = pathJoin(folderPath, element);
-		
+
 		if (lstatSync(elementAbs).isDirectory()) {
 			removeFolderSync(elementAbs);
 		} else {
