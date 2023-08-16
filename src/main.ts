@@ -170,7 +170,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 			spellcheck: false,
 			enableRemoteModule: false,
 			nodeIntegration: false
-		} as Electron.WebPreferences
+		} satisfies Electron.WebPreferences
 	});
 
 	// add additional submenus to the generic win
@@ -312,14 +312,15 @@ app.on('ready', () => {
 			conf = conf.filter(line => line.trim().length > 0);
 			for (const item of conf) filter.urls.push(item);
 		}
-		mainWindow.webContents.session.webRequest.onBeforeRequest(filter, (details, callback) => {
-			if (userPrefs.hideAds !== 'block' || filter.urls.length === 0) {
-				callback({ cancel: false });
-				return;
-			}
-			console.log(`Blocked ${details.url}`);
-			callback({ cancel: true });
-		});
+		// FIXME electron cannot have multiple onBeforeRequest handlers; use the adblocker commander uses: https://github.com/asger-finding/anotherkrunkerclient/blob/2857ac3e475ec2e45d83a9ef5d46a0a33b8c55dd/src/app.ts#L256
+		// mainWindow.webContents.session.webRequest.onBeforeRequest(filter, (details, callback) => {
+		// 	if (userPrefs.hideAds !== 'block' || filter.urls.length === 0) {
+		// 		callback({ cancel: false });
+		// 		return;
+		// 	}
+		// 	console.log(`Blocked ${details.url}`);
+		// 	callback({ cancel: true });
+		// });
 
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
