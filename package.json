@@ -13,6 +13,7 @@
 		"testbuild": "pnpm run build && electron .",
 		"dist": "pnpm run build && electron-builder",
 		"release": "pnpm run build && electron-builder --publish always",
+		"lint": "eslint .",
 		"changelog-c": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits -r 0",
 		"changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
 	},
