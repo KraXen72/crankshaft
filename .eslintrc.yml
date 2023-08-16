@@ -8,9 +8,9 @@ plugins:
   - import
 
 ignorePatterns:
+  - app/
   - node_modules/
   - build/
-  - gulpfile.mjs
   - esbuilder.js # this is just a hacked together dev building file that uses esbuild. not even in ts
 
 extends:
