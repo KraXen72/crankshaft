@@ -1,5 +1,5 @@
 import { mkdirSync, readdirSync, lstatSync, copyFileSync, existsSync, unlinkSync, rmdirSync } from 'fs';
-import { join as pathJoin, } from 'path';
+import { join as pathJoin } from 'path';
 
 /// <reference path="global.d.ts" />
 
@@ -15,11 +15,8 @@ export function copyFolderSync(from: string, to: string) {
 		const fromElementAbs = pathJoin(from, element);
 		const toElementAbs = pathJoin(to, element);
 
-		if (lstatSync(fromElementAbs).isDirectory()) {
-			copyFolderSync(fromElementAbs, toElementAbs);
-		} else {
-			copyFileSync(fromElementAbs, toElementAbs);
-		}
+		if (lstatSync(fromElementAbs).isDirectory()) copyFolderSync(fromElementAbs, toElementAbs);
+		else copyFileSync(fromElementAbs, toElementAbs);
 	});
 }
 
@@ -32,11 +29,8 @@ export function removeFolderSync(folderPath: string) {
 	readdirSync(folderPath).forEach(element => {
 		const elementAbs = pathJoin(folderPath, element);
 
-		if (lstatSync(elementAbs).isDirectory()) {
-			removeFolderSync(elementAbs);
-		} else {
-			unlinkSync(elementAbs);
-		}
+		if (lstatSync(elementAbs).isDirectory()) removeFolderSync(elementAbs);
+		else unlinkSync(elementAbs);
 	});
 	rmdirSync(folderPath);
 }

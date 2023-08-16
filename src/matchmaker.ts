@@ -6,6 +6,7 @@ export const MATCHMAKER_GAMEMODES = ['Free for All', 'Team Deathmatch', 'Hardpoi
 export const MATCHMAKER_REGIONS = ['MBI', 'NY', 'FRA', 'SIN', 'DAL', 'SYD', 'MIA', 'BHN', 'TOK', 'BRZ', 'AFR', 'LON', 'CHI', 'SV', 'STL', 'MX'];
 
 // https://greasyfork.org/en/scripts/468482-kraxen-s-krunker-utils
+
 /// <reference path="global.d.ts" />
 
 function getGameMode(num: number) {

@@ -18,7 +18,7 @@ const configPath = userData;
  */
 function migrateSettings() {
 	if (existsSync(pathJoin(docsPath, 'settings moved.txt')) || readdirSync(docsPath).length === 0) return;
-	if (!existsSync(userData)) mkdirSync(userData)
+	if (!existsSync(userData)) mkdirSync(userData);
 
 	console.log(`Migrating old settings to new path ${userData}`);
 	if (existsSync(userData) && readdirSync(userData).length !== 0) {
@@ -35,8 +35,8 @@ function migrateSettings() {
 		error.stack = null;
 		throw error;
 	}
-	moveFolderSync(docsPath, userData)
-	if (!existsSync(docsPath)) mkdirSync(docsPath)
+	moveFolderSync(docsPath, userData);
+	if (!existsSync(docsPath)) mkdirSync(docsPath);
 	writeFileSync(pathJoin(docsPath, 'settings moved.txt'),
 		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.\n
 Settings, userscripts and swapper have been moved to '${userData}'.\n

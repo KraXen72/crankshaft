@@ -32,9 +32,9 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	userPrefs = recieved_userPrefs;
 	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
 
-	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) }
-	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) }
-	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) }
+	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) };
+	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) };
+	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) };
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -76,7 +76,7 @@ const settingsDesc: SettingsDesc = {
 	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC. No effect if RPC is off.', safety: 0, cat: 0, instant: true },
 	hideAds: { title: 'Hide/Block Ads', type: 'sel', desc: 'With \'hide\' you can still claim free KR. Using \'block\' also blocks trackers.', safety: 0, cat: 0, refreshOnly: true, opts: ['block', 'hide', 'off'] },
 	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. ', safety: 0, cat: 0, refreshOnly: true },
-	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety:1, cat:0 },
+	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
 
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -175,7 +175,6 @@ class SettingElem {
 	#disabled: boolean;
 
 	constructor(props: RenderReadySetting) {
-
 		/** @type {Object} save the props from constructor to this class (instance) */
 		this.props = props;
 
@@ -382,8 +381,8 @@ class SettingElem {
 		if (this.#wrapper !== false) return this.#wrapper; // return the element if already initialized
 
 		// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
-		const classes = ['setting', 'settName', `safety-${this.props.safety}`, this.type ]
-		if (this.props.button) classes.push('has-button')
+		const classes = ['setting', 'settName', `safety-${this.props.safety}`, this.type];
+		if (this.props.button) classes.push('has-button');
 
 		const wrapper = createElement('div', {
 			class: classes,
@@ -391,9 +390,9 @@ class SettingElem {
 			innerHTML: this.HTML
 		});
 
-		if (this.props.button) {  
+		if (this.props.button) {
 			const { icon, text, callback } = this.props.button;
-			wrapper.appendChild(skeleton.settingButton(icon, text, callback, this.props.button.customTitle ?? void 0)) 
+			wrapper.appendChild(skeleton.settingButton(icon, text, callback, this.props.button.customTitle ?? void 0));
 		}
 		if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value;
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback

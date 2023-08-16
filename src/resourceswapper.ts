@@ -2,6 +2,7 @@ import { readdirSync, existsSync, mkdirSync } from 'fs';
 import { join as pathJoin } from 'path';
 
 const TARGET_GAME_DOMAIN = 'krunker.io';
+
 /// <reference path="global.d.ts" />
 
 /**

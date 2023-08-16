@@ -49,7 +49,7 @@ interface Window {
 	OffCliV: boolean;
 	getGameActivity: Function;
 	showWindow: Function;
-	windows: [ { // settings window
+	windows: [{ // settings window
 		settingType: 'basic' | 'advanced';
 		tabIndex: number;
 		tabs: {
@@ -76,10 +76,10 @@ interface Window {
 type Callbacks = 'normal' | 'userscript' | Function;
 type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'num';
 
-interface settingExtraButton { 
-	icon: string, 
-	text: string, 
-	callback: (e?: MouseEvent) => void, 
+interface SettingExtraButton {
+	icon: string,
+	text: string,
+	callback: (e?: MouseEvent) => void,
 	customTitle?: string
 }
 
@@ -88,7 +88,7 @@ interface SettingItemGeneric {
 	desc?: string;
 	safety: number;
 	type: ValidTypes;
-	button?: settingExtraButton;
+	button?: SettingExtraButton;
 
 	/** category */
 	cat?: number;
@@ -143,7 +143,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 	key: string;
 	callback: Callbacks;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-anya
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	value: any;
 
 	// an optional unload function (for now for userscripts)
