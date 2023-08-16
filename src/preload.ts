@@ -213,10 +213,16 @@ function patchSettings(_userPrefs: UserPrefs) {
 		const settingsWindow = window.windows[0];
 		let selectedTab = settingsWindow.tabIndex;
 
-		const isClientTab = () => {
+		function isClientTab() {
 			const allTabsCount = settingsWindow.tabs[settingsWindow.settingType].length - 1;
 			return selectedTab === allTabsCount;
 		};
+
+		function safeRenderSettings() {
+			const settHolder = document.getElementById('settHolder');
+			if (!isClientTab() && settHolder !== null) settHolder.classList.remove('Crankshaft-settings');
+			if (isClientTab()) renderSettings();
+		}
 
 		const showWindowHook = window.showWindow.bind(window);
 		const getSettingsHook = settingsWindow.getSettings.bind(settingsWindow);
@@ -242,9 +248,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 			const result = changeTabHook(...args);
 			selectedTab = settingsWindow.tabIndex;
 
-			const settHolder = document.getElementById('settHolder');
-			if (!isClientTab() && settHolder !== null) settHolder.classList.remove('Crankshaft-settings');
-			if (isClientTab()) renderSettings();
+			safeRenderSettings()
 
 			return result;
 		};
@@ -271,6 +275,8 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 			return result;
 		};
+
+		safeRenderSettings()
 	}
 
 	function waitForWindow0() {
