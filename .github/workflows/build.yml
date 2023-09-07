@@ -25,10 +25,11 @@ jobs:
         with:
           node-version: 'latest'
 
-      - name: Install dependencies
-        run: |
-          npm install --global pnpm
-          pnpm install
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+          run_install: true
 
       - name: Build and release if the draft exists
         run: pnpm run dist
