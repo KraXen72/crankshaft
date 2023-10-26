@@ -5,6 +5,7 @@
 #aContainer,
 #topRightAdHolder,
 div#aContainer,
-#braveWarning {
-    display: none !important
+#braveWarning,
+#topRightAdHolder {
+  display: none !important;
 }
