@@ -7,7 +7,7 @@
 #uiBase.onMenu #spec1,
 #uiBase.onMenu #specGameInfo,
 #uiBase.onMenu #spec0 {
-  display: none;
+  display: none !important;
 }
 
 #uiBase.onMenu #spectateUI > div:nth-child(1) {
@@ -19,7 +19,7 @@
   position: fixed;
   top: calc(50% + 80px);
   left: 50%;
-  translate: -50% -50%;
+  transform: translate(-50%, -50%);
 }
 
 #uiBase.onMenu #spectateUI > div:nth-child(1) > .spectateInfo > #specTimer {
