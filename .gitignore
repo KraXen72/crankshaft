@@ -1,12 +1,3 @@
-dist/*
-app/*
-node_modules/*
-
-GatoClientLiteRewrite.zip
-CrankshaftRewrite.zip
-*.zip
-*.rar
-xed_preload.js
-cc-config.js
-
-multiselect_dummy.html
+dist/
+app/
+node_modules/
