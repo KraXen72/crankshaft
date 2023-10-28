@@ -69,14 +69,12 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 - crankshaft 1.9.0 will add quick-open buttons for the new directories & files, as they are harder to access.
 
 ## building from source
-1. **you have to have [git](https://git-scm.com/downloads) and [nodejs](https://nodejs.org/en/download/) 12+ installed**.
-   - if you're planning on contributing and not just building from source, use `pnpm` ([link](https://pnpm.io) or `npm i -g pnpm`) instead of `npm`.
-   - for `pnpm`, you don't have to pass `--openssl_fips=''` when installing
+1. **you have to have [git](https://git-scm.com/downloads), [nodejs](https://nodejs.org/en/download/), and [pnpm](https://pnpm.io/installation) installed**.
 2. **installation**:
    - `git clone https://github.com/KraXen72/crankshaft`
    - `cd crankshaft`
-   - `npm i --openssl_fips=''`
-3. **building from source**: `npm run dist`
+   - `pnpm i`
+3. **building from source**: `pnpm dist`
   
 ### contributing
 1. follow previous steps 1 & 2
