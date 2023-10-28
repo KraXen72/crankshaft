@@ -216,7 +216,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 		function isClientTab() {
 			const allTabsCount = settingsWindow.tabs[settingsWindow.settingType].length - 1;
 			return selectedTab === allTabsCount;
-		};
+		}
 
 		function safeRenderSettings() {
 			const settHolder = document.getElementById('settHolder');
@@ -248,7 +248,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 			const result = changeTabHook(...args);
 			selectedTab = settingsWindow.tabIndex;
 
-			safeRenderSettings()
+			safeRenderSettings();
 
 			return result;
 		};
@@ -276,7 +276,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 			return result;
 		};
 
-		safeRenderSettings()
+		safeRenderSettings();
 	}
 
 	function waitForWindow0() {
