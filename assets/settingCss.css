@@ -294,5 +294,11 @@ input:checked+.advancedSlider:hover {
     border: 2px solid #333333
 }
 
+.settings-Userscript-Author {
+	opacity: 0.4;
+	font-size: 0.9rem;
+	color: inherit;
+}
+
 .hiddenClasses-hideAds-bottomOffset { bottom: 80px !important; }
 #editorBtnM[src$="client.png"] { display: none; } /* don't promote official client in a custom client lol */

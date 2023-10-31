@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
-import { styleSettingsCSS, getTimezoneByRegionKey } from './preload';
+import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 
@@ -270,6 +270,14 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			}
+			case 'color':
+				this.HTML += `<span class="setting-title">${props.title}</span> 
+					<label class="setting-input-wrapper">
+							<input class="s-update" type="color" value="${props.value ? props.value : ''}" ${this.#disabled ? 'disabled' : ''}/>
+					</label>`;
+				this.updateKey = 'value';
+				this.updateMethod = 'oninput';
+				break;
 			default:
 				// @ts-ignore
 				this.HTML = `<span class="setting-title">${props.title}</span><span>Unknown setting type</span>`;
@@ -519,10 +527,12 @@ export function renderSettings() {
 				{ desc: `Go to the Crankshaft <a href="https://github.com/${repoID}#userscripts">README.md</a> to download some made by the client dev.` })));
 		}
 
+		// This array is used to store userscript settings HTML
+		var customUserScriptSettings: Array<DocumentFragment> = []
 		const userscriptSettings: RenderReadySetting[] = su.userscripts
 			.map(userscript => {
 				const obj: RenderReadySetting = {
-					key: userscript.name.slice(0, -3), // remove .js
+					key: userscript.name.replace(/.js$/, ''), // remove .js
 					title: userscript.name,
 					value: su.userscriptTracker[userscript.name],
 					type: 'bool',
@@ -533,19 +543,64 @@ export function renderSettings() {
 				};
 				if (userscript.meta) { // render custom metadata if provided
 					const thisMeta = userscript.meta;
+					// Define low-scope variables because I can't be arsed to copy + paste the same ternary operator
+					var scriptAuthor = ('author' in thisMeta && thisMeta.author) ? `${thisMeta.author}` : false
+					var scriptName = ('name' in thisMeta && thisMeta.name) ? thisMeta.name : userscript.name
 					Object.assign(obj, {
-						title: 'name' in thisMeta && thisMeta.name ? thisMeta.name : userscript.name,
+						title: scriptName,
 						desc: `${'desc' in thisMeta && thisMeta.desc ? thisMeta.desc.slice(0, 60) : ''}
-						${'author' in thisMeta && thisMeta.author ? `&#8226; ${thisMeta.author}` : ''}
+						${scriptAuthor ? `&#8226; ${scriptAuthor}` : ''}
 						${'version' in thisMeta && thisMeta.version ? `&#8226; v${thisMeta.version}` : ''}
-						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}`
+						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}
+						${'krunkerSettings' in thisMeta && thisMeta.krunkerSettings ? `&#8226; Uses Custom Settings` : ``}`
 					});
+					// Read and render script-defined settings
+					if ('krunkerSettings' in thisMeta && thisMeta.krunkerSettings) {
+						// Create separate fragment so that script settings go at the bottom of the client page.
+						var fragForUserscript: DocumentFragment = new DocumentFragment()
+						var userscriptCategoryID: string = `${scriptName}by${scriptAuthor}`.replaceAll(' ', '').toLowerCase()
+						fragForUserscript.appendChild(skeleton.catHedElem(`Userscript Settings: ${scriptName} <span class='settings-Userscript-Author'>by ${scriptAuthor}</span>`));
+						fragForUserscript.appendChild(skeleton.catBodElem(userscriptCategoryID, ``));
+						try {
+							var userScriptDefinedOptions = JSON.parse(thisMeta.krunkerSettings)
+							strippedConsole.log(userScriptDefinedOptions)
+							const scriptEventSuffix = userScriptDefinedOptions.eventPrefix ?? userscriptCategoryID
+							Object.keys(userScriptDefinedOptions).forEach(settingKey => {
+								if (settingKey !== "eventPrefix") {
+									var settingProps: RenderReadySetting = userScriptDefinedOptions[settingKey]
+									//{ title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
+									const customSettingObject: RenderReadySetting = {
+										key: settingKey,
+										title: "Unset Custom Setting Title: {title}",
+										value: false,
+										type: 'bool',
+										desc: userscript.fullpath,
+										safety: 0,
+										callback: function (value: UserPrefs[keyof UserPrefs]) {
+											strippedConsole.log("Dispatching custom Setting Event: ", `krunker-${scriptEventSuffix}`)
+											var userscriptEvent: CustomEvent = new CustomEvent(`krunker-${scriptEventSuffix}`, { detail: { value, key: this.settingKey } })
+											document.dispatchEvent(userscriptEvent)
+										}.bind({settingKey})
+									};
+									Object.assign(customSettingObject, settingProps)
+									const customOptionElem = new SettingElem(customSettingObject)
+									fragForUserscript.querySelector(`.${userscriptCategoryID}`).appendChild(customOptionElem.elem)
+								}
+							})
+						} catch (err) {
+							
+						}
+						// Add fragment to array of userscript options.
+						customUserScriptSettings.push(fragForUserscript)
+					}
 				}
 				if (userscript.unload) obj.instant = true;
 
 				return obj;
 			});
-
+		
+		// Apply custom userscript options to the settings fragment
+		customUserScriptSettings.forEach(fragment => {csSettings.appendChild(fragment)})
 		document.querySelector('.Crankshaft-settings').textContent = '';
 		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
 

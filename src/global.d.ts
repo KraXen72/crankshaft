@@ -34,6 +34,7 @@ interface UserscriptMeta {
 	version: string;
 	desc: string;
 	src: string;
+	krunkerSettings: string
 }
 
 /** krunker injects these into the window object */
@@ -74,7 +75,7 @@ interface Window {
  */
 
 type Callbacks = 'normal' | 'userscript' | Function;
-type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'num';
+type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'color' | 'num';
 
 interface SettingExtraButton {
 	icon: string,
@@ -86,6 +87,7 @@ interface SettingExtraButton {
 interface SettingItemGeneric {
 	title: string;
 	desc?: string;
+	// This is for the (!) display on settings, describing if they are safe to use, and at what level they are safe.
 	safety: number;
 	type: ValidTypes;
 	button?: SettingExtraButton;

@@ -41,6 +41,8 @@ class Userscript implements IUserscriptInstance {
 
 	runAt: ('document-start' | 'document-end') = 'document-end';
 
+	krunkerSettings: string;
+
 	constructor(props: IUserscript) {
 		this.hasRan = false;
 		this.#strictMode = false;
