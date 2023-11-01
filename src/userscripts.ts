@@ -70,12 +70,15 @@ class Userscript implements IUserscriptInstance {
 
 				/*
 				 * if the metadata define some prop twice, the parser turns it into an array.
-				 * we check if a value isArray and if yes, take the last item in that array as the new value
+				 * we check if a value isArray and if yes, take the last item in that array as the new value (BUT NOT IF IT'S THE 'krunkerSetting' ATTRIBUTE. We force that to be an array.)
 				 */
 
 				for (const metaKey of Object.keys(this.meta) as Array<keyof UserscriptMeta>) {
+					strippedConsole.log(this.meta, metaKey)
 					const meta = this.meta[metaKey];
-					if (Array.isArray(meta)) this.meta[metaKey] = meta[meta.length - 1];
+					if (Array.isArray(meta) && metaKey !== "krunkerSetting") this.meta[metaKey] = meta[meta.length - 1];
+					// @ts-ignore I ignore this because you can't assign an array to a string... even though global definitions say that it should be an array anyway... probably because it thinks I'm trying to nest the array.
+					if (!Array.isArray(meta) && metaKey === "krunkerSetting" && typeof this.meta[metaKey] === "string") this.meta[metaKey] = [this.meta[metaKey]]
 				}
 
 				if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';

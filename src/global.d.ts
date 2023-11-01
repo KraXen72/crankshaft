@@ -34,7 +34,8 @@ interface UserscriptMeta {
 	version: string;
 	desc: string;
 	src: string;
-	krunkerSettings: string
+	krunkerSetting: Array<string>;
+	settingsEventPrefix: string;
 }
 
 /** krunker injects these into the window object */
@@ -126,6 +127,33 @@ interface SettingsDesc {
 
 /** a render-ready setting. contains a SettingsDescItem + value, callback and key */
 interface RenderReadySetting extends SettingItemGeneric {
+	type: ValidTypes;
+
+	// for sel
+	opts?: string[];
+	cols?: number;
+
+	// for multisel
+	/** optDescriptions.length must equal opts.length! */
+	optDescriptions?: string[];
+
+	// for num
+	min?: number;
+	max?: number;
+	step?: number;
+
+	// the data
+	key: string;
+	callback: Callbacks;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	value: any;
+
+	// an optional unload function (for now for userscripts)
+	userscriptReference?: IUserscriptInstance
+}
+
+interface UserscriptRenderReadySetting extends SettingItemGeneric {
 	type: ValidTypes;
 
 	// for sel

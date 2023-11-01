@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { join } from 'path'
 import { writeFileSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
@@ -13,10 +14,13 @@ enum RefreshEnum {
 	reloadApp
 }
 interface IPaths { [path: string]: string }
+interface customUserscriptSettings { [key: string]: any }
 
 /* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
+let userscriptPrefsPath: string;
+let userscriptPreferences: customUserscriptSettings = {};
 let userPrefsCache: UserPrefs; // the userprefs on path
 let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
 let refreshNotifElement: HTMLElement;
@@ -28,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settings
 ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
 	userPrefsPath = recieved_paths.settingsPath;
+	userscriptPrefsPath = recieved_paths.userScriptSettingsPath;
 	paths = recieved_paths;
 	userPrefs = recieved_userPrefs;
 	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
@@ -125,6 +130,9 @@ const refreshToUnloadMessage = 'REFRESH PAGE TO UNLOAD USERSCRIPT';
 function saveSettings() {
 	writeFileSync(userPrefsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
 	ipcRenderer.send('settingsUI_updates_userPrefs', userPrefs); // send them back to main
+}
+function saveUserScriptSettings(eventSuffix: string) {
+	writeFileSync(join(userscriptPrefsPath, `${eventSuffix}settings.json`), JSON.stringify(userscriptPreferences[eventSuffix], null, 2), { encoding: 'utf-8' });
 }
 
 function recalculateRefreshNeeded() {
@@ -552,43 +560,48 @@ export function renderSettings() {
 						${scriptAuthor ? `&#8226; ${scriptAuthor}` : ''}
 						${'version' in thisMeta && thisMeta.version ? `&#8226; v${thisMeta.version}` : ''}
 						${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}
-						${'krunkerSettings' in thisMeta && thisMeta.krunkerSettings ? `&#8226; Uses Custom Settings` : ``}`
+						${'krunkerSetting' in thisMeta && thisMeta.krunkerSetting ? `&#8226; Uses Custom Settings` : ``}`
 					});
 					// Read and render script-defined settings
-					if ('krunkerSettings' in thisMeta && thisMeta.krunkerSettings) {
+					if ('krunkerSetting' in thisMeta && thisMeta.krunkerSetting) {
 						// Create separate fragment so that script settings go at the bottom of the client page.
 						var fragForUserscript: DocumentFragment = new DocumentFragment()
 						var userscriptCategoryID: string = `${scriptName}by${scriptAuthor}`.replaceAll(' ', '').toLowerCase()
 						fragForUserscript.appendChild(skeleton.catHedElem(`Userscript Settings: ${scriptName} <span class='settings-Userscript-Author'>by ${scriptAuthor}</span>`));
 						fragForUserscript.appendChild(skeleton.catBodElem(userscriptCategoryID, ``));
 						try {
-							var userScriptDefinedOptions = JSON.parse(thisMeta.krunkerSettings)
+							if (!Array.isArray(thisMeta.krunkerSetting)) throw "krunkerSetting is not array? Possible parsing error."
+							var userScriptDefinedOptions: Array<RenderReadySetting> = thisMeta.krunkerSetting.map((setting):RenderReadySetting => JSON.parse(setting))
 							strippedConsole.log(userScriptDefinedOptions)
-							const scriptEventSuffix = userScriptDefinedOptions.eventPrefix ?? userscriptCategoryID
-							Object.keys(userScriptDefinedOptions).forEach(settingKey => {
-								if (settingKey !== "eventPrefix") {
-									var settingProps: RenderReadySetting = userScriptDefinedOptions[settingKey]
-									//{ title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
-									const customSettingObject: RenderReadySetting = {
-										key: settingKey,
-										title: "Unset Custom Setting Title: {title}",
-										value: false,
-										type: 'bool',
-										desc: userscript.fullpath,
-										safety: 0,
-										callback: function (value: UserPrefs[keyof UserPrefs]) {
-											strippedConsole.log("Dispatching custom Setting Event: ", `krunker-${scriptEventSuffix}`)
-											var userscriptEvent: CustomEvent = new CustomEvent(`krunker-${scriptEventSuffix}`, { detail: { value, key: this.settingKey } })
-											document.dispatchEvent(userscriptEvent)
-										}.bind({settingKey})
-									};
-									Object.assign(customSettingObject, settingProps)
-									const customOptionElem = new SettingElem(customSettingObject)
-									fragForUserscript.querySelector(`.${userscriptCategoryID}`).appendChild(customOptionElem.elem)
-								}
+							const scriptEventSuffix: string = thisMeta.settingsEventPrefix ?? userscriptCategoryID
+							userscriptPreferences[scriptEventSuffix] = {}
+							userScriptDefinedOptions.forEach(setting => {
+								var settingProps: UserscriptRenderReadySetting = setting
+								userscriptPreferences[scriptEventSuffix][setting.key] = setting.value
+								const customSettingObject: RenderReadySetting = {
+									key: settingProps.key ?? "UNDEFINED CUSTOM SETTINGS OPTION",
+									title: "Unset Custom Setting Title: {title}",
+									value: false,
+									type: 'bool',
+									desc: userscript.fullpath,
+									safety: 0,
+									callback: function (this: {settingKey: string, eventSuffix: string}, value: UserPrefs[keyof UserPrefs]) {
+										strippedConsole.log("Dispatching custom Setting Event: ", `krunker-${this.eventSuffix}`)
+										var detailOBJ: { [key: string]: UserPrefs[keyof UserPrefs] } = {}
+										detailOBJ[this.settingKey] = value
+										userscriptPreferences[this.eventSuffix][this.settingKey] = value
+										var userscriptEvent: CustomEvent = new CustomEvent(`krunker-${this.eventSuffix}`, { detail: detailOBJ })
+										document.dispatchEvent(userscriptEvent)
+										saveUserScriptSettings(this.eventSuffix)
+										strippedConsole.log(userscriptPreferences)
+									}.bind({settingKey: setting.key, eventSuffix: scriptEventSuffix})
+								};
+								Object.assign(customSettingObject, settingProps)
+								const customOptionElem = new SettingElem(customSettingObject)
+								fragForUserscript.querySelector(`.${userscriptCategoryID}`).appendChild(customOptionElem.elem)
 							})
 						} catch (err) {
-							
+							strippedConsole.error(err, thisMeta)
 						}
 						// Add fragment to array of userscript options.
 						customUserScriptSettings.push(fragForUserscript)
