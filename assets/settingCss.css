@@ -300,5 +300,32 @@ input:checked+.advancedSlider:hover {
 	color: inherit;
 }
 
+.brokenCustomUserscriptSettingWrapper .crankshaft-button-holder.setting.settName {
+	display: block;
+	width: 95%;
+}
+
+.setting.settName.safety-0.brokenCustomUserscriptSettingWrapper {
+	color: red;
+	background: rgba(200, 0, 0, 0.2);
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.brokenCustomUserscriptSettingWrapper div.setting-title.brokenCustomUserscriptSettingTitle {
+	color: red !important;
+	grid-area: unset !important;
+	border-bottom: 5px solid;
+    padding-bottom: 0.4rem;
+}
+
+.setting-desc-new.brokenCustomUserscriptSettingDesc {
+	width: 100%;
+	color: red !important;
+	font-style: italic;
+	font-weight: bolder;
+}
+
 .hiddenClasses-hideAds-bottomOffset { bottom: 80px !important; }
 #editorBtnM[src$="client.png"] { display: none; } /* don't promote official client in a custom client lol */
