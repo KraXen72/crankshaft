@@ -13,11 +13,12 @@ interface InsertedCSS {
 interface IUserscript {
 	name: string;
 	fullpath: string;
+	settingsPath: string;
 	content?: string;
 	exported?: {
 		meta?: UserscriptMeta | false,
 		unload?: Function | false
-	}
+	};
 }
 
 interface IUserscriptInstance extends IUserscript {
@@ -25,7 +26,8 @@ interface IUserscriptInstance extends IUserscript {
 	hasRan: boolean,
 	runAt: ('document-start' | 'document-end'),
 	load: Function,
-	unload: Function | false
+	unload: Function | false,
+	settings?: {[key: string]: UserscriptRenderReadySetting}
 }
 
 interface UserscriptMeta {
@@ -34,8 +36,7 @@ interface UserscriptMeta {
 	version: string;
 	desc: string;
 	src: string;
-	krunkerSetting: Array<string>;
-	settingsEventPrefix: string;
+	settingsID: string;
 }
 
 /** krunker injects these into the window object */
@@ -171,7 +172,7 @@ interface UserscriptRenderReadySetting extends SettingItemGeneric {
 
 	// the data
 	key: string;
-	callback: Callbacks;
+	changed: Function;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	value: any;

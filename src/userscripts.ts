@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, writeFileSync } from 'fs';
+import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { strippedConsole } from './preload';
@@ -10,6 +10,7 @@ import { userscriptToggleCSS } from './utils';
 export const su = {
 	userscriptsPath: '',
 	userscriptTrackerPath: '',
+	userscriptPrefsPath: '',
 	userscripts: <IUserscriptInstance[]>[],
 	userscriptTracker: <UserscriptTracker>{}
 };
@@ -35,13 +36,14 @@ class Userscript implements IUserscriptInstance {
 
 	unload: Function | false;
 
+	settings: { [key: string]: UserscriptRenderReadySetting };
+	settingsPath: string;
+
 	hasRan: boolean; // this is public so settings can just show a "reload page" message when needed
 
 	#strictMode: boolean;
 
 	runAt: ('document-start' | 'document-end') = 'document-end';
-
-	krunkerSettings: string;
 
 	constructor(props: IUserscript) {
 		this.hasRan = false;
@@ -52,6 +54,8 @@ class Userscript implements IUserscriptInstance {
 
 		this.meta = false;
 		this.unload = false;
+
+		this.settingsPath = props.settingsPath;
 
 		this.content = readFileSync(this.fullpath, { encoding: 'utf-8' });
 		if (this.content.startsWith('"use strict"')) this.#strictMode = true;
@@ -70,15 +74,12 @@ class Userscript implements IUserscriptInstance {
 
 				/*
 				 * if the metadata define some prop twice, the parser turns it into an array.
-				 * we check if a value isArray and if yes, take the last item in that array as the new value (BUT NOT IF IT'S THE 'krunkerSetting' ATTRIBUTE. We force that to be an array.)
+				 * we check if a value isArray and if yes, take the last item in that array as the new value
 				 */
 
 				for (const metaKey of Object.keys(this.meta) as Array<keyof UserscriptMeta>) {
-					strippedConsole.log(this.meta, metaKey)
 					const meta = this.meta[metaKey];
-					if (Array.isArray(meta) && metaKey !== "krunkerSetting") this.meta[metaKey] = meta[meta.length - 1];
-					// @ts-ignore I ignore this because you can't assign an array to a string... even though global definitions say that it should be an array anyway... probably because it thinks I'm trying to nest the array.
-					if (!Array.isArray(meta) && metaKey === "krunkerSetting" && typeof this.meta[metaKey] === "string") this.meta[metaKey] = [this.meta[metaKey]]
+					if (Array.isArray(meta)) this.meta[metaKey] = meta[meta.length - 1];
 				}
 
 				if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';
@@ -93,6 +94,7 @@ class Userscript implements IUserscriptInstance {
 			// eslint-disable-next-line @typescript-eslint/no-implied-eval
 			const exported = new Function(this.content).apply({
 				unload: false,
+				settings: {},
 				_console: strippedConsole,
 				_css: userscriptToggleCSS
 			});
@@ -101,6 +103,28 @@ class Userscript implements IUserscriptInstance {
 			if (typeof exported !== 'undefined') {
 				// more stuff to be added here later
 				if ('unload' in exported) this.unload = exported.unload;
+				if ('settings' in exported) {
+					this.settings = exported.settings
+					strippedConsole.log(`Re-defined userscript settings.`)
+				}
+			}
+
+			if (existsSync(this.settingsPath) && Object.keys(this.settings).length > 0) {
+				try {
+					var settingsJSON = JSON.parse(readFileSync(this.settingsPath, 'utf-8'));
+					Object.keys(settingsJSON).forEach(settingKey => {
+						if ( // Comparison chain basically validates the settings JSON
+							settingKey in this.settings && // Make sure setting key is a changeable key
+							typeof this.settings[settingKey].changed === "function" &&  // Make sure setting key has a changed function
+							settingsJSON[settingKey] !== this.settings[settingKey].value && // Make sure you aren't applying changes unnecissarily
+							typeof settingsJSON[settingKey] === typeof this.settings[settingKey].value // Ensure the saved and scripted values are of the same type
+						) {
+							strippedConsole.log(`Set settings JSON item ${settingKey}`)
+							this.settings[settingKey].changed(settingsJSON[settingKey])
+						}
+					})
+				} catch (err) { // Preferences for script are probably corrupted.
+				}
 			}
 
 			strippedConsole.log(`%c[cs]${this.#strictMode ? '%c[strict]' : '%c[non-strict]'} %cran %c'${this.name.toString()}' `,
@@ -114,14 +138,15 @@ class Userscript implements IUserscriptInstance {
 
 }
 
-ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscriptsPath: string) => {
-	su.userscriptsPath = recieved_userscriptsPath;
+ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths: { userscriptsPath: string, userscriptPrefsPath: string }) => {
+	su.userscriptsPath = recieved_userscript_paths.userscriptsPath;
 	su.userscriptTrackerPath = pathResolve(su.userscriptsPath, 'tracker.json');
+	su.userscriptPrefsPath = recieved_userscript_paths.userscriptPrefsPath
 
 	// init the userscripts (read, map and set up tracker)
 	su.userscripts = readdirSync(su.userscriptsPath, { withFileTypes: true })
 		.filter(entry => entry.name.endsWith('.js'))
-		.map(entry => new Userscript({ name: entry.name, fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
+		.map(entry => new Userscript({ name: entry.name, settingsPath: pathResolve(su.userscriptPrefsPath, entry.name.replace(/.js$/, '.json')), fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
 
 	const tracker: UserscriptTracker = {};
 
