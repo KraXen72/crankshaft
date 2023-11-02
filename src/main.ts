@@ -47,7 +47,7 @@ if (existsSync(docsPath)) migrateSettings();
 
 const swapperPath = pathJoin(configPath, 'swapper');
 const settingsPath = pathJoin(configPath, 'settings.json');
-const userScriptSettingsPath = pathJoin(configPath, '/userscriptsettings')
+const userscriptPreferencesPath = pathJoin(configPath, '/userscriptsettings')
 const filtersPath = pathJoin(configPath, 'filters.txt');
 const userscriptsPath = pathJoin(configPath, 'scripts');
 const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
@@ -93,7 +93,7 @@ const userPrefs = settingsSkeleton;
 if (!existsSync(configPath)) mkdirSync(configPath, { recursive: true });
 if (!existsSync(settingsPath)) writeFileSync(settingsPath, JSON.stringify(settingsSkeleton, null, 2), { encoding: 'utf-8', flag: 'wx' });
 
-if (!existsSync(userScriptSettingsPath)) mkdirSync(userScriptSettingsPath, { recursive: true });
+if (!existsSync(userscriptPreferencesPath)) mkdirSync(userscriptPreferencesPath, { recursive: true });
 if (!existsSync(swapperPath)) mkdirSync(swapperPath, { recursive: true });
 if (!existsSync(userscriptsPath)) mkdirSync(userscriptsPath, { recursive: true });
 if (!existsSync(userscriptTrackerPath)) writeFileSync(userscriptTrackerPath, '{}', { encoding: 'utf-8' });
@@ -135,12 +135,12 @@ ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 // send usercript path to preload
 ipcMain.on('initializeUserscripts', () => {
-	mainWindow.webContents.send('main_initializes_userscripts', userscriptsPath, __dirname);
+	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath: userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, __dirname);
 });
 
 // initial request of settings to populate the settingsUI
 ipcMain.on('settingsUI_requests_userPrefs', () => {
-	const paths = { settingsPath, swapperPath, filtersPath, userScriptSettingsPath, configPath, userscriptsPath };
+	const paths = { settingsPath, swapperPath, filtersPath, userscriptPreferencesPath, configPath, userscriptsPath };
 	mainWindow.webContents.send('m_userPrefs_for_settingsUI', paths, userPrefs);
 });
 
