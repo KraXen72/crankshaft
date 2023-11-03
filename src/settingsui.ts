@@ -406,6 +406,7 @@ class SettingElem {
 					} else {
 						elem.querySelector('.setting-desc-new').textContent = refreshToUnloadMessage;
 						target.setAttribute('disabled', '');
+						refreshSettings = true;
 						this.#disabled = true;
 					}
 				}
@@ -610,12 +611,12 @@ export function renderSettings() {
 						// Create separate fragment so that script settings go at the bottom of the client page.
 						const brokenSettings: string[] = []
 						var fragForUserscript: DocumentFragment = new DocumentFragment()
-						var userscriptCategoryID: string = `${scriptName}by${scriptAuthor}`.replaceAll(' ', '').toLowerCase()
+						var userscriptCategoryID: string = `${scriptName}by${scriptAuthor}`.replaceAll(' ', '').toLowerCase().replaceAll(/[^a-z0-9]/g, '')
 						fragForUserscript.appendChild(skeleton.catHedElem(` ${scriptName} <span class='settings-Userscript-Author'>by ${scriptAuthor}</span>`));
 						fragForUserscript.appendChild(skeleton.catBodElem(userscriptCategoryID, ``));
 						try {
 							var userScriptDefinedOptions: { [key: string]: UserscriptRenderReadySetting } = {... userscript.settings}
-							const scriptEventSuffix: string = userscript.name.replace(/.js$/, '') ?? userscriptCategoryID
+							const scriptEventSuffix: string = userscript?.name?.replace(/.js$/, '') ?? userscriptCategoryID
 							userscriptPreferences[scriptEventSuffix] = {}
 							loadUserScriptSettings(scriptEventSuffix, userScriptDefinedOptions)
 							Object.keys(userScriptDefinedOptions).forEach(settingKey => {
@@ -627,7 +628,7 @@ export function renderSettings() {
 								switch (setting.type) {
 									case 'num':
 										if (typeof setting.value !== "number") {
-											settingIsMalformed = `'${typeof setting.value}' is NOT a valid value for setting type '${setting.type}.'`
+											settingIsMalformed = `'${setting.value}' (${typeof setting.value}) is NOT a valid value for setting type '${setting.type}.'`
 										} else if ('min' in setting && typeof setting.min !== "number") {
 											settingIsMalformed = `'${setting.min}' is NOT a valid value for 'num' minimum value: .min MUST be a number.`
 										} else if ('max' in setting && typeof setting.max !== "number") {
@@ -642,16 +643,17 @@ export function renderSettings() {
 										break;
 									case 'bool':
 										if (typeof setting.value !== "boolean") {
-											settingIsMalformed = `'${typeof setting.value}' is NOT a valid value for setting type '${setting.type}.'`
+											settingIsMalformed = `'${setting.value}' (${typeof setting.value}) is NOT a valid value for setting type '${setting.type}.'`
 										}
 										break;
 									case 'sel':
-										var validOpts = ['number', 'boolean']
+										var validOpts = ['number', 'string']
 										if (!('opts' in setting)) {
 											settingIsMalformed = `Setting type 'sel' requires property .opts as an array with each option for this setting. (Example: {opts: ['option1', 'option2'...]})`
 										} else if (!Array.isArray(setting.opts)) {
 											settingIsMalformed = `Setting type 'sel' requires the .opts property to be an ARRAY! (Example: {opts: ['option1', 'option2'...]})`
 										} else if (setting.opts.find(option => !validOpts.includes(typeof option))) {
+											strippedConsole.log(setting)
 											settingIsMalformed = `All options (.opts) in setting type 'sel' need to be either NUMBERs or STRINGs.`
 										} else if (setting.opts.find(option => typeof option !== typeof setting.opts[0])) {
 											settingIsMalformed = `All options (.opts) in setting type 'sel' need to be the same type! (You cannot have both STRING and NUMBER options.)`
@@ -663,7 +665,7 @@ export function renderSettings() {
 										break;
 									case 'color':
 										if (typeof setting.value !== "string") {
-											settingIsMalformed = `'${typeof setting.value}' is NOT a valid value for setting type '${setting.type}.'`
+											settingIsMalformed = `'${setting.value}' (${typeof setting.value}) is NOT a valid value for setting type '${setting.type}.'`
 										} else {
 											if (!setting.value.match(/^#([0-9a-fA-F]{3}){2}$/g)) {
 												settingIsMalformed = `'${setting.value}' is not a valid color. Use #ffffff`
@@ -674,8 +676,8 @@ export function renderSettings() {
 										settingIsMalformed = `'${setting.type}' is NOT a valid setting type.`
 										break;
 								}
-								if (setting.title.length < 1) {
-									settingIsMalformed = `'${setting.title}' is NOT a valid setting title.`
+								if (('title' in setting) && setting.title.length < 1) {
+									settingIsMalformed = `'${setting?.title}' is NOT a valid setting title.`
 								}
 								if (!('changed' in setting)) {
 									settingIsMalformed = `Custom setting requires .changed() function property.`
@@ -688,7 +690,6 @@ export function renderSettings() {
 										title: "Unset Custom Setting Title: {title}",
 										value: false,
 										type: 'bool',
-										desc: userscript.fullpath,
 										safety: 0,
 										callback: function (this: { settingKey: string, eventSuffix: string, changed: Function }, value: UserPrefs[keyof UserPrefs]) {
 											var detailOBJ: { [key: string]: UserPrefs[keyof UserPrefs] } = {}
