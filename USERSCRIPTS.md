@@ -339,7 +339,7 @@ this.settings = {
 ![Finished custom settings example](./assets/customsettings_finishedexample.png)
 
 Custom Settings Implementation Examples:
-[keystrokes.js](https://github.com/AspectQuote/krunkeruserscripts/blob/main/keystrokes.js)
+... Examples Soon™
 
 ## Tips / Notes
 
