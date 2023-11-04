@@ -1,6 +1,7 @@
 name: Build crankshaft
 
 on: push
+# TODO: Add branch filter
 
 jobs:
   build:
@@ -59,7 +60,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
 
-      - name: Create nightly releas
+      - name: Create nightly release
         uses: softprops/action-gh-release@v1
         with:
           files: Binaries-*/*
