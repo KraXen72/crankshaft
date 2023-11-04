@@ -42,5 +42,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: binaries
+          name: Binaries-${{ runner.os }}
           path: dist/crankshaft-*
