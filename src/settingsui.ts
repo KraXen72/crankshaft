@@ -578,7 +578,7 @@ export function renderSettings() {
 		}
 
 		// This array is used to store userscript settings HTML
-		const customUserScriptSettings: Array<DocumentFragment> = []
+		const customUserScriptSettings: DocumentFragment[] = []
 		const userscriptSettings: RenderReadySetting[] = su.userscripts
 			.map(userscript => {
 				const obj: RenderReadySetting = {
