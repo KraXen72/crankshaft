@@ -1,6 +1,9 @@
 name: Build crankshaft
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -28,8 +31,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 'latest'
-          cache: 'pnpm'
+          node-version: latest
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install
@@ -38,3 +41,32 @@ jobs:
         run: pnpm run dist
         env:
           GH_TOKEN: ${{ secrets.github_token }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Binaries-${{ runner.os }}
+          path: dist/crankshaft-*
+  release:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Create nightly release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Binaries-*/*
+          body_path: ${{ github.workspace }}/.github/workflows/notes.md
+          name: Nightly release
+          tag_name: nightly
+          prerelease: true
