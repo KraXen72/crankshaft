@@ -1,7 +1,9 @@
 name: Build crankshaft
 
-on: push
-# TODO: Add branch filter
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
