@@ -3,6 +3,7 @@ import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { strippedConsole } from './preload';
 import { userscriptToggleCSS } from './utils';
+import { customSettingSavedJSONIsMalformed } from './userscriptvalidators';
 
 /// <reference path="global.d.ts" />
 
@@ -103,23 +104,15 @@ class Userscript implements IUserscriptInstance {
 			if (typeof exported !== 'undefined') {
 				// more stuff to be added here later
 				if ('unload' in exported) this.unload = exported.unload;
-				if ('settings' in exported) {
-					this.settings = exported.settings
-					strippedConsole.log(`Re-defined userscript settings.`)
-				}
+				if ('settings' in exported) this.settings = exported.settings
 			}
 
+			// Apply custom settings if they exist
 			if (existsSync(this.settingsPath) && Object.keys(this.settings).length > 0) {
 				try {
 					var settingsJSON = JSON.parse(readFileSync(this.settingsPath, 'utf-8'));
 					Object.keys(settingsJSON).forEach(settingKey => {
-						if ( // Comparison chain basically validates the settings JSON
-							settingKey in this.settings && // Make sure setting key is a changeable key
-							typeof this.settings[settingKey].changed === "function" &&  // Make sure setting key has a changed function
-							settingsJSON[settingKey] !== this.settings[settingKey].value && // Make sure you aren't applying changes unnecissarily
-							typeof settingsJSON[settingKey] === typeof this.settings[settingKey].value // Ensure the saved and scripted values are of the same type
-						) {
-							strippedConsole.log(`Set settings JSON item ${settingKey}`)
+						if (customSettingSavedJSONIsMalformed(settingKey, this.settings, settingsJSON)) {
 							this.settings[settingKey].changed(settingsJSON[settingKey])
 						}
 					})
@@ -146,6 +139,7 @@ ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths
 	// init the userscripts (read, map and set up tracker)
 	su.userscripts = readdirSync(su.userscriptsPath, { withFileTypes: true })
 		.filter(entry => entry.name.endsWith('.js'))
+		//                                               v this is so that each custom userscript option will have its own unique file name.  v
 		.map(entry => new Userscript({ name: entry.name, settingsPath: pathResolve(su.userscriptPrefsPath, entry.name.replace(/.js$/, '.json')), fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
 
 	const tracker: UserscriptTracker = {};

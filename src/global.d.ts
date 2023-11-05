@@ -27,7 +27,7 @@ interface IUserscriptInstance extends IUserscript {
 	runAt: ('document-start' | 'document-end'),
 	load: Function,
 	unload: Function | false,
-	settings?: {[key: string]: UserscriptRenderReadySetting}
+	settings?: Record<string, UserscriptRenderReadySetting>
 }
 
 interface UserscriptMeta {
