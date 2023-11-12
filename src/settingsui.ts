@@ -6,7 +6,7 @@ import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } fro
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
-import { customSettingIsMalformed, customSettingSavedJSONIsMalformed } from './userscriptvalidators';
+import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
 
 /// <reference path="global.d.ts" />
 enum RefreshEnum {
@@ -15,7 +15,7 @@ enum RefreshEnum {
 	reloadApp
 }
 interface IPaths { [path: string]: string }
-interface customUserscriptSettings { [key: string]: any }
+type customUserscriptSettings = Record<string, UserPrefs>
 
 /* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
@@ -134,9 +134,9 @@ function saveSettings() {
 }
 function loadUserScriptSettings(eventSuffix: string, settings: Record<string, UserscriptRenderReadySetting>): UserPrefs {
 	try {
-		const settingsJSON = JSON.parse(readFileSync(join(userscriptPrefsPath, `${eventSuffix}.json`), 'utf-8'));
+		const settingsJSON: {[key: string]: UserPrefValue} = JSON.parse(readFileSync(join(userscriptPrefsPath, `${eventSuffix}.json`), 'utf-8'));
 		Object.keys(settingsJSON).forEach(settingKey => {
-			if (customSettingSavedJSONIsMalformed(settingKey, settings, settingsJSON)) {
+			if (customSettingSavedJSONIsNotMalformed(settingKey, settings, settingsJSON)) {
 				userscriptPreferences[eventSuffix][settingKey] = settingsJSON[settingKey]
 			}
 		})
@@ -151,20 +151,18 @@ function userscriptSettingsResetDefaults(eventSuffix: string, userscriptSettings
 		if (!brokenSettings.includes(settingKey)) {
 			const setting = userscriptSettings[settingKey]
 			const settingValue = userscriptSettings[settingKey].value
-			if (setting.value !== userscriptPreferences[eventSuffix][settingKey]) {
-				setting.changed(settingValue)
-			}
+			setting.changed(settingValue)
 			const settingValueContainer: HTMLElement = optionsContainer.querySelector(`#settingElem-${settingKey}`)
 			const settingValueElement: HTMLInputElement = settingValueContainer.querySelector(`.s-update`)
 			const secondarySettingValueElement: HTMLInputElement = settingValueContainer.querySelector(`.s-update-secondary`)
 			userscriptPreferences[eventSuffix][settingKey] = settingValue
 			switch (setting.type) {
 				case "bool":
-					settingValueElement.checked = settingValue
+					settingValueElement.checked = settingValue as boolean
 					break;
 					default:
-					settingValueElement.value = settingValue
-					if (secondarySettingValueElement) secondarySettingValueElement.value = settingValue
+					settingValueElement.value = String(settingValue)
+					if (secondarySettingValueElement) secondarySettingValueElement.value = String(settingValue)
 					break;
 			}
 			saveUserScriptSettings(eventSuffix)
@@ -311,7 +309,7 @@ class SettingElem {
 						${props.opts.map((opt, i) => `<label class="hostOpt">
 							<span class="optName">${opt}</span>
 							${hasValidDescriptions ? `<span class="optDescription">${this.props.optDescriptions[i]}</span>` : ''}
-							<input type="checkbox" name="${opt}" ${props.value.includes(opt) ? 'checked' : ''} />
+							<input type="checkbox" name="${opt}" ${(props.value as string[]).includes(opt) ? 'checked' : ''} />
 							<div class="optCheck"></div>
 						</label>`).join('')}
 					</div>`;
@@ -452,7 +450,7 @@ class SettingElem {
 			const { icon, text, callback } = this.props.button;
 			wrapper.appendChild(skeleton.settingButton(icon, text, callback, this.props.button.customTitle ?? void 0));
 		}
-		if (this.type === 'sel') wrapper.querySelector('select').value = this.props.value;
+		if (this.type === 'sel') wrapper.querySelector('select').value = String(this.props.value);
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
 
 		// @ts-ignore
@@ -578,7 +576,7 @@ export function renderSettings() {
 		}
 
 		// This array is used to store userscript settings HTML
-		const customUserScriptSettings: DocumentFragment[] = []
+		const customUserScriptSettingsElems: DocumentFragment[] = []
 		const userscriptSettings: RenderReadySetting[] = su.userscripts
 			.map(userscript => {
 				const obj: RenderReadySetting = {
@@ -671,7 +669,7 @@ export function renderSettings() {
 						defaultsItem.appendChild(skeleton.settingButton('refresh', 'Reset Defaults', e => { userscriptSettingsResetDefaults(userscript.name.replace(/.js$/, '') ?? userscriptCategoryID, userScriptDefinedOptions, userscriptCategoryID, brokenSettings)}));
 						fragForUserscript.querySelector(`.${userscriptCategoryID}`).appendChild(defaultsItem)
 						// Add fragment to array of userscript options.
-						customUserScriptSettings.push(fragForUserscript)
+						customUserScriptSettingsElems.push(fragForUserscript)
 					}
 				}
 				if (userscript.unload) {
@@ -684,7 +682,7 @@ export function renderSettings() {
 			});
 		
 		// Apply custom userscript options to the settings fragment
-		customUserScriptSettings.forEach(fragment => { csSettings.appendChild(fragment) })
+		customUserScriptSettingsElems.forEach(fragment => { csSettings.appendChild(fragment) })
 		document.querySelector('.Crankshaft-settings').textContent = '';
 		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
 

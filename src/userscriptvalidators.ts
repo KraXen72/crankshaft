@@ -33,8 +33,8 @@ export const customSettingIsMalformed = function(customUserScriptSetting: Usersc
                 settingIsMalformed = `All options (.opts) in setting type 'sel' need to be the same type! (You cannot have both STRING and NUMBER options.)`
             } else if (setting.opts.length < 2) {
                 settingIsMalformed = `Setting type 'sel' must have at least 2 options to choose from!`
-            } else if (!setting.opts.includes(setting.value)) {
-                settingIsMalformed = `Setting type 'sel' must have its value set to one of the options defined in .opts!`
+            } else if (!setting.opts.includes(setting.value as string)) {
+                settingIsMalformed = `Setting type 'sel' must have its value set to one of the options defined in .opts! (${setting.opts.join(',')})`
             }
             break;
         case 'color':
@@ -62,7 +62,7 @@ export const customSettingIsMalformed = function(customUserScriptSetting: Usersc
     return settingIsMalformed
 }
 
-export const customSettingSavedJSONIsMalformed = function (settingKey: string, settings: Record<string, UserscriptRenderReadySetting>, settingsJSON: Record<string, UserscriptRenderReadySetting>): boolean {
+export const customSettingSavedJSONIsNotMalformed = function (settingKey: string, settings: Record<string, UserscriptRenderReadySetting>, settingsJSON: Record<string, UserPrefValue>): boolean {
     // Comparison chain basically validates the settings JSON
     return (settingKey in settings && // Make sure setting key is a changeable/registered key
     typeof settings[settingKey].changed === "function" &&  // Make sure setting key has a changed function

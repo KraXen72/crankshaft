@@ -1,6 +1,8 @@
 type UserPrefs = {
-	[preference: string]: boolean | string | string[] | number;
+	[preference: string]: UserPrefValue;
 };
+
+type UserPrefValue = boolean | string | string[] | number
 
 interface UserscriptTracker {
 	[script: string]: boolean;
@@ -147,8 +149,7 @@ interface RenderReadySetting extends SettingItemGeneric {
 	key: string;
 	callback: Callbacks;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	value: any;
+	value: UserPrefValue;
 
 	// an optional unload function (for now for userscripts)
 	userscriptReference?: IUserscriptInstance
@@ -174,8 +175,7 @@ interface UserscriptRenderReadySetting extends SettingItemGeneric {
 	key: string;
 	changed: Function;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	value: any;
+	value: UserPrefValue;
 
 	// an optional unload function (for now for userscripts)
 	userscriptReference?: IUserscriptInstance

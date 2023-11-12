@@ -3,7 +3,7 @@ import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { strippedConsole } from './preload';
 import { userscriptToggleCSS } from './utils';
-import { customSettingSavedJSONIsMalformed } from './userscriptvalidators';
+import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
 
 /// <reference path="global.d.ts" />
 
@@ -110,9 +110,9 @@ class Userscript implements IUserscriptInstance {
 			// Apply custom settings if they exist
 			if (existsSync(this.settingsPath) && Object.keys(this.settings).length > 0) {
 				try {
-					var settingsJSON = JSON.parse(readFileSync(this.settingsPath, 'utf-8'));
+					var settingsJSON: {[key: string]: UserPrefValue} = JSON.parse(readFileSync(this.settingsPath, 'utf-8'));
 					Object.keys(settingsJSON).forEach(settingKey => {
-						if (customSettingSavedJSONIsMalformed(settingKey, this.settings, settingsJSON)) {
+						if (customSettingSavedJSONIsNotMalformed(settingKey, this.settings, settingsJSON)) {
 							this.settings[settingKey].changed(settingsJSON[settingKey])
 						}
 					})
