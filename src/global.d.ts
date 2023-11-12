@@ -1,6 +1,8 @@
 type UserPrefs = {
-	[preference: string]: boolean | string | string[] | number;
+	[preference: string]: UserPrefValue;
 };
+
+type UserPrefValue = boolean | string | string[] | number
 
 interface UserscriptTracker {
 	[script: string]: boolean;
@@ -13,11 +15,12 @@ interface InsertedCSS {
 interface IUserscript {
 	name: string;
 	fullpath: string;
+	settingsPath: string;
 	content?: string;
 	exported?: {
 		meta?: UserscriptMeta | false,
 		unload?: Function | false
-	}
+	};
 }
 
 interface IUserscriptInstance extends IUserscript {
@@ -25,7 +28,8 @@ interface IUserscriptInstance extends IUserscript {
 	hasRan: boolean,
 	runAt: ('document-start' | 'document-end'),
 	load: Function,
-	unload: Function | false
+	unload: Function | false,
+	settings?: Record<string, UserscriptRenderReadySetting>
 }
 
 interface UserscriptMeta {
@@ -34,6 +38,7 @@ interface UserscriptMeta {
 	version: string;
 	desc: string;
 	src: string;
+	settingsID: string;
 }
 
 /** krunker injects these into the window object */
@@ -74,7 +79,7 @@ interface Window {
  */
 
 type Callbacks = 'normal' | 'userscript' | Function;
-type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'num';
+type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'color' | 'num';
 
 interface SettingExtraButton {
 	icon: string,
@@ -86,6 +91,7 @@ interface SettingExtraButton {
 interface SettingItemGeneric {
 	title: string;
 	desc?: string;
+	// This is for the (!) display on settings, describing if they are safe to use, and at what level they are safe.
 	safety: number;
 	type: ValidTypes;
 	button?: SettingExtraButton;
@@ -143,8 +149,33 @@ interface RenderReadySetting extends SettingItemGeneric {
 	key: string;
 	callback: Callbacks;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	value: any;
+	value: UserPrefValue;
+
+	// an optional unload function (for now for userscripts)
+	userscriptReference?: IUserscriptInstance
+}
+
+interface UserscriptRenderReadySetting extends SettingItemGeneric {
+	type: ValidTypes;
+
+	// for sel
+	opts?: string[];
+	cols?: number;
+
+	// for multisel
+	/** optDescriptions.length must equal opts.length! */
+	optDescriptions?: string[];
+
+	// for num
+	min?: number;
+	max?: number;
+	step?: number;
+
+	// the data
+	key: string;
+	changed: Function;
+
+	value: UserPrefValue;
 
 	// an optional unload function (for now for userscripts)
 	userscriptReference?: IUserscriptInstance
