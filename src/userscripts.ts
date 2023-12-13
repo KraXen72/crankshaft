@@ -108,7 +108,7 @@ class Userscript implements IUserscriptInstance {
 			}
 
 			// Apply custom settings if they exist
-			if (existsSync(this.settingsPath) && Object.keys(this.settings).length > 0) {
+			if (Object.keys(this.settings).length > 0 && existsSync(this.settingsPath)) {
 				try {
 					var settingsJSON: {[key: string]: UserPrefValue} = JSON.parse(readFileSync(this.settingsPath, 'utf-8'));
 					Object.keys(settingsJSON).forEach(settingKey => {
