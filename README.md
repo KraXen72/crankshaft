@@ -1,9 +1,14 @@
 # crankshaft
-
+  
 [![GitHub All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)](https://github.com/KraXen72/crankshaft/releases/latest) [![Latest release](https://img.shields.io/github/downloads/KraXen72/crankshaft/latest/total)](https://github.com/KraXen72/crankshaft/releases/latest) [![Chat](https://img.shields.io/discord/966300714060116008)](https://discord.gg/ZeVuxG7gQJ) [![Recurring donation via Liberapay](https://img.shields.io/badge/donate-liberapay-%23f6c915?logo=liberapay)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://img.shields.io/badge/donate-ko--fi-%23ff5e5b?logo=kofi)](https://ko-fi.com/kraxen72)
 
 > a fast, feature-rich krunker client written in typescript
   
+**Notice:**
+crankshaft is **not** archived/unmaintained - the latest release works fine    
+development of new features **has been paused** due to a lack of time and the state krunker is in, but bugs will be fixed.  
+this is **not forever** - there will likely **be updates in the future**.  
+
 **Download:** [Windows (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-setup-win-x64.exe) - [Mac (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-x64.dmg) - [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) - [Linux (i386 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-i386.AppImage) - [Other](https://github.com/KraXen72/crankshaft/releases/latest)  
 ![splash](assets/blank_splash.png)
 
