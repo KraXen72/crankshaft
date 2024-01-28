@@ -4,14 +4,17 @@
 
 > a fast, feature-rich krunker client written in typescript
   
-**Notice:**
-crankshaft is **not** archived/unmaintained - the latest release works fine    
-development of new features **has been paused** due to a lack of time and the state krunker is in, but bugs will be fixed.  
-this is **not forever** - there will likely **be updates in the future**.  
-
 **Download:** [Windows (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-setup-win-x64.exe) - [Mac (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-x64.dmg) - [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) - [Linux (i386 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-i386.AppImage) - [Other](https://github.com/KraXen72/crankshaft/releases/latest)  
-![splash](assets/blank_splash.png)
-
+  
+## upcoming breaking change
+- **from version `1.9.0`, crankshaft will no longer support `Documents/Crankshaft` for configuration.**
+- **make a backup of `Documents/Crankshaft` before updating.**
+- **crankshaft 1.9.0 will auto-migrate the folder** to the new location in `%APPDATA%`, but there's a *very small chance* it could fail while moving/copying/deleting the files, and you'd lose your settings, swapper & scripts.
+- this is due to inconsistent read/write permissions for users whose Documents directory lives inside of OneDrive or has been otherwise moved.
+- crankshaft 1.9.0 will add quick-open buttons for the new directories & files for easy access.
+  
+![splash](assets/blank_splash.png)  
+  
 ## client features
 - very good performance with additional performance enhancing settings
 - highly customisable, many different settings
@@ -23,7 +26,7 @@ this is **not forever** - there will likely **be updates in the future**.
 - quick class switcher using `#hiddenClasses`
 - built-in hotkeys: [more about them here](#hotkeys)
 - maintained & open source
-
+  
 ## quality of life
 - all client specific **features can be turned off** to ensure **maximum performance**
   - once a feature is disabled, none of it code runs
@@ -65,13 +68,6 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 ## matchmaker
 a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6` 
 ![matchmaker](./assets/matchmaker_screenshot.png)
-
-## upcoming breaking change
-- **from version `1.9.0`, crankshaft will no longer support `Documents/Crankshaft` for configuration.**
-- **make a backup of `Documents/Crankshaft` before updating.**
-- **crankshaft 1.9.0 will auto-migrate the folder**, but there's a *very small chance* it could fail while moving/copying/deleting the files, and you'd lose your settings, swapper & scripts.
-- this is due to inconsistent read/write permissions for users whose Documents directory lives inside of OneDrive or has been otherwise moved.
-- crankshaft 1.9.0 will add quick-open buttons for the new directories & files, as they are harder to access.
 
 ## building from source
 1. **you have to have [git](https://git-scm.com/downloads), [nodejs](https://nodejs.org/en/download/), and [pnpm](https://pnpm.io/installation) installed**.
