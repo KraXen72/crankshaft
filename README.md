@@ -89,6 +89,26 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
    - until automated tests are added, try to manually test it works even after the code is minified. if it does not, you're probably doing something wrong
 - please report any bugs/feature requests in the Issues.
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.
+  
+#### wanted/potential features
+- here are some features i wanted to add, but don't have the time to
+- if you're looking to contribute, feel free to open pr's for these
+- [ ] **Add a new setting type: Keybind**
+  - after clicking it, it would wait until a keypress that isn't esc & register it
+  - there would be a reset button to `[none]` next to the setting input
+  - allow userscripts to create this setting type
+- [ ] **Matchmaker: Map autocomplete**
+  - create a simple typeahead/autocomplete for the matchmaker, where you can input maps (official ones)
+    - you can get more info about maps from [this krunker api link](https://matchmaker.krunker.io/game-list?hostname=krunker.io) or the [client code](https://github.com/KraXen72/crankshaft/blob/master/src/matchmaker.ts)
+    - [Wes Bos' Javascript30 free course (episode 6)](https://javascript30.com) is a tutorial on how to implement a typeahead in vanilla js
+      - (you'd use typescript but it's very similar)
+  - allow toggling the list of maps between whitelist/blacklist
+  - take this white/blacklist into account when using the matchmaker
+- [ ] **Add tests**
+  - could be useful, testing a few thigs like: if the game loads, if settings load, if you can set a setting, etc.
+- [ ] **Implement autoupdate** (whatever official way electron recommends)
+  - i tried to add this once and failed.
+  - honestly good luck since this client uses an ancient electron version due to all the newer ones having a bug that causes aim freeze in krunker
 
 ### credits
 - [Creepycats](https://github.com/creepycats) released [Gatoclient](https://github.com/Gatohost/gatoclient), which was based on top of [idkr](https://github.com/idkr-client/idkr).
