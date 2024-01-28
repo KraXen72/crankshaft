@@ -106,7 +106,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
   - take this white/blacklist into account when using the matchmaker
 - [ ] **Add tests**
   - could be useful, testing a few thigs like: if the game loads, if settings load, if you can set a setting, etc.
-- [ ] **Implement autoupdate** (whatever official way electron recommends)
+- [ ] **Add autoupdate** (whatever official way electron recommends)
   - i tried to add this once and failed.
   - honestly good luck since this client uses an ancient electron version due to all the newer ones having a bug that causes aim freeze in krunker
 
