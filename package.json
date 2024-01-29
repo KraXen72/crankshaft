@@ -40,7 +40,7 @@
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
-		"@cliqz/adblocker-electron": "^1.26.15",
+		"@cliqz/adblocker": "^1.26.15",
 		"compare-versions": "^6.1.0",
 		"dayjs": "^1.11.10",
 		"discord-rpc": "^4.0.1",

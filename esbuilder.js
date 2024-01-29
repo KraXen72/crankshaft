@@ -19,7 +19,7 @@ const buildOptions = {
 		'src/main.ts',
 		'src/menu.ts',
 		'src/preload.ts',
-		'src/resourceswapper.ts',
+		'src/requesthandler.ts',
 		'src/settingsui.ts',
 		'src/switches.ts',
 		'src/userscripts.ts',
