@@ -58,10 +58,7 @@ export default class {
 
 		this.recursiveSwap('');
 
-		// FIXME: format better?
 		this.engine = FiltersEngine.parse(`${this.defaultFilters}\n${this.customFilters}`);
-
-		// TESTING REMOVE LATER
 
 		this.browserWindow.webContents.session.webRequest.onBeforeRequest((details, callback) => {
 			if (this.swapperEnabled) {
