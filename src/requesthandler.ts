@@ -74,7 +74,8 @@ export default class {
 					// Redirect to the local resource.
 					return callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
 				}
-			} else if (this.blockerEnabled) {
+			}
+			if (this.blockerEnabled) {
 				const req = Request.fromRawDetails({
 					_originalRequestDetails: details,
 					requestId: `${details.id}`,
