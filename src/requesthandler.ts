@@ -1,10 +1,11 @@
 import { readdirSync, existsSync, mkdirSync } from 'fs';
 import { join as pathJoin } from 'path';
 
-// TODO: conditional import
+import { Filter } from 'electron';
+import { readFileSync } from 'original-fs';
 
-import { ElectronRequestType, FiltersEngine, Request } from '@cliqz/adblocker';
-import { WebRequest } from 'electron';
+// TODO: conditional import (?)
+import { URLPattern } from 'urlpattern-polyfill';
 
 const TARGET_GAME_DOMAIN = 'krunker.io';
 
@@ -22,17 +23,19 @@ export default class {
 
 	private blockerEnabled: boolean;
 
-	private swapUrls: RegExp[] = [];
+	private customFiltersEnabled: boolean;
 
-	private engine: FiltersEngine;
+	private filter: Filter = { urls: [] };
+
+	private swapUrls: string[] = [];
 
 	private started = false;
 
 	private swapDir: string;
 
-	private defaultFilters: string;
+	private defaultFilters: string[];
 
-	private customFilters: string;
+	private customFilters: string[] = [];
 
 	/**
 	 * Set the target window.
@@ -40,13 +43,18 @@ export default class {
 	 * @param browserWindow - The target window.
 	 */
 	// FIXME: better way to enable/disable?
-	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string, swapperEnabled: boolean, blockerEnabled: boolean, defaultFilters: string, customFilters: string) {
+	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string, swapperEnabled: boolean, blockerEnabled: boolean, customFiltersEnabled: boolean, defaultFiltersPath: string, customFiltersPath: string) {
 		this.browserWindow = browserWindow;
 		this.swapDir = swapDir;
 		this.swapperEnabled = swapperEnabled;
 		this.blockerEnabled = blockerEnabled;
-		this.defaultFilters = defaultFilters;
-		this.customFilters = customFilters;
+		this.customFiltersEnabled = customFiltersEnabled;
+
+		this.defaultFilters = readFileSync(defaultFiltersPath).toString()
+			.split(/\r?\n/u);
+		this.customFilters = readFileSync(customFiltersPath).toString()
+			.split(/\r?\n/u)
+			.filter(filter => filter[0] !== '#');
 	}
 
 	/** Initialize the request handler for the target window.*/
@@ -56,17 +64,18 @@ export default class {
 		// If the target directory doesn't exist, create it.
 		if (!existsSync(this.swapDir)) mkdirSync(this.swapDir, { recursive: true });
 
-		this.recursiveSwap('');
+		if (this.swapperEnabled) {
+			this.recursiveSwap('');
+			this.filter.urls.push(...this.swapUrls);
+		}
 
-		this.engine = FiltersEngine.parse(`${this.defaultFilters}\n${this.customFilters}`);
+		if (this.blockerEnabled) this.filter.urls.push(...this.defaultFilters);
 
-		this.browserWindow.webContents.session.webRequest.onBeforeRequest((details, callback) => {
+		if (this.customFiltersEnabled) this.filter.urls.push(...this.customFilters.filter(i => i !== ''));
+
+		this.browserWindow.webContents.session.webRequest.onBeforeRequest(this.filter, (details, callback) => {
 			if (this.swapperEnabled) {
-				let swapResourse = false;
-				this.swapUrls.every(pattern => {
-					if (details.url.match(pattern).length > 0) swapResourse = true;
-					return swapResourse;
-				});
+				const swapResourse = this.swapUrls.some(pat => new URLPattern(pat).test(details.url));
 				if (swapResourse) {
 					const path = new URL(details.url).pathname;
 					const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path);
@@ -75,18 +84,9 @@ export default class {
 					return callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
 				}
 			}
-			if (this.blockerEnabled) {
-				const req = Request.fromRawDetails({
-					_originalRequestDetails: details,
-					requestId: `${details.id}`,
-					sourceUrl: details.referrer,
-					tabId: details.webContentsId,
-					type: (details.resourceType || 'other') as ElectronRequestType,
-					url: details.url
-				});
-				const { redirect, match } = this.engine.match(req);
-				if (redirect) return callback({ redirectURL: redirect.dataUrl });
-				else if (match) return callback({ cancel: true });
+			if (this.blockerEnabled || this.customFiltersEnabled) {
+				const block = this.filter.urls.some(pat => new URLPattern(pat).test(details.url));
+				if (block) return callback({ cancel: true });
 			}
 			return callback({});
 		});
@@ -119,7 +119,7 @@ export default class {
 	}
 
 	/**
-	 * Recursively swap all files in the target directory.
+	 * Generate a list of url match patterns for all resources to swap (recursive)
 	 *
 	 * @param prefix - The target directory to swap.
 	 */
@@ -133,18 +133,18 @@ export default class {
 					this.recursiveSwap(name);
 				} else {
 					// browserfps.com has the server name as the subdomain instead of 'assets', so we must take that into account.
-					const tests: RegExp[] = [
-						new RegExp(`\\w+://\\w+\\.${TARGET_GAME_DOMAIN}${name}`, 'u'),
-						new RegExp(`\\w+://\\w+\\.${TARGET_GAME_DOMAIN}${name}?.*`, 'u'),
-						new RegExp(`\\w+://\\w+\\.${TARGET_GAME_DOMAIN}/assets${name}`, 'gu'),
-						new RegExp(`\\w+://\\w+\\.${TARGET_GAME_DOMAIN}/assets${name}?.*`, 'gu')
+					const tests = [
+						`*://*.${TARGET_GAME_DOMAIN}${name}`,
+						`*://*.${TARGET_GAME_DOMAIN}${name}?*`,
+						`*://*.${TARGET_GAME_DOMAIN}/assets${name}`,
+						`*://*.${TARGET_GAME_DOMAIN}/assets${name}?*`
 					];
 					this.swapUrls.push(...(/^\/(?:models|textures|sound|scares|videos)(?:$|\/)/u.test(name)
 						? tests
 						: [
 							...tests,
-							new RegExp(`\\w+://comp+\\.${TARGET_GAME_DOMAIN}${name}?.*`, 'gu'),
-							new RegExp(`\\w+://comp+\\.${TARGET_GAME_DOMAIN}/assets${name}?.*`, 'gu')
+							`*://comp.${TARGET_GAME_DOMAIN}${name}?*`,
+							`*://comp.${TARGET_GAME_DOMAIN}/assets/${name}?*`
 						]
 					));
 				}

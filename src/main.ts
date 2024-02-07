@@ -99,9 +99,11 @@ if (!existsSync(userscriptsPath)) mkdirSync(userscriptsPath, { recursive: true }
 if (!existsSync(userscriptTrackerPath)) writeFileSync(userscriptTrackerPath, '{}', { encoding: 'utf-8' });
 if (!existsSync(filtersPath)) {
 	writeFileSync(filtersPath,
-		`! Welcome to the filters file! Filters are in the adblock list format. Only request blocking is supported for now.
-		! Exclamation marks are comments. Here's a filter that blocks all bundle audio:
-! ||assets.krunker.io/sound/bundle_*.mp3*
+		`# Welcome to the filters file! Filters follow the URL pattern format:
+# https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
+# Hashtags are used for comments, and each line is a new filter.
+# Here's an example of a filter that blocks the cosmetic bundle popup audio:
+# *://assets.krunker.io/sound/bundle_*.mp3*
 `);
 }
 
@@ -157,7 +159,6 @@ ipcMain.on('openExternal', (event, url: string) => { shell.openExternal(url); })
 
 const $assets = pathResolve(__dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
-const defaultFilters = readFileSync(pathJoin($assets, 'blockFilter.txt'), { encoding: 'utf-8' });
 
 /** open a custom generic window with our menu, hidden */
 function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructorOptions | MenuItem)[], addAdditionalSubmenus = true) {
@@ -455,7 +456,13 @@ app.on('ready', () => {
 	});
 
 	if (userPrefs.resourceSwapper || userPrefs.hideAds === 'block') {
-		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow, swapperPath, userPrefs.resourceSwapper, userPrefs.hideAds === 'block', defaultFilters, readFileSync(filtersPath).toString());
+		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow,
+			swapperPath,
+			userPrefs.resourceSwapper,
+			userPrefs.hideAds === 'block',
+			userPrefs.customFilters,
+			pathJoin($assets, 'blockFilters.txt'),
+			filtersPath);
 		CrankshaftFilterHandlerInstance.start();
 	}
 });

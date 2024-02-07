@@ -1,0 +1,14 @@
+*://*.pollfish.com/*
+*://www.paypalobjects.com/*
+*://fran-cdn.frvr.com/prebid*
+*://fran-cdn.frvr.com/gpt_*
+*://c.amazon-adsystem.com/*
+*://fran-cdn.frvr.com/pubads_*
+*://platform.twitter.com/*
+*://cookiepro.com/*
+*://*.cookiepro.com/*
+*://www.googletagmanager.com/*
+*://storage.googleapis.com/pollfish_production/*
+*://krunker.io/libs/frvr-channel-web*
+*://apis.google.com/js/platform.js
+*://imasdk.googleapis.com/*

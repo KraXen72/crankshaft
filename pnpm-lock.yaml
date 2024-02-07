@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@cliqz/adblocker':
-    specifier: ^1.26.15
-    version: 1.26.15
   compare-versions:
     specifier: ^6.1.0
     version: 6.1.0
@@ -17,6 +14,9 @@ dependencies:
   discord-rpc:
     specifier: ^4.0.1
     version: 4.0.1
+  urlpattern-polyfill:
+    specifier: ^10.0.0
+    version: 10.0.0
   userscript-meta:
     specifier: ^1.0.1
     version: 1.0.1
@@ -92,29 +92,6 @@ packages:
     dependencies:
       regenerator-runtime: 0.14.1
     dev: true
-
-  /@cliqz/adblocker-content@1.26.15:
-    resolution: {integrity: sha512-F1G+HCVW1SjCtHihXdh4iR6JeuI/50agBPl4EmAmZhlC2ALLAf0kZDswNr2L5sNQ1/j1XBbeNzu4YrDonnq7NQ==}
-    dependencies:
-      '@cliqz/adblocker-extended-selectors': 1.26.15
-    dev: false
-
-  /@cliqz/adblocker-extended-selectors@1.26.15:
-    resolution: {integrity: sha512-dM51IMHrRjQPj0JnoYfIBRoG9q9yYKQ7uDW27wfy0QW4pqlGRkEuHjXKK2dC8aOWUgNjDypnzWxfUMf7v0lEXA==}
-    dev: false
-
-  /@cliqz/adblocker@1.26.15:
-    resolution: {integrity: sha512-qmrQd0a6DC+HXWvamezwtdg91mvdyvrmufcg0l/I2EGJV1nLC81S81/Fln3TnJiJTuC7rqko6pq2E+GfoDdRPg==}
-    dependencies:
-      '@cliqz/adblocker-content': 1.26.15
-      '@cliqz/adblocker-extended-selectors': 1.26.15
-      '@remusao/guess-url-type': 1.2.1
-      '@remusao/small': 1.2.1
-      '@remusao/smaz': 1.9.1
-      '@types/chrome': 0.0.256
-      '@types/firefox-webext-browser': 120.0.0
-      tldts-experimental: 6.1.4
-    dev: false
 
   /@develar/schema-utils@2.6.5:
     resolution: {integrity: sha512-0cp4PsWQ/9avqTVMCtZ+GirikIA36ikvjtHweU4/j8yLtgObI0+JUPhYFScgwlteveGB1rt3Cm8UhN04XayDig==}
@@ -466,35 +443,6 @@ packages:
       fastq: 1.17.0
     dev: true
 
-  /@remusao/guess-url-type@1.2.1:
-    resolution: {integrity: sha512-rbOqre2jW8STjheOsOaQHLgYBaBZ9Owbdt8NO7WvNZftJlaG3y/K9oOkl8ZUpuFBisIhmBuMEW6c+YrQl5inRA==}
-    dev: false
-
-  /@remusao/small@1.2.1:
-    resolution: {integrity: sha512-7MjoGt0TJMVw1GPKgWq6SJPws1SLsUXQRa43Umht+nkyw2jnpy3WpiLNqGdwo5rHr5Wp9B2W/Pm5RQp656UJdw==}
-    dev: false
-
-  /@remusao/smaz-compress@1.9.1:
-    resolution: {integrity: sha512-E2f48TwloQu3r6BdLOGF2aczeH7bJ/32oJGqvzT9SKur0cuUnLcZ7ZXP874E2fwmdE+cXzfC7bKzp79cDnmeyw==}
-    dependencies:
-      '@remusao/trie': 1.4.1
-    dev: false
-
-  /@remusao/smaz-decompress@1.9.1:
-    resolution: {integrity: sha512-TfjKKprYe3n47od8auhvJ/Ikj9kQTbDTe71ynKlxslrvvUhlIV3VQSuwYuMWMbdz1fIs0H/fxCN1Z8/H3km6/A==}
-    dev: false
-
-  /@remusao/smaz@1.9.1:
-    resolution: {integrity: sha512-e6BLuP8oaXCZ9+v46Is4ilAZ/Vq6YLgmBP204Ixgk1qTjXmqvFYG7+AS7v9nsZdGOy96r9DWGFbbDVgMxwu1rA==}
-    dependencies:
-      '@remusao/smaz-compress': 1.9.1
-      '@remusao/smaz-decompress': 1.9.1
-    dev: false
-
-  /@remusao/trie@1.4.1:
-    resolution: {integrity: sha512-yvwa+aCyYI/UjeD39BnpMypG8N06l86wIDW1/PAc6ihBRnodIfZDwccxQN3n1t74wduzaz74m4ZMHZnB06567Q==}
-    dev: false
-
   /@sindresorhus/is@0.14.0:
     resolution: {integrity: sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==}
     engines: {node: '>=6'}
@@ -512,32 +460,11 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
-  /@types/chrome@0.0.256:
-    resolution: {integrity: sha512-NleTQw4DNzhPwObLNuQ3i3nvX1rZ1mgnx5FNHc2KP+Cj1fgd3BrT5yQ6Xvs+7H0kNsYxCY+lxhiCwsqq3JwtEg==}
-    dependencies:
-      '@types/filesystem': 0.0.35
-      '@types/har-format': 1.2.15
-    dev: false
-
   /@types/debug@4.1.12:
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
     dependencies:
       '@types/ms': 0.7.34
     dev: true
-
-  /@types/filesystem@0.0.35:
-    resolution: {integrity: sha512-1eKvCaIBdrD2mmMgy5dwh564rVvfEhZTWVQQGRNn0Nt4ZEnJ0C8oSUCzvMKRA4lGde5oEVo+q2MrTTbV/GHDCQ==}
-    dependencies:
-      '@types/filewriter': 0.0.32
-    dev: false
-
-  /@types/filewriter@0.0.32:
-    resolution: {integrity: sha512-Kpi2GXQyYJdjL8mFclL1eDgihn1SIzorMZjD94kdPZh9E4VxGOeyjPxi5LpsM4Zku7P0reqegZTt2GxhmA9VBg==}
-    dev: false
-
-  /@types/firefox-webext-browser@120.0.0:
-    resolution: {integrity: sha512-L+tDlwNeq0kQGfAYc2sNfKhRWJz9CNRvlbq9HnLibKUiJ3VTThG8sj7xrJF4CtKpEA9eBAr91Z2nnKIAy+xUJg==}
-    dev: false
 
   /@types/fs-extra@9.0.13:
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
@@ -553,10 +480,6 @@ packages:
       '@types/node': 20.11.10
     dev: true
     optional: true
-
-  /@types/har-format@1.2.15:
-    resolution: {integrity: sha512-RpQH4rXLuvTXKR0zqHq3go0RVXYv/YVqv4TnPH95VbwUxZdQlK1EtcMvQvMpDngHbt13Csh9Z4qT9AbkiQH5BA==}
-    dev: false
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -3770,16 +3693,6 @@ packages:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
     dev: true
 
-  /tldts-core@6.1.4:
-    resolution: {integrity: sha512-9rlteMsuqWQaWlLhnqCOeAXW1jqahlBHXOhCHu1GkkNBbjitbEqhDQC1Br6W/2PZJTTh8f+QIk5GstyZFC26Bg==}
-    dev: false
-
-  /tldts-experimental@6.1.4:
-    resolution: {integrity: sha512-+6hbs9/8gvWzfSyiWkv5wnfHl+ZPY6pz/wGNwZkyH3YYm05/YqlKbvl6B2eKFIOUx9KMmlTWYMmZ8h7h49flEg==}
-    dependencies:
-      tldts-core: 6.1.4
-    dev: false
-
   /tmp-promise@3.0.3:
     resolution: {integrity: sha512-RwM7MoPojPxsOBYnyd2hy0bxtIlVrihNs9pj5SUvY8Zz1sQcQG2tG1hSr8PDxfgEB8RNKDhqbIlroIarSNDNsQ==}
     dependencies:
@@ -3969,6 +3882,10 @@ packages:
     dependencies:
       prepend-http: 2.0.0
     dev: true
+
+  /urlpattern-polyfill@10.0.0:
+    resolution: {integrity: sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==}
+    dev: false
 
   /userscript-meta@1.0.1:
     resolution: {integrity: sha512-jgfve+ZReUyo+t7pmu9sQPyLzsU5qVWW30tYp5iXQsW2BZg78ezOCZU7jMxkyN2BKnsDeaYKMfisU/JerXXCbg==}
