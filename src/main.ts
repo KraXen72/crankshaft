@@ -455,13 +455,15 @@ app.on('ready', () => {
 		}
 	});
 
+	// console.log(readFileSync(pathJoin($assets, 'blockFilters.txt'), { encoding: 'utf-8' }));
+
 	if (userPrefs.resourceSwapper || userPrefs.hideAds === 'block') {
 		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow,
 			swapperPath,
 			userPrefs.resourceSwapper,
 			userPrefs.hideAds === 'block',
 			userPrefs.customFilters,
-			pathJoin($assets, 'blockFilters.txt'),
+			readFileSync(pathJoin($assets, 'blockFilters.txt')).toString(),
 			filtersPath);
 		CrankshaftFilterHandlerInstance.start();
 	}
