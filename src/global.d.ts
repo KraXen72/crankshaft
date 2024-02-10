@@ -75,7 +75,7 @@ interface Window {
 
 /*
  *	these setting type defs do look complicated but they just ensure a noob can easily create a new setting.
- *	basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see 
+ *	basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see
  */
 
 type Callbacks = 'normal' | 'userscript' | Function;
@@ -191,10 +191,10 @@ interface CategoryName {
 // discord rpc
 type RPCargs = { details: string, state: string };
 
-/** 
+/**
  * return type of window.getGameActivity()
  * we can't ensure krunker doesen't change or fail to return this exact object
- * this should be consumed as `Partial<GameInfo>` with fallbacks from elements for properties you are using 
+ * this should be consumed as `Partial<GameInfo>` with fallbacks from elements for properties you are using
  */
 interface GameInfo {
 

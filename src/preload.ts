@@ -13,7 +13,7 @@ dayjs.extend(utc);
 
 /// <reference path="global.d.ts" />
 
-// get rid of client unsupported message 
+// get rid of client unsupported message
 window.OffCliV = true;
 
 // save some console methods from krunker
@@ -29,9 +29,9 @@ const $assets = pathResolve(__dirname, '..', 'assets');
 
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCSS = {
-	hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' }),
-	menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), { encoding: 'utf-8' }),
-	quickClassPicker: readFileSync(pathJoin($assets, 'quickClassPicker.css'), { encoding: 'utf-8' }) + hiddenClassesImages(16),
+	hideAds: readFileSync(pathJoin($assets, 'styles/hideAds.css'), { encoding: 'utf-8' }),
+	menuTimer: readFileSync(pathJoin($assets, 'styles/menuTimer.css'), { encoding: 'utf-8' }),
+	quickClassPicker: readFileSync(pathJoin($assets, 'styles/quickClassPicker.css'), { encoding: 'utf-8' }) + hiddenClassesImages(16),
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
@@ -119,11 +119,11 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
-	const settCss = readFileSync(pathJoin($assets, 'settingCss.css'), { encoding: 'utf-8' });
+	const settCss = readFileSync(pathJoin($assets, 'styles/settingCss.css'), { encoding: 'utf-8' });
 	injectSettingsCSS(settCss, settId);
 
 	if (clientSplash) {
-		const splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), { encoding: 'utf-8' });
+		const splashCSS = readFileSync(pathJoin($assets, 'styles/splashCss.css'), { encoding: 'utf-8' });
 		injectSettingsCSS(splashCSS, splashId);
 
 		const instructionHider = document.getElementById('instructionHider');

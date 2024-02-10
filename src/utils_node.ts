@@ -7,7 +7,7 @@ import { join as pathJoin } from 'path';
 
 /**
  * recursive synchronous folder copy (modified from SO)
- * @link https://stackoverflow.com/a/52338335/13342359 
+ * @link https://stackoverflow.com/a/52338335/13342359
  */
 export function copyFolderSync(from: string, to: string) {
 	if (!existsSync(to)) mkdirSync(to);

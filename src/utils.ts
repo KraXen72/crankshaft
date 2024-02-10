@@ -111,7 +111,7 @@ export function hiddenClassesImages(classesCount: number) {
 
 	let css = `#hiddenClasses [id^="menuClassPicker"] {
 		width: ${buttonSize}px; height: ${buttonSize}px;
-		background-size: ${buttonSize - 6}px ${buttonSize - 6}px; 
+		background-size: ${buttonSize - 6}px ${buttonSize - 6}px;
 	}\n`;
 
 	for (let i = 0; i < classesCount; i++) css += `#${prepend}${i} { background-image: url("https://assets.krunker.io/textures/classes/icon_${i}.png"); } \n`;

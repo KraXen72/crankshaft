@@ -28,9 +28,9 @@ function migrateSettings() {
 
 		There are files in both directories!
 		Make sure your actual settings, swapper & scripts are in the new folder & delete stuff from the old one.
-		
+
 		Crankshaft v${app.getVersion()} no longer supports settings in Documents due to inconsistent permissions.
-		
+
 		Restart crankshaft afterwards.`);
 		error.stack = null;
 		throw error;
@@ -158,7 +158,7 @@ ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 ipcMain.on('openExternal', (event, url: string) => { shell.openExternal(url); });
 
 const $assets = pathResolve(__dirname, '..', 'assets');
-const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
+const hideAdsCSS = readFileSync(pathJoin($assets, 'styles/hideAds.css'), { encoding: 'utf-8' });
 
 /** open a custom generic window with our menu, hidden */
 function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructorOptions | MenuItem)[], addAdditionalSubmenus = true) {
@@ -431,7 +431,7 @@ app.on('ready', () => {
 		) {
 			event.preventDefault();
 			mainWindow.loadURL(url);
-		} else { // for any other link, fall back to creating a custom window with strippedMenu. 
+		} else { // for any other link, fall back to creating a custom window with strippedMenu.
 			event.preventDefault();
 			console.log(`genericWindow created for ${url}`, socialWindowReference);
 			const genericWin = customGenericWin(url, strippedMenuTemplate);

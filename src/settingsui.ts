@@ -10,23 +10,21 @@ import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from '
 
 /// <reference path="global.d.ts" />
 enum RefreshEnum {
-	notNeeded = 0,
-	refresh,
-	reloadApp
+	NotNeeded,
+	Refresh,
+	ReloadApp
 }
 interface IPaths { [path: string]: string }
-type customUserscriptSettings = Record<string, UserPrefs>;
+type CustomUserscriptSettings = Record<string, UserPrefs>;
 
-/* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
 let userscriptPrefsPath: string;
-const userscriptPreferences: customUserscriptSettings = {};
+const userscriptPreferences: CustomUserscriptSettings = {};
 let userPrefsCache: UserPrefs; // the userprefs on path
-let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
+let refreshNeeded: RefreshEnum = RefreshEnum.NotNeeded;
 let refreshNotifElement: HTMLElement;
 let paths: IPaths;
-/* eslint-disable init-declarations */
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
@@ -61,13 +59,13 @@ function openPath(e: MouseEvent, path: string) {
  * each setting is defined here as a SettingsDesc object. check typescript intelliSense to see if you have all required props.
  * some setting types, like 'sel' will have more required props, for example 'opts'.
  * note: for each key in userPrefs, there should exist an entry under the same key here.
- * 
+ *
  * optional props and their defaults:
  * desc (description): omitting it or leaving it "" will not render any description
  * cat (category): omitting will put the setting in the first (0th) category
  * instant: ommiting will not render an instant icon.
  * refreshOnly: ommiting will not render a refresh-only icon
- * 
+ *
  * note: instant and refreshOnly are exclusive. only use one at a time
  * note: settings will get rendered in the order you define them.
  * based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
@@ -172,7 +170,7 @@ function saveUserScriptSettings(eventSuffix: string) {
 }
 
 function recalculateRefreshNeeded() {
-	refreshNeeded = RefreshEnum.notNeeded;
+	refreshNeeded = RefreshEnum.NotNeeded;
 	for (let i = 0; i < Object.keys(userPrefs).length; i++) {
 		const cache = (item: UserPrefs[keyof UserPrefs]) => (Array.isArray(item) ? [...item] : item);
 		const key = Object.keys(userPrefs)[i];
@@ -188,9 +186,9 @@ function recalculateRefreshNeeded() {
 			if (descObj?.instant) {
 				continue;
 			} else if (descObj?.refreshOnly) {
-				if (refreshNeeded < RefreshEnum.refresh) refreshNeeded = RefreshEnum.refresh;
+				if (refreshNeeded < RefreshEnum.Refresh) refreshNeeded = RefreshEnum.Refresh;
 			} else {
-				refreshNeeded = RefreshEnum.reloadApp;
+				refreshNeeded = RefreshEnum.ReloadApp;
 			}
 		}
 	}
@@ -256,7 +254,7 @@ class SettingElem {
 		}
 		switch (props.type) {
 			case 'bool':
-				this.HTML += `<span class="setting-title">${props.title}</span> 
+				this.HTML += `<span class="setting-title">${props.title}</span>
 					<label class="switch">
 							<input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled' : ''}/>
 							<div class="slider round"></div>
@@ -280,7 +278,7 @@ class SettingElem {
 							value="${props.value}" min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
 						/>
 					</div>
-					<input type="number" class="rb-input s-update sliderVal" name="${props.key}" 
+					<input type="number" class="rb-input s-update sliderVal" name="${props.key}"
 						autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
 					/>
 				</span>`;
@@ -315,7 +313,7 @@ class SettingElem {
 				break;
 			}
 			case 'color':
-				this.HTML += `<span class="setting-title">${props.title}</span> 
+				this.HTML += `<span class="setting-title">${props.title}</span>
 					<label class="setting-input-wrapper">
 							<input class="s-update" type="color" value="${props.value ? props.value : ''}" ${this.#disabled ? 'disabled' : ''}/>
 					</label>`;
@@ -473,9 +471,9 @@ const skeleton = {
 			${innerHTML}
 	</div>`,
 
-	/** 
-	 * make a setting with some text (notice) 
-	 * @param desc description of the notice 
+	/**
+	 * make a setting with some text (notice)
+	 * @param desc description of the notice
 	 * @param opts desc => description, iconHTML => icon's html, generate through skeleton's *icon methods
 	 */
 	notice: (notice: string, opts?: { desc?: string, iconHTML?: string }) => `
@@ -511,11 +509,11 @@ const skeleton = {
 
 	refreshElem: (level: RefreshEnum) => {
 		switch (level) {
-			case RefreshEnum.reloadApp:
+			case RefreshEnum.ReloadApp:
 				return '<span class="restart-msg">Restart client fully to see changes</span>';
-			case RefreshEnum.refresh:
+			case RefreshEnum.Refresh:
 				return `<span class="reload-msg">${skeleton.refreshIcon('refresh-icon')}Reload page with <code>F5</code> or <code>F6</code> to see changes</span>`;
-			case RefreshEnum.notNeeded:
+			case RefreshEnum.NotNeeded:
 			default:
 				return '';
 		}
@@ -691,7 +689,7 @@ export function renderSettings() {
 					}
 				}
 				if (userscript.unload) obj.instant = true;
-				 else obj.instant = false;
+				else obj.instant = false;
 
 
 				return obj;

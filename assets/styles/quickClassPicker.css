@@ -6,7 +6,7 @@
 
 	position: absolute;
 	bottom: 300px;
-    left: 50%;	
+    left: 50%;
     transform: translate(-50%,0) scale(.95);
 
     pointer-events: all;

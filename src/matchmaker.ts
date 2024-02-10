@@ -15,13 +15,13 @@ function getGameMode(num: number) {
 
 function matchmakerMessageText(game: IMatchmakerGame, meeting: number, all: number) {
 	return `Game found! ${game.gameID} (${meeting}/${all} games meet criteria)
-	
+
 	Region: ${game.region}
 	Map: ${game.map}
 	Gamemode: ${game.gamemode}
 	Players: ${game.playerCount}/${game.playerLimit}
 	Time remaining: ${secondsToTimestring(game.remainingTime)}
-	
+
 	Join game?`;
 }
 
