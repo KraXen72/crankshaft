@@ -1,30 +1,31 @@
 #uiBase.onMenu #spectateUI {
-  display: block !important;
+	display: block !important;
 }
 
 #uiBase.onMenu #spectateUI > div:not(:nth-child(1)),
-#spectateUI[style*="none"] div div:not(.spectateInfo),
+#spectateUI[style*='none'] div div:not(.spectateInfo),
 #uiBase.onMenu #spec1,
 #uiBase.onMenu #specGameInfo,
 #uiBase.onMenu #spec0 {
-  display: none !important;
+	display: none !important;
 }
 
 #uiBase.onMenu #spectateUI > div {
-  z-index: 1;
-  transform: unset;
+	z-index: 1;
+	transform: unset;
 }
 
 #uiBase.onMenu .spectateInfo {
-  position: fixed;
-  top: calc(50% + 80px);
-  left: 50%;
-  transform: translate(-50%, -50%);
+	position: fixed;
+	top: calc(50% + 80px);
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 #uiBase.onMenu #spectateUI div .spectateInfo #specTimer {
-  background-color: #00000050;
-  padding: 25px;
-  font-size: 42px;
-  border-radius: 0.5em;
+	display: block !important;
+	background-color: #00000050;
+	padding: 25px;
+	font-size: 42px;
+	border-radius: 0.5em;
 }
