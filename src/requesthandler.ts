@@ -69,13 +69,12 @@ export default class {
 		}
 
 		if (this.blockerEnabled) this.filter.urls.push(...this.defaultFilters);
-
 		if (this.customFiltersEnabled) this.filter.urls.push(...this.customFilters.filter(i => i !== ''));
 
 		this.browserWindow.webContents.session.webRequest.onBeforeRequest(this.filter, (details, callback) => {
 			if (this.swapperEnabled) {
-				const swapResourse = this.swapUrls.some(pat => new URLPattern(pat).test(details.url));
-				if (swapResourse) {
+				const shouldSwapResource = this.swapUrls.some(pat => new URLPattern(pat).test(details.url));
+				if (shouldSwapResource) {
 					const path = new URL(details.url).pathname;
 					const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path);
 
@@ -83,10 +82,12 @@ export default class {
 					return callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
 				}
 			}
+
 			if (this.blockerEnabled || this.customFiltersEnabled) {
-				const block = this.filter.urls.some(pat => new URLPattern(pat).test(details.url));
-				if (block) return callback({ cancel: true });
+				const shouldBlock = this.filter.urls.some(pat => new URLPattern(pat).test(details.url));
+				if (shouldBlock) return callback({ cancel: true });
 			}
+
 			return callback({});
 		});
 
