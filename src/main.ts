@@ -460,9 +460,7 @@ app.on('ready', () => {
 	if (userPrefs.resourceSwapper || userPrefs.hideAds === 'block') {
 		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow,
 			swapperPath,
-			userPrefs.resourceSwapper,
-			userPrefs.hideAds === 'block',
-			userPrefs.customFilters,
+			userPrefs,
 			readFileSync(pathJoin($assets, 'blockFilters.txt')).toString(),
 			filtersPath);
 		CrankshaftFilterHandlerInstance.start();

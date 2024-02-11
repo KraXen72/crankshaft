@@ -43,12 +43,12 @@ export default class {
 	 * @param browserWindow - The target window.
 	 */
 	// FIXME: better way to enable/disable?
-	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string, swapperEnabled: boolean, blockerEnabled: boolean, customFiltersEnabled: boolean, defaultFiltersStr: string, customFiltersPath: string) {
+	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string, userPrefs: UserPrefs, defaultFiltersStr: string, customFiltersPath: string) {
 		this.browserWindow = browserWindow;
 		this.swapDir = swapDir;
-		this.swapperEnabled = swapperEnabled;
-		this.blockerEnabled = blockerEnabled;
-		this.customFiltersEnabled = customFiltersEnabled;
+		this.swapperEnabled = userPrefs.resourceSwapper as boolean;
+		this.blockerEnabled = userPrefs.hideAds === 'block';
+		this.customFiltersEnabled = userPrefs.customFilters as boolean;
 
 		this.defaultFilters = defaultFiltersStr.split(/\r?\n/u);
 		this.customFilters = readFileSync(customFiltersPath, { encoding: 'utf-8' }).toString()
