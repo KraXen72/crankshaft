@@ -1,4 +1,3 @@
-import { strippedConsole } from './preload';
 import { secondsToTimestring } from './utils';
 
 // eslint-disable-next-line max-len
@@ -15,13 +14,13 @@ function getGameMode(num: number) {
 
 function matchmakerMessageText(game: IMatchmakerGame, meeting: number, all: number) {
 	return `Game found! ${game.gameID} (${meeting}/${all} games meet criteria)
-	
+
 	Region: ${game.region}
 	Map: ${game.map}
 	Gamemode: ${game.gamemode}
 	Players: ${game.playerCount}/${game.playerLimit}
 	Time remaining: ${secondsToTimestring(game.remainingTime)}
-	
+
 	Join game?`;
 }
 
@@ -67,7 +66,7 @@ export async function fetchGame(_userPrefs: UserPrefs) {
 	} else {
 		// eslint-disable-next-line no-alert
 		alert("Couldn't find any games matching your criteria. Please change them or try again later.");
-		strippedConsole.log(criteria);
+		console.log(criteria);
 	}
 }
 

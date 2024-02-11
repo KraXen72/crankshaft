@@ -14,6 +14,7 @@
 		"dist": "pnpm run build && electron-builder",
 		"release": "pnpm run build && electron-builder --publish always",
 		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"changelog-c": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits -r 0",
 		"changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
 	},

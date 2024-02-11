@@ -2,7 +2,7 @@ type UserPrefs = {
 	[preference: string]: UserPrefValue;
 };
 
-type UserPrefValue = boolean | string | string[] | number
+type UserPrefValue = boolean | string | string[] | number;
 
 interface UserscriptTracker {
 	[script: string]: boolean;
@@ -52,30 +52,32 @@ interface Window {
 
 	// krunker's stuff
 	OffCliV: boolean;
-	getGameActivity: Function;
+	getGameActivity(): Partial<GameInfo>;
 	showWindow: Function;
-	windows: [{ // settings window
-		settingType: 'basic' | 'advanced';
-		tabIndex: number;
-		tabs: {
-			basic: SettingsTab[];
-			advanced: SettingsTab[];
-		}
-		getTabs: Function;
-		changeTab: Function;
-		genList: Function;
-		toggleType: Function;
-		getSettings: Function;
-
-	}, ...Object[]];
+	windows: KrunkerWindow[];
 
 	// crankshaft's stuff
-	errAlert: Function;
+	errAlert(err: Error, name: string): void;
+}
+
+// settings window
+interface KrunkerWindow {
+	settingType: 'basic' | 'advanced';
+	tabIndex: number;
+	tabs: {
+		basic: SettingsTab[];
+		advanced: SettingsTab[];
+	}
+	getTabs(): string;
+	changeTab(tabInd: number): void;
+	genList(): string;
+	toggleType(opts: { checked: boolean }): void;
+	getSettings(): string;
 }
 
 /*
  *	these setting type defs do look complicated but they just ensure a noob can easily create a new setting.
- *	basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see 
+ *	basically, settings are SettingItemGeneric + a type: string. some types have extra fields, as you can see
  */
 
 type Callbacks = 'normal' | 'userscript' | Function;
@@ -91,6 +93,7 @@ interface SettingExtraButton {
 interface SettingItemGeneric {
 	title: string;
 	desc?: string;
+
 	// This is for the (!) display on settings, describing if they are safe to use, and at what level they are safe.
 	safety: number;
 	type: ValidTypes;
@@ -190,10 +193,10 @@ interface CategoryName {
 // discord rpc
 type RPCargs = { details: string, state: string };
 
-/** 
+/**
  * return type of window.getGameActivity()
  * we can't ensure krunker doesen't change or fail to return this exact object
- * this should be consumed as `Partial<GameInfo>` with fallbacks from elements for properties you are using 
+ * this should be consumed as `Partial<GameInfo>` with fallbacks from elements for properties you are using
  */
 interface GameInfo {
 
@@ -250,6 +253,8 @@ interface IMatchmakerGame {
 	gamemode: string;
 	remainingTime: number;
 }
+
+
 type ValidRequestTypes = 'mainFrame' | 'subFrame' | 'stylesheet' | 'script' | 'image' | 'font' | 'object' | 'xhr' | 'ping' | 'cspReport' | 'media' | 'webSocket';
 interface WebRequestFilter {
 	urls: string[];

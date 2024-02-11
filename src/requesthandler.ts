@@ -43,12 +43,12 @@ export default class {
 	 * @param browserWindow - The target window.
 	 */
 	// FIXME: better way to enable/disable?
-	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string, swapperEnabled: boolean, blockerEnabled: boolean, customFiltersEnabled: boolean, defaultFiltersStr: string, customFiltersPath: string) {
+	public constructor(browserWindow: Electron.BrowserWindow, swapDir: string, userPrefs: UserPrefs, defaultFiltersStr: string, customFiltersPath: string) {
 		this.browserWindow = browserWindow;
 		this.swapDir = swapDir;
-		this.swapperEnabled = swapperEnabled;
-		this.blockerEnabled = blockerEnabled;
-		this.customFiltersEnabled = customFiltersEnabled;
+		this.swapperEnabled = userPrefs.resourceSwapper as boolean;
+		this.blockerEnabled = userPrefs.hideAds === 'block';
+		this.customFiltersEnabled = userPrefs.customFilters as boolean;
 
 		this.defaultFilters = defaultFiltersStr.split(/\r?\n/u);
 		this.customFilters = readFileSync(customFiltersPath, { encoding: 'utf-8' }).toString()
@@ -69,13 +69,12 @@ export default class {
 		}
 
 		if (this.blockerEnabled) this.filter.urls.push(...this.defaultFilters);
-
 		if (this.customFiltersEnabled) this.filter.urls.push(...this.customFilters.filter(i => i !== ''));
 
 		this.browserWindow.webContents.session.webRequest.onBeforeRequest(this.filter, (details, callback) => {
 			if (this.swapperEnabled) {
-				const swapResourse = this.swapUrls.some(pat => new URLPattern(pat).test(details.url));
-				if (swapResourse) {
+				const shouldSwapResource = this.swapUrls.some(pat => new URLPattern(pat).test(details.url));
+				if (shouldSwapResource) {
 					const path = new URL(details.url).pathname;
 					const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path);
 
@@ -83,10 +82,12 @@ export default class {
 					return callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
 				}
 			}
+
 			if (this.blockerEnabled || this.customFiltersEnabled) {
-				const block = this.filter.urls.some(pat => new URLPattern(pat).test(details.url));
-				if (block) return callback({ cancel: true });
+				const shouldBlock = this.filter.urls.some(pat => new URLPattern(pat).test(details.url));
+				if (shouldBlock) return callback({ cancel: true });
 			}
+
 			return callback({});
 		});
 

@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
-import { strippedConsole } from './preload';
 import { userscriptToggleCSS } from './utils';
 import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
 
@@ -38,6 +37,7 @@ class Userscript implements IUserscriptInstance {
 	unload: Function | false;
 
 	settings: { [key: string]: UserscriptRenderReadySetting };
+
 	settingsPath: string;
 
 	hasRan: boolean; // this is public so settings can just show a "reload page" message when needed
@@ -96,7 +96,6 @@ class Userscript implements IUserscriptInstance {
 			const exported = new Function(this.content).apply({
 				unload: false,
 				settings: {},
-				_console: strippedConsole,
 				_css: userscriptToggleCSS
 			});
 
@@ -104,28 +103,26 @@ class Userscript implements IUserscriptInstance {
 			if (typeof exported !== 'undefined') {
 				// more stuff to be added here later
 				if ('unload' in exported) this.unload = exported.unload;
-				if ('settings' in exported) this.settings = exported.settings
+				if ('settings' in exported) this.settings = exported.settings;
 			}
 
 			// Apply custom settings if they exist
 			if (Object.keys(this.settings).length > 0 && existsSync(this.settingsPath)) {
 				try {
-					var settingsJSON: {[key: string]: UserPrefValue} = JSON.parse(readFileSync(this.settingsPath, 'utf-8'));
+					const settingsJSON: { [key: string]: UserPrefValue } = JSON.parse(readFileSync(this.settingsPath, 'utf-8'));
 					Object.keys(settingsJSON).forEach(settingKey => {
-						if (customSettingSavedJSONIsNotMalformed(settingKey, this.settings, settingsJSON)) {
-							this.settings[settingKey].changed(settingsJSON[settingKey])
-						}
-					})
+						if (customSettingSavedJSONIsNotMalformed(settingKey, this.settings, settingsJSON)) this.settings[settingKey].changed(settingsJSON[settingKey]);
+					});
 				} catch (err) { // Preferences for script are probably corrupted.
 				}
 			}
 
-			strippedConsole.log(`%c[cs]${this.#strictMode ? '%c[strict]' : '%c[non-strict]'} %cran %c'${this.name.toString()}' `,
+			console.log(`%c[cs]${this.#strictMode ? '%c[strict]' : '%c[non-strict]'} %cran %c'${this.name.toString()}' `,
 				'color: lightblue; font-weight: bold;', this.#strictMode ? 'color: #62dd4f' : 'color: orange',
 				'color: white;', 'color: lightgreen;');
 		} catch (error) {
 			errAlert(error, this.name);
-			strippedConsole.error(error);
+			console.error(error);
 		}
 	}
 
@@ -134,11 +131,12 @@ class Userscript implements IUserscriptInstance {
 ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths: { userscriptsPath: string, userscriptPrefsPath: string }) => {
 	su.userscriptsPath = recieved_userscript_paths.userscriptsPath;
 	su.userscriptTrackerPath = pathResolve(su.userscriptsPath, 'tracker.json');
-	su.userscriptPrefsPath = recieved_userscript_paths.userscriptPrefsPath
+	su.userscriptPrefsPath = recieved_userscript_paths.userscriptPrefsPath;
 
 	// init the userscripts (read, map and set up tracker)
 	su.userscripts = readdirSync(su.userscriptsPath, { withFileTypes: true })
 		.filter(entry => entry.name.endsWith('.js'))
+
 		//                                               v this is so that each custom userscript option will have its own unique file name.  v
 		.map(entry => new Userscript({ name: entry.name, settingsPath: pathResolve(su.userscriptPrefsPath, entry.name.replace(/.js$/, '.json')), fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
 

@@ -13,25 +13,16 @@ dayjs.extend(utc);
 
 /// <reference path="global.d.ts" />
 
-// get rid of client unsupported message 
-window.OffCliV = true;
-
-// save some console methods from krunker
-export const strippedConsole = {
-	error: console.error.bind(console),
-	log: console.log.bind(console),
-	warn: console.warn.bind(console),
-	time: console.time.bind(console),
-	timeEnd: console.timeEnd.bind(console)
-};
+window.OffCliV = true; // get rid of client unsupported message
+localStorage.logs = true; // prevent krunker from overwriting console
 
 const $assets = pathResolve(__dirname, '..', 'assets');
 
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCSS = {
-	hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' }),
-	menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), { encoding: 'utf-8' }),
-	quickClassPicker: readFileSync(pathJoin($assets, 'quickClassPicker.css'), { encoding: 'utf-8' }) + hiddenClassesImages(16),
+	hideAds: readFileSync(pathJoin($assets, 'styles/hideAds.css'), { encoding: 'utf-8' }),
+	menuTimer: readFileSync(pathJoin($assets, 'styles/menuTimer.css'), { encoding: 'utf-8' }),
+	quickClassPicker: readFileSync(pathJoin($assets, 'styles/quickClassPicker.css'), { encoding: 'utf-8' }) + hiddenClassesImages(16),
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
@@ -58,7 +49,7 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 		updateElement.appendChild(createElement('span', { text: 'No new updates' }));
 	}
 
-	strippedConsole.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
+	console.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
 
 	document.body.appendChild(updateElement);
 
@@ -70,12 +61,12 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 
 ipcRenderer.on('initDiscordRPC', () => {
 	function updateRPC() {
-		strippedConsole.log('> updated RPC');
+		console.log('> updated RPC');
 		const classElem = document.getElementById('menuClassName');
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo');
 
-		const gameActivity = hasOwn(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
+		const gameActivity = hasOwn(window, 'getGameActivity') ? window.getGameActivity() : {};
 		let overWriteDetails: string | false = false;
 		if (!hasOwn(gameActivity, 'class')) gameActivity.class = { name: classElem?.textContent ?? '' };
 		if (!hasOwn(gameActivity, 'map') || !hasOwn(gameActivity, 'mode')) overWriteDetails = mapElem?.textContent ?? 'Loading game...';
@@ -97,8 +88,8 @@ ipcRenderer.on('initDiscordRPC', () => {
 		updateRPC();
 		setTimeout(() => {
 			// hook elements that update rpc
-			try { document.getElementById('windowCloser').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook wincloser", e); }
-			try { document.getElementById('customizeButton').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook customizeButton", e); }
+			try { document.getElementById('windowCloser').addEventListener('click', updateRPC); } catch (e) { console.error("didn't hook wincloser", e); }
+			try { document.getElementById('customizeButton').addEventListener('click', updateRPC); } catch (e) { console.error("didn't hook customizeButton", e); }
 		}, 4000);
 	});
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
@@ -119,11 +110,11 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
-	const settCss = readFileSync(pathJoin($assets, 'settingCss.css'), { encoding: 'utf-8' });
+	const settCss = readFileSync(pathJoin($assets, 'styles/settingCss.css'), { encoding: 'utf-8' });
 	injectSettingsCSS(settCss, settId);
 
 	if (clientSplash) {
-		const splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), { encoding: 'utf-8' });
+		const splashCSS = readFileSync(pathJoin($assets, 'styles/splashCss.css'), { encoding: 'utf-8' });
 		injectSettingsCSS(splashCSS, splashId);
 
 		const instructionHider = document.getElementById('instructionHider');
@@ -207,7 +198,7 @@ export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
 function patchSettings(_userPrefs: UserPrefs) {
 	// hooking & binding credit: https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/preload/game-settings.ts
 	let interval: number | NodeJS.Timer = null;
-	strippedConsole.log('waiting to hook settings...');
+	console.log('waiting to hook settings...');
 
 	function hookSettings() {
 		const settingsWindow = window.windows[0];
@@ -290,7 +281,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 			&& typeof window.windows[0].changeTab === 'function'
 		) {
 			clearInterval(interval);
-			strippedConsole.log('hooking settings');
+			console.log('hooking settings');
 			hookSettings();
 		}
 	}

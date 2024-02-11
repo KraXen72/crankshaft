@@ -1,5 +1,4 @@
 import { webFrame } from 'electron';
-import { strippedConsole } from './preload';
 
 /// <reference path="global.d.ts" />
 
@@ -69,7 +68,7 @@ export function toggleSettingCSS(css: string, identifier: string, value: ('toggl
 			webFrame.removeInsertedCSS(insertedCSS[identifier]);
 			delete insertedCSS[identifier];
 		} catch (error) {
-			strippedConsole.error("couldn't uninject css: ", error);
+			console.error("couldn't uninject css: ", error);
 		}
 	}
 
@@ -87,7 +86,7 @@ export function toggleSettingCSS(css: string, identifier: string, value: ('toggl
 export function userscriptToggleCSS(css: string, identifier: string, value: ('toggle' | boolean) = 'toggle') {
 	const reservedKeywords = ['menuTimer', 'hideAds', 'hideReCaptcha'];
 	if (!reservedKeywords.includes(identifier)) toggleSettingCSS(css, identifier, value);
-	else strippedConsole.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`);
+	else console.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`);
 }
 
 export function debounce(func: Function, timeout = 300) {
@@ -111,7 +110,7 @@ export function hiddenClassesImages(classesCount: number) {
 
 	let css = `#hiddenClasses [id^="menuClassPicker"] {
 		width: ${buttonSize}px; height: ${buttonSize}px;
-		background-size: ${buttonSize - 6}px ${buttonSize - 6}px; 
+		background-size: ${buttonSize - 6}px ${buttonSize - 6}px;
 	}\n`;
 
 	for (let i = 0; i < classesCount; i++) css += `#${prepend}${i} { background-image: url("https://assets.krunker.io/textures/classes/icon_${i}.png"); } \n`;
