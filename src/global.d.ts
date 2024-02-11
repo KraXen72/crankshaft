@@ -54,22 +54,25 @@ interface Window {
 	OffCliV: boolean;
 	getGameActivity(): Partial<GameInfo>;
 	showWindow: Function;
-	windows: [{ // settings window
-		settingType: 'basic' | 'advanced';
-		tabIndex: number;
-		tabs: {
-			basic: SettingsTab[];
-			advanced: SettingsTab[];
-		}
-		getTabs(): string;
-		changeTab(tabInd: number): void;
-		genList(): string;
-		toggleType(opts: { checked: boolean }): void;
-		getSettings(): string;
-	}, ...Object[]];
+	windows: KrunkerWindow[];
 
 	// crankshaft's stuff
-	errAlert: Function;
+	errAlert(err: Error, name: string): void;
+}
+
+// settings window
+interface KrunkerWindow {
+	settingType: 'basic' | 'advanced';
+	tabIndex: number;
+	tabs: {
+		basic: SettingsTab[];
+		advanced: SettingsTab[];
+	}
+	getTabs(): string;
+	changeTab(tabInd: number): void;
+	genList(): string;
+	toggleType(opts: { checked: boolean }): void;
+	getSettings(): string;
 }
 
 /*
