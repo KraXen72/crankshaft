@@ -52,7 +52,7 @@ interface Window {
 
 	// krunker's stuff
 	OffCliV: boolean;
-	getGameActivity: Function;
+	getGameActivity(): Partial<GameInfo>;
 	showWindow: Function;
 	windows: [{ // settings window
 		settingType: 'basic' | 'advanced';
@@ -61,12 +61,11 @@ interface Window {
 			basic: SettingsTab[];
 			advanced: SettingsTab[];
 		}
-		getTabs: Function;
-		changeTab: Function;
-		genList: Function;
-		toggleType: Function;
-		getSettings: Function;
-
+		getTabs(): string;
+		changeTab(tabInd: number): void;
+		genList(): string;
+		toggleType(opts: { checked: boolean }): void;
+		getSettings(): string;
 	}, ...Object[]];
 
 	// crankshaft's stuff
@@ -251,6 +250,8 @@ interface IMatchmakerGame {
 	gamemode: string;
 	remainingTime: number;
 }
+
+
 type ValidRequestTypes = 'mainFrame' | 'subFrame' | 'stylesheet' | 'script' | 'image' | 'font' | 'object' | 'xhr' | 'ping' | 'cspReport' | 'media' | 'webSocket';
 interface WebRequestFilter {
 	urls: string[];

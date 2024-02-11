@@ -66,7 +66,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo');
 
-		const gameActivity = hasOwn(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
+		const gameActivity = hasOwn(window, 'getGameActivity') ? window.getGameActivity() : {};
 		let overWriteDetails: string | false = false;
 		if (!hasOwn(gameActivity, 'class')) gameActivity.class = { name: classElem?.textContent ?? '' };
 		if (!hasOwn(gameActivity, 'map') || !hasOwn(gameActivity, 'mode')) overWriteDetails = mapElem?.textContent ?? 'Loading game...';
