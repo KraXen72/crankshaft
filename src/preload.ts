@@ -286,8 +286,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 			&& hasOwn(window, 'windows')
 			&& Array.isArray(window.windows)
 			&& window.windows.length >= 0
-			&& typeof window.windows[0] !== 'undefined'
-			&& typeof window.windows[0].changeTab === 'function'
+			&& typeof window.windows[0]?.changeTab === 'function'
 		) {
 			clearInterval(interval);
 			strippedConsole.log('hooking settings');

@@ -1,4 +1,4 @@
-export const customSettingIsMalformed = function(customUserScriptSetting: UserscriptRenderReadySetting): boolean | string {
+export const customSettingIsMalformed = (customUserScriptSetting: UserscriptRenderReadySetting): boolean | string => {
 	let settingIsMalformed: string | boolean = false;
 	const setting = customUserScriptSetting;
 	switch (setting.type) {
@@ -26,7 +26,7 @@ export const customSettingIsMalformed = function(customUserScriptSetting: Usersc
 			break;
 		case 'color':
 			if (typeof setting.value !== 'string') settingIsMalformed = `'${setting.value}' (${typeof setting.value}) is NOT a valid value for setting type '${setting.type}.'`;
-			 else if (!setting.value.match(/^#([0-9a-fA-F]{3}){2}$/g)) settingIsMalformed = `'${setting.value}' is not a valid color. Use #ffffff`;
+			else if (!setting.value.match(/^#([0-9a-fA-F]{3}){2}$/g)) settingIsMalformed = `'${setting.value}' is not a valid color. Use #ffffff`;
 
 			break;
 		default:
@@ -42,10 +42,9 @@ export const customSettingIsMalformed = function(customUserScriptSetting: Usersc
 	return settingIsMalformed;
 };
 
-export const customSettingSavedJSONIsNotMalformed = function(settingKey: string, settings: Record<string, UserscriptRenderReadySetting>, settingsJSON: Record<string, UserPrefValue>): boolean {
-	// Comparison chain basically validates the settings JSON
-	return (settingKey in settings // Make sure setting key is a changeable/registered key
-    && typeof settings[settingKey].changed === 'function' // Make sure setting key has a changed function
-    && settingsJSON[settingKey] !== settings[settingKey].value // Make sure you aren't applying changes unnecissarily
-    && typeof settingsJSON[settingKey] === typeof settings[settingKey].value); // Ensure the saved and scripted values are of the same type
-};
+export const customSettingSavedJSONIsNotMalformed = (settingKey: string, settings: Record<string, UserscriptRenderReadySetting>, settingsJSON: Record<string, UserPrefValue>): boolean => (
+	settingKey in settings // Make sure setting key is a changeable/registered key
+	&& typeof settings[settingKey].changed === 'function' // Make sure setting key has a changed function
+	&& settingsJSON[settingKey] !== settings[settingKey].value // Make sure you aren't applying changes unnecissarily
+	&& typeof settingsJSON[settingKey] === typeof settings[settingKey].value
+);

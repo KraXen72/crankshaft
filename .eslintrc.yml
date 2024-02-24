@@ -40,7 +40,7 @@ rules:
   no-trailing-spaces: [error, { ignoreComments: true }]
   prefer-named-capture-group: 0
   linebreak-style: 0
-  no-console: 0 
+  no-console: 0
   no-empty: [error, { "allowEmptyCatch": true }]
   # init-declarations: ["warn", "always"]
   init-declarations: 0
@@ -59,9 +59,9 @@ rules:
   spaced-comment: ["warn", "always", { "markers": ["/"] }] # ignore for ts path reference
 
   # VISUAL
-  max-len: ["error", { "code": 220, "tabWidth": 4 }]
+  max-len: ["error", { "code": 250, "tabWidth": 4 }]
   # ignore some common ones (forloop, arrow functions, error/event paramter) but warn about others
-  id-length: ["error", { "exceptions": ["e", "u", "i", "j"] }] 
+  id-length: ["error", { "exceptions": ["e", "u", "i", "j"] }]
   sort-keys: 0
   sort-imports: 0
 
