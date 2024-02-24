@@ -16,6 +16,15 @@ dayjs.extend(utc);
 window.OffCliV = true; // get rid of client unsupported message
 localStorage.logs = true; // prevent krunker from overwriting console
 
+// save most console methods
+export const strippedConsole = {
+	error: console.error.bind(console),
+	log: console.log.bind(console),
+	warn: console.warn.bind(console),
+	time: console.time.bind(console),
+	timeEnd: console.timeEnd.bind(console)
+};
+
 const $assets = pathResolve(__dirname, '..', 'assets');
 
 /** actual css for settings that are style-based (hide ads, etc)*/
@@ -49,7 +58,7 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 		updateElement.appendChild(createElement('span', { text: 'No new updates' }));
 	}
 
-	console.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
+	strippedConsole.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
 
 	document.body.appendChild(updateElement);
 
@@ -61,7 +70,7 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 
 ipcRenderer.on('initDiscordRPC', () => {
 	function updateRPC() {
-		console.log('> updated RPC');
+		strippedConsole.log('> updated RPC');
 		const classElem = document.getElementById('menuClassName');
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo');
@@ -88,8 +97,8 @@ ipcRenderer.on('initDiscordRPC', () => {
 		updateRPC();
 		setTimeout(() => {
 			// hook elements that update rpc
-			try { document.getElementById('windowCloser').addEventListener('click', updateRPC); } catch (e) { console.error("didn't hook wincloser", e); }
-			try { document.getElementById('customizeButton').addEventListener('click', updateRPC); } catch (e) { console.error("didn't hook customizeButton", e); }
+			try { document.getElementById('windowCloser').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook wincloser", e); }
+			try { document.getElementById('customizeButton').addEventListener('click', updateRPC); } catch (e) { strippedConsole.error("didn't hook customizeButton", e); }
 		}, 4000);
 	});
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
@@ -130,7 +139,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 				logoSVG.remove();
 				_observer.disconnect();
 			} catch (e) {
-				console.log('splash screen was already cleared.');
+				strippedConsole.log('splash screen was already cleared.');
 			}
 		};
 
@@ -198,7 +207,7 @@ export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
 function patchSettings(_userPrefs: UserPrefs) {
 	// hooking & binding credit: https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/preload/game-settings.ts
 	let interval: number | NodeJS.Timer = null;
-	console.log('waiting to hook settings...');
+	strippedConsole.log('waiting to hook settings...');
 
 	function hookSettings() {
 		const settingsWindow = window.windows[0];
@@ -281,7 +290,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 			&& typeof window.windows[0].changeTab === 'function'
 		) {
 			clearInterval(interval);
-			console.log('hooking settings');
+			strippedConsole.log('hooking settings');
 			hookSettings();
 		}
 	}

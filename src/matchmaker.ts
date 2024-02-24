@@ -1,3 +1,4 @@
+import { strippedConsole } from './preload';
 import { secondsToTimestring } from './utils';
 
 // eslint-disable-next-line max-len
@@ -66,7 +67,7 @@ export async function fetchGame(_userPrefs: UserPrefs) {
 	} else {
 		// eslint-disable-next-line no-alert
 		alert("Couldn't find any games matching your criteria. Please change them or try again later.");
-		console.log(criteria);
+		strippedConsole.log(criteria);
 	}
 }
 

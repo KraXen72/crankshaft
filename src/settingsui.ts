@@ -3,7 +3,7 @@ import { join } from 'path';
 import { writeFileSync, readFileSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
-import { styleSettingsCSS, getTimezoneByRegionKey } from './preload';
+import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
@@ -676,7 +676,7 @@ export function renderSettings() {
 								}
 							});
 						} catch (err) {
-							console.error(`Error creating custom settings for userscript: ${userscript.name}`, err);
+							strippedConsole.error(`Error creating custom settings for userscript: ${userscript.name}`, err);
 						}
 
 						// Add the 'reset defaults' button

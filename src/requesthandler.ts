@@ -1,11 +1,12 @@
 import { readdirSync, existsSync, mkdirSync } from 'fs';
 import { join as pathJoin } from 'path';
-
 import { Filter } from 'electron';
 import { readFileSync } from 'original-fs';
+import { strippedConsole } from './preload';
 
 // TODO: conditional import (?)
 import { URLPattern } from 'urlpattern-polyfill';
+
 
 const TARGET_GAME_DOMAIN = 'krunker.io';
 
@@ -150,7 +151,7 @@ export default class {
 				}
 			}
 		} catch (err) {
-			console.error(`Failed to resource-swap with prefix: ${prefix}`);
+			strippedConsole.error(`Failed to resource-swap with prefix: ${prefix}`);
 		}
 	}
 

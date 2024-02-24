@@ -13,6 +13,7 @@ There are a few example userscripts mentioned in the README you can go off of.
 		- [Template to copy](#template-to-copy-1)
 	- [Utility functions](#utility-functions)
 		- [Unload function (version 1.6.0+)](#unload-function-version-160)
+		- [Console access (version 1.6.0+)](#console-access-version-160)
 		- [Insert CSS (version 1.6.1+)](#insert-css-version-161)
 		- [Custom Krunker Settings (version 1.9.0+)](#custom-krunker-settings-version-190)
 			- [Step 1 - Add the setting key:](#step-1---add-the-setting-key)
@@ -52,7 +53,7 @@ You can define only some of them if you want, for example `@name` and `@desc`
 // @run-at document-end
 // ==/UserScript==
 
-console.log("Everything is awesome! Everything is cool when you're part of a team!")
+this._console.log("Everything is awesome! Everything is cool when you're part of a team!")
 ```
 
 ### Template to copy
@@ -98,7 +99,7 @@ function checkSpect() {
 	if (has(globalThis, "setSpect") && typeof globalThis.setSpect === 'function') {
 		globalThis.setSpect(true)
 		clearInterval(interval)
-		console.log("sucessfully set spectator mode!")
+		this._console.log("sucessfully set spectator mode!")
 	}
 }
 
@@ -116,7 +117,7 @@ return this
   - thus, we have to use `Object.prototype.hasOwnProperty.call(object, key)`, which always sources the function from the `Object.prototype`
   - if you're thinking this is too paranoid, even eslint yells at you about using `hasOwnProperty` from a source other than `Object.prototype`
 - **clear the interval after you run your stuff!!!** `setInterval` is one of the most performance heavy function. it literally schedules a function to be ran every x ms. ***unless*** that's what you want to do, clear the interval after you're done.
-- **unless your callback is an arrow function, use `callback.apply(this)`.** we have to run `checkSpect.apply(this)` instead of just `checkSpect()` because in that case the `this` keyword will no longer have our helper functions like `_css`.
+- **unless your callback is an arrow function, use `callback.apply(this)`.** we have to run `checkSpect.apply(this)` instead of just `checkSpect()` because in that case the `this` keyword will no longer have our helper functions like `_css`, `_console`, etc.
 - if you want to wait for more functions, you can define more intervals & callback under different names. but honestly once 1 function exists, others probably exist too. so you should be fine only waiting for 1 of them.
 - i think normal functions technically get hoisted to the top so doing `const interval = setInterval` without the initial let definition *should* also work, but i haven't tested it.
 
@@ -170,6 +171,16 @@ this.unload = () => {
 
 return this
 
+```
+
+### Console access (version 1.6.0+)
+
+By default, Krunker disables all console methods.
+We have found a way to bypass these methods from being overwritten, but for consistency, we still expose the console methods through `this._console`.
+It only provides the three basic methods: `log`, `warn` and `error`.
+
+```js
+this._console.log("everything is awesome!")
 ```
 
 ### Insert CSS (version 1.6.1+)
@@ -316,7 +327,7 @@ this.settings = {
         "desc": "Turns awesomeness on or off. Defaults to 'true' because crankshaft is awesome.",
         "type": "bool",
         "value": true,
-        changed: (value) => { console.log(value) } /* EDITED */
+        changed: (value) => { this._console.log(value) } /* EDITED */
 	},
 	"myOtherSuperAwesomeCustomSetting": { /* NEW */
 		"title": "Increase Awesomeness!",
@@ -326,7 +337,7 @@ this.settings = {
 		"min": 9000,
 		"max": 100000,
 		"step": 10,
-        changed: (value) => { console.log(value) }
+        changed: (value) => { this._console.log(value) }
 	}
 }
 ```

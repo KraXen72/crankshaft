@@ -1,4 +1,5 @@
 import { webFrame } from 'electron';
+import { strippedConsole } from './preload';
 
 /// <reference path="global.d.ts" />
 
@@ -68,7 +69,7 @@ export function toggleSettingCSS(css: string, identifier: string, value: ('toggl
 			webFrame.removeInsertedCSS(insertedCSS[identifier]);
 			delete insertedCSS[identifier];
 		} catch (error) {
-			console.error("couldn't uninject css: ", error);
+			strippedConsole.error("couldn't uninject css: ", error);
 		}
 	}
 
@@ -86,7 +87,7 @@ export function toggleSettingCSS(css: string, identifier: string, value: ('toggl
 export function userscriptToggleCSS(css: string, identifier: string, value: ('toggle' | boolean) = 'toggle') {
 	const reservedKeywords = ['menuTimer', 'hideAds', 'hideReCaptcha'];
 	if (!reservedKeywords.includes(identifier)) toggleSettingCSS(css, identifier, value);
-	else console.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`);
+	else strippedConsole.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`);
 }
 
 export function debounce(func: Function, timeout = 300) {

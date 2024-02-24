@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
+import { strippedConsole } from './preload';
 import { userscriptToggleCSS } from './utils';
 import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
 
@@ -96,6 +97,7 @@ class Userscript implements IUserscriptInstance {
 			const exported = new Function(this.content).apply({
 				unload: false,
 				settings: {},
+				_console: strippedConsole,
 				_css: userscriptToggleCSS
 			});
 
@@ -117,12 +119,12 @@ class Userscript implements IUserscriptInstance {
 				}
 			}
 
-			console.log(`%c[cs]${this.#strictMode ? '%c[strict]' : '%c[non-strict]'} %cran %c'${this.name.toString()}' `,
+			strippedConsole.log(`%c[cs]${this.#strictMode ? '%c[strict]' : '%c[non-strict]'} %cran %c'${this.name.toString()}' `,
 				'color: lightblue; font-weight: bold;', this.#strictMode ? 'color: #62dd4f' : 'color: orange',
 				'color: white;', 'color: lightgreen;');
 		} catch (error) {
 			errAlert(error, this.name);
-			console.error(error);
+			strippedConsole.error(error);
 		}
 	}
 
