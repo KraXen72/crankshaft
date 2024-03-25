@@ -1,9 +1,11 @@
 // crankshaft's build script. uses esbuild, which is a fast js build tool written in go.
 const esbuild = require('esbuild');
+const fs = require('fs');
 
 const args = process.argv.filter(a => a.startsWith("--"))
 const building = args.includes("--build")
 const watching = args.includes("--watch")
+const syncDL = args.includes("--syncdl")
 console.log("building(minifying):", building, "watching:", watching)
 
 const buildLogger = {
@@ -14,7 +16,7 @@ const buildLogger = {
 }
 
 const buildOptions = {
-	// keep this manually in-sync! THANKS FOR LETTING ME KNOW!
+	// keep this manually in-sync!
 	entryPoints: [
 		'src/main.ts',
 		'src/menu.ts',
@@ -46,6 +48,30 @@ async function watch(extraOptions) {
 	await ctx.watch()
 }
 
+async function syncDownloadLinks() {
+	const req = await fetch(`https://api.github.com/repos/KraXen72/crankshaft/releases`);
+	const res = await req.json();
+	const releases = res.filter(r => !(r.prerelease || r.draft))
+	const latestStable = releases[0]
+	const dlLinksByName = Object.fromEntries(latestStable.assets.map(asset => [asset.name, asset.browser_download_url]))
+	
+	// console.log(latestStable)
+	const downloadMarkdown = `**Download:** [Windows (x64)](${dlLinksByName['crankshaft-setup-win-x64.exe']}) - [Mac (x64)](${dlLinksByName['crankshaft-portable-mac-x64.dmg']}) - [Linux (x86_64 AppImage)](${dlLinksByName['crankshaft-portable-linux-x86_64.AppImage']}) - [Linux (i386 AppImage)](${dlLinksByName['crankshaft-portable-linux-i386.AppImage']}) - [Other](${latestStable.html_url})  `
+	// console.log(downloadMarkdown)
+
+	const readmeLines = fs.readFileSync('./README.md', { encoding: 'utf-8' }).split("\n")
+	for (let i = 0; i < readmeLines.length; i++) {
+		if (!readmeLines[i].startsWith("**Download:** [Windows (x64)](")) continue;
+		readmeLines[i] = downloadMarkdown
+		break;
+	}
+	
+	fs.writeFileSync('./README.md', readmeLines.join("\n"), { encoding: 'utf-8' })
+	console.log("[updated readme with latest stable download links]")
+}
+
+if (syncDL) syncDownloadLinks()
+	
 if (watching) {
 	watch({ plugins: [ buildLogger ] });
 } else {
