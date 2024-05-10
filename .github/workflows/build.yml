@@ -21,15 +21,15 @@ jobs:
           sudo apt install g++-multilib
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: latest
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: latest
           cache: pnpm
@@ -43,9 +43,9 @@ jobs:
           GH_TOKEN: ${{ secrets.github_token }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Binaries-${{ runner.os }}
+          name: binaries-${{ matrix.os }}
           path: dist/crankshaft-*
   release:
     needs: build
@@ -57,15 +57,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Create nightly release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          files: Binaries-*/*
+          files: binaries-*/*
           body_path: ${{ github.workspace }}/.github/workflows/notes.md
           name: Nightly release
           tag_name: nightly
