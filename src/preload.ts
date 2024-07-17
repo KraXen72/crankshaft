@@ -109,18 +109,18 @@ ipcRenderer.on('initDiscordRPC', () => {
 	document.addEventListener('pointerlockchange', updateRPC); // thank God this exists
 });
 
-ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
+ipcRenderer.on('matchmakerRedirect', (_event, userPrefs: UserPrefs) => fetchGame(userPrefs));
 
-ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string) => {
+ipcRenderer.on('injectClientCSS', (_event, userPrefs: UserPrefs, version: string) => {
 	// eslint-disable-next-line
-	const { matchmaker, matchmaker_F6 } = _userPrefs;
+	const { matchmaker, matchmaker_F6 } = userPrefs;
 
 	document.addEventListener('keydown', event => {
 		if (event.code === 'Escape') document.exitPointerLock();
 		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts } = userPrefs;
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
