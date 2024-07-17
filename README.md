@@ -95,14 +95,14 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
   - allow userscripts to create this setting type
 - [ ] **Matchmaker: Map autocomplete**
   - create a simple typeahead/autocomplete for the matchmaker, where you can input maps (official ones)
-    - you can get more info about maps from [this krunker api link](https://matchmaker.krunker.io/game-list?hostname=krunker.io) or the [client code](https://github.com/KraXen72/crankshaft/blob/master/src/matchmaker.ts)
+    - you can get more info about maps from [this krunker api link](https://matchmaker.krunker.io/game-list?hostname=krunker.io) or the [client's code](https://github.com/KraXen72/crankshaft/blob/master/src/matchmaker.ts)
     - [Wes Bos' Javascript30 free course (episode 6)](https://javascript30.com) is a tutorial on how to implement a typeahead in vanilla js
       - (you'd use typescript but it's very similar)
   - allow toggling the list of maps between whitelist/blacklist
   - take this white/blacklist into account when using the matchmaker
 - [ ] **Add tests**
-  - could be useful, testing a few thigs like: if the game loads, if settings load, if you can set a setting, etc.
-- [ ] **Add autoupdate** (whatever official way electron recommends)
+  - could be useful, testing a few things like: if the game loads, if settings load, if you can set a setting, etc.
+- [ ] **Add auto-update** (whatever official way electron recommends)
   - i tried to add this once and failed.
   - honestly good luck since this client uses an ancient electron version due to all the newer ones having a bug that causes aim freeze in krunker
 
@@ -119,4 +119,4 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 ## support development
 [![Recurring donation via Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/kraxen72)
 
-You can support ongoing development & maintainance by donating. All donations are highly appreciated! <3
+You can support ongoing development & maintenance by donating. All donations are highly appreciated! <3

@@ -22,14 +22,14 @@ There are a few example userscripts mentioned in the README you can go off of.
 			- [Step 4 - Add the changed() function:](#step-4---add-the-changed-function)
 	- [Tips / Notes](#tips--notes)
 		- [removing an eventListener easily:](#removing-an-eventlistener-easily)
-		- ['once' attribute on eventlisteners](#once-attribute-on-eventlisteners)
+		- ['once' attribute on eventListeners](#once-attribute-on-eventlisteners)
 	- [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
 		- [crankshaft version 1.9.0+](#crankshaft-version-190)
 		- [crankshaft version \<1.9.0](#crankshaft-version-190-1)
 
-> Warning: Goes without saying, but you should never write userscipts that break [Krunker's Terms & Conditions](https://krunker.io/docs/terms.txt), like hacks or selfbots. Crankshaft maintainers are not responsible for scripts YOU write and your account can get banned.
+> Warning: Goes without saying, but you should never write userscripts that break [Krunker's Terms & Conditions](https://krunker.io/docs/terms.txt), like hacks or self-bots. Crankshaft maintainers are not responsible for scripts YOU write, and your account can be banned.
 
-> Note: Userscripts written before 20th January 2023 may not work if not updated, because krunker changed some things related to script injection.
+> Note: Userscripts written before 20th January 2023 may not work if not updated, because Krunker changed some things related to script injection.
 
 ## Metadata
 
@@ -47,7 +47,7 @@ You can define only some of them if you want, for example `@name` and `@desc`
 // @name My Awesome Userscript
 // @author Unlucky1031
 // @version 1.0
-// @desc Adds a ton of awesomness to the game
+// @desc Adds a ton of awesomeness to the game
 // @license MIT; https://mit-license.org
 // @src https://github.com/Unlucky1031/crankshaft-userscript
 // @run-at document-end
@@ -81,7 +81,7 @@ You can define an optional `@run-at` rule.
   The script executes as soon as possible. `body` most likely won't have any content in it yet.
 
 ## Waiting for a function to exist
-While krunker is loading, you might already have existing dom elements, (`@run-at` is set to `document-end` by default) but the functions in their `onclick`'s don't exist yet. You can do something like this:
+While Krunker is loading, you might already have existing dom elements (`@run-at` is set to `document-end` by default,) but the functions in their `onclick`'s don't exist yet. You can do something like this:
 ```js
 // ==UserScript==
 // @name auto-spectate
@@ -99,7 +99,7 @@ function checkSpect() {
 	if (has(globalThis, "setSpect") && typeof globalThis.setSpect === 'function') {
 		globalThis.setSpect(true)
 		clearInterval(interval)
-		this._console.log("sucessfully set spectator mode!")
+		this._console.log("Successfully set spectator mode!")
 	}
 }
 
@@ -109,7 +109,7 @@ this.unload = () => clearInterval(interval)
 return this
 ```
 ### Explanation/notes
-- `globalThis` **can be used interchangably with** `window` **in this case.** - [more details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis)
+- `globalThis` **can be used interchangeably with** `window` **in this case.** - [more details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis)
 - **we use a custom `has` function to check if a function exists on window**. <u>**you can just copy-paste it**</u>, but here's a technical explanation for those interested:
   - Unlike the `in` operator, this method does not check for the specified property in the object's prototype chain. - [source (MDN)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty#description)
   - ideally, we'd use `Object.hasOwn`, but that's supported only in chrome >= 93 (not our case)
@@ -145,7 +145,7 @@ Userscripts are executed with a custom javascript `this` object. It exposes some
 if you want users to be able to turn on and off your userscript without reloading the page, define a `this.unload` function.
 The `this.unload` function is not required, but highly recommended, because users can freely toggle your userscript on and off without reloading the page.
 That's why it's also important you try to undo all the stuff you do in the userscript.
-This function should **delete all elements you create**, **remove all eventlisteners** and basically **undo the changes you made to the game**.
+This function should **delete all elements you create**, **remove all eventListeners** and basically **undo the changes you made to the game**.
 
 ```js
 // example which exports an unload function
@@ -164,8 +164,8 @@ myElem.addEventListener("click", clickCb) // added some on click action
 document.body.appendChild(myElem) // added the element to body
 
 this.unload = () => {
-  let toRemoveElem = document.getElementById("mediocre-element") // get the element by id / queryselector rather than use the myElem reference
-  toRemoveElem.removeEventListener("click", clickCb) // remove any eventlisteners you added to be safe
+  let toRemoveElem = document.getElementById("mediocre-element") // get the element by id / querySelector rather than use the myElem reference
+  toRemoveElem.removeEventListener("click", clickCb) // remove any eventListeners you added to be safe
   toRemoveElem.remove() // remove the element
 }
 
@@ -177,7 +177,7 @@ return this
 
 By default, Krunker disables all console methods.
 We have found a way to bypass these methods from being overwritten, but for consistency, we still expose the console methods through `this._console`.
-It only provides the three basic methods: `log`, `warn` and `error`.
+It only provides three basic methods: `log`, `warn` and `error`.
 
 ```js
 this._console.log("everything is awesome!")
@@ -186,7 +186,7 @@ this._console.log("everything is awesome!")
 ### Insert CSS (version 1.6.1+)
 
 Electron offers a function to inject (and uninject) css into a page.
-It has multiple advantages: the page **can't remove the css** and **has no idea who or how it is inserted**. You can utilise this in your userscripts with the `this._css` function. It takes 3 arguments:
+It has multiple advantages: the page **can't remove the css** and **has no idea why or how it is inserted**. You can utilise this in your userscripts with the `this._css` function. It takes 3 arguments:
 
 - **css (string)**: the css you want to inject
 - **identifier (string)**: the identifier for this css block, so you can later remove it in the `this.unload` function
@@ -207,7 +207,7 @@ this._css(cssBody, 'recaptcha', true)
 this.unload = () => {
   this._css(cssBody, 'recaptcha', false)
   // you could even use this._css('', 'recaptcha', false)
-  // as long as you use the correct identifier, the css doesen't matter for removing
+  // as long as you use the correct identifier, the css doesn't matter for removing
 }
 
 // we have to return this since we define an unload function
@@ -319,7 +319,7 @@ this.settings = {
 }
 ```
 
-After that, you're all set! You've successfully added a custom setting to your krunker script, and can use the value however you like. In order to add more settings, simply create another key and define the properties you need!
+After that, you're all set! You've successfully added a custom setting to your userscript, and can use the value however you like. In order to add more settings, simply create another key and define the properties you need!
 ```js
 this.settings = {
 	"mySuperAwesomeCustomSetting": {
@@ -349,12 +349,14 @@ Custom Settings Implementation Examples:
 ## Tips / Notes
 
 ### removing an eventListener easily:
-if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function).
-### 'once' attribute on eventlisteners
-you might want to use the `once: true` eventlistener option, that way if you only run it at the page load, you don't need to remove it.
+if you want to easily remove an eventListener, define it's callback function outside, like in the example (not using an arrow function).
+
+### 'once' attribute on eventListeners
+you might want to use the `once: true` eventListener option, that way if you only run it at the page load, you don't need to remove it.
 ```js
 myElem.addEventListener("DOMContentLoaded", () => { /* ... */ }, { once: true })
 ```
+
 however, you shouldn't need to use this at all - `@run-at` is `document-end` by default. you can assume the dom elements will exist
 
 - **It is highly recommended to always define an `unload` function if all your script does is add some css. It's really easy to do.**
