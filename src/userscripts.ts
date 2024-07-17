@@ -144,7 +144,7 @@ ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths
 
 	const tracker: UserscriptTracker = {};
 
-	su.userscripts.forEach(u => { tracker[u.name] = false; }); // fill tracker with falses, so new userscripts get added disabled
+	su.userscripts.forEach(u => { tracker[u.name] = false; }); // fill tracker with false values, so when new userscripts are added, they are disabled
 	Object.assign(tracker, JSON.parse(readFileSync(su.userscriptTrackerPath, { encoding: 'utf-8' }))); // read and assign the tracker.json
 	writeFileSync(su.userscriptTrackerPath, JSON.stringify(tracker, null, 2), { encoding: 'utf-8' }); // save with the new userscripts
 
