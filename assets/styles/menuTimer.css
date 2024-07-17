@@ -2,12 +2,27 @@
 	display: block !important;
 }
 
-#uiBase.onMenu #spectateUI > div:not(:nth-child(1)),
-#spectateUI[style*='none'] div div:not(.spectateInfo),
 #uiBase.onMenu #spec1,
 #uiBase.onMenu #specGameInfo,
-#uiBase.onMenu #spec0 {
+#uiBase.onMenu #spec0,
+#uiBase.onMenu #specControlHolder,
+#uiBase.onMenu #specNames {
 	display: none !important;
+}
+
+#uiBase.onMenu #spectateHUD {
+	box-sizing: border-box;
+	display: flex !important;
+	justify-content: center;
+	height: .5rem;
+	white-space: nowrap;
+	width: max-content;
+	position: fixed;
+	top: calc(50% + 140px);
+}
+
+#uiBase.onMenu #spectateHUD #specGMessage {
+	top: 0;
 }
 
 #uiBase.onMenu #spectateUI > div {
@@ -23,7 +38,6 @@
 }
 
 #uiBase.onMenu #spectateUI div .spectateInfo #specTimer {
-	display: block !important;
 	background-color: #00000050;
 	padding: 25px;
 	font-size: 42px;
