@@ -177,7 +177,8 @@ return this
 
 By default, Krunker disables all console methods.
 We have found a way to bypass these methods from being overwritten, but for consistency, we still expose the console methods through `this._console`.
-It only provides three basic methods: `log`, `warn` and `error`.
+It provides 5 basic methods for logging: `log`, `info`, `debug`, `warn` and `error`.
+Console also includes a few other utility functions, such as these 5 methods which we also provided: `time`, `timeEnd`, `timeLog`, `assert` and `clear`.
 
 ```js
 this._console.log("everything is awesome!")

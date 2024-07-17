@@ -582,7 +582,7 @@ export function renderSettings() {
 					title: userscript.name,
 					value: su.userscriptTracker[userscript.name],
 					type: 'bool',
-					desc: userscript.fullpath,
+					desc: userscript.fullPath,
 					safety: 0,
 					userscriptReference: userscript,
 					callback: 'userscript'

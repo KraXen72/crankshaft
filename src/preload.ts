@@ -18,11 +18,16 @@ localStorage.logs = true; // prevent krunker from overwriting console
 
 // save most console methods
 export const strippedConsole = {
-	error: console.error.bind(console),
 	log: console.log.bind(console),
+	info: console.info.bind(console),
+	debug: console.debug.bind(console),
 	warn: console.warn.bind(console),
+	error: console.error.bind(console),
 	time: console.time.bind(console),
-	timeEnd: console.timeEnd.bind(console)
+	timeEnd: console.timeEnd.bind(console),
+	timeLog: console.timeLog.bind(console),
+	assert: console.assert.bind(console),
+	clear: console.clear.bind(console)
 };
 
 const $assets = pathResolve(__dirname, '..', 'assets');
@@ -35,9 +40,9 @@ export const styleSettingsCSS = {
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
-ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => patchSettings(_userPrefs));
+ipcRenderer.on('main_did-finish-load', (_event, userPrefs) => patchSettings(userPrefs));
 
-ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
+ipcRenderer.on('checkForUpdates', async(_event, currentVersion) => {
 	const releases = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`);
 	const response = await releases.json();
 	const latestVersion = response.tag_name;
@@ -205,7 +210,7 @@ export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
 	return `[${localDate.format('HH:mm')}]`;
 }
 
-function patchSettings(_userPrefs: UserPrefs) {
+function patchSettings(userPrefs: UserPrefs) {
 	// hooking & binding credit: https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/preload/game-settings.ts
 	let interval: number | NodeJS.Timer = null;
 	strippedConsole.log('waiting to hook settings...');
@@ -256,7 +261,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 		settingsWindow.getSettings = (...args: unknown[]) => {
 			const result: string = getSettingsHook(...args);
-			if (!_userPrefs.regionTimezones) return result;
+			if (!userPrefs.regionTimezones) return result;
 
 			if (result.includes('window.setSetting("defaultRegion"') && result.match(regionOptionsRegex).length > 0) {
 				const optionsHTML = result.match(regionOptionsRegex)[0];

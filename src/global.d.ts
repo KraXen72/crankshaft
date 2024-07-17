@@ -14,7 +14,7 @@ interface InsertedCSS {
 
 interface IUserscript {
 	name: string;
-	fullpath: string;
+	fullPath: string;
 	settingsPath: string;
 	content?: string;
 	exported?: {

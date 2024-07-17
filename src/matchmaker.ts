@@ -25,13 +25,13 @@ function matchmakerMessageText(game: IMatchmakerGame, meeting: number, all: numb
 	Join game?`;
 }
 
-export async function fetchGame(_userPrefs: UserPrefs) {
+export async function fetchGame(userPrefs: UserPrefs) {
 	const criteria = {
-		regions: _userPrefs.matchmaker_regions,
-		gameModes: _userPrefs.matchmaker_gamemodes,
-		minPlayers: _userPrefs.matchmaker_minPlayers,
-		maxPlayers: _userPrefs.matchmaker_maxPlayers,
-		minRemainingTime: _userPrefs.matchmaker_minRemainingTime
+		regions: userPrefs.matchmaker_regions,
+		gameModes: userPrefs.matchmaker_gamemodes,
+		minPlayers: userPrefs.matchmaker_minPlayers,
+		maxPlayers: userPrefs.matchmaker_maxPlayers,
+		minRemainingTime: userPrefs.matchmaker_minRemainingTime
 	} as IMatchmakerCriteria;
 
 	const response = await fetch(`https://matchmaker.krunker.io/game-list?hostname=${window.location.hostname}`);

@@ -28,7 +28,7 @@ class Userscript implements IUserscriptInstance {
 
 	name: string;
 
-	fullpath: string;
+	fullPath: string;
 
 	content: string;
 
@@ -52,14 +52,14 @@ class Userscript implements IUserscriptInstance {
 		this.#strictMode = false;
 
 		this.name = props.name;
-		this.fullpath = props.fullpath;
+		this.fullPath = props.fullPath;
 
 		this.meta = false;
 		this.unload = false;
 
 		this.settingsPath = props.settingsPath;
 
-		this.content = readFileSync(this.fullpath, { encoding: 'utf-8' });
+		this.content = readFileSync(this.fullPath, { encoding: 'utf-8' });
 		if (this.content.startsWith('"use strict"')) this.#strictMode = true;
 		if (this.content.includes('// ==UserScript==') && this.content.includes('// ==/UserScript==')) {
 			// eslint-disable-next-line
@@ -140,7 +140,7 @@ ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths
 		.filter(entry => entry.name.endsWith('.js'))
 
 		//                                               v this is so that each custom userscript option will have its own unique file name.  v
-		.map(entry => new Userscript({ name: entry.name, settingsPath: pathResolve(su.userscriptPrefsPath, entry.name.replace(/.js$/, '.json')), fullpath: pathResolve(su.userscriptsPath, entry.name).toString() }));
+		.map(entry => new Userscript({ name: entry.name, settingsPath: pathResolve(su.userscriptPrefsPath, entry.name.replace(/.js$/, '.json')), fullPath: pathResolve(su.userscriptsPath, entry.name).toString() }));
 
 	const tracker: UserscriptTracker = {};
 
