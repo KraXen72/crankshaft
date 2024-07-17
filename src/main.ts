@@ -133,7 +133,7 @@ let socialWindowReference: BrowserWindow;
 
 ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
-// send usercript path to preload
+// send userscript path to preload
 ipcMain.on('initializeUserscripts', () => {
 	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, __dirname);
 });
@@ -154,7 +154,7 @@ ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 	Object.assign(userPrefs, data);
 });
 
-// allow perload opening links in default browser
+// allow preload opening links in default browser
 ipcMain.on('openExternal', (event, url: string) => { shell.openExternal(url); });
 
 const $assets = pathResolve(__dirname, '..', 'assets');
@@ -292,7 +292,7 @@ app.on('ready', () => {
 
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
-		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
+		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingscss, splashcss & others
 
 		if (userPrefs.discordRPC) {
 			// eslint-disable-next-line

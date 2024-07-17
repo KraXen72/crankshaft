@@ -28,13 +28,13 @@ let paths: IPaths;
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
-ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
+ipcRenderer.on('m_userPrefs_for_settingsUI', (event, received_paths: IPaths, received_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
-	userPrefsPath = recieved_paths.settingsPath;
-	userscriptPrefsPath = recieved_paths.userscriptPreferencesPath;
-	paths = recieved_paths;
-	userPrefs = recieved_userPrefs;
-	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
+	userPrefsPath = received_paths.settingsPath;
+	userscriptPrefsPath = received_paths.userscriptPreferencesPath;
+	paths = received_paths;
+	userPrefs = received_userPrefs;
+	userPrefsCache = { ...received_userPrefs }; // cache userprefs
 
 	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) };
 	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) };
@@ -63,8 +63,8 @@ function openPath(e: MouseEvent, path: string) {
  * optional props and their defaults:
  * desc (description): omitting it or leaving it "" will not render any description
  * cat (category): omitting will put the setting in the first (0th) category
- * instant: ommiting will not render an instant icon.
- * refreshOnly: ommiting will not render a refresh-only icon
+ * instant: omitting will not render an instant icon.
+ * refreshOnly: omitting will not render a refresh-only icon
  *
  * note: instant and refreshOnly are exclusive. only use one at a time
  * note: settings will get rendered in the order you define them.
@@ -391,7 +391,7 @@ class SettingElem {
 				 * I hate that I have to take the lazy route but I don't see a way of extracting settings without loading the script.
 				 */
 				/* if ('settings' in userscript && Object.keys(userscript.settings).length > 0) */ refreshSettings = true;
-				// either the userscsript has not ran yet, or it's instant
+				// either the userscript has not ran yet, or it's instant
 				if (value && (!userscript.hasRan || this.props.instant)) {
 					userscript.load();
 					userscript.hasRan = true;
@@ -404,15 +404,15 @@ class SettingElem {
 						this.#disabled = true;
 					}
 				}
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
+				ipcRenderer.send('logMainConsole', `userscript: received an update for ${userscript.name}: ${value}`);
 				su.userscriptTracker[userscript.name] = value;
 			} else {
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
+				ipcRenderer.send('logMainConsole', `userscript: received an update for ${this.props.title}: ${value}`);
 				su.userscriptTracker[this.props.title] = value;
 			}
 			saveUserscriptTracker();
 
-			// krunkers transition takes .4s, this is more reliable than to wait for transitionend
+			// Krunker's transition takes .4s, this is more reliable than to wait for transitionend
 			if (refreshSettings) setTimeout(renderSettings, 400);
 		} else {
 			// eslint-disable-next-line callback-return
@@ -434,7 +434,7 @@ class SettingElem {
 	get elem() {
 		if (this.#wrapper !== false) return this.#wrapper; // return the element if already initialized
 
-		// i only create the element after .elem is called so i don't pollute the dom with virutal elements when making settings
+		// i only create the element after .elem is called so i don't pollute the dom with virtual elements when making settings
 		const classes = ['setting', 'settName', `safety-${this.props.safety}`, this.type];
 		if (this.props.button) classes.push('has-button');
 
@@ -464,7 +464,7 @@ class SettingElem {
 
 /** a settings generation helper. has some skeleton elements and methods that make them. purpose: prevents code duplication */
 const skeleton = {
-	/** make a setting cateogry */
+	/** make a setting category */
 	category: (title: string, innerHTML: string, elemClass = 'mainSettings') => `
 	<div class="setHed Crankshaft-setHed"><span class="material-icons plusOrMinus">keyboard_arrow_down</span> ${title}</div>
 	<div class="setBodH Crankshaft-setBodH ${elemClass}">
@@ -550,7 +550,7 @@ export function renderSettings() {
 		if ('cat' in setObj) { // if category is specified
 			const cat = categoryNames[setObj.cat];
 
-			// create the given category if it doesen't exist
+			// create the given category if it doesn't exist
 			if (csSettings.querySelector(`.${cat.cat}`) === null) {
 				csSettings.appendChild(skeleton.catHedElem(cat.name));
 				csSettings.appendChild(skeleton.catBodElem(cat.cat, ('note' in cat) ? skeleton.notice(cat.note) : ''));

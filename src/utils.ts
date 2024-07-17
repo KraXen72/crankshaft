@@ -105,7 +105,7 @@ export function debounce(func: Function, timeout = 300) {
 export function hiddenClassesImages(classesCount: number) {
 	const prepend = 'menuClassPicker0'.slice(0, -1);
 
-	const gaps = (4 * (classesCount - 1)); // for each gap (classesCount - 1) we substract 4px
+	const gaps = (4 * (classesCount - 1)); // for each gap (classesCount - 1) we subtract 4px
 	const theoreticalButtonSize = Math.round((810 - gaps) / classesCount); // 810 is krunker's hardcoded middle element width
 	const buttonSize = Math.min(theoreticalButtonSize, 50); // safety measure in case the buttons would be < 50px
 

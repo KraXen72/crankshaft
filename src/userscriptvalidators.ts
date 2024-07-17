@@ -45,6 +45,6 @@ export const customSettingIsMalformed = (customUserScriptSetting: UserscriptRend
 export const customSettingSavedJSONIsNotMalformed = (settingKey: string, settings: Record<string, UserscriptRenderReadySetting>, settingsJSON: Record<string, UserPrefValue>): boolean => (
 	settingKey in settings // Make sure setting key is a changeable/registered key
 	&& typeof settings[settingKey].changed === 'function' // Make sure setting key has a changed function
-	&& settingsJSON[settingKey] !== settings[settingKey].value // Make sure you aren't applying changes unnecissarily
+	&& settingsJSON[settingKey] !== settings[settingKey].value // Make sure you aren't applying changes unnecessarily
 	&& typeof settingsJSON[settingKey] === typeof settings[settingKey].value
 );

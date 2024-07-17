@@ -169,7 +169,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	if (userscripts) ipcRenderer.send('initializeUserscripts');
 });
 
-// warning: timezone calculation may be slighty innacurate: no special logic for DST and approx. offsets for BRZ, BHN and AFR
+// warning: timezone calculation may be slightly inaccurate: no special logic for DST and approx. offsets for BRZ, BHN and AFR
 export const regionMappings = [
 	{ name: 'Frankfurt', id: 'de-fra', code: 'FRA', offset: 2 },
 	{ name: 'Silicon Valley', id: 'us-ca-sv', code: 'SV', offset: -7 },
@@ -183,6 +183,7 @@ export const regionMappings = [
 	{ name: 'Brazil', id: 'brz', code: 'BRZ', offset: -3 }, // approximate, BRT
 	{ name: 'Middle East', id: 'me-bhn', code: 'BHN', offset: 3 }, // approximate, Saudi arabia
 	{ name: 'South Africa', id: 'af-ct', code: 'AFR', offset: 2 }, // approximate, SAST
+
 	// found in matchmaker, but not region picker
 	{ name: 'China (hidden)', id: '', code: 'CHI', offset: 8 }, // approximate, Beijing
 	{ name: 'London (hidden)', id: '', code: 'LON', offset: 1 },

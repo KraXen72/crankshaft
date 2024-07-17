@@ -195,7 +195,7 @@ type RPCargs = { details: string, state: string };
 
 /**
  * return type of window.getGameActivity()
- * we can't ensure krunker doesen't change or fail to return this exact object
+ * we can't ensure krunker doesn't change or fail to return this exact object
  * this should be consumed as `Partial<GameInfo>` with fallbacks from elements for properties you are using
  */
 interface GameInfo {

@@ -16,7 +16,7 @@ export const su = {
 	userscriptTracker: <UserscriptTracker>{}
 };
 
-/** simple error message for usercripts. can be called from the userscript itself */
+/** simple error message for userscripts. can be called from the userscript itself */
 const errAlert = (err: Error, name: string) => {
 	// eslint-disable-next-line no-alert
 	alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`);
@@ -75,7 +75,7 @@ class Userscript implements IUserscriptInstance {
 				this.meta = metaParser.parse(chunk) as UserscriptMeta; // assume this.meta is not false when parsing
 
 				/*
-				 * if the metadata define some prop twice, the parser turns it into an array.
+				 * if the metadata defines some prop twice, the parser turns it into an array.
 				 * we check if a value isArray and if yes, take the last item in that array as the new value
 				 */
 
