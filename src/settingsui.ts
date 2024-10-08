@@ -88,6 +88,7 @@ const settingsDesc: SettingsDesc = {
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
 	clientSplash: { title: 'Client Splash Screen', type: 'bool', safety: 0, cat: 1, refreshOnly: true },
+	immersiveSplash: { title: 'Immersive Splash Screen', type: 'bool', desc: 'Adds a background that covers the Krunker loading skeleton. Has no effect if Client Splash Screen is off.', safety: 0, cat: 1, refreshOnly: true },
 	regionTimezones: { title: 'Region Picker Timezones', type: 'bool', desc: 'Adds local time to all region pickers', safety: 0, cat: 1, refreshOnly: true },
 
 	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2, refreshOnly: true },
@@ -203,6 +204,19 @@ function saveUserscriptTracker() {
 	writeFileSync(su.userscriptTrackerPath, JSON.stringify(su.userscriptTracker, null, 2), { encoding: 'utf-8' });
 }
 
+function sanitizeString(string: string) {
+	const map = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#x27;',
+		"/": '&#x2F;',
+	};
+	const reg = /[&<>"'/]/ig;
+	return string.replace(reg, (match: keyof typeof map) => (map[match]));
+}
+
 /** creates a new Setting element */
 class SettingElem {
 
@@ -221,7 +235,7 @@ class SettingElem {
 
 	#disabled: boolean;
 
-	constructor(props: RenderReadySetting) {
+	constructor(props: RenderReadySetting, trusted: boolean = true) {
 		/** @type {Object} save the props from constructor to this class (instance) */
 		this.props = props;
 
@@ -257,9 +271,15 @@ class SettingElem {
 				this.props.desc = refreshToUnloadMessage;
 			}
 		}
+
+		function sanitize(string: string) {
+			if (trusted) return string;
+			return sanitizeString(string);
+		}
+
 		switch (props.type) {
 			case 'bool':
-				this.HTML += `<span class="setting-title">${props.title}</span> 
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
 					<label class="switch">
 							<input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled' : ''}/>
 							<div class="slider round"></div>
@@ -268,7 +288,7 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			case 'text':
-				this.HTML += `<span class="setting-title">${props.title}</span>
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<span class="setting-input-wrapper">
 							<input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}"/>
 					</span>`;
@@ -276,7 +296,7 @@ class SettingElem {
 				this.updateMethod = 'oninput';
 				break;
 			case 'num':
-				this.HTML += `<span class="setting-title">${props.title}</span>
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 				<span class="setting-input-wrapper">
 					<div class="slidecontainer">
 						<input type="range" class="sliderM s-update-secondary" name="${props.key}"
@@ -288,13 +308,13 @@ class SettingElem {
 					/>
 				</span>`;
 				this.updateKey = 'valueAsNumber';
-				this.updateMethod = 'onchange';
+				this.updateMethod = 'oninput';
 				break;
 			case 'heading':
-				this.HTML = `<h1 class="setting-title">${props.title}</h1>`;
+				this.HTML = `<h1 class="setting-title">${sanitize(props.title)}</h1>`;
 				break;
 			case 'sel':
-				this.HTML += `<span class="setting-title">${props.title}</span>
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
           			<select class="s-update inputGrey2">
 						${props.opts.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
 					</select>`;
@@ -304,11 +324,11 @@ class SettingElem {
 			case 'multisel': {
 				const hasValidDescriptions = hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length;
 				if (hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`);
-				this.HTML += `<span class="setting-title">${props.title}</span>
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : ''}>
 						${props.opts.map((opt, i) => `<label class="hostOpt">
-							<span class="optName">${opt}</span>
-							${hasValidDescriptions ? `<span class="optDescription">${this.props.optDescriptions[i]}</span>` : ''}
+							<span class="optName">${sanitize(opt)}</span>
+							${hasValidDescriptions ? `<span class="optDescription">${sanitize(this.props.optDescriptions[i])}</span>` : ''}
 							<input type="checkbox" name="${opt}" ${(props.value as string[]).includes(opt) ? 'checked' : ''} />
 							<div class="optCheck"></div>
 						</label>`).join('')}
@@ -318,7 +338,7 @@ class SettingElem {
 				break;
 			}
 			case 'color':
-				this.HTML += `<span class="setting-title">${props.title}</span> 
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
 					<label class="setting-input-wrapper">
 							<input class="s-update" type="color" value="${props.value ? props.value : ''}" ${this.#disabled ? 'disabled' : ''}/>
 					</label>`;
@@ -327,11 +347,11 @@ class SettingElem {
 				break;
 			default:
 				// @ts-ignore
-				this.HTML = `<span class="setting-title">${props.title}</span><span>Unknown setting type</span>`;
+				this.HTML = `<span class="setting-title">${sanitize(props.title)}</span><span>Unknown setting type</span>`;
 		}
 
 		// add desc
-		if (Boolean(props.desc) && props.desc !== '') this.HTML += `<div class="setting-desc-new">${props.desc}</div>`;
+		if (Boolean(props.desc) && props.desc !== '') this.HTML += `<div class="setting-desc-new">${sanitize(props.desc)}</div>`;
 	}
 
 
@@ -649,7 +669,7 @@ export function renderSettings() {
 										}.bind({ settingKey, prefsKey: userscriptPrefsKey, changed: setting.changed }) }
 									)
 									// Adding the entire constructed custom element to the DOM fragment
-									const customOptionElem = new SettingElem(customSettingObject)
+									const customOptionElem = new SettingElem(customSettingObject, false);
 									fragForUserscript.querySelector(`.${userscriptCategoryID}`).appendChild(customOptionElem.elem)
 								} else { 
 									// If the custom setting is dumb, make sure it's never changed and the script creator gets a nice, big, very red warning about it.
@@ -686,8 +706,8 @@ export function renderSettings() {
 		document.querySelector('.Crankshaft-settings').textContent = '';
 		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
 
-		for (const i of userscriptSettings) {
-			const userSet = new SettingElem(i);
+		for (const constructedUserscriptToggle of userscriptSettings) {
+			const userSet = new SettingElem(constructedUserscriptToggle);
 			document.querySelector('.Crankshaft-settings .setBodH.userscripts').appendChild(userSet.elem);
 		}
 	} else {

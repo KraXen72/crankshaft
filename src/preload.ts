@@ -116,7 +116,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts } = _userPrefs;
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -131,7 +131,8 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		const uiBaseElement = document.getElementById(splashMountElementID);
 		if (uiBaseElement === null) throw `Krunker didn't create #${splashMountElementID}`;
 
-		const splashBackground = createElement('div', {class: ['crankshaft-loading-background']})
+		const splashBackground = createElement('div', {class: ['crankshaft-loading-background']});
+		if (immersiveSplash) splashBackground.classList.add('immersive');
 		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
 			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })

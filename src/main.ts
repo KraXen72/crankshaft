@@ -4,7 +4,7 @@ import { moveFolderSync } from './utils_node';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
-import Swapper from './resourceswapper';
+import RequestHandler from './requesthandler';
 
 /// <reference path="global.d.ts" />
 
@@ -47,7 +47,7 @@ if (existsSync(docsPath)) migrateSettings();
 
 const swapperPath = pathJoin(configPath, 'swapper');
 const settingsPath = pathJoin(configPath, 'settings.json');
-const userscriptPreferencesPath = pathJoin(configPath, '/userscriptsettings')
+const userscriptPreferencesPath = pathJoin(configPath, '/userscriptsettings');
 const filtersPath = pathJoin(configPath, 'filters.txt');
 const userscriptsPath = pathJoin(configPath, 'scripts');
 const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
@@ -65,6 +65,7 @@ const settingsSkeleton = {
 	resourceSwapper: true,
 	userscripts: false,
 	clientSplash: true,
+	immersiveSplash: false,
 	discordRPC: false,
 	extendedRPC: true,
 	'angle-backend': 'default',
@@ -135,7 +136,7 @@ ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
 
 // send usercript path to preload
 ipcMain.on('initializeUserscripts', () => {
-	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath: userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, __dirname);
+	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, __dirname);
 });
 
 // initial request of settings to populate the settingsUI
@@ -289,43 +290,6 @@ app.on('ready', () => {
 	mainWindow.on('ready-to-show', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
-		const filter: WebRequestFilter = { urls: [] };
-		const blockFilters = [
-			'*://*.pollfish.com/*',
-			'*://www.paypalobjects.com/*',
-			'*://fran-cdn.frvr.com/prebid*',
-			'*://fran-cdn.frvr.com/gpt_*',
-			'*://c.amazon-adsystem.com/*',
-			'*://fran-cdn.frvr.com/pubads_*',
-			'*://platform.twitter.com/*',
-			'*://cookiepro.com/*',
-			'*://*.cookiepro.com/*',
-			'*://www.googletagmanager.com/*',
-			'*://storage.googleapis.com/pollfish_production/*',
-			'*://krunker.io/libs/frvr-channel-web*',
-			'*://apis.google.com/js/platform.js',
-			'*://imasdk.googleapis.com/*'
-		];
-		if (userPrefs.hideAds === 'block') filter.urls.push(...blockFilters);
-		if (userPrefs.customFilters) {
-			let conf = readFileSync(filtersPath, 'utf8').split('\n');
-
-			for (let i = 0; i < conf.length; i++) conf[i] = conf[i].split('#')[0];
-			conf = conf.filter(line => line.trim().length > 0);
-			for (const item of conf) filter.urls.push(item);
-		}
-
-		/*
-		 * FIXME electron cannot have multiple onBeforeRequest handlers; use the adblocker commander uses: https://github.com/asger-finding/anotherkrunkerclient/blob/2857ac3e475ec2e45d83a9ef5d46a0a33b8c55dd/src/app.ts#L256
-		 * mainWindow.webContents.session.webRequest.onBeforeRequest(filter, (details, callback) => {
-		 * 	if (userPrefs.hideAds !== 'block' || filter.urls.length === 0) {
-		 * 		callback({ cancel: false });
-		 * 		return;
-		 * 	}
-		 * 	console.log(`Blocked ${details.url}`);
-		 * 	callback({ cancel: true });
-		 * });
-		 */
 
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
@@ -492,9 +456,17 @@ app.on('ready', () => {
 		}
 	});
 
-	if (userPrefs.resourceSwapper) {
-		const CrankshaftSwapInstance = new Swapper(mainWindow, swapperPath);
-		CrankshaftSwapInstance.start();
+	// console.log(readFileSync(pathJoin($assets, 'blockFilters.txt'), { encoding: 'utf-8' }));
+
+	if (userPrefs.resourceSwapper || userPrefs.hideAds === 'block') {
+		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow,
+			swapperPath,
+			userPrefs.resourceSwapper,
+			userPrefs.hideAds === 'block',
+			userPrefs.customFilters,
+			readFileSync(pathJoin($assets, 'blockFilters.txt')).toString(),
+			filtersPath);
+		CrankshaftFilterHandlerInstance.start();
 	}
 });
 
