@@ -599,7 +599,7 @@ export function renderSettings() {
 		const customUserScriptSettingsElems: DocumentFragment[] = []
 		const userscriptSettings: RenderReadySetting[] = su.userscripts
 			.map(userscript => {
-				const obj: RenderReadySetting = {
+				const customUserscriptSetting: RenderReadySetting = {
 					key: userscript.name.replace(/.js$/, ''), // remove .js
 					title: userscript.name,
 					value: su.userscriptTracker[userscript.name],
@@ -615,7 +615,7 @@ export function renderSettings() {
 					const scriptAuthor = ('author' in thisMeta && thisMeta.author) ? `${thisMeta.author}` : false
 					const scriptName = ('name' in thisMeta && thisMeta.name) ? thisMeta.name : userscript.name
 					const scriptHasSettings = ('settings' in userscript && Object.keys(userscript.settings).length > 0 && su.userscriptTracker[userscript.name])
-					Object.assign(obj, {
+					Object.assign(customUserscriptSetting, {
 						title: scriptName,
 						desc: `${'desc' in thisMeta && thisMeta.desc ? thisMeta.desc.slice(0, 60) : ''}
 						${scriptAuthor ? `&#8226; ${scriptAuthor}` : ''}
@@ -631,7 +631,7 @@ export function renderSettings() {
 						const fragForUserscript = new DocumentFragment()
 						// Create container for script, basically follows what y'all do above.
 						const userscriptCategoryID: string = `${scriptName}by${scriptAuthor}`.replaceAll(' ', '').toLowerCase().replaceAll(/[^a-z0-9]/g, '')
-						fragForUserscript.appendChild(skeleton.catHedElem(` ${scriptName} <span class='settings-Userscript-Author'>by ${scriptAuthor}</span>`));
+						fragForUserscript.appendChild(skeleton.catHedElem(` ${scriptName} <span class='settings-Userscript-Author'>by ${sanitizeString(`${scriptAuthor}`)}</span>`));
 						fragForUserscript.appendChild(skeleton.catBodElem(userscriptCategoryID, ``));
 						// Create immutable variable for the userscript's settings for predictable behaviour
 						const userScriptDefinedOptions: Record<string, UserscriptRenderReadySetting> = {... userscript.settings}
@@ -643,9 +643,9 @@ export function renderSettings() {
 							loadUserScriptSettings(userscriptPrefsKey, userScriptDefinedOptions)
 							// Loop through each custom setting and do stuff
 							Object.keys(userScriptDefinedOptions).forEach(settingKey => {
-								const setting: UserscriptRenderReadySetting = {...userScriptDefinedOptions[settingKey]}
+								const setting: UserscriptRenderReadySetting = {...userScriptDefinedOptions[settingKey]};
 								// This is a failsafe just in case a user adds a setting to a script without restarting the client. Not 100% sure if this is needed.
-								if (userscriptPreferences[userscriptPrefsKey][settingKey] === undefined) userscriptPreferences[userscriptPrefsKey][settingKey] = setting.value
+								if (userscriptPreferences[userscriptPrefsKey][settingKey] === undefined) userscriptPreferences[userscriptPrefsKey][settingKey] = setting.value;
 								// Check if the script creator made their settings dumb
 								let settingIsMalformed: boolean | string = customSettingIsMalformed(setting);
 								if (settingIsMalformed === false) {
@@ -693,12 +693,12 @@ export function renderSettings() {
 					}
 				}
 				if (userscript.unload) {
-					obj.instant = true;
+					customUserscriptSetting.instant = true;
 				} else {
-					obj.instant = false;
+					customUserscriptSetting.instant = false;
 				}
 
-				return obj;
+				return customUserscriptSetting;
 			});
 		
 		// Apply custom userscript options to the settings fragment
