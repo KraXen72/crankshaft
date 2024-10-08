@@ -48,7 +48,7 @@ html {
 
 .crankshaft-holder-update {
 	top: 20px;
-	left: 20px;
+	left: 50% !important;
 	background-color: black;
 	padding: 1rem;
 	border-radius: 0.5rem;
