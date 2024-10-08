@@ -5,6 +5,7 @@ import { fetchGame } from './matchmaker';
 import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
+import { splashFlavor } from './splashscreen';
 
 // TODO if super border rewrite these to dynamic require's. For now i have not done it because i don't want to dynamically require in exported function
 import dayjs from 'dayjs';
@@ -126,9 +127,11 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		const splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), { encoding: 'utf-8' });
 		injectSettingsCSS(splashCSS, splashId);
 
-		const instructionHider = document.getElementById('instructionHider');
-		if (instructionHider === null) throw "Krunker didn't create #instructionHider";
+		const splashMountElementID = 'uiBase';
+		const uiBaseElement = document.getElementById(splashMountElementID);
+		if (uiBaseElement === null) throw `Krunker didn't create #${splashMountElementID}`;
 
+		const splashBackground = createElement('div', {class: ['crankshaft-loading-background']})
 		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
 			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })
@@ -136,18 +139,21 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 		const clearSplash = (_observer: MutationObserver) => {
 			try {
-				logoSVG.remove();
+				splashBackground.remove();
 				_observer.disconnect();
 			} catch (e) {
 				console.log('splash screen was already cleared.');
 			}
 		};
 
-		instructionHider.appendChild(logoSVG);
+		uiBaseElement.appendChild(splashBackground);
 
 		// i am not sure if you should be injecting more elements into a svg element, but it seems to work. feel free to pr a better version tho.
-		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: '#loadInfoLHolder', text: `v${version}` }));
-		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: '#loadInfoRHolder', text: 'by KraXen72 and contributors' }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: 'loadInfoLHolder', text: `v${version}` }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: 'loadInfoRHolder', text: 'Client by KraXen72' }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-splash', id: 'loadInfoSplashHolder', text: splashFlavor }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-loadingindicator', id: 'loadInfoLoadingIndicator', text: `LOADING...` }));
+		splashBackground.appendChild(logoSVG);
 
 		const observerConfig = { attributes: true, childList: true, subtree: true };
 		const callback = (mutationList: MutationRecord[], observer: MutationObserver) => {

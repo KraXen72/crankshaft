@@ -1,9 +1,3 @@
-#loadEditrBtn,
-#loadInfoLHolder,
-#loadInfoRHolder {
-	display: none !important;
-}
-
 html {
 	background: #363636 !important;
 }
@@ -13,6 +7,7 @@ html {
 	background-size: 100px !important;
 	background-repeat: repeat !important;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAMAAAC8EZcfAAAAclBMVEXE/+IAAAAoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgnJycoKCgoKCgoKCgoKCgnJycoKCgoKCgnJycoKCgoKCgoKCgoKCgoKCgpKSm+1W+6AAAAAXRSTlMAQObYZgAAAfpJREFUeNrt3QGqIjsQRuHD2URW0Pvf4oPHcMMt0j0OXqx/hjoAggX4AdJJbEX+zx3gTj7e+cW9CYKF6Gddfyjks+kLwmbfWbgl3b6zEKuw03cQYoBQ74V4FpIixKMQUoQUUL+vCLEKu31FiFXY7KvCPaUrfRLiV90+jkJsFv5+n+eu1xcorL6z0J12ATlpGn1VCPdCA96DcCuU4gvIb7EfSOkABCSnCpS0CpC8CjBZiOFCVCLbQEgWIkQLSS4eSLdvmqZpmqZpmqZpTj5zuH0z44HZQr+K5SUTLQ3wTWGkI4FXgR6Gi4cGaOmHl7oBon2udQtcKq1d3ndtal++UrrPdJ/GA0335QNN8S0ArlTgkz3At2B33QDXSll8r+NU5XOtQnjy9+xpnnycfX3C62lYnughUiv2buALo/XgiwDC1fkTEGqnkbqafFK6TjOVyMvM4lcr5qSOR2Gjz+txGgDUpyFRwmUoUAVPzZb/TeCci+/6R4CQLVw0tu4vLnCpCR8Qroe17XXf3FBafxlwEdfcM/xR4WKapmmapmmapuDmW8XvZTjQcKDBQNN9mu5zfOPrK9Q3whEGZLhQs4WqYpqweDBV6BcwU+gGZgsxXIipQjcwUmgBBgnL+cg4od/CNGHhYZaw+IAc4dl31riz3QePZsP+ueLg6xX+B4FEGkmLcq6yAAAAAElFTkSuQmCC) !important;
+	box-shadow: 0.7em 0.7em 0 rgba(0, 0, 0, 0.5);
 
 	position: absolute;
 	left: 50%;
@@ -27,3 +22,58 @@ html {
 	height: min-content;
 }
 
+/* floating toasts css that is required */
+.crankshaft-holder-l,
+.crankshaft-holder-r,
+.crankshaft-holder-update,
+.crankshaft-holder-splash,
+.crankshaft-holder-loadingindicator {
+	position: absolute;
+	font-size: 20px !important;
+	color: rgba(255, 255, 255, 0.7);
+	display: block !important;
+}
+
+.crankshaft-holder-r {
+	right: 20px;
+	bottom: 20px;
+	text-align: right;
+}
+
+.crankshaft-holder-l {
+	left: 20px;
+	bottom: 20px;
+	text-align: left;
+}
+
+.crankshaft-holder-update {
+	top: 20px;
+	left: 20px;
+	background-color: black;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	width: max-content;
+	z-index: 10;
+}
+
+.crankshaft-holder-splash {
+	top: 100%;
+	left: 0%;
+	margin: 0.6em 1em;
+}
+.crankshaft-holder-loadingindicator {
+	bottom: 100%;
+	right: 0%;
+	margin: 0.6em 1em;
+}
+
+.crankshaft-loading-background {
+	width: 100%;
+	height: 100%;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAMAAAC8EZcfAAAAclBMVEXE/+IAAAAoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgnJycoKCgoKCgoKCgoKCgnJycoKCgoKCgnJycoKCgoKCgoKCgoKCgoKCgpKSm+1W+6AAAAAXRSTlMAQObYZgAAAfpJREFUeNrt3QGqIjsQRuHD2URW0Pvf4oPHcMMt0j0OXqx/hjoAggX4AdJJbEX+zx3gTj7e+cW9CYKF6Gddfyjks+kLwmbfWbgl3b6zEKuw03cQYoBQ74V4FpIixKMQUoQUUL+vCLEKu31FiFXY7KvCPaUrfRLiV90+jkJsFv5+n+eu1xcorL6z0J12ATlpGn1VCPdCA96DcCuU4gvIb7EfSOkABCSnCpS0CpC8CjBZiOFCVCLbQEgWIkQLSS4eSLdvmqZpmqZpmqZpTj5zuH0z44HZQr+K5SUTLQ3wTWGkI4FXgR6Gi4cGaOmHl7oBon2udQtcKq1d3ndtal++UrrPdJ/GA0335QNN8S0ArlTgkz3At2B33QDXSll8r+NU5XOtQnjy9+xpnnycfX3C62lYnughUiv2buALo/XgiwDC1fkTEGqnkbqafFK6TjOVyMvM4lcr5qSOR2Gjz+txGgDUpyFRwmUoUAVPzZb/TeCci+/6R4CQLVw0tu4vLnCpCR8Qroe17XXf3FBafxlwEdfcM/xR4WKapmmapmmapuDmW8XvZTjQcKDBQNN9mu5zfOPrK9Q3whEGZLhQs4WqYpqweDBV6BcwU+gGZgsxXIipQjcwUmgBBgnL+cg4od/CNGHhYZaw+IAc4dl31riz3QePZsP+ueLg6xX+B4FEGkmLcq6yAAAAAElFTkSuQmCC);
+	background-color: #171717;
+	z-index: 50;
+	position: absolute;
+	top: 0;
+	left: 0;
+}

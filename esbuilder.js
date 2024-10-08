@@ -14,7 +14,7 @@ const buildLogger = {
 }
 
 const buildOptions = {
-	// keep this manually in-sync! THANKS FOR LETTING ME KNOW!
+	// keep this manually in-sync!
 	entryPoints: [
 		'src/main.ts',
 		'src/menu.ts',
@@ -26,7 +26,8 @@ const buildOptions = {
 		'src/matchmaker.ts',
 		'src/utils_node.ts',
 		'src/utils.ts',
-		'src/userscriptvalidators.ts'
+		'src/userscriptvalidators.ts',
+		'src/splashscreen.ts'
 	],
 	bundle: false,
 	minify: building,

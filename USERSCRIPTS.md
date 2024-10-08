@@ -221,7 +221,7 @@ return this;
 Beginning in version 1.9.0, crankshaft supports the ability for scripts to **easily** inject their own custom settings into Krunker, allowing for userscript creators to implement easy-to-change settings into the client.
 ![Custom crankshaft userscript settings](./assets/customsettings_screenshot.png)
 
-Doing this is very easy! All you have to do is include a `.settings` property on your script's root `this` object!
+Doing this is very easy, all you have to do is include a `settings` attribute on your script's root `this` property.
 
 ```js
 // ==UserScript==
@@ -236,17 +236,17 @@ this.settings = {}
 return this // Make sure you include this part!
 ```
 
-That's all you have to do! Obviously though, it's not super useful to have no custom settings. Thankfully, it's simple to implement plenty of custom settings. Let's walk through adding a custom setting step-by-step.
+Obviously, it's not super useful to have no custom settings. It's simple to populate this object with custom settings. Let's walk through adding a custom setting step-by-step.
 
 #### Step 1 - Add the setting key:
 ```js
 this.settings = {
-	"mySuperAwesomeCustomSetting": {
+	"mySuperAwesomeCustomSetting": { /* NEW */
 		/* Setting properties go here */
 	}
 }
 ```
-When you add a property to the `settings` object, crankshaft will recognize it as a setting it needs to display. This key will be used to store the setting's value when it's saved to disk. This can be anything, but follow standard JavaScript object property guidelines. (No spaces or special characters.)
+When adding a property to the `settings` attribute, crankshaft will recognize it as a setting it needs to display. This key will be used to store the setting's value when it's saved to disk. This can be anything, but it's best practice to follow standard JavaScript object property guidelines. (No spaces or special characters.)
 
 #### Step 2 - Add the required setting properties:
 ```js
@@ -263,8 +263,11 @@ After you add the properties to your custom setting, crankshaft will know what k
 Custom Setting Required Schematic
 - `mySuperAwesomeCustomSetting` Setting key. Explained above in Step 1.
 	- `title`: _string_ - This will be what the setting name is. (i.e. "Default Region", "Render Distance")
-	- `type`: _string_ - The type of setting the setting is. Can be 'bool' (boolean), 'num' (number), 'sel' (selection), or 'color' (color).
+	- `type`: _string_ - The type of setting the setting is. Can be `bool` (boolean), `num` (number), 'sel' (selection), or `color` (HEX color string).
 	- `value`: _boolean|number|string_ - The default value for the setting. The type of this must match the `type` property.
+
+Custom Setting Conditional Required Schematic
+- `opts`: _array_ - The options for a particular setting. Only works with the `sel` (selection) setting type. NOTE: This is REQUIRED and needs 2 options if the type of setting is `sel`.
 
 #### Step 3 - Add the optional setting properties:
 ```js
@@ -277,15 +280,15 @@ this.settings = {
 	}
 }
 ```
-After adding the required properties, you might want to add some of the optional properties! Optional properties can control some of the behaviours of settings, depending on what `type` of setting it is!
+After adding the required properties, it is often useful to add some optional properties. Optional properties control some of the behaviours of settings, depending on what `type` of setting it is.
 
 Custom Setting Optional Schematic
 - `mySuperAwesomeCustomSetting` Setting key. Explained above in Step 1.
 	- `desc`: _string_ - The setting's description. This will be displayed in small text below the setting `title`.
 	- `min`: _number_ - The setting's minimum value. This only works with `num` type settings. Defaults to `0`.
 	- `max`: _number_ - The setting's maximum value. This only works with `num` type settings. Defaults to `100`.
-	- `step`: _number_ - The setting's step value. This only works with `num` type settings. This controls how many times each slider tick increases the setting value. Must be smaller than the difference between the `min` and `max` value if they are set. (Play with this, it's hard to explain, but fairly simple in practice.)
-	- `opts`: _array_ - The options for a particular setting. Only works with the `sel` (selection) setting type.
+	- `step`: _number_ - The setting's step value. This only works with `num` type settings. This controls how many times each slider tick increases the setting value. Must be smaller than the difference between the `min` and `max` value if they are set. (Play with this; it's hard to explain, but fairly simple in practice.)
+	
 
 #### Step 4 - Add the changed() function:
 ```js
@@ -299,9 +302,9 @@ this.settings = {
 	}
 }
 ```
-This is where the magic happens! Whenever your custom setting is changed, it will automatically call the changed() function, allowing your script to do what it needs to with the new value.
+Whenever a custom setting is changed, it will automatically call the changed() function with the new value as the argument, allowing the script to do what it needs to with the new value.
 
-For this, **you should use an ES6 arrow function** to be sure your script retains its own [scope](https://developer.mozilla.org/en-US/docs/Glossary/Scope). However, bind()-ing the top-level `this` keyword to the function like the code below works to retain the top-level `this` of your script, but nothing else:
+For this, **you should use an ES6 arrow function** to be sure the script retains its own [scope](https://developer.mozilla.org/en-US/docs/Glossary/Scope). However, bind()-ing the top-level `this` keyword to the function like the code below works to retain the top-level `this` of the script, but nothing else:
 ```js
 this.settings = {
 	"mySuperAwesomeCustomSetting": {
@@ -314,7 +317,8 @@ this.settings = {
 }
 ```
 
-After that, you're all set! You've successfully added a custom setting to your krunker script, and can use the value however you like. In order to add more settings, simply create another key and define the properties you need!
+With this, the custom setting has been successfully added to the script, and is able to use the value however you like. 
+To add more settings, simply create another key and define more setting properties.
 ```js
 this.settings = {
 	"mySuperAwesomeCustomSetting": {
@@ -331,7 +335,7 @@ this.settings = {
         "value": 9001,
 		"min": 9000,
 		"max": 100000,
-		"step": 10,
+		"step": 1,
         changed: (value) => { this._console.log(value) }
 	}
 }
@@ -339,6 +343,8 @@ this.settings = {
 ![Finished custom settings example](./assets/customsettings_finishedexample.png)
 
 Custom Settings Implementation Examples:
+[customsettingsexample.js](./assets/userscriptexamples/customsettingsexample.js)
+[customcsschanger.js](./assets/userscriptexamples/customcsschanger.js)
 [keystrokes.js](https://github.com/AspectQuote/krunkeruserscripts/blob/main/keystrokes.js)
 
 ## Tips / Notes
