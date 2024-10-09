@@ -25,7 +25,7 @@
 	top: 0;
 }
 
-#uiBase.onMenu #spectateUI > div:not(#specKPDContr) {
+#uiBase.onMenu #spectateUI > #spectateHUD {
 	z-index: 1;
 	transform: unset;
 }
@@ -47,4 +47,22 @@
 /* For some reason, the game insists on showing KPD controls when first loading in. (it doesn't do this on browser so I don't know why it happens) */
 #uiBase.onMenu #specKPDContr {
 	display: none;
+}
+
+#uiBase.onMenu #spectateUI div#specStats {
+	position: absolute;
+	top: calc(50% + 13em);
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1;
+}
+
+#uiBase.onMenu #spectateUI div#specStats:before {
+	content: 'Spectating';
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 1.2em;
+	padding-bottom: 0.5em;
 }
