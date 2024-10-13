@@ -5,6 +5,7 @@ import { fetchGame } from './matchmaker';
 import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
+import { splashFlavor } from './splashscreen';
 
 // TODO if super border rewrite these to dynamic require's. For now i have not done it because i don't want to dynamically require in exported function
 import dayjs from 'dayjs';
@@ -115,7 +116,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, userscripts } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts } = _userPrefs;
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -126,9 +127,12 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		const splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), { encoding: 'utf-8' });
 		injectSettingsCSS(splashCSS, splashId);
 
-		const instructionHider = document.getElementById('instructionHider');
-		if (instructionHider === null) throw "Krunker didn't create #instructionHider";
+		const splashMountElementID = 'uiBase';
+		const uiBaseElement = document.getElementById(splashMountElementID);
+		if (uiBaseElement === null) throw `Krunker didn't create #${splashMountElementID}`;
 
+		const splashBackground = createElement('div', {class: ['crankshaft-loading-background']});
+		if (immersiveSplash) splashBackground.classList.add('immersive');
 		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
 			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })
@@ -136,18 +140,21 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 		const clearSplash = (_observer: MutationObserver) => {
 			try {
-				logoSVG.remove();
+				splashBackground.remove();
 				_observer.disconnect();
 			} catch (e) {
 				console.log('splash screen was already cleared.');
 			}
 		};
 
-		instructionHider.appendChild(logoSVG);
+		uiBaseElement.appendChild(splashBackground);
 
 		// i am not sure if you should be injecting more elements into a svg element, but it seems to work. feel free to pr a better version tho.
-		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: '#loadInfoLHolder', text: `v${version}` }));
-		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: '#loadInfoRHolder', text: 'by KraXen72 and contributors' }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: 'loadInfoLHolder', text: `v${version}` }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: 'loadInfoRHolder', text: 'Client by KraXen72' }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-splash', id: 'loadInfoSplashHolder', text: splashFlavor }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-loadingindicator', id: 'loadInfoLoadingIndicator', text: `LOADING...` }));
+		splashBackground.appendChild(logoSVG);
 
 		const observerConfig = { attributes: true, childList: true, subtree: true };
 		const callback = (mutationList: MutationRecord[], observer: MutationObserver) => {
@@ -180,6 +187,7 @@ export const regionMappings = [
 	{ name: 'New York', id: 'us-nj', code: 'NY', offset: -4 },
 	{ name: 'Mumbai', id: 'as-mb', code: 'MBI', offset: 5.5 },
 	{ name: 'Dallas', id: 'us-tx', code: 'DAL', offset: -5 },
+	{ name: 'Iowa', id: 'iow', code: 'IOW', offset: -6 },
 	{ name: 'Brazil', id: 'brz', code: 'BRZ', offset: -3 }, // approximate, BRT
 	{ name: 'Middle East', id: 'me-bhn', code: 'BHN', offset: 3 }, // approximate, Saudi arabia
 	{ name: 'South Africa', id: 'af-ct', code: 'AFR', offset: 2 }, // approximate, SAST
@@ -187,7 +195,9 @@ export const regionMappings = [
 	{ name: 'China (hidden)', id: '', code: 'CHI', offset: 8 }, // approximate, Beijing
 	{ name: 'London (hidden)', id: '', code: 'LON', offset: 1 },
 	{ name: 'Seattle (hidden)', id: '', code: 'STL', offset: -7 },
-	{ name: 'Mexico (hidden)', id: '', code: 'MX', offset: -6 }
+	{ name: 'Mexico (hidden)', id: '', code: 'MX', offset: -6 },
+	// FRVR 'Super Secret' testing server
+	{ name: 'EU Super Secret Servers', id: 'sss', code: 'FRA', offset: 2 }
 ];
 
 // find option elements of the region setting, + select closing tag
@@ -263,7 +273,12 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 				for (let i = 0; i < optionElements.length; i++) {
 					const opt = optionElements[i];
-					opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
+					try {
+						opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
+					} catch (error) {
+						strippedConsole.error("Error getting timezone for: ", opt);
+						opt.textContent += ` [??:??]`;
+					}
 				}
 
 				const tempHolder = document.createElement('div');

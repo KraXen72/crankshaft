@@ -65,6 +65,7 @@ const settingsSkeleton = {
 	resourceSwapper: true,
 	userscripts: false,
 	clientSplash: true,
+	immersiveSplash: false,
 	discordRPC: false,
 	extendedRPC: true,
 	'angle-backend': 'default',

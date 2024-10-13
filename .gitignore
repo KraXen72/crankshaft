@@ -2,4 +2,3 @@ dist/
 app/
 node_modules/
 package-lock.json
-multiselect_dummy.html
