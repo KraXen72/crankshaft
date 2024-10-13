@@ -267,7 +267,7 @@ Custom Setting Required Schematic
 	- `value`: _boolean|number|string_ - The default value for the setting. The type of this must match the `type` property.
 
 Custom Setting Conditional Required Schematic
-- `opts`: _array_ - The options for a particular setting. Only works with the `sel` (selection) setting type. NOTE: This is REQUIRED and needs 2 options if the type of setting is `sel`.
+- `opts`: _array_ - The options for a particular setting. Only works with the `sel` (selection) setting type. NOTE: This is REQUIRED and needs at least 2 options if the type of setting is `sel`.
 
 #### Step 3 - Add the optional setting properties:
 ```js

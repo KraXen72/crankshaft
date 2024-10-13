@@ -187,6 +187,7 @@ export const regionMappings = [
 	{ name: 'New York', id: 'us-nj', code: 'NY', offset: -4 },
 	{ name: 'Mumbai', id: 'as-mb', code: 'MBI', offset: 5.5 },
 	{ name: 'Dallas', id: 'us-tx', code: 'DAL', offset: -5 },
+	{ name: 'Iowa', id: 'iow', code: 'IOW', offset: -6 },
 	{ name: 'Brazil', id: 'brz', code: 'BRZ', offset: -3 }, // approximate, BRT
 	{ name: 'Middle East', id: 'me-bhn', code: 'BHN', offset: 3 }, // approximate, Saudi arabia
 	{ name: 'South Africa', id: 'af-ct', code: 'AFR', offset: 2 }, // approximate, SAST
@@ -194,7 +195,9 @@ export const regionMappings = [
 	{ name: 'China (hidden)', id: '', code: 'CHI', offset: 8 }, // approximate, Beijing
 	{ name: 'London (hidden)', id: '', code: 'LON', offset: 1 },
 	{ name: 'Seattle (hidden)', id: '', code: 'STL', offset: -7 },
-	{ name: 'Mexico (hidden)', id: '', code: 'MX', offset: -6 }
+	{ name: 'Mexico (hidden)', id: '', code: 'MX', offset: -6 },
+	// FRVR 'Super Secret' testing server
+	{ name: 'EU Super Secret Servers', id: 'sss', code: 'FRA', offset: 2 }
 ];
 
 // find option elements of the region setting, + select closing tag
@@ -270,7 +273,12 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 				for (let i = 0; i < optionElements.length; i++) {
 					const opt = optionElements[i];
-					opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
+					try {
+						opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
+					} catch (error) {
+						strippedConsole.error("Error getting timezone for: ", opt);
+						opt.textContent += ` [??:??]`;
+					}
 				}
 
 				const tempHolder = document.createElement('div');

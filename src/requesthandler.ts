@@ -78,7 +78,6 @@ export default class {
 				if (swapResourse) {
 					const path = new URL(details.url).pathname;
 					const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path);
-
 					// Redirect to the local resource.
 					return callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
 				}
@@ -146,6 +145,12 @@ export default class {
 							`*://comp.${TARGET_GAME_DOMAIN}/assets/${name}?*`
 						]
 					));
+					if (name === "/css/main_custom.css") {
+						this.swapUrls.push(...[
+							`https://${TARGET_GAME_DOMAIN}/css/main_custom.css`,
+							`https://${TARGET_GAME_DOMAIN}/css/main_custom.css?*`,
+						])
+					}
 				}
 			}
 		} catch (err) {
