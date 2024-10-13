@@ -145,12 +145,6 @@ export default class {
 							`*://comp.${TARGET_GAME_DOMAIN}/assets/${name}?*`
 						]
 					));
-					if (name === "/css/main_custom.css") {
-						this.swapUrls.push(...[
-							`https://${TARGET_GAME_DOMAIN}/css/main_custom.css`,
-							`https://${TARGET_GAME_DOMAIN}/css/main_custom.css?*`,
-						])
-					}
 				}
 			}
 		} catch (err) {
