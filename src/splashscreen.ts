@@ -99,7 +99,17 @@ const possibleSplashFlavors: string[] = [
 	"Stats don't matter.",
 	"Don't sweat it!",
 	"Input Failed 3",
-	"Brian from Krunker"
+	"Brian from Krunker",
+	"525",
+	"novisgravitas",
+	"Freezing aim...",
+	"Nyoom",
+	"Colon Three",
+	"Shrimply Mantastic",
+	"Now with cloudy skies!",
+	"There's so much to look forward to!",
+	"What's gonna work? Teamwork!",
+	"Krunkin into the sunset"
 ];
 
 const splashFlavor = possibleSplashFlavors[Math.floor(Math.random() * possibleSplashFlavors.length)];
