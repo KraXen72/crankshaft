@@ -102,7 +102,7 @@ const possibleSplashFlavors: string[] = [
 	"Brian from Krunker",
 	"525",
 	"novisgravitas",
-	"Freezing aim...",
+	"Freezing Aim...",
 	"Nyoom",
 	"Colon Three",
 	"Shrimply Mantastic",
