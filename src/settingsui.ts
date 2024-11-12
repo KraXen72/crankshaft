@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { join } from 'path'
-import { writeFileSync, readFileSync } from 'fs';
+import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
@@ -41,6 +41,12 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) };
 	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) };
 	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) };
+
+	try {
+		settingsDesc.cssSwapper.opts = readdirSync(`${paths.swapperPath}/css/`)
+	} catch {
+		settingsDesc.cssSwapper.opts = ['No Custom CSS']
+	}
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -84,6 +90,7 @@ const settingsDesc: SettingsDesc = {
 	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. ', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
 
+	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Swap from different CSS in the Resource Swapper CSS folder", safety: 0, cat: 1, refreshOnly: true, opts: [] },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },

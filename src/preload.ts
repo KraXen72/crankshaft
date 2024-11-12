@@ -1,4 +1,4 @@
-﻿import { readFileSync } from 'fs';
+﻿import { readFileSync, existsSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
@@ -107,7 +107,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 
 ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
 
-ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string) => {
+ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string, path: string) => {
 	// eslint-disable-next-line
 	const { matchmaker, matchmaker_F6 } = _userPrefs;
 
@@ -116,7 +116,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts } = _userPrefs;
+	let { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts, cssSwapper } = _userPrefs;
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -164,6 +164,21 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		const observer = new MutationObserver(callback);
 		observer.observe(document.getElementById('instructions'), observerConfig);
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
+	}
+
+	switch (cssSwapper) {
+		case 'No Custom CSS':
+			existsSync(pathJoin(path, 'css')) ? cssSwapper = 'main_custom.css' : cssSwapper = 'No Custom CSS'
+			break
+
+		default:
+			existsSync(pathJoin(path, 'css')) ? cssSwapper = cssSwapper : cssSwapper = 'No Custom CSS'
+			break
+	}
+
+	if (cssSwapper !== 'No Custom CSS') {
+		let cssInUse = readFileSync(pathJoin(pathJoin(path, 'css'), `${cssSwapper}`), { encoding: 'utf-8' })
+		document.body.innerHTML += `<style>${cssInUse}</style>`
 	}
 
 	if (hideAds === 'block' || hideAds === 'hide') {

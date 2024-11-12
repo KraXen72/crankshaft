@@ -63,6 +63,7 @@ const settingsSkeleton = {
 	quickClassPicker: false,
 	fullscreen: 'windowed', // windowed, maximized, fullscreen, borderless
 	resourceSwapper: true,
+	cssSwapper: 'No Custom CSS',
 	userscripts: false,
 	clientSplash: true,
 	immersiveSplash: false,
@@ -293,7 +294,7 @@ app.on('ready', () => {
 
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
-		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion()); // tell preload to inject settingcss and splashcss + other
+		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), swapperPath); // tell preload to inject settingcss and splashcss + other
 
 		if (userPrefs.discordRPC) {
 			// eslint-disable-next-line
