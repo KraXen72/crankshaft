@@ -178,7 +178,11 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 	if (cssSwapper !== 'No Custom CSS') {
 		let cssInUse = readFileSync(pathJoin(pathJoin(path, 'css'), `${cssSwapper}`), { encoding: 'utf-8' })
-		document.body.innerHTML += `<style>${cssInUse}</style>`
+		addEventListener("DOMContentLoaded", (event) => {
+			const styleElement = createElement('style');
+			styleElement.textContent = cssInUse;
+			document.body.appendChild(styleElement);
+		});
 	}
 
 	if (hideAds === 'block' || hideAds === 'hide') {
