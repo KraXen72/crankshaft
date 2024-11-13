@@ -107,7 +107,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 
 ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
 
-ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string, path: string) => {
+ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string, cssPath: string) => {
 	// eslint-disable-next-line
 	const { matchmaker, matchmaker_F6 } = _userPrefs;
 
@@ -116,7 +116,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
 	});
 
-	let { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts, cssSwapper } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts, cssSwapper } = _userPrefs;
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -166,24 +166,12 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
 
-	switch (cssSwapper) {
-		case 'No Custom CSS':
-			existsSync(pathJoin(path, 'css')) ? cssSwapper = 'main_custom.css' : cssSwapper = 'No Custom CSS'
-			break
-
-		default:
-			existsSync(pathJoin(path, 'css')) ? cssSwapper = cssSwapper : cssSwapper = 'No Custom CSS'
-			break
-	}
-
-	if (cssSwapper !== 'No Custom CSS') {
-		let cssInUse = readFileSync(pathJoin(pathJoin(path, 'css'), `${cssSwapper}`), { encoding: 'utf-8' })
-		addEventListener("DOMContentLoaded", (event) => {
-			const styleElement = createElement('style');
-			styleElement.textContent = cssInUse;
-			document.body.appendChild(styleElement);
-		});
-	}
+	let cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
+	addEventListener("DOMContentLoaded", (event) => {
+		const styleElement = createElement('style', { id: "crankshaftCustomCSS" });
+		styleElement.textContent = cssInUse;
+		document.body.appendChild(styleElement);
+	});
 
 	if (hideAds === 'block' || hideAds === 'hide') {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
