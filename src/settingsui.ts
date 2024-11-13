@@ -41,12 +41,9 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) };
 	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) };
 	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) };
+	settingsDesc.cssSwapper.button = { icon: 'folder', text: 'CSS', callback: e => openPath(e, paths.cssPath) };
 
-	try {
-		settingsDesc.cssSwapper.opts = readdirSync(`${paths.swapperPath}/css/`)
-	} catch {
-		settingsDesc.cssSwapper.opts = ['No Custom CSS']
-	}
+	settingsDesc.cssSwapper.opts = readdirSync(paths.cssPath);
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */

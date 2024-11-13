@@ -51,6 +51,8 @@ const userscriptPreferencesPath = pathJoin(configPath, '/userscriptsettings');
 const filtersPath = pathJoin(configPath, 'filters.txt');
 const userscriptsPath = pathJoin(configPath, 'scripts');
 const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
+const cssPath = pathJoin(configPath, "css");
+const mainCustomCssPath = pathJoin(cssPath, "main_custom.css");
 
 app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36';
 
@@ -63,7 +65,7 @@ const settingsSkeleton = {
 	quickClassPicker: false,
 	fullscreen: 'windowed', // windowed, maximized, fullscreen, borderless
 	resourceSwapper: true,
-	cssSwapper: 'No Custom CSS',
+	cssSwapper: 'main_custom.css',
 	userscripts: false,
 	clientSplash: true,
 	immersiveSplash: false,
@@ -108,6 +110,14 @@ if (!existsSync(filtersPath)) {
 # *://assets.krunker.io/sound/bundle_*.mp3*
 `);
 }
+if (!existsSync(cssPath)) {
+	mkdirSync(cssPath);
+}
+if (!existsSync(mainCustomCssPath)) {
+	writeFileSync(mainCustomCssPath, 
+		`/* This is the default custom css file, which is loaded by Crankshaft automatically. */
+/* Other files created in this directory will also show up in the setting's dropdown menu. */`);
+}
 
 Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, { encoding: 'utf-8' })));
 
@@ -142,7 +152,7 @@ ipcMain.on('initializeUserscripts', () => {
 
 // initial request of settings to populate the settingsUI
 ipcMain.on('settingsUI_requests_userPrefs', () => {
-	const paths = { settingsPath, swapperPath, filtersPath, userscriptPreferencesPath, configPath, userscriptsPath };
+	const paths = { settingsPath, swapperPath, cssPath, filtersPath, userscriptPreferencesPath, configPath, userscriptsPath };
 	mainWindow.webContents.send('m_userPrefs_for_settingsUI', paths, userPrefs);
 });
 
@@ -294,7 +304,7 @@ app.on('ready', () => {
 
 		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
-		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), swapperPath); // tell preload to inject settingcss and splashcss + other
+		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
 		if (userPrefs.discordRPC) {
 			// eslint-disable-next-line
