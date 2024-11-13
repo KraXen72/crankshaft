@@ -1,4 +1,4 @@
-﻿import { readFileSync } from 'fs';
+﻿import { readFileSync, existsSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
@@ -107,7 +107,7 @@ ipcRenderer.on('initDiscordRPC', () => {
 
 ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
 
-ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string) => {
+ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string, cssPath: string) => {
 	// eslint-disable-next-line
 	const { matchmaker, matchmaker_F6 } = _userPrefs;
 
@@ -116,7 +116,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts, cssSwapper } = _userPrefs;
 	const splashId = 'Crankshaft-splash-css';
 	const settId = 'Crankshaft-settings-css';
 
@@ -165,6 +165,13 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		observer.observe(document.getElementById('instructions'), observerConfig);
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
+
+	let cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
+	addEventListener("DOMContentLoaded", (event) => {
+		const styleElement = createElement('style', { id: "crankshaftCustomCSS" });
+		styleElement.textContent = cssInUse;
+		document.body.appendChild(styleElement);
+	});
 
 	if (hideAds === 'block' || hideAds === 'hide') {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);
