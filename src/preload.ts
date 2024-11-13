@@ -6,6 +6,7 @@ import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSe
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
 import { splashFlavor } from './splashscreen';
+import { initializeCompResultSaver } from './compresultsaver';
 
 // TODO if super border rewrite these to dynamic require's. For now i have not done it because i don't want to dynamically require in exported function
 import dayjs from 'dayjs';
@@ -36,7 +37,10 @@ export const styleSettingsCSS = {
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
-ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => patchSettings(_userPrefs));
+ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
+	patchSettings(_userPrefs);
+	initializeCompResultSaver();
+});
 
 ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 	const releases = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`);

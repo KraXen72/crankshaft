@@ -27,7 +27,8 @@ const buildOptions = {
 		'src/utils_node.ts',
 		'src/utils.ts',
 		'src/userscriptvalidators.ts',
-		'src/splashscreen.ts'
+		'src/splashscreen.ts',
+		'src/compresultsaver.ts'
 	],
 	bundle: false,
 	minify: building,
