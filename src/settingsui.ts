@@ -87,7 +87,7 @@ const settingsDesc: SettingsDesc = {
 	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. ', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
 
-	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Swap from different CSS in the Resource Swapper CSS folder", safety: 0, cat: 1, refreshOnly: true, opts: [] },
+	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Swap from different CSS in the Resource Swapper CSS folder", safety: 0, cat: 1, instant: true, opts: [] },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -400,6 +400,12 @@ class SettingElem {
 				const adsHidden = value === 'hide' || value === 'block';
 				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, adsHidden);
 				document.getElementById('hiddenClasses').classList.toggle('hiddenClasses-hideAds-bottomOffset', adsHidden);
+			}
+
+			if (this.props.key === "cssSwapper") {
+				let cssElem = document.getElementById('crankshaftCustomCSS');
+				let cssFile = readFileSync(join(paths.cssPath, value), { encoding: 'utf-8' });
+				cssElem.textContent = cssFile;
 			}
 
 			// you can add custom instant refresh callbacks for settings here

@@ -166,7 +166,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
 
-	let cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' })
+	let cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
 	addEventListener("DOMContentLoaded", (event) => {
 		const styleElement = createElement('style', { id: "crankshaftCustomCSS" });
 		styleElement.textContent = cssInUse;
