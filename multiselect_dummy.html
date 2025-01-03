@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=`, initial-scale=1.0">
+	<title>MultiSelect</title>
+</head>
+<body>
+	<div class="multisel-parent">
+		<label for=""><input type="checkbox" name="" id="">Free for All</label>
+		<label for=""><input type="checkbox" name="" id="">Team Deathmatch</label>
+		<label for=""><input type="checkbox" name="" id="">Hardpoint</label>
+		<label for=""><input type="checkbox" name="" id="">Free for All</label>
+		<label for=""><input type="checkbox" name="" id="">Team Deathmatch</label>
+		<label for=""><input type="checkbox" name="" id="">Hardpoint</label>
+		<label for=""><input type="checkbox" name="" id="">Free for All</label>
+		<label for=""><input type="checkbox" name="" id="">Team Deathmatch</label>
+		<label for=""><input type="checkbox" name="" id="">Hardpoint</label>
+		<label for=""><input type="checkbox" name="" id="">Free for All</label>
+		<label for=""><input type="checkbox" name="" id="">Team Deathmatch</label>
+		<label for=""><input type="checkbox" name="" id="">Hardpoint</label>
+		<label for=""><input type="checkbox" name="" id="">Free for All</label>
+		<label for=""><input type="checkbox" name="" id="">Team Deathmatch</label>
+		<label for=""><input type="checkbox" name="" id="">Hardpoint</label>
+	</div>
+	<style>
+		.multisel-parent {
+			display: grid;
+			grid-template: repeat(3, 1fr) / repeat(5, 1fr);
+			gap: .2rem;
+
+			background: #232323;
+			padding: .2rem;
+			border-radius: 10px;
+		}
+		.multisel-parent label {
+			padding: .2rem;
+			border-radius: 5px;
+			background: #393939;
+			color: #a3a5aa;
+			position: relative;
+		}
+		.multisel-parent label input::after {
+			content: "";
+			background: transparent;
+			display: block;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			border-radius: 5px;
+		}
+		.multisel-parent label input:checked::after {
+			background-color: rgba(0, 128, 0, 0.466);
+		}
+	</style>
+</body>
+</html>

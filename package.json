@@ -11,6 +11,7 @@
 		"watch": "node esbuilder.js --watch",
 		"dev": "concurrently --kill-others \"node esbuilder.js --watch\" \"electron .\"",
 		"testbuild": "pnpm run build && electron .",
+		"testbuild-nv": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
 		"dist": "pnpm run build && electron-builder",
 		"release": "pnpm run build && electron-builder --publish always",
 		"lint": "eslint .",
