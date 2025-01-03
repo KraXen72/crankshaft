@@ -54,7 +54,7 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 
 function openPath(e: MouseEvent, path: string) {
 	e.stopPropagation();
-	shell.openPath(path);
+	shell.openPath(path).catch(e => strippedConsole.error(e));
 }
 
 /**
