@@ -1,4 +1,4 @@
-export const customSettingIsMalformed = function (customUserScriptSetting: UserscriptRenderReadySetting): boolean | string {
+export function customSettingIsMalformed(customUserScriptSetting: UserscriptRenderReadySetting): boolean | string {
 	let settingIsMalformed: string | boolean = false
 	const setting = customUserScriptSetting
 	switch (setting.type) {
