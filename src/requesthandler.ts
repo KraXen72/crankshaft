@@ -146,6 +146,12 @@ export default class {
 						]
 					));
 				}
+				if (name === '/css/main_custom.css') {
+					this.swapUrls.push(
+						`https://${TARGET_GAME_DOMAIN}/css/main_custom.css`,
+						`https://${TARGET_GAME_DOMAIN}/css/main_custom.css?*`
+					);
+				}
 			}
 		} catch (err) {
 			console.error(`Failed to resource-swap with prefix: ${prefix}`);
