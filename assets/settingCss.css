@@ -329,3 +329,23 @@ input:checked+.advancedSlider:hover {
 
 .hiddenClasses-hideAds-bottomOffset { bottom: 80px !important; }
 #editorBtnM[src$="client.png"] { display: none; } /* don't promote official client in a custom client lol */
+
+/* Match Result Copy Button Styles */
+.matchResultButton {
+	position: absolute;
+	bottom: 28%;
+	left: 50%;
+	color: white;
+	font-size: 1.5em;
+	transform: translateX(-50%);
+	padding: 0.4em 1.3em 0.6em;
+	background: rgba(0, 0, 0, 0.3);
+	border: 5px solid;
+	transition: color 0.2s;
+}
+
+.matchResultButton:hover {
+	color: #ffeb00;
+	transition: color 0s;
+	cursor: pointer;
+}
