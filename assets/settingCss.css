@@ -333,7 +333,7 @@ input:checked+.advancedSlider:hover {
 /* Match Result Copy Button Styles */
 .matchResultButton {
 	position: absolute;
-	bottom: 28%;
+	bottom: 3rem;
 	left: 50%;
 	color: white;
 	font-size: 1.5em;

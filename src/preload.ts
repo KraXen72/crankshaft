@@ -38,50 +38,61 @@ export const styleSettingsCSS = {
 
 ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
 	patchSettings(_userPrefs);
-	if (_userPrefs.saveMatchResultJSONButton) {
-		const copyStr = 'Copy';
-		const copiedStr = 'Copied to Clipboard!';
-		const failedToCopy = 'Failed to get data. Make sure you are on the Leaderboard tab.';
-		const buttonElement = createElement('div', { text: copyStr, class: ['matchResultButton'] });
-		let lastCopied = 0;
-		const copyCooldownMS = 2000;
-		function copyScoreboardToClipboard() {
-			if (Date.now() - lastCopied < copyCooldownMS) return;
-			lastCopied = Date.now();
-			const lbElement = document.querySelector('#endTable');
-			if (!lbElement) return setButtonText(failedToCopy);
-			const hardpoint = document.querySelector('#endTable').children[0].children[0].children[5].textContent === 'Obj';
-			const output = [...lbElement.children[0].children].slice(2).map(leaderboardRow => {
-				// @ts-ignore I have no idea but I hate the red squiggly
-				const children: HTMLElement[] = [...leaderboardRow.children];
-				let returnObject = {
-					position: children[0].innerText.replace('.', ''),
-					name: children[1].innerText,
-					score: children[2].innerText,
-					kills: children[3].innerText,
-					deaths: children[4].innerText
-				}
-				if (hardpoint) {
-					Object.assign(returnObject, {
-						objective: children[5].innerText,
-						damage: children[6].innerText
-					})
-				}
-				return returnObject;
-			});
-			strippedConsole.log(output);
-			navigator.clipboard.writeText(JSON.stringify(output, null, 2));
-			setButtonText(copiedStr);
-		}
-		buttonElement.onclick = copyScoreboardToClipboard;
-		function setButtonText(text: string) {
-			buttonElement.textContent = text;
-			setTimeout(() => {
-				buttonElement.textContent = copyStr;
-			}, copyCooldownMS);
-		}
-		document.getElementById('endMidHolder').appendChild(buttonElement);
-	};
+
+	if (!_userPrefs.saveMatchResultJSONButton) return;
+	const copyStr = 'Copy';
+	const copiedStr = 'Copied to Clipboard!';
+	const failedToCopy = 'Failed to get data. Make sure you are on the Leaderboard tab.';
+	const buttonElement = createElement('div', { text: copyStr, class: ['matchResultButton'] });
+	let lastCopied = 0;
+	const copyCooldownMS = 2000;
+
+	function copyScoreboardToClipboard() {
+		if (Date.now() - lastCopied < copyCooldownMS) return;
+		lastCopied = Date.now();
+		const lbElement = document.querySelector('#endTable');
+		if (!lbElement) return setButtonText(failedToCopy);
+
+		const isHardpoint = document.querySelector('#endTable')
+			.children?.[0]
+			.children?.[0]
+			.children?.[5]
+			.textContent === 'Obj';
+
+		const output = [...lbElement.children?.[0]?.children].slice(2).map(leaderboardRow => {
+			const rowChildren = [...leaderboardRow.children] as HTMLElement[];
+			const returnObj = {
+				position: rowChildren[0].innerText.replace('.', ''),
+				name: rowChildren[1].innerText,
+				score: rowChildren[2].innerText,
+				kills: rowChildren[3].innerText,
+				deaths: rowChildren[4].innerText
+			}
+			if (isHardpoint) {
+				Object.assign(returnObj, {
+					objective: rowChildren[5].innerText,
+					damage: rowChildren[6].innerText
+				})
+			}
+			return returnObj;
+		});
+
+		strippedConsole.log(output);
+		navigator.clipboard.writeText(JSON.stringify(output, null, 2));
+		setButtonText(copiedStr);
+	}
+
+	buttonElement.onclick = copyScoreboardToClipboard;
+
+	function setButtonText(text: string) {
+		buttonElement.textContent = text;
+		setTimeout(() => {
+			buttonElement.textContent = copyStr;
+		}, copyCooldownMS);
+	}
+
+	document.getElementById('endMidHolder').appendChild(buttonElement);
+
 });
 
 ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
