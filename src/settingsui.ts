@@ -57,7 +57,7 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 
 function openPath(e: MouseEvent, path: string) {
 	e.stopPropagation();
-	shell.openPath(path);
+	shell.openPath(path).catch(e => strippedConsole.error(e));
 }
 
 /**
@@ -85,6 +85,7 @@ const settingsDesc: SettingsDesc = {
 	extendedRPC: { title: 'Extended Discord RPC', type: 'bool', desc: 'Adds Github + Discord buttons to RPC. No effect if RPC is off.', safety: 0, cat: 0, instant: true },
 	hideAds: { title: 'Hide/Block Ads', type: 'sel', desc: 'With \'hide\' you can still claim free KR. Using \'block\' also blocks trackers.', safety: 0, cat: 0, refreshOnly: true, opts: ['block', 'hide', 'off'] },
 	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. ', safety: 0, cat: 0, refreshOnly: true },
+	saveMatchResultJSONButton: { title: 'Match Result To Clipboard', type: 'bool', desc: 'New button on match end which copies the match results JSON.', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
 
 	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Swap from different CSS in the Resource Swapper CSS folder", safety: 0, cat: 1, instant: true, opts: [] },

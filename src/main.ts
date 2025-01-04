@@ -71,6 +71,7 @@ const settingsSkeleton = {
 	immersiveSplash: false,
 	discordRPC: false,
 	extendedRPC: true,
+	saveMatchResultJSONButton: false,
 	'angle-backend': 'default',
 	logDebugToConsole: false,
 	alwaysWaitForDevTools: false,

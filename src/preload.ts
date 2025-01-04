@@ -1,4 +1,4 @@
-﻿import { readFileSync, existsSync } from 'fs';
+﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
@@ -36,7 +36,64 @@ export const styleSettingsCSS = {
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
-ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => patchSettings(_userPrefs));
+ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
+	patchSettings(_userPrefs);
+
+	if (!_userPrefs.saveMatchResultJSONButton) return;
+	const copyStr = 'Copy';
+	const copiedStr = 'Copied to Clipboard!';
+	const failedToCopy = 'Failed to get data. Make sure you are on the Leaderboard tab.';
+	const buttonElement = createElement('div', { text: copyStr, class: ['matchResultButton'] });
+	let lastCopied = 0;
+	const copyCooldownMS = 2000;
+
+	function copyScoreboardToClipboard() {
+		if (Date.now() - lastCopied < copyCooldownMS) return;
+		lastCopied = Date.now();
+		const lbElement = document.querySelector('#endTable');
+		if (!lbElement) return setButtonText(failedToCopy);
+
+		const isHardpoint = document.querySelector('#endTable')
+			.children?.[0]
+			.children?.[0]
+			.children?.[5]
+			.textContent === 'Obj';
+
+		const output = [...lbElement.children?.[0]?.children].slice(2).map(leaderboardRow => {
+			const rowChildren = [...leaderboardRow.children] as HTMLElement[];
+			const returnObj = {
+				position: rowChildren[0].innerText.replace('.', ''),
+				name: rowChildren[1].innerText,
+				score: rowChildren[2].innerText,
+				kills: rowChildren[3].innerText,
+				deaths: rowChildren[4].innerText
+			}
+			if (isHardpoint) {
+				Object.assign(returnObj, {
+					objective: rowChildren[5].innerText,
+					damage: rowChildren[6].innerText
+				})
+			}
+			return returnObj;
+		});
+
+		strippedConsole.log(output);
+		navigator.clipboard.writeText(JSON.stringify(output, null, 2));
+		setButtonText(copiedStr);
+	}
+
+	buttonElement.onclick = copyScoreboardToClipboard;
+
+	function setButtonText(text: string) {
+		buttonElement.textContent = text;
+		setTimeout(() => {
+			buttonElement.textContent = copyStr;
+		}, copyCooldownMS);
+	}
+
+	document.getElementById('endMidHolder').appendChild(buttonElement);
+
+});
 
 ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 	const releases = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`);
