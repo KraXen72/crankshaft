@@ -3,3 +3,4 @@ app/
 node_modules/
 package-lock.json
 pnpm-lock.yaml
+multiselect_dummy.html
