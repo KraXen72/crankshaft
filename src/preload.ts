@@ -222,13 +222,14 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		observer.observe(document.getElementById('instructions'), observerConfig);
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
-
-	let cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
-	addEventListener("DOMContentLoaded", (event) => {
-		const styleElement = createElement('style', { id: "crankshaftCustomCSS" });
-		styleElement.textContent = cssInUse;
-		document.body.appendChild(styleElement);
-	});
+	if (cssSwapper !== 'None') {
+		let cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
+		addEventListener("DOMContentLoaded", (event) => {
+			const styleElement = createElement('style', { id: "crankshaftCustomCSS" });
+			styleElement.textContent = cssInUse;
+			document.body.appendChild(styleElement);
+		});
+	}
 
 	if (hideAds === 'block' || hideAds === 'hide') {
 		toggleSettingCSS(styleSettingsCSS.hideAds, 'hideAds', true);

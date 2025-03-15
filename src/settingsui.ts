@@ -43,7 +43,10 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) };
 	settingsDesc.cssSwapper.button = { icon: 'folder', text: 'CSS', callback: e => openPath(e, paths.cssPath) };
 
-	settingsDesc.cssSwapper.opts = readdirSync(paths.cssPath);
+	settingsDesc.cssSwapper.opts = ['None', ...readdirSync(paths.cssPath)];
+	if (!settingsDesc.cssSwapper.opts.includes(userPrefs.cssSwapper)) {
+		userPrefs.cssSwapper = 'None';
+	}
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -88,7 +91,7 @@ const settingsDesc: SettingsDesc = {
 	saveMatchResultJSONButton: { title: 'Match Result To Clipboard', type: 'bool', desc: 'New button on match end which copies the match results JSON.', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
 
-	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Swap from different CSS in the Resource Swapper CSS folder", safety: 0, cat: 1, instant: true, opts: [] },
+	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Load and swap between CSS files", safety: 0, cat: 1, instant: true, opts: [] },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -403,7 +406,7 @@ class SettingElem {
 				document.getElementById('hiddenClasses').classList.toggle('hiddenClasses-hideAds-bottomOffset', adsHidden);
 			}
 
-			if (this.props.key === "cssSwapper") {
+			if (this.props.key === "cssSwapper" && value !== 'None') {
 				let cssElem = document.getElementById('crankshaftCustomCSS');
 				let cssFile = readFileSync(join(paths.cssPath, value), { encoding: 'utf-8' });
 				cssElem.textContent = cssFile;
