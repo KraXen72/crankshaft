@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { join } from 'path'
-import { writeFileSync, readFileSync } from 'fs';
+import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
@@ -41,6 +41,12 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) };
 	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) };
 	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) };
+	settingsDesc.cssSwapper.button = { icon: 'folder', text: 'CSS', callback: e => openPath(e, paths.cssPath) };
+
+	settingsDesc.cssSwapper.opts = ['None', ...readdirSync(paths.cssPath)];
+	if (!settingsDesc.cssSwapper.opts.includes(userPrefs.cssSwapper)) {
+		userPrefs.cssSwapper = 'None';
+	}
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -85,6 +91,7 @@ const settingsDesc: SettingsDesc = {
 	saveMatchResultJSONButton: { title: 'Match Result To Clipboard', type: 'bool', desc: 'New button on match end which copies the match results JSON.', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
 
+	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Load and swap between CSS files", safety: 0, cat: 1, instant: true, opts: [] },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -397,6 +404,12 @@ class SettingElem {
 				const adsHidden = value === 'hide' || value === 'block';
 				toggleSettingCSS(styleSettingsCSS.hideAds, this.props.key, adsHidden);
 				document.getElementById('hiddenClasses').classList.toggle('hiddenClasses-hideAds-bottomOffset', adsHidden);
+			}
+
+			if (this.props.key === "cssSwapper" && value !== 'None') {
+				let cssElem = document.getElementById('crankshaftCustomCSS');
+				let cssFile = readFileSync(join(paths.cssPath, value), { encoding: 'utf-8' });
+				cssElem.textContent = cssFile;
 			}
 
 			// you can add custom instant refresh callbacks for settings here
