@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { join } from 'path'
+import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
@@ -15,13 +15,13 @@ enum RefreshEnum {
 	reloadApp
 }
 interface IPaths { [path: string]: string }
-type customUserscriptSettings = Record<string, UserPrefs>
+type CustomUserscriptSettings = Record<string, UserPrefs>;
 
 /* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
 let userscriptPrefsPath: string;
-let userscriptPreferences: customUserscriptSettings = {};
+const userscriptPreferences: CustomUserscriptSettings = {};
 let userPrefsCache: UserPrefs; // the userprefs on path
 let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
 let refreshNotifElement: HTMLElement;
@@ -44,9 +44,7 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	settingsDesc.cssSwapper.button = { icon: 'folder', text: 'CSS', callback: e => openPath(e, paths.cssPath) };
 
 	settingsDesc.cssSwapper.opts = ['None', ...readdirSync(paths.cssPath)];
-	if (!settingsDesc.cssSwapper.opts.includes(userPrefs.cssSwapper)) {
-		userPrefs.cssSwapper = 'None';
-	}
+	if (!settingsDesc.cssSwapper.opts.includes(userPrefs.cssSwapper)) userPrefs.cssSwapper = 'None';
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -60,7 +58,7 @@ function transformMarrySettings(data: UserPrefs, desc: SettingsDesc, callback: C
 
 function openPath(e: MouseEvent, path: string) {
 	e.stopPropagation();
-	shell.openPath(path).catch(e => strippedConsole.error(e));
+	shell.openPath(path).catch(err => strippedConsole.error(err));
 }
 
 /**
@@ -75,6 +73,7 @@ function openPath(e: MouseEvent, path: string) {
  * refreshOnly: ommiting will not render a refresh-only icon
  * 
  * note: instant and refreshOnly are exclusive. only use one at a time
+ * 
  * note: settings will get rendered in the order you define them.
  * based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
  */
@@ -91,7 +90,7 @@ const settingsDesc: SettingsDesc = {
 	saveMatchResultJSONButton: { title: 'Match Result To Clipboard', type: 'bool', desc: 'New button on match end which copies the match results JSON.', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
 
-	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: "Load and swap between CSS files", safety: 0, cat: 1, instant: true, opts: [] },
+	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: 'Load and swap between CSS files', safety: 0, cat: 1, instant: true, opts: [] },
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -143,41 +142,40 @@ function saveSettings() {
 }
 function loadUserScriptSettings(eventSuffix: string, settings: Record<string, UserscriptRenderReadySetting>): UserPrefs {
 	try {
-		const settingsJSON: {[key: string]: UserPrefValue} = JSON.parse(readFileSync(join(userscriptPrefsPath, `${eventSuffix}.json`), 'utf-8'));
+		const settingsJSON: { [key: string]: UserPrefValue } = JSON.parse(readFileSync(join(userscriptPrefsPath, `${eventSuffix}.json`), 'utf-8'));
 		Object.keys(settingsJSON).forEach(settingKey => {
 			if (customSettingSavedJSONIsNotMalformed(settingKey, settings, settingsJSON)) {
-				userscriptPreferences[eventSuffix][settingKey] = settingsJSON[settingKey]
+				userscriptPreferences[eventSuffix][settingKey] = settingsJSON[settingKey];
 			}
-		})
-		return userscriptPreferences[eventSuffix]
+		});
+		return userscriptPreferences[eventSuffix];
 	} catch (e) { // Settings file for script probably doesn't exist yet
-		return {}
+		return {};
 	}
 }
 function userscriptSettingsResetDefaults(eventSuffix: string, userscriptSettings: Record<string, UserscriptRenderReadySetting>, userscriptCategoryID: string, brokenSettings: string[]) {
-	const optionsContainer = document.querySelector(`.${userscriptCategoryID}`)
+	const optionsContainer = document.querySelector(`.${userscriptCategoryID}`);
 	Object.keys(userscriptSettings).forEach(settingKey => {
 		if (!brokenSettings.includes(settingKey)) {
-			const setting = userscriptSettings[settingKey]
-			const settingValue = userscriptSettings[settingKey].value
-			setting.changed(settingValue)
-			const settingValueContainer: HTMLElement = optionsContainer.querySelector(`#settingElem-${settingKey}`)
-			const settingValueElement: HTMLInputElement = settingValueContainer.querySelector(`.s-update`)
-			const secondarySettingValueElement: HTMLInputElement = settingValueContainer.querySelector(`.s-update-secondary`)
-			userscriptPreferences[eventSuffix][settingKey] = settingValue
+			const setting = userscriptSettings[settingKey];
+			const settingValue = userscriptSettings[settingKey].value;
+			setting.changed(settingValue);
+			const settingValueContainer: HTMLElement = optionsContainer.querySelector(`#settingElem-${settingKey}`);
+			const settingValueElement: HTMLInputElement = settingValueContainer.querySelector('.s-update');
+			const secondarySettingValueElement: HTMLInputElement = settingValueContainer.querySelector('.s-update-secondary');
+			userscriptPreferences[eventSuffix][settingKey] = settingValue;
 			switch (setting.type) {
-				case "bool":
-					settingValueElement.checked = settingValue as boolean
+				case 'bool':
+					settingValueElement.checked = settingValue as boolean;
 					break;
-					default:
-					settingValueElement.value = String(settingValue)
-					if (secondarySettingValueElement) secondarySettingValueElement.value = String(settingValue)
+				default:
+					settingValueElement.value = String(settingValue);
+					if (secondarySettingValueElement) secondarySettingValueElement.value = String(settingValue);
 					break;
 			}
-			saveUserScriptSettings(eventSuffix)
+			saveUserScriptSettings(eventSuffix);
 		}
-	})
-
+	});
 }
 function saveUserScriptSettings(eventSuffix: string) {
 	writeFileSync(join(userscriptPrefsPath, `${eventSuffix}.json`), JSON.stringify(userscriptPreferences[eventSuffix], null, 2), { encoding: 'utf-8' });
@@ -219,7 +217,7 @@ function sanitizeString(string: string) {
 		'>': '&gt;',
 		'"': '&quot;',
 		"'": '&#x27;',
-		"/": '&#x2F;',
+		'/': '&#x2F;',
 	};
 	const reg = /[&<>"'/]/ig;
 	return string.replace(reg, (match: keyof typeof map) => (map[match]));
@@ -406,9 +404,9 @@ class SettingElem {
 				document.getElementById('hiddenClasses').classList.toggle('hiddenClasses-hideAds-bottomOffset', adsHidden);
 			}
 
-			if (this.props.key === "cssSwapper" && value !== 'None') {
-				let cssElem = document.getElementById('crankshaftCustomCSS');
-				let cssFile = readFileSync(join(paths.cssPath, value), { encoding: 'utf-8' });
+			if (this.props.key === 'cssSwapper' && value !== 'None') {
+				const cssElem = document.getElementById('crankshaftCustomCSS');
+				const cssFile = readFileSync(join(paths.cssPath, value), { encoding: 'utf-8' });
 				cssElem.textContent = cssFile;
 			}
 
@@ -426,7 +424,7 @@ class SettingElem {
 				const userscript = this.props.userscriptReference;
 				// I would normally check if the script has settings before forcing a settings refresh... but userscripts don't define their settings until they run, so it wouldn't hot-reload settings.
 				// I hate that I have to take the lazy route but I don't see a way of extracting settings without loading the script.
-				/* if ('settings' in userscript && Object.keys(userscript.settings).length > 0) */ refreshSettings = true
+				/* if ('settings' in userscript && Object.keys(userscript.settings).length > 0) */ refreshSettings = true;
 				// either the userscsript has not ran yet, or it's instant
 				if (value && (!userscript.hasRan || this.props.instant)) {
 					userscript.load();
@@ -567,69 +565,78 @@ const skeleton = {
 };
 
 function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, scriptVanity: { author: string, name: string }) {
-	const renderReadyData = {
-		documentFragment: new DocumentFragment()
-	};
+	const renderReadyData = { documentFragment: new DocumentFragment() };
+
 	// Create tracker for broken settings so that they aren't saved or modified.
 	const brokenSettings: string[] = [];
+
 	// Create container for script, basically follows what happens above.
-	const userscriptCategoryID: string = `${scriptVanity.name}by${scriptVanity.author}`.replaceAll(' ', '').toLowerCase().replaceAll(/[^a-z0-9]/g, '');
+	const userscriptCategoryID: string = `${scriptVanity.name}by${scriptVanity.author}`.replaceAll(' ', '').toLowerCase().replaceAll(/[^a-z0-9]/gu, '');
 	renderReadyData.documentFragment.appendChild(skeleton.catHedElem(` ${scriptVanity.name} <span class='settings-Userscript-Author'>by ${sanitizeString(`${scriptVanity.author}`)}</span>`));
-	renderReadyData.documentFragment.appendChild(skeleton.catBodElem(userscriptCategoryID, ``));
+	renderReadyData.documentFragment.appendChild(skeleton.catBodElem(userscriptCategoryID, ''));
+
 	// Create immutable variable for the userscript's settings for predictable behaviour
 	const userScriptDefinedOptions: Record<string, UserscriptRenderReadySetting> = { ...userscript.settings };
+
 	// The object key that will store all the settings for a specific userscript
-	const userscriptPrefsKey: string = userscript?.name?.replace(/.js$/, '') ?? userscriptCategoryID;
+	const userscriptPrefsKey: string = userscript?.name?.replace(/.js$/u, '') ?? userscriptCategoryID;
 	try {
 		// We are re-applying saved settings here. We do also this on startup in userscripts.ts. This is so that if a script is hot-reloaded, its preferences are immediately re-applied.
 		userscriptPreferences[userscriptPrefsKey] = {};
 		loadUserScriptSettings(userscriptPrefsKey, userScriptDefinedOptions);
+
 		// Loop through each custom setting and do stuff
 		Object.entries(userScriptDefinedOptions).forEach(([settingKey, settingData]) => {
 			const setting = { ...settingData };
+
 			// This is a failsafe just in case a user adds a setting to a script without restarting the client. Not 100% sure if this is needed.
 			if (userscriptPreferences[userscriptPrefsKey][settingKey] === undefined) userscriptPreferences[userscriptPrefsKey][settingKey] = setting.value;
+
 			// Check if the script creator made their settings dumb
-			let settingIsMalformed: boolean | string = customSettingIsMalformed(setting);
+			const settingIsMalformed: boolean | string = customSettingIsMalformed(setting);
 			if (settingIsMalformed === false) {
 				// Below, we're basically designating a default RenderReadySetting just in case the script creator omitted properties.
 				const customSettingObject: RenderReadySetting = {
-					key: settingKey ?? "UNDEFINED CUSTOM SETTINGS OPTION",
-					title: "Unset Custom Setting Title: {title}",
+					key: settingKey ?? 'UNDEFINED CUSTOM SETTINGS OPTION',
+					title: 'Unset Custom Setting Title: {title}',
 					value: false,
 					type: 'bool',
 					safety: 0,
-					callback: function () { }
+					callback() { }
 				};
+
 				// Apply defaults and squash objects.
 				Object.assign(customSettingObject, setting, {
 					value: userscriptPreferences[userscriptPrefsKey][settingKey],
+
 					// We specifically apply the callback at the top level so that a userscript creator can't just define their own callback() and access the client directly through a userscript.
-					callback: function (this: { settingKey: string, prefsKey: string, changed: Function }, value: UserPrefs[keyof UserPrefs]) {
-						userscriptPreferences[this.prefsKey][this.settingKey] = value
-						saveUserScriptSettings(this.prefsKey)
-						this.changed(value)
+					callback: function(this: { settingKey: string, prefsKey: string, changed: Function }, value: UserPrefs[keyof UserPrefs]) {
+						userscriptPreferences[this.prefsKey][this.settingKey] = value;
+						saveUserScriptSettings(this.prefsKey);
+						this.changed(value);
 					}.bind({ settingKey, prefsKey: userscriptPrefsKey, changed: setting.changed })
 				});
+
 				// Adding the entire constructed custom element to the DOM fragment
 				const customOptionElem = new SettingElem(customSettingObject, false);
 				renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(customOptionElem.elem);
 			} else {
 				// If the custom setting is dumb, make sure it's never changed and the script user gets a nice, big, very red warning about it.
-				brokenSettings.push(settingKey)
-				const brokenOptionWrapper = createElement('div', { class: ['setting', 'settName', 'safety-0', 'brokenCustomUserscriptSettingWrapper'], innerHTML: `` })
-				const brokenOptionElem = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<div class="setting-title brokenCustomUserscriptSettingTitle">Malformed Setting: ${settingKey}</div><div class='setting-desc-new brokenCustomUserscriptSettingDesc'>Userscript Setting Validation error: ${settingIsMalformed}</div>`});
+				brokenSettings.push(settingKey);
+				const brokenOptionWrapper = createElement('div', { class: ['setting', 'settName', 'safety-0', 'brokenCustomUserscriptSettingWrapper'], innerHTML: '' });
+				const brokenOptionElem = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<div class="setting-title brokenCustomUserscriptSettingTitle">Malformed Setting: ${settingKey}</div><div class='setting-desc-new brokenCustomUserscriptSettingDesc'>Userscript Setting Validation error: ${settingIsMalformed}</div>` });
 				brokenOptionWrapper.appendChild(brokenOptionElem);
 				renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(brokenOptionWrapper);
 			}
-		})
+		});
 	} catch (err) {
 		strippedConsole.error(`Error creating custom settings for userscript: ${userscript.name}`, err);
 		renderReadyData.documentFragment = new DocumentFragment();
 	}
+
 	// Add the 'reset defaults' button
 	const defaultsItem = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<span class="buttons-title">Reset ${scriptVanity.name} Settings</span>` });
-	defaultsItem.appendChild(skeleton.settingButton('refresh', 'Reset Defaults', e => { userscriptSettingsResetDefaults(userscript.name.replace(/.js$/, '') ?? userscriptCategoryID, userScriptDefinedOptions, userscriptCategoryID, brokenSettings) }));
+	defaultsItem.appendChild(skeleton.settingButton('refresh', 'Reset Defaults', e => { userscriptSettingsResetDefaults(userscript.name.replace(/.js$/u, '') ?? userscriptCategoryID, userScriptDefinedOptions, userscriptCategoryID, brokenSettings); }));
 	renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(defaultsItem);
 
 	return renderReadyData;
@@ -681,9 +688,9 @@ export function renderSettings() {
 		// This array is used to store userscript settings HTML
 		const customUserScriptSettingsElems: DocumentFragment[] = [];
 
-		const userscriptSettings: RenderReadySetting[] = su.userscripts.map((userscript) => {
+		const userscriptSettings: RenderReadySetting[] = su.userscripts.map(userscript => {
 			const customUserscriptSetting: RenderReadySetting = {
-				key: userscript.name.replace(/.js$/, ''), // remove .js
+				key: userscript.name.replace(/.js$/u, ''), // remove .js
 				title: userscript.name,
 				value: su.userscriptTracker[userscript.name],
 				type: 'bool',
@@ -705,12 +712,13 @@ export function renderSettings() {
 					${'version' in thisMeta && thisMeta.version ? `&#8226; v${thisMeta.version}` : ''}
 					${'src' in thisMeta && thisMeta.src ? ` &#8226; <a target="_blank" href="${thisMeta.src}">source</a>` : ''}`
 				});
+
 				// Read and render script-defined settings
 				if (scriptHasSettings) {
 					const settingCount = Object.keys(userscript.settings).length;
 					customUserscriptSetting.desc = `${customUserscriptSetting.desc} ${`&#8226; Uses ${settingCount} Custom Setting${settingCount === 1 ? '' : 's'}`}`;
 
-					const userscriptSettings = generateRenderReadyUserscriptSettings(userscript, {author: (scriptAuthor !== false) ? scriptAuthor : '', name: scriptName});
+					const userscriptSettings = generateRenderReadyUserscriptSettings(userscript, { author: (scriptAuthor !== false) ? scriptAuthor : '', name: scriptName });
 					// Add fragment to array of userscript options.
 					customUserScriptSettingsElems.push(userscriptSettings.documentFragment);
 				}
@@ -719,9 +727,9 @@ export function renderSettings() {
 
 			return customUserscriptSetting;
 		});
-		
+
 		// Apply custom userscript options to the settings fragment
-		customUserScriptSettingsElems.forEach(fragment => { csSettings.appendChild(fragment) })
+		customUserScriptSettingsElems.forEach(fragment => { csSettings.appendChild(fragment); });
 		document.querySelector('.Crankshaft-settings').textContent = '';
 		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
 

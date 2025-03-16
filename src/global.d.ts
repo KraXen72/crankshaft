@@ -2,7 +2,7 @@ type UserPrefs = {
 	[preference: string]: UserPrefValue;
 };
 
-type UserPrefValue = boolean | string | string[] | number
+type UserPrefValue = boolean | string | string[] | number;
 
 interface UserscriptTracker {
 	[script: string]: boolean;
@@ -91,6 +91,7 @@ interface SettingExtraButton {
 interface SettingItemGeneric {
 	title: string;
 	desc?: string;
+
 	// This is for the (!) display on settings, describing if they are safe to use, and at what level they are safe.
 	safety: number;
 	type: ValidTypes;

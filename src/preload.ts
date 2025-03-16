@@ -50,16 +50,12 @@ ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
 	function copyScoreboardToClipboard() {
 		if (Date.now() - lastCopied < copyCooldownMS) return;
 		lastCopied = Date.now();
-		const lbElement = document.querySelector('#endTable');
-		if (!lbElement) return setButtonText(failedToCopy);
+		const lbRows = document.querySelector('#endTable')?.children[0]?.children;
+		if (!lbRows) return setButtonText(failedToCopy);
 
-		const isHardpoint = document.querySelector('#endTable')
-			.children?.[0]
-			.children?.[0]
-			.children?.[5]
-			.textContent === 'Obj';
+		const isHardpoint = lbRows[0]?.children[5]?.textContent === 'Obj';
 
-		const output = [...lbElement.children?.[0]?.children].slice(2).map(leaderboardRow => {
+		const output = [...lbRows].slice(2).map(leaderboardRow => {
 			const rowChildren = [...leaderboardRow.children] as HTMLElement[];
 			const returnObj = {
 				position: rowChildren[0].innerText.replace('.', ''),
@@ -67,12 +63,12 @@ ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
 				score: rowChildren[2].innerText,
 				kills: rowChildren[3].innerText,
 				deaths: rowChildren[4].innerText
-			}
+			};
 			if (isHardpoint) {
 				Object.assign(returnObj, {
 					objective: rowChildren[5].innerText,
 					damage: rowChildren[6].innerText
-				})
+				});
 			}
 			return returnObj;
 		});
@@ -92,7 +88,6 @@ ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
 	}
 
 	document.getElementById('endMidHolder').appendChild(buttonElement);
-
 });
 
 ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
@@ -188,7 +183,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		const uiBaseElement = document.getElementById(splashMountElementID);
 		if (uiBaseElement === null) throw `Krunker didn't create #${splashMountElementID}`;
 
-		const splashBackground = createElement('div', {class: ['crankshaft-loading-background']});
+		const splashBackground = createElement('div', { class: ['crankshaft-loading-background'] });
 		if (immersiveSplash) splashBackground.classList.add('immersive');
 		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
@@ -210,7 +205,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-l', id: 'loadInfoLHolder', text: `v${version}` }));
 		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-r', id: 'loadInfoRHolder', text: 'Client by KraXen72' }));
 		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-splash', id: 'loadInfoSplashHolder', text: splashFlavor }));
-		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-loadingindicator', id: 'loadInfoLoadingIndicator', text: `LOADING...` }));
+		logoSVG.appendChild(createElement('div', { class: 'crankshaft-holder-loadingindicator', id: 'loadInfoLoadingIndicator', text: 'LOADING...' }));
 		splashBackground.appendChild(logoSVG);
 
 		const observerConfig = { attributes: true, childList: true, subtree: true };
@@ -223,9 +218,9 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
 	if (cssSwapper !== 'None') {
-		let cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
-		addEventListener("DOMContentLoaded", (event) => {
-			const styleElement = createElement('style', { id: "crankshaftCustomCSS" });
+		const cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
+		addEventListener('DOMContentLoaded', (event) => {
+			const styleElement = createElement('style', { id: 'crankshaftCustomCSS' });
 			styleElement.textContent = cssInUse;
 			document.body.appendChild(styleElement);
 		});
@@ -256,11 +251,13 @@ export const regionMappings = [
 	{ name: 'Brazil', id: 'brz', code: 'BRZ', offset: -3 }, // approximate, BRT
 	{ name: 'Middle East', id: 'me-bhn', code: 'BHN', offset: 3 }, // approximate, Saudi arabia
 	{ name: 'South Africa', id: 'af-ct', code: 'AFR', offset: 2 }, // approximate, SAST
+
 	// found in matchmaker, but not region picker
 	{ name: 'China (hidden)', id: '', code: 'CHI', offset: 8 }, // approximate, Beijing
 	{ name: 'London (hidden)', id: '', code: 'LON', offset: 1 },
 	{ name: 'Seattle (hidden)', id: '', code: 'STL', offset: -7 },
 	{ name: 'Mexico (hidden)', id: '', code: 'MX', offset: -6 },
+
 	// FRVR 'Super Secret' testing server
 	{ name: 'EU Super Secret Servers', id: 'sss', code: 'FRA', offset: 2 }
 ];
@@ -341,8 +338,8 @@ function patchSettings(_userPrefs: UserPrefs) {
 					try {
 						opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
 					} catch (error) {
-						strippedConsole.error("Error getting timezone for: ", opt);
-						opt.textContent += ` [??:??]`;
+						strippedConsole.error('Error getting timezone for: ', opt);
+						opt.textContent += ' [??:??]';
 					}
 				}
 
