@@ -54,7 +54,7 @@ const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
 const cssPath = pathJoin(configPath, 'css');
 const exampleCssPath = pathJoin(cssPath, 'example.css');
 
-app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36';
+app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Electron/12.2.3 Safari/537.36';
 
 const settingsSkeleton = {
 	fpsUncap: true,
@@ -184,7 +184,7 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 			spellcheck: false,
 			enableRemoteModule: false,
 			nodeIntegration: false
-		} satisfies Electron.WebPreferences
+		}
 	});
 
 	// add additional submenus to the generic win
@@ -264,7 +264,8 @@ app.on('ready', () => {
 			preload: pathJoin(__dirname, 'preload.js'),
 			enableRemoteModule: false,
 			spellcheck: false,
-			nodeIntegration: false
+			nodeIntegration: false,
+			contextIsolation: false // not ideal, but preload does a lot of interaction w/ the page
 		},
 		backgroundColor: '#000000'
 	};

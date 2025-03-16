@@ -31,7 +31,7 @@
 	"devDependencies": {
 		"concurrently": "^8.2.2",
 		"conventional-changelog-cli": "^4.1.0",
-		"electron": "10.4.7",
+		"electron": "12.2.3",
 		"electron-builder": "23.6.0",
 		"esbuild": "^0.20.0",
 		"eslint": "^8.56.0",

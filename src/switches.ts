@@ -74,6 +74,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		app.commandLine.appendSwitch('disable-frame-rate-limit');
 		app.commandLine.appendSwitch('disable-gpu-vsync');
 		app.commandLine.appendSwitch('max-gum-fps', '9999');
+		app.commandLine.appendSwitch('enable-features', 'ImplLatencyRecovery,MainLatencyRecovery');
 		console.log('Removed FPS Cap');
 	}
 
