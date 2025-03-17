@@ -1,3 +1,20 @@
+## [1.9.0](https://github.com/KraXen72/crankshaft/compare/1.8.0...1.9.0) (2025-03-17)
+
+
+### Features
+* userscript settings api by @AspectQuote ([7058b46](https://github.com/KraXen72/crankshaft/commit/7058b46ad096e3848ba407a51132d410f01f4d54))
+* css swapper with hot-swapping by @eeonaa ([cdd1db7](https://github.com/KraXen72/crankshaft/commit/cdd1db7a5758385e9c9b783a2e2e09ab66329d1c))
+* copy match results to clipboard button by @AspectQuote, suggested by @Duprious ([be34e30](https://github.com/KraXen72/crankshaft/commit/be34e30388cbf02b6bb6af3e3ae1c53e80530380))
+* ad/tracker blocking and custom filters by @thegu5 ([6610fd9](https://github.com/KraXen72/crankshaft/commit/6610fd98f4aaf49b1e7d016bf093668e7f6d2f12), [6831dfd](https://github.com/KraXen72/crankshaft/commit/6831dfd94f06f293b981a04da2a17a0f71f5e305))
+
+### Misc
+* settings location migration, quick open folder buttons by @KraXen72 
+* timezones in matchmaker by @KraXen72 
+* menu timer improvements by @envyxyz & @aprilsbloom 
+* cleanup & ci by @Mixaz017 
+* and much more cleanup
+* and many more fixes
+
 ## [1.8.0](https://github.com/KraXen72/crankshaft/compare/1.7.2...1.8.0) (2023-06-20)
 
 

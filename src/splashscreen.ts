@@ -109,7 +109,8 @@ const possibleSplashFlavors: string[] = [
 	'Now with cloudy skies!',
 	"There's so much to look forward to!",
 	"What's gonna work? Teamwork!",
-	'Krunkin into the sunset'
+	'Krunkin into the sunset',
+	'Is this thing on?'
 ];
 
 const splashFlavor = possibleSplashFlavors[Math.floor(Math.random() * possibleSplashFlavors.length)];
