@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const args = process.argv.filter(a => a.startsWith("--"))
 const building = args.includes("--build")
 const watching = args.includes("--watch")
+const metaFile = args.includes("--meta")
 console.log("building(minifying):", building, "watching:", watching)
 
 fs.rmSync("app/main.js", { force: true })
@@ -32,6 +33,7 @@ const buildOptions = {
 	bundle: true,
 	minify: building,
 	sourcemap: "inline",
+	metafile: metaFile,
 	format: 'cjs',
 	platform: 'node',
 	target: ["node14", "chrome89"], // electron 12.2.3
@@ -51,5 +53,8 @@ async function watch(extraOptions) {
 if (watching) {
 	watch({ plugins: [ buildLogger ] })
 } else {
-	esbuild.buildSync(buildOptions)
+	const result = esbuild.buildSync(buildOptions)
+	if (metaFile) {
+		fs.writeFileSync("metafile.json", JSON.stringify(result.metafile))
+	}
 }
