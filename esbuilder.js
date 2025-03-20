@@ -32,7 +32,7 @@ const buildOptions = {
 	],
 	bundle: true,
 	minify: building,
-	sourcemap: "inline",
+	sourcemap: building ? false : "inline",
 	metafile: metaFile,
 	format: 'cjs',
 	platform: 'node',
