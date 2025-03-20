@@ -1,11 +1,18 @@
 // crankshaft's build script. uses esbuild, which is a fast js build tool written in go.
-const esbuild = require('esbuild');
+const esbuild = require("esbuild");
+const fs = require("node:fs");
 
 const args = process.argv.filter(a => a.startsWith("--"))
 const building = args.includes("--build")
 const watching = args.includes("--watch")
 console.log("building(minifying):", building, "watching:", watching)
 
+fs.rmSync("app/main.js", { force: true })
+fs.rmSync("app/preload.js", { force: true })
+
+/**
+ * @type {import('esbuild').Plugin}
+ */
 const buildLogger = {
 	name: 'build-logger',
 	setup(build) {
@@ -13,42 +20,36 @@ const buildLogger = {
 	},
 }
 
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
 const buildOptions = {
 	// keep this manually in-sync!
 	entryPoints: [
 		'src/main.ts',
-		'src/menu.ts',
-		'src/preload.ts',
-		'src/requesthandler.ts',
-		'src/settingsui.ts',
-		'src/switches.ts',
-		'src/userscripts.ts',
-		'src/matchmaker.ts',
-		'src/utils_node.ts',
-		'src/utils.ts',
-		'src/userscriptvalidators.ts',
-		'src/splashscreen.ts'
+		'src/preload.ts'
 	],
-	bundle: false,
+	bundle: true,
 	minify: building,
-	sourcemap: false,
+	sourcemap: "inline",
 	format: 'cjs',
 	platform: 'node',
-	target: "es2020", // electron 10.4.7 => chromium 85 => released in 2020
-	banner: {
-		js: "\"use strict\";"
-	},
+	target: ["node14", "chrome89"], // electron 12.2.3
 	outdir: 'app',
-	tsconfig: 'tsconfig.json'
+	tsconfig: 'tsconfig.json',
+	external: ["electron"]
 }
 
+/**
+ * @param {import('esbuild').BuildOptions} extraOptions 
+ */
 async function watch(extraOptions) {
-	const ctx = await esbuild.context(Object.assign(buildOptions, extraOptions))
+	const ctx = await esbuild.context({ ...buildOptions, ...extraOptions })
 	await ctx.watch()
 }
 
 if (watching) {
-	watch({ plugins: [ buildLogger ] });
+	watch({ plugins: [ buildLogger ] })
 } else {
 	esbuild.buildSync(buildOptions)
 }

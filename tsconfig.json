@@ -5,9 +5,12 @@
 		"esModuleInterop": true,
 		"noImplicitAny": true,
 		"isolatedModules": true,
-		"noEmit": true
+		"noEmit": true,
+		"allowJs": true,
+		"checkJs": true
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*",
+		"esbuilder.js"
 	]
 }
