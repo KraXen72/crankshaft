@@ -1,8 +1,7 @@
-import { readdirSync, existsSync, mkdirSync } from 'fs';
+import { readdirSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join as pathJoin } from 'path';
 
 import { Filter } from 'electron';
-import { readFileSync } from 'original-fs';
 
 // TODO: conditional import (?)
 import { URLPattern } from 'urlpattern-polyfill';
