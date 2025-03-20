@@ -21,6 +21,9 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
     devDependencies:
+      '@types/discord-rpc':
+        specifier: ^4.0.9
+        version: 4.0.9
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
@@ -291,6 +294,12 @@ packages:
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
+
+  '@types/discord-rpc@4.0.9':
+    resolution: {integrity: sha512-IW5yPfEzcZRaHTvB/AZOvadMwQihVzxbl6xueuGUr3RBF8VSkzbucCRC/zzS10CEVka7LRGT4C7lXKMbWv8oWQ==}
+
+  '@types/events@3.0.3':
+    resolution: {integrity: sha512-trOc4AAUThEz9hapPtSd7wf5tiQKvTtu5b371UxXdTuqzIh0ArcRspRP0i0Viu+LXstIQ1z96t1nsPxT9ol01g==}
 
   '@types/fs-extra@9.0.13':
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
@@ -2370,6 +2379,12 @@ snapshots:
   '@types/debug@4.1.12':
     dependencies:
       '@types/ms': 0.7.34
+
+  '@types/discord-rpc@4.0.9':
+    dependencies:
+      '@types/events': 3.0.3
+
+  '@types/events@3.0.3': {}
 
   '@types/fs-extra@9.0.13':
     dependencies:

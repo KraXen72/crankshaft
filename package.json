@@ -29,6 +29,7 @@
 		"url": "https://github.com/KraXen72/crankshaft.git"
 	},
 	"devDependencies": {
+		"@types/discord-rpc": "^4.0.9",
 		"concurrently": "^8.2.2",
 		"conventional-changelog-cli": "^4.1.0",
 		"electron": "12.2.3",
