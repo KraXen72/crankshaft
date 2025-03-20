@@ -1,4 +1,4 @@
-import { join as pathJoin, resolve as pathResolve } from 'path';
+﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { moveFolderSync } from './utils_node';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
@@ -306,36 +306,35 @@ app.on('ready', () => {
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
 		if (userPrefs.discordRPC) {
-			// eslint-disable-next-line
-			const DiscordRPC = require('discord-rpc');
-			const rpc = new DiscordRPC.Client({ transport: 'ipc' });
-			const startTimestamp = new Date();
-			const clientId = '988529967220523068';
+			import('discord-rpc').then(DiscordRPC => {
+				const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+				const startTimestamp = new Date();
+				const clientId = '988529967220523068';
 
-			// eslint-disable-next-line no-inner-declarations
-			function updateRPC({ details, state }: RPCargs) {
-				const data = {
-					details,
-					state,
-					startTimestamp,
-					largeImageKey: 'logo',
-					largeImageText: 'Playing Krunker',
-					instance: true
-				};
-				if (userPrefs.extendedRPC) {
-					Object.assign(data, {
-						buttons: [
-							{ label: 'Github', url: 'https://github.com/KraXen72/crankshaft' },
-							{ label: 'Discord Server', url: 'https://discord.gg/ZeVuxG7gQJ' }
-						]
-					});
+				function updateRPC({ details, state }: RPCargs) {
+					const data = {
+						details,
+						state,
+						startTimestamp,
+						largeImageKey: 'logo',
+						largeImageText: 'Playing Krunker',
+						instance: true
+					};
+					if (userPrefs.extendedRPC) {
+						Object.assign(data, {
+							buttons: [
+								{ label: 'Github', url: 'https://github.com/KraXen72/crankshaft' },
+								{ label: 'Discord Server', url: 'https://discord.gg/ZeVuxG7gQJ' }
+							]
+						});
+					}
+					rpc.setActivity(data);
 				}
-				rpc.setActivity(data);
-			}
 
-			rpc.login({ clientId }).catch(console.error); // login to the RPC
-			mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
-			ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
+				rpc.login({ clientId }).catch(console.error); // login to the RPC
+				mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
+				ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
+			});
 		}
 	});
 
