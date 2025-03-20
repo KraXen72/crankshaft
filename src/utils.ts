@@ -1,10 +1,6 @@
 import { webFrame } from 'electron';
 import { strippedConsole } from './preload';
 
-/// <reference path="global.d.ts" />
-
-const insertedCSS: InsertedCSS = {};
-
 /** inject css as a style tag */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const injectSettingsCSS = (css: string, identifier = 'settings') => {
@@ -54,6 +50,8 @@ export function createElement(type: string, options: Object = {}) {
 
 	return element;
 }
+
+const insertedCSS: InsertedCSS = {};
 
 /**
  * inject or uninject css to hide ads

@@ -1,7 +1,5 @@
 import { app } from 'electron';
 
-/// <reference path="global.d.ts" />
-
 /** applies command line switches to the app based on the passed userprefs */
 export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 	if (userPrefs.safeFlags_removeUselessFeatures) {

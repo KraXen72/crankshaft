@@ -1,8 +1,6 @@
 import { shell, MenuItemConstructorOptions, MenuItem, app, BrowserWindow } from 'electron';
 import { OpenDevToolsOptions } from 'electron/main';
 
-/// <reference path="global.d.ts" />
-
 // Menu
 /** submenu to replace the About screen */
 export const aboutSubmenu: MenuItemConstructorOptions[] = [

@@ -5,8 +5,6 @@ import { strippedConsole } from './preload';
 import { userscriptToggleCSS } from './utils';
 import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
 
-/// <reference path="global.d.ts" />
-
 /** sharedUserscriptData */
 export const su = {
 	userscriptsPath: '',

@@ -9,13 +9,7 @@ import { URLPattern } from 'urlpattern-polyfill';
 
 const TARGET_GAME_DOMAIN = 'krunker.io';
 
-/// <reference path="global.d.ts" />
-
-/**
- * RequestHandler
- * @class RequestHandler
- */
-export default class {
+export default class RequestHandler {
 
 	private browserWindow: Electron.BrowserWindow;
 
@@ -39,7 +33,6 @@ export default class {
 
 	/**
 	 * Set the target window.
-	 *
 	 * @param browserWindow - The target window.
 	 */
 	// FIXME: better way to enable/disable?

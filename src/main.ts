@@ -1,12 +1,10 @@
-﻿import { join as pathJoin, resolve as pathResolve } from 'path';
+import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { moveFolderSync } from './utils_node';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
 import RequestHandler from './requesthandler';
-
-/// <reference path="global.d.ts" />
 
 const userData = pathJoin(app.getPath('userData'), 'config');
 const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 settings path

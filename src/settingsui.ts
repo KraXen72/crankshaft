@@ -8,7 +8,6 @@ import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
 import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
 
-/// <reference path="global.d.ts" />
 enum RefreshEnum {
 	notNeeded = 0,
 	refresh,

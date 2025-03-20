@@ -1,25 +1,13 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
-		"noImplicitAny": true,
-		"sourceMap": false,
-		"outDir": "app",
-		"baseUrl": ".",
 		"target": "es2021",
-		"strict": false,
-		"paths": {
-			"*": [
-				"node_modules/*"
-			]
-		},
+		"module": "commonjs",
 		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true
+		"noImplicitAny": true,
+		"isolatedModules": true,
+		"noEmit": true
 	},
 	"include": [
 		"src/**/*"
-	],
-	"exclude": [
-		"dist/*",
-		"app/*"
 	]
 }

@@ -1,8 +1,6 @@
 import { mkdirSync, readdirSync, lstatSync, copyFileSync, existsSync, unlinkSync, rmdirSync } from 'fs';
 import { join as pathJoin } from 'path';
 
-/// <reference path="global.d.ts" />
-
 // who thought trying to move a directory on node 12 would be so hard? i've tried fs-extra, move-concurrently and mv. none work.
 
 /**
