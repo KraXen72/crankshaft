@@ -20,6 +20,28 @@ const errAlert = (err: Error, name: string) => {
 	alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`);
 };
 
+/*
+ * Adapted from https://github.com/pd4d10/userscript-meta
+ * MIT License, (c) 2016 pd4d10 https://github.com/pd4d10/userscript-meta/blob/master/LICENSE
+ */
+const parseMetadata = (meta: string) => meta.split(/[\r\n]/u)
+	.filter(line => /\S+/u.test(line) // remove blank line
+				&& line.indexOf('==UserScript==') === -1
+				&& line.indexOf('==/UserScript==') === -1)
+	.reduce((obj: Record<string, string | string[]>, line) => {
+		const arr = line.trim().replace(/^\/\//u, '')
+			.trim()
+			.split(/\s+/u);
+		const key = arr[0].slice(1);
+		const value = arr.slice(1).join(' ');
+
+		if (!(key in obj)) obj[key] = value;
+		else if (Array.isArray(obj[key])) obj[key].push(value);
+		else obj[key] = [obj[key], value];
+
+		return obj;
+	}, {});
+
 // this could be moved into the ipcRenderer eventlistener but i don't like the idea of a class existing only locally in that arrow function...
 /** class for userscripts */
 class Userscript implements IUserscriptInstance {
@@ -60,9 +82,6 @@ class Userscript implements IUserscriptInstance {
 		this.content = readFileSync(this.fullpath, { encoding: 'utf-8' });
 		if (this.content.startsWith('"use strict"')) this.#strictMode = true;
 		if (this.content.includes('// ==UserScript==') && this.content.includes('// ==/UserScript==')) {
-			// eslint-disable-next-line
-			const metaParser = require('userscript-meta');
-
 			let chunk: (string[] | string) = this.content.split('\n');
 			chunk = (chunk.length === 1 ? [chunk] : chunk) as string[]; // ensure it's an array
 			const startLine = chunk.findIndex(line => line.includes('// ==UserScript=='));
@@ -70,13 +89,17 @@ class Userscript implements IUserscriptInstance {
 
 			if (startLine !== -1 && endLine !== -1) {
 				chunk = chunk.slice(startLine, endLine + 1).join('\n');
-				this.meta = metaParser.parse(chunk) as UserscriptMeta; // assume this.meta is not false when parsing
+
+				/* 
+				 * assume this.meta is not false when parsing
+				 * fixme: types
+				 */
+				this.meta = parseMetadata(chunk) as unknown as UserscriptMeta;
 
 				/*
 				 * if the metadata define some prop twice, the parser turns it into an array.
 				 * we check if a value isArray and if yes, take the last item in that array as the new value
 				 */
-
 				for (const metaKey of Object.keys(this.meta) as Array<keyof UserscriptMeta>) {
 					const meta = this.meta[metaKey];
 					if (Array.isArray(meta)) this.meta[metaKey] = meta[meta.length - 1];

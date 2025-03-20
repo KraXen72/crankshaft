@@ -20,9 +20,6 @@ importers:
       urlpattern-polyfill:
         specifier: ^10.0.0
         version: 10.0.0
-      userscript-meta:
-        specifier: ^1.0.1
-        version: 1.0.1
     devDependencies:
       concurrently:
         specifier: ^8.2.2
@@ -2093,9 +2090,6 @@ packages:
 
   urlpattern-polyfill@10.0.0:
     resolution: {integrity: sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==}
-
-  userscript-meta@1.0.1:
-    resolution: {integrity: sha512-jgfve+ZReUyo+t7pmu9sQPyLzsU5qVWW30tYp5iXQsW2BZg78ezOCZU7jMxkyN2BKnsDeaYKMfisU/JerXXCbg==}
 
   utf8-byte-length@1.0.5:
     resolution: {integrity: sha512-Xn0w3MtiQ6zoz2vFyUVruaCL53O/DwUvkEeOvj+uulMm0BkUGYWmBYVyElqZaSLhY6ZD0ulfU3aBra2aVT4xfA==}
@@ -4487,8 +4481,6 @@ snapshots:
       prepend-http: 2.0.0
 
   urlpattern-polyfill@10.0.0: {}
-
-  userscript-meta@1.0.1: {}
 
   utf8-byte-length@1.0.5: {}
 
