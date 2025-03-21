@@ -30,16 +30,15 @@
 	},
 	"devDependencies": {
 		"@types/discord-rpc": "^4.0.9",
-		"concurrently": "^8.2.2",
-		"conventional-changelog-cli": "^4.1.0",
+		"concurrently": "^9.1.2",
+		"conventional-changelog-cli": "^5.0.0",
 		"electron": "12.2.3",
 		"electron-builder": "23.6.0",
-		"esbuild": "^0.20.0",
+		"esbuild": "^0.25.1",
 		"eslint": "^8.56.0",
 		"eslint-config-airbnb-typescript": "^17.1.0",
 		"eslint-config-raven": "^1.0.3",
-		"eslint-plugin-import": "^2.29.1",
-		"typescript": "^5.3.3"
+		"eslint-plugin-import": "^2.29.1"
 	},
 	"dependencies": {
 		"compare-versions": "^6.1.0",
