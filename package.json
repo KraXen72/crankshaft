@@ -42,7 +42,6 @@
 	},
 	"dependencies": {
 		"compare-versions": "^6.1.0",
-		"dayjs": "^1.11.10",
 		"discord-rpc": "^4.0.1",
 		"urlpattern-polyfill": "^10.0.0"
 	}

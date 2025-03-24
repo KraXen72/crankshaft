@@ -7,13 +7,6 @@ import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
 import { splashFlavor } from './splashscreen';
 
-// TODO if super border rewrite these to dynamic require's. For now i have not done it because i don't want to dynamically require in exported function
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
-
-/// <reference path="global.d.ts" />
-
 // get rid of client unsupported message 
 window.OffCliV = true;
 
@@ -238,28 +231,28 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 // warning: timezone calculation may be slighty innacurate: no special logic for DST and approx. offsets for BRZ, BHN and AFR
 export const regionMappings = [
-	{ name: 'Frankfurt', id: 'de-fra', code: 'FRA', offset: 2 },
-	{ name: 'Silicon Valley', id: 'us-ca-sv', code: 'SV', offset: -7 },
-	{ name: 'Sydney', id: 'au-syd', code: 'SYD', offset: 10 },
-	{ name: 'Tokyo', id: 'jb-hnd', code: 'TOK', offset: 9 },
-	{ name: 'Miami', id: 'us-fl', code: 'MIA', offset: -4 },
-	{ name: 'Singapore', id: 'sgp', code: 'SIN', offset: 8 },
-	{ name: 'New York', id: 'us-nj', code: 'NY', offset: -4 },
-	{ name: 'Mumbai', id: 'as-mb', code: 'MBI', offset: 5.5 },
-	{ name: 'Dallas', id: 'us-tx', code: 'DAL', offset: -5 },
-	{ name: 'Iowa', id: 'iow', code: 'IOW', offset: -6 },
-	{ name: 'Brazil', id: 'brz', code: 'BRZ', offset: -3 }, // approximate, BRT
-	{ name: 'Middle East', id: 'me-bhn', code: 'BHN', offset: 3 }, // approximate, Saudi arabia
-	{ name: 'South Africa', id: 'af-ct', code: 'AFR', offset: 2 }, // approximate, SAST
+	{ name: 'Frankfurt', id: 'de-fra', code: 'FRA', timezone: 'Europe/Berlin' },
+	{ name: 'Silicon Valley', id: 'us-ca-sv', code: 'SV', timezone: 'America/Los_Angeles' },
+	{ name: 'Sydney', id: 'au-syd', code: 'SYD', timezone: 'Australia/Sydney' },
+	{ name: 'Tokyo', id: 'jb-hnd', code: 'TOK', timezone: 'Asia/Tokyo' },
+	{ name: 'Miami', id: 'us-fl', code: 'MIA', timezone: 'America/New_York' },
+	{ name: 'Singapore', id: 'sgp', code: 'SIN', timezone: 'Asia/Singapore' },
+	{ name: 'New York', id: 'us-nj', code: 'NY', timezone: 'America/New_York' },
+	{ name: 'Mumbai', id: 'as-mb', code: 'MBI', timezone: 'Asia/Kolkata' },
+	{ name: 'Dallas', id: 'us-tx', code: 'DAL', timezone: 'America/Chicago' },
+	{ name: 'Iowa', id: 'iow', code: 'IOW', timezone: 'America/Chicago' },
+	{ name: 'Brazil', id: 'brz', code: 'BRZ', timezone: 'America/Sao_Paulo' }, // BRT
+	{ name: 'Middle East', id: 'me-bhn', code: 'BHN', timezone: 'Asia/Riyadh' }, // Saudi Arabia
+	{ name: 'South Africa', id: 'af-ct', code: 'AFR', timezone: 'Africa/Johannesburg' }, // SAST
 
 	// found in matchmaker, but not region picker
-	{ name: 'China (hidden)', id: '', code: 'CHI', offset: 8 }, // approximate, Beijing
-	{ name: 'London (hidden)', id: '', code: 'LON', offset: 1 },
-	{ name: 'Seattle (hidden)', id: '', code: 'STL', offset: -7 },
-	{ name: 'Mexico (hidden)', id: '', code: 'MX', offset: -6 },
+	{ name: 'China (hidden)', id: '', code: 'CHI', timezone: 'Asia/Shanghai' }, // Beijing
+	{ name: 'London (hidden)', id: '', code: 'LON', timezone: 'Europe/London' },
+	{ name: 'Seattle (hidden)', id: '', code: 'STL', timezone: 'America/Los_Angeles' },
+	{ name: 'Mexico (hidden)', id: '', code: 'MX', timezone: 'America/Mexico_City' },
 
 	// FRVR 'Super Secret' testing server
-	{ name: 'EU Super Secret Servers', id: 'sss', code: 'FRA', offset: 2 }
+	{ name: 'EU Super Secret Servers', id: 'sss', code: 'FRA', timezone: 'Europe/Berlin' }
 ];
 
 // find option elements of the region setting, + select closing tag
@@ -268,12 +261,11 @@ const regionOptionsRegex = new RegExp('s*<option value=.*(de-fra).*(us-ca-sv).*<
 /** get a timezone in format '[HH:mm]' for a region by it's 3-letter code (e.g. FRA) or id (e.g. de-fra) */
 export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
 	if (key === 'id' && value === '') throw new Error('getTimezoneByRegionKey: forbidden to get regions by id with empty id, would match multiple hidden regions');
-	const date = dayjs().utc();
 	const possibleRegions = regionMappings.filter(reg => reg[key] === value);
 	if (possibleRegions.length === 0) throw new Error(`getTimezoneByRegionKey: couldn't get region object for '${key}' === '${value}'`);
 	const region = possibleRegions[0];
-	const localDate = region.offset > 0 ? date.add(region.offset, 'hour') : date.subtract(Math.abs(region.offset), 'hour');
-	return `[${localDate.format('HH:mm')}]`;
+	const localTime = new Date().toLocaleTimeString('en-US', { timeZone: region.timezone, hour12: false, hour: '2-digit', minute: '2-digit' });
+	return `[${localTime}]`;
 }
 
 function patchSettings(_userPrefs: UserPrefs) {
