@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
@@ -212,7 +212,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	}
 	if (cssSwapper !== 'None') {
 		const cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
-		addEventListener('DOMContentLoaded', (event) => {
+		addEventListener('DOMContentLoaded', event => {
 			const styleElement = createElement('style', { id: 'crankshaftCustomCSS' });
 			styleElement.textContent = cssInUse;
 			document.body.appendChild(styleElement);
@@ -226,6 +226,16 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true);
 	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
+
+	/*
+	 * Animate transforms instead of position properties
+	 * https://web.dev/articles/stick-to-compositor-only-properties-and-manage-layer-count
+	 */
+	addEventListener('DOMContentLoaded', event => {
+		const styleElement = createElement('style', { id: 'crankshaftKeyframeFix' });
+		styleElement.textContent = '@keyframes chat-moveup { 0% { transform: translateY(375px); } 100% { transform: translateY(0px); } } @keyframes death-ui-moveup { 0% { transform: translateY(340px); } 100% { transform: translateY(0px); } }';
+		document.body.appendChild(styleElement);
+	});
 	if (userscripts) ipcRenderer.send('initializeUserscripts');
 });
 
