@@ -1,4 +1,4 @@
-import { join as pathJoin, resolve as pathResolve } from 'path';
+﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { moveFolderSync } from './utils_node';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
@@ -180,7 +180,6 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 		center: true,
 		webPreferences: {
 			spellcheck: false,
-			enableRemoteModule: false,
 			nodeIntegration: false
 		}
 	});
@@ -260,10 +259,10 @@ app.on('ready', () => {
 		center: true,
 		webPreferences: {
 			preload: pathJoin(__dirname, 'preload.js'),
-			enableRemoteModule: false,
 			spellcheck: false,
 			nodeIntegration: false,
-			contextIsolation: false // not ideal, but preload does a lot of interaction w/ the page
+			contextIsolation: false, // not ideal, but preload does a lot of interaction w/ the page
+			sandbox: false
 		},
 		backgroundColor: '#000000'
 	};

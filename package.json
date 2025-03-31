@@ -1,5 +1,5 @@
 {
-	"name": "crankshaft",
+	"name": "crankshaft-next",
 	"version": "1.9.0",
 	"description": "Crankshaft Krunker Client by KraXen72",
 	"main": "./app/main.js",
@@ -32,7 +32,7 @@
 		"@types/discord-rpc": "^4.0.9",
 		"concurrently": "^9.1.2",
 		"conventional-changelog-cli": "^5.0.0",
-		"electron": "12.2.3",
+		"electron": "npm:electron-nightly@37.0.0-nightly.20250328",
 		"electron-builder": "23.6.0",
 		"esbuild": "^0.25.1",
 		"eslint": "^8.56.0",
