@@ -186,14 +186,16 @@ span.optDescription {
 
 .setting-desc-new {
 	display: block;
-	width: 750px;
+	width: fit-content;
+	max-width: 50ch;
+	line-height: 30px;
+	font-size: 15px;
+	letter-spacing: 0.5px;
 	word-wrap: break-word;
-	font-size: 20px;
 	color: rgba(255, 255, 255, 0.4) !important;
-	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
 	overflow: hidden;
 	max-height: 500px;
-	margin-top: 5px;
+	margin-top: 6px;
 	grid-area: desc;
 }
 
