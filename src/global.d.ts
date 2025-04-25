@@ -119,10 +119,15 @@ interface MultiselectSettingDescItem extends SettingItemGeneric {
 	cols: number
 }
 
+interface TextSettingDescItem extends SettingItemGeneric {
+	type: 'text',
+	placeholder?: string
+}
+
 // num has to have a min and max
 interface NumSettingItem extends SettingItemGeneric { type: 'num', min?: number, max?: number }
 
-type SettingsDescItem = (SettingItemGeneric | NumSettingItem | SelectSettingDescItem | MultiselectSettingDescItem);
+type SettingsDescItem = (SettingItemGeneric | NumSettingItem | SelectSettingDescItem | MultiselectSettingDescItem | TextSettingDescItem);
 
 /** array of SettingDescItem objects */
 interface SettingsDesc {
@@ -145,6 +150,9 @@ interface RenderReadySetting extends SettingItemGeneric {
 	min?: number;
 	max?: number;
 	step?: number;
+
+	// for text
+	placeholder?: string;
 
 	// the data
 	key: string;
