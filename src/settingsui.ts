@@ -295,7 +295,7 @@ class SettingElem {
 			case 'text':
 				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<span class="setting-input-wrapper">
-							<input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" value="${props.value}"/>
+							<input type="text" class="rb-input s-update inputGrey2" name="${props.key}" autocomplete="off" placeholder="${props.placeholder ?? ''}" value="${props.value ?? ''}"/>
 					</span>`;
 				this.updateKey = 'value';
 				this.updateMethod = 'oninput';
