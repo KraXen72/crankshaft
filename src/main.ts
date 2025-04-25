@@ -72,6 +72,7 @@ const settingsSkeleton = {
 	saveMatchResultJSONButton: false,
 	'angle-backend': 'default',
 	logDebugToConsole: false,
+	overrideURL: undefined as string | undefined,
 	alwaysWaitForDevTools: false,
 	safeFlags_removeUselessFeatures: true,
 	safeFlags_helpfulFlags: true,
@@ -300,7 +301,7 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
 
-		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
+		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL(userPrefs.overrideURL ?? 'https://krunker.io'); return; }
 
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
@@ -365,7 +366,7 @@ app.on('ready', () => {
 				accelerator: 'F6',
 				click: () => {
 					if (userPrefs.matchmaker && userPrefs.matchmaker_F6) mainWindow.webContents.send('matchmakerRedirect', userPrefs);
-					else mainWindow.loadURL('https://krunker.io');
+					else mainWindow.loadURL(userPrefs.overrideURL ?? 'https://krunker.io');
 				}
 			},
 			{ label: 'Copy game link to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(mainWindow.webContents.getURL()); } },
@@ -374,7 +375,7 @@ app.on('ready', () => {
 				accelerator: 'CommandOrControl+F7',
 				click: () => {
 					const copiedText = clipboard.readText();
-					if (copiedText.includes('https://krunker.io/?game')) mainWindow.webContents.loadURL(copiedText);
+					if (copiedText.includes('krunker.io/?game')) mainWindow.webContents.loadURL(copiedText);
 				}
 			},
 			{ type: 'separator' },
@@ -401,7 +402,7 @@ app.on('ready', () => {
 		// sanity check, if social window is destroyed but the reference still exists
 		if (typeof socialWindowReference !== 'undefined' && socialWindowReference.isDestroyed()) socialWindowReference = void 0;
 
-		if (url.includes('https://krunker.io/social.html') && typeof socialWindowReference !== 'undefined') {
+		if (url.includes('social.html') && typeof socialWindowReference !== 'undefined') {
 			event.preventDefault();
 			socialWindowReference.loadURL(url); // if a designated socialWindow exists already, just load the url there
 		} else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
@@ -434,6 +435,7 @@ app.on('ready', () => {
 
 			// for comp or hosted game just load it into the mainWindow
 		} else if (url.includes('comp.krunker.io')
+			|| url.includes('beta.krunker.io')
 			|| url.startsWith('https://krunker.io/?game')
 			|| url.startsWith('https://krunker.io/?play')
 			|| (url.includes('?game=') && url.includes('&matchId='))
@@ -447,13 +449,13 @@ app.on('ready', () => {
 			event.newGuest = genericWin;
 
 			// if the window is social, create and assign a new socialWindow
-			if (url.includes('https://krunker.io/social.html')) {
+			if (url.includes('social.html')) {
 				socialWindowReference = genericWin;
 				// eslint-disable-next-line no-void
 				genericWin.on('close', () => { socialWindowReference = void 0; }); // remove reference once window is closed
 
 				genericWin.webContents.on('will-navigate', (evt, willnavUrl) => { // new social pages will just replace the url in this one window
-					if (willnavUrl.includes('https://krunker.io/social.html')) {
+					if (willnavUrl.includes('social.html')) {
 						genericWin.loadURL(willnavUrl);
 					} else {
 						evt.preventDefault();

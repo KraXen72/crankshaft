@@ -10,5 +10,6 @@
 *://www.googletagmanager.com/*
 *://storage.googleapis.com/pollfish_production/*
 *://krunker.io/libs/frvr-channel-web*
+*://*.krunker.io/libs/frvr-channel-web*
 *://apis.google.com/js/platform.js
 *://imasdk.googleapis.com/*
