@@ -1,3 +1,23 @@
+## [1.9.1](https://github.com/KraXen72/crankshaft/compare/1.9.0...1.9.1) (2025-04-26)
+
+
+### Features
+* Use default gamefont for the descriptions on settings tab by @ankeborg ([c0eb211](https://github.com/KraXen72/crankshaft/commit/c0eb211d126188faa9c8ccee91ab04196218216f))
+* Add placeholder option to text settings
+* Add URL override option, helpful for beta tests/similar
+* Include inline source maps in development builds (helpful for debugging)
+* Add metal ANGLE backend option
+
+### Bugfixes
+* Fix loading userscripts that don't `return this`
+* Fix Discord RPC
+
+### Cleanup
+* Enable bundling in ESBuild
+* Dependency cleanup (code size reduced by 10x, ~1mb to ~100kb)
+* Remove multilib from CI by @Mixaz017 ([ef1b55a](https://github.com/KraXen72/crankshaft/commit/ef1b55af5f417cab838253b16d2e9450ce330da6))
+* Support pnpm v10 by allowing some postinstall scripts (onlyBuiltDependencies)
+
 ## [1.9.0](https://github.com/KraXen72/crankshaft/compare/1.8.0...1.9.0) (2025-03-17)
 
 
