@@ -29,7 +29,6 @@
 		"url": "https://github.com/KraXen72/crankshaft.git"
 	},
 	"devDependencies": {
-		"@types/discord-rpc": "^4.0.9",
 		"concurrently": "^9.1.2",
 		"conventional-changelog-cli": "^5.0.0",
 		"electron": "12.2.3",
@@ -42,10 +41,14 @@
 	},
 	"dependencies": {
 		"compare-versions": "^6.1.0",
-		"discord-rpc": "^4.0.1",
+		"minimal-discord-rpc": "^1.0.2",
 		"urlpattern-polyfill": "^10.0.0"
 	},
 	"pnpm": {
-		"onlyBuiltDependencies": ["electron", "esbuild", "register-scheme"]
+		"onlyBuiltDependencies": [
+			"electron",
+			"esbuild",
+			"register-scheme"
+		]
 	}
 }

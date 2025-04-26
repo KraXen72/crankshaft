@@ -1,4 +1,4 @@
-import { join as pathJoin, resolve as pathResolve } from 'path';
+﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { moveFolderSync } from './utils_node';
 import { BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, BrowserWindowConstructorOptions } from 'electron';
@@ -307,19 +307,22 @@ app.on('ready', () => {
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
 		if (userPrefs.discordRPC) {
-			import('discord-rpc').then(DiscordRPC => {
-				const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+			// @ts-ignore since this node version is older than webcrypto
+			globalThis.crypto = { randomUUID: () => '' };
+
+			import('minimal-discord-rpc').then(DiscordRPC => {
+				const rpc = new DiscordRPC.Client({ clientId: '988529967220523068' });
 				const startTimestamp = new Date();
-				const clientId = '988529967220523068';
 
 				function updateRPC({ details, state }: RPCargs) {
 					const data = {
 						details,
 						state,
-						startTimestamp,
-						largeImageKey: 'logo',
-						largeImageText: 'Playing Krunker',
-						instance: true
+						timestamps: { start: startTimestamp },
+						assets: {
+							large_image: 'logo',
+							large_text: 'Playing Krunker'
+						}
 					};
 					if (userPrefs.extendedRPC) {
 						Object.assign(data, {
@@ -329,11 +332,17 @@ app.on('ready', () => {
 							]
 						});
 					}
-					rpc.setActivity(data);
+					rpc.setActivity(data).catch(console.error);
 				}
 
-				rpc.login({ clientId }).catch(console.error); // login to the RPC
-				mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
+				rpc.login().catch(console.error); // login to the RPC
+
+				let initialized = false;
+				rpc.on('ready', () => {
+					if (initialized) return;
+					initialized = true;
+					mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
+				});
 				ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
 			});
 		}
