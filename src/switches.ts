@@ -2,6 +2,11 @@ import { app } from 'electron';
 
 /** applies command line switches to the app based on the passed userprefs */
 export function applyCommandLineSwitches(userPrefs: UserPrefs) {
+	// app.commandLine.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations');
+	// app.commandLine.appendSwitch('ozone-platform', 'wayland');
+
+	// app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
+
 	if (userPrefs.safeFlags_removeUselessFeatures) {
 		app.commandLine.appendSwitch('disable-breakpad');
 		app.commandLine.appendSwitch('disable-print-preview');
