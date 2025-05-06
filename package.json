@@ -31,8 +31,8 @@
 	"devDependencies": {
 		"concurrently": "^9.1.2",
 		"conventional-changelog-cli": "^5.0.0",
-		"electron": "12.2.3",
 		"electron-builder": "23.6.0",
+		"electron-nightly": "12.0.0-nightly.20201116",
 		"esbuild": "^0.25.1",
 		"eslint": "^8.56.0",
 		"eslint-config-airbnb-typescript": "^17.1.0",
@@ -47,6 +47,7 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"electron",
+			"electron-nightly",
 			"esbuild",
 			"register-scheme"
 		]

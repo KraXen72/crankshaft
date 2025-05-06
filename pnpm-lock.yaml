@@ -24,12 +24,12 @@ importers:
       conventional-changelog-cli:
         specifier: ^5.0.0
         version: 5.0.0(conventional-commits-filter@5.0.0)
-      electron:
-        specifier: 12.2.3
-        version: 12.2.3
       electron-builder:
         specifier: 23.6.0
         version: 23.6.0
+      electron-nightly:
+        specifier: 12.0.0-nightly.20201116
+        version: 12.0.0-nightly.20201116
       esbuild:
         specifier: ^0.25.1
         version: 0.25.1
@@ -888,6 +888,11 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
+  electron-nightly@12.0.0-nightly.20201116:
+    resolution: {integrity: sha512-4sIzOchbGhBqoOVd3592xe3H01lMbtipRfBHsS75tJvlsGB4JdypGC9TdoeLcCNphG3Hm7HvnIvZsfHxXUFSuQ==}
+    engines: {node: '>= 8.6'}
+    hasBin: true
+
   electron-osx-sign@0.6.0:
     resolution: {integrity: sha512-+hiIEb2Xxk6eDKJ2FFlpofCnemCbjbT5jz+BKGpVBrRNT3kWTGs4DfNX6IzGwgi33hUcXF+kFs9JW+r6Wc1LRg==}
     engines: {node: '>=4.0.0'}
@@ -896,11 +901,6 @@ packages:
 
   electron-publish@23.6.0:
     resolution: {integrity: sha512-jPj3y+eIZQJF/+t5SLvsI5eS4mazCbNYqatv5JihbqOstIM13k0d1Z3vAWntvtt13Itl61SO6seicWdioOU5dg==}
-
-  electron@12.2.3:
-    resolution: {integrity: sha512-B27c7eqx1bC5kea6An8oVhk1pShNC4VGqWarHMhD47MDtmg54KepHO5AbAvmKKZK/jWN7NTC7wyCYTDElJNtQA==}
-    engines: {node: '>= 8.6'}
-    hasBin: true
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -3059,6 +3059,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  electron-nightly@12.0.0-nightly.20201116:
+    dependencies:
+      '@electron/get': 1.14.1
+      '@types/node': 14.18.63
+      extract-zip: 1.7.0
+    transitivePeerDependencies:
+      - supports-color
+
   electron-osx-sign@0.6.0:
     dependencies:
       bluebird: 3.7.2
@@ -3079,14 +3087,6 @@ snapshots:
       fs-extra: 10.1.0
       lazy-val: 1.0.5
       mime: 2.6.0
-    transitivePeerDependencies:
-      - supports-color
-
-  electron@12.2.3:
-    dependencies:
-      '@electron/get': 1.14.1
-      '@types/node': 14.18.63
-      extract-zip: 1.7.0
     transitivePeerDependencies:
       - supports-color
 
