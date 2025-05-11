@@ -1,0 +1,80 @@
+@keyframes matchmakerPopupSlideDown {
+    0% {
+        transform: translate(-50%, -500%);
+    }
+
+    100% {
+        transform: translate(-50%, 0%);
+    }
+}
+
+#matchmakerPopupContainer {
+    position: absolute;
+    top: 10em;
+    left: 50%;
+    z-index: 10;
+    box-sizing: border-box;
+    width: 35em;
+    aspect-ratio: 2.5/1;
+    border-radius: 1.2em;
+    overflow: hidden;
+    background-size: 100% 100%;
+    pointer-events: all;
+    background-color: #212121;
+    animation: matchmakerPopupSlideDown 0.5s ease forwards;
+}
+
+#matchmakerPopupTitle {
+    font-size: 1.8em;
+    color: white;
+    padding: 0.3em 0.7em;
+    background: var(--div-black);
+    margin-bottom: 0.3em;
+}
+
+#matchmakerPopupDescription {
+    background: var(--div-black);
+    color: var(--yellow);
+    box-sizing: border-box;
+    padding: 0.6em 1em;
+}
+
+#matchmakerPopupOptions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+}
+
+.matchmakerPopupButton {
+    text-align: center;
+    border: 0.3em solid;
+    box-sizing: border-box;
+    margin: 0.5em;
+    color: white;
+    border-radius: 0.3em;
+    font-size: 1.3em;
+    background-color: var(--div-black);
+    padding: 0.2em 1.4em;
+    transition: all 0.08s;
+}
+
+#matchmakerConfirmButton {
+    border-color: var(--accept-color);
+    flex-grow: 1;
+}
+
+#matchmakerCancelButton {
+    border-color: var(--danger-color);
+}
+
+.matchmakerPopupButton:hover {
+    cursor: pointer;
+    border-color: white !important;
+    transform: scale(0.95);
+}
+
+.matchmakerPopupButton:active {
+    transform: scale(0.85);
+}

@@ -162,15 +162,21 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	});
 
 	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts, cssSwapper } = _userPrefs;
-	const splashId = 'Crankshaft-splash-css';
-	const settId = 'Crankshaft-settings-css';
+	const splashScreenCSSInjectionID = 'Crankshaft-splash-css';
+	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
+	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
 
 	const settCss = readFileSync(pathJoin($assets, 'settingCss.css'), { encoding: 'utf-8' });
-	injectSettingsCSS(settCss, settId);
+	injectSettingsCSS(settCss, customSettingsCSSInjectionID);
+
+	if (matchmaker) {
+		const matchmakerCss = readFileSync(pathJoin($assets, 'matchmakerCss.css'), { encoding: 'utf-8' });
+		injectSettingsCSS(matchmakerCss, matchmakerPopupCSSInjectionID);
+	}
 
 	if (clientSplash) {
 		const splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), { encoding: 'utf-8' });
-		injectSettingsCSS(splashCSS, splashId);
+		injectSettingsCSS(splashCSS, splashScreenCSSInjectionID);
 
 		const splashMountElementID = 'uiBase';
 		const uiBaseElement = document.getElementById(splashMountElementID);
@@ -210,6 +216,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		observer.observe(document.getElementById('instructions'), observerConfig);
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
+
 	if (cssSwapper !== 'None') {
 		const cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
 		addEventListener('DOMContentLoaded', (event) => {
@@ -283,14 +290,13 @@ function patchSettings(_userPrefs: UserPrefs) {
 		}
 
 		function safeRenderSettings() {
-			const settHolder = document.getElementById('settHolder');
-			if (!isClientTab() && settHolder !== null) settHolder.classList.remove('Crankshaft-settings');
 			if (isClientTab()) renderSettings();
 		}
 
 		const showWindowHook = window.showWindow.bind(window);
 		const getSettingsHook = settingsWindow.getSettings.bind(settingsWindow);
 		const changeTabHook = settingsWindow.changeTab.bind(settingsWindow);
+		const searchHook = settingsWindow.searchList.bind(settingsWindow);
 
 		window.showWindow = (...args: unknown[]) => {
 			const result = showWindowHook(...args);
@@ -301,7 +307,9 @@ function patchSettings(_userPrefs: UserPrefs) {
 				advSliderElem.disabled = true;
 				advSliderElem.nextElementSibling.setAttribute('title', 'Crankshaft auto-enables advanced settings mode');
 
-				if (isClientTab()) renderSettings();
+				// We check the search query here because krunker reloads the search each time the settings page is closed/reopened, causing any client settings to be erased
+				const searchQuery = (document.getElementById('settSearch') as (HTMLInputElement | undefined))?.value ?? "";
+				if (isClientTab() || searchQuery.length > 0) renderSettings();
 			}
 
 			return result;
@@ -344,6 +352,12 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 			return result;
 		};
+
+		settingsWindow.searchList = (...args: unknown[]) => {
+			const result: any = searchHook(...args); // Do normal krunker settings search things
+			renderSettings();
+			return result;
+		}
 
 		safeRenderSettings();
 	}
