@@ -302,7 +302,7 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
 
-		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL(userPrefs.overrideURL ?? 'https://krunker.io'); return; }
+		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL(userPrefs.overrideURL || 'https://krunker.io'); return; }
 
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
@@ -376,7 +376,7 @@ app.on('ready', () => {
 				accelerator: 'F6',
 				click: () => {
 					if (userPrefs.matchmaker && userPrefs.matchmaker_F6) mainWindow.webContents.send('matchmakerRedirect', userPrefs);
-					else mainWindow.loadURL(userPrefs.overrideURL ?? 'https://krunker.io');
+					else mainWindow.loadURL(userPrefs.overrideURL || 'https://krunker.io');
 				}
 			},
 			{ label: 'Copy game link to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(mainWindow.webContents.getURL()); } },
