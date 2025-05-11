@@ -166,16 +166,16 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
 	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
 
-	const settCss = readFileSync(pathJoin($assets, 'settingCss.css'), { encoding: 'utf-8' });
+	const settCss = readFileSync(pathJoin($assets, 'settings.css'), { encoding: 'utf-8' });
 	injectSettingsCSS(settCss, customSettingsCSSInjectionID);
 
 	if (matchmaker) {
-		const matchmakerCss = readFileSync(pathJoin($assets, 'matchmakerCss.css'), { encoding: 'utf-8' });
+		const matchmakerCss = readFileSync(pathJoin($assets, 'matchmaker.css'), { encoding: 'utf-8' });
 		injectSettingsCSS(matchmakerCss, matchmakerPopupCSSInjectionID);
 	}
 
 	if (clientSplash) {
-		const splashCSS = readFileSync(pathJoin($assets, 'splashCss.css'), { encoding: 'utf-8' });
+		const splashCSS = readFileSync(pathJoin($assets, 'splash.css'), { encoding: 'utf-8' });
 		injectSettingsCSS(splashCSS, splashScreenCSSInjectionID);
 
 		const splashMountElementID = 'uiBase';
