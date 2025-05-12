@@ -83,16 +83,13 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 	if (userPrefs['angle-backend'] !== 'default') {
 		if (userPrefs['angle-backend'] === 'vulkan') {
-			app.commandLine.appendSwitch('use-angle', 'vulkan');
 			app.commandLine.appendSwitch('use-vulkan');
-			app.commandLine.appendSwitch('--enable-features=Vulkan');
-
-			console.log('VULKAN INITIALIZED');
-		} else {
-			app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
-
-			console.log(`Using Angle: ${userPrefs['angle-backend']}`);
+			app.commandLine.appendSwitch('enable-features', 'Vulkan');
 		}
+
+		app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
+
+		console.log(`Using Angle: ${userPrefs['angle-backend']}`);
 	}
 	if (userPrefs.inProcessGPU) {
 		app.commandLine.appendSwitch('in-process-gpu');
