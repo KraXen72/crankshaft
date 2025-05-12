@@ -2,6 +2,12 @@ appId: com.kraxen72.crankshaft
 publish:
     - provider: github
       publishAutoUpdate: false
+# Duplicated from .npmrc with a hardcoded electron version
+# (not the best, but it doesn't look like there's any way around this)
+electronDownload:
+    customDir: v37.0.0-nightly.20250328-inputpriofix-1
+    mirror: https://github.com/thegu5/electron/releases/download/
+    isVerifyChecksum: false
 win:
     artifactName: ${productName}-portable-${os}-${arch}.${ext}
     target:

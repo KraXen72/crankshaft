@@ -1,7 +1,7 @@
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join as pathJoin } from 'path';
 
-import { Filter } from 'electron';
+import { WebRequestFilter } from 'electron';
 
 // TODO: conditional import (?)
 import { URLPattern } from 'urlpattern-polyfill';
@@ -18,7 +18,7 @@ export default class RequestHandler {
 
 	private customFiltersEnabled: boolean;
 
-	private filter: Filter = { urls: [] };
+	private filter: WebRequestFilter = { urls: [] };
 
 	private swapUrls: string[] = [];
 

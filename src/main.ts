@@ -181,7 +181,6 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 		center: true,
 		webPreferences: {
 			spellcheck: false,
-			enableRemoteModule: false,
 			nodeIntegration: false
 		}
 	});
@@ -261,10 +260,10 @@ app.on('ready', () => {
 		center: true,
 		webPreferences: {
 			preload: pathJoin(__dirname, 'preload.js'),
-			enableRemoteModule: false,
 			spellcheck: false,
 			nodeIntegration: false,
-			contextIsolation: false // not ideal, but preload does a lot of interaction w/ the page
+			contextIsolation: false, // not ideal, but preload does a lot of interaction w/ the page
+			sandbox: false
 		},
 		backgroundColor: '#000000'
 	};
