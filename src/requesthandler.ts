@@ -78,6 +78,7 @@ export default class RequestHandler {
 				const block = this.filter.urls.some(pat => new URLPattern(pat).test(details.url));
 				if (block) return callback({ cancel: true });
 			}
+			
 			return callback({});
 		});
 
