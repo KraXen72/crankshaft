@@ -263,7 +263,8 @@ app.on('ready', () => {
 			spellcheck: false,
 			nodeIntegration: false,
 			contextIsolation: false, // not ideal, but preload does a lot of interaction w/ the page
-			sandbox: false
+			sandbox: false,
+      		backgroundThrottling: false,
 		},
 		backgroundColor: '#000000'
 	};

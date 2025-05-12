@@ -2,8 +2,6 @@ import { app } from 'electron';
 
 /** applies command line switches to the app based on the passed userprefs */
 export function applyCommandLineSwitches(userPrefs: UserPrefs) {
-	// app.commandLine.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations');
-	// app.commandLine.appendSwitch('ozone-platform', 'wayland');
 	app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
 
 	if (userPrefs.safeFlags_removeUselessFeatures) {
@@ -29,10 +27,10 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		app.commandLine.appendSwitch('enable-webgl2-compute-context');
 		app.commandLine.appendSwitch('disable-background-timer-throttling');
 		app.commandLine.appendSwitch('disable-renderer-backgrounding');
+		app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
 		// Don't require user gesture for autoplay (thanks Commander)
 		app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-
 
 		console.log('Applied helpful flags');
 	}
@@ -63,6 +61,9 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		app.commandLine.appendSwitch('ignore-gpu-blocklist');
 		app.commandLine.appendSwitch('no-pings');
 		app.commandLine.appendSwitch('no-proxy-server');
+		app.commandLine.appendSwitch('enable-unsafe-webgpu');
+		app.commandLine.appendSwitch('enable-accelerated-video-decode');
+		//app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder');
 
 		// disable-canvas-aa
 
@@ -73,7 +74,6 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		// do they crash the game? not for me. do they actually help? yeah kind of. depending on your gpu etc.
 		app.commandLine.appendSwitch('enable-gpu-rasterization');
 		app.commandLine.appendSwitch('enable-oop-rasterization');
-		app.commandLine.appendSwitch('disable-zero-copy'); // this is really important, otherwise the game crashes.
 		console.log('GPU rasterization active');
 	}
 
@@ -87,16 +87,12 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 	if (userPrefs['angle-backend'] !== 'default') {
 		if (userPrefs['angle-backend'] === 'vulkan') {
-			app.commandLine.appendSwitch('use-angle', 'vulkan');
 			app.commandLine.appendSwitch('use-vulkan');
-			app.commandLine.appendSwitch('--enable-features=Vulkan');
-
-			console.log('VULKAN INITIALIZED');
-		} else {
-			app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
-
-			console.log(`Using Angle: ${userPrefs['angle-backend']}`);
+			app.commandLine.appendSwitch('enable-features', 'Vulkan');
 		}
+		
+		app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
+		console.log(`Using Angle: ${userPrefs['angle-backend']}`);
 	}
 
 	if (userPrefs.inProcessGPU) {
