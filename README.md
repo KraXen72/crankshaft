@@ -10,14 +10,7 @@
 [Mac (arm64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-arm64.dmg) -
 [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) -
 [Other](https://github.com/KraXen72/crankshaft/releases/latest)  
-  
-## breaking change
-- **as of version `1.9.0`, crankshaft no longer supports `Documents/Crankshaft` for configuration.**
-- **make a backup of `Documents/Crankshaft` before updating.**
-- **crankshaft 1.9.0 auto-migrates the folder** to the new location in `%APPDATA%`, but there's a *very small chance* it could fail while moving/copying/deleting the files, and you'd lose your settings, swapper & scripts.
-- this is due to inconsistent read/write permissions for users whose Documents directory lives inside of OneDrive or has been otherwise moved.
-- for easy access to the new folders, use the quick open buttons in settings
-  
+
 ![splash](assets/blank_splash.png)  
   
 ## client features

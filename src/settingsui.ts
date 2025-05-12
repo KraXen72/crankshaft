@@ -78,7 +78,7 @@ function openPath(e: MouseEvent, path: string) {
  */
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
-	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'd3d11', 'd3d9', 'd3d11on12', 'vulkan'], cat: 0 },
+	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'vulkan', 'metal', 'd3d11', 'd3d9', 'd3d11on12'], cat: 0 },
 	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', 'borderless'] },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. ', safety: 0, cat: 0 },
@@ -564,8 +564,26 @@ const skeleton = {
 	}
 };
 
-function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, scriptVanity: { author: string, name: string }) {
-	const renderReadyData = { documentFragment: new DocumentFragment() };
+/**
+ * Creates userscript setting DOM elements
+ * @param userscript The userscript that needs custom settings created
+ * @param scriptVanity The author and name of the script
+ * @param filter The current settings search term, used to filter the userscript settings
+ * @param forceInclude Whether or not to render all settings regardless of search term, used when the userscript name matches the settings search term
+ * @returns the rendered userscript settings and how many settings were rendered
+ */
+function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, scriptVanity: { author: string, name: string }, filter: string, forceInclude: boolean) {
+	const renderReadyData = { 
+		/**
+		 * Document Fragment containing the custom userscript settings to be rendered
+		 */
+		documentFragment: new DocumentFragment(), 
+
+		/**
+		 * Count of the actual rendered custom userscript settings
+		 */
+		renderedSettings: 0 
+	}
 
 	// Create tracker for broken settings so that they aren't saved or modified.
 	const brokenSettings: string[] = [];
@@ -617,9 +635,12 @@ function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, 
 					}.bind({ settingKey, prefsKey: userscriptPrefsKey, changed: setting.changed })
 				});
 
-				// Adding the entire constructed custom element to the DOM fragment
-				const customOptionElem = new SettingElem(customSettingObject, false);
-				renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(customOptionElem.elem);
+				if (forceInclude || settingSearchFilter(customSettingObject, filter)) {
+					// Adding the entire constructed custom element to the DOM fragment
+					const customOptionElem = new SettingElem(customSettingObject, false);
+					renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(customOptionElem.elem);
+					renderReadyData.renderedSettings++;
+				}
 			} else {
 				// If the custom setting is dumb, make sure it's never changed and the script user gets a nice, big, very red warning about it.
 				brokenSettings.push(settingKey);
@@ -634,26 +655,47 @@ function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, 
 		renderReadyData.documentFragment = new DocumentFragment();
 	}
 
-	// Add the 'reset defaults' button
-	const defaultsItem = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<span class="buttons-title">Reset ${scriptVanity.name} Settings</span>` });
-	defaultsItem.appendChild(skeleton.settingButton('refresh', 'Reset Defaults', e => { userscriptSettingsResetDefaults(userscript.name.replace(/.js$/u, '') ?? userscriptCategoryID, userScriptDefinedOptions, userscriptCategoryID, brokenSettings); }));
-	renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(defaultsItem);
+	if (forceInclude || 'reset defaults'.includes(filter)) {
+		// Add the 'reset defaults' button
+		const defaultsItem = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<span class="buttons-title">Reset ${scriptVanity.name} Settings</span>` });
+		defaultsItem.appendChild(skeleton.settingButton('refresh', 'Reset Defaults', e => { userscriptSettingsResetDefaults(userscript.name.replace(/.js$/u, '') ?? userscriptCategoryID, userScriptDefinedOptions, userscriptCategoryID, brokenSettings); }));
+		renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(defaultsItem);
+		renderReadyData.renderedSettings++;
+	}
 
 	return renderReadyData;
 }
 
+/**
+ * The function used to filter settings to match the search term
+ * @param setting The setting that may be filtered out
+ * @param query The search term
+ * @returns Whether or not the setting meets the search term
+ */
+function settingSearchFilter(setting: RenderReadySetting, query: string) {
+	return `${setting.title}${setting.desc ?? ""}`.toLowerCase().includes(query);
+}
+
+/**
+ * HTML Element that holds all of crankshaft's setting elements
+ */
+const crankshaftSettingsHolder = createElement('div', {
+	class: ['Crankshaft-settings']
+})
 export function renderSettings() {
-	// do the settingElem class instances still exist after we close settings?
-	const settHolder = document.getElementById('settHolder');
-	settHolder.textContent = '';
+	const filter = ((document.getElementById('settSearch') as (HTMLInputElement | undefined))?.value ?? "").toLowerCase();
+	Array.from(document.querySelectorAll(".setHed")).filter(element => element.innerHTML === "No settings found").forEach(element => element.remove());
 
-	settHolder.classList.add('Crankshaft-settings');
+	crankshaftSettingsHolder.remove();
+	crankshaftSettingsHolder.innerHTML = "";
 
-	settHolder.appendChild(skeleton.catHedElem(categoryNames[0].name));
-	settHolder.appendChild(skeleton.catBodElem(categoryNames[0].cat, skeleton.notice('These settings need a client restart to work.')));
+	const settings: RenderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal').filter((setting) => {return settingSearchFilter(setting, filter)});
 
-	const csSettings = new DocumentFragment();
-	const settings: RenderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal');
+	// Add the basic client settings element whenever client settings are rendered
+	if (settings.filter(setting => setting.cat === 0).length === 0) {
+		crankshaftSettingsHolder.appendChild(skeleton.catHedElem(categoryNames[0].name));
+		crankshaftSettingsHolder.appendChild(skeleton.catBodElem(categoryNames[0].cat, ''));
+	}
 
 	for (const setObj of settings) {
 		const setElem = new SettingElem(setObj);
@@ -663,32 +705,39 @@ export function renderSettings() {
 			const cat = categoryNames[setObj.cat];
 
 			// create the given category if it doesen't exist
-			if (csSettings.querySelector(`.${cat.cat}`) === null) {
-				csSettings.appendChild(skeleton.catHedElem(cat.name));
-				csSettings.appendChild(skeleton.catBodElem(cat.cat, ('note' in cat) ? skeleton.notice(cat.note) : ''));
+			if (crankshaftSettingsHolder.querySelector(`.${cat.cat}`) === null) {
+				crankshaftSettingsHolder.appendChild(skeleton.catHedElem(cat.name));
+				crankshaftSettingsHolder.appendChild(skeleton.catBodElem(cat.cat, ('note' in cat) ? skeleton.notice(cat.note) : ''));
 			}
 
 			// add to that category
-			csSettings.querySelector(`.${cat.cat}`).appendChild(settElemMade);
+			crankshaftSettingsHolder.querySelector(`.${cat.cat}`).appendChild(settElemMade);
 		} else {
 			// add to default category
-			csSettings.querySelector('.setBodH.mainSettings').appendChild(settElemMade);
+			crankshaftSettingsHolder.querySelector('.setBodH.mainSettings').appendChild(settElemMade);
 		}
 	}
 
 	if (userPrefs.userscripts) {
-		csSettings.appendChild(skeleton.catHedElem('Userscripts'));
+		/**
+		 * Turn On/Off Userscripts settings header
+		 */
+		const userscriptToggleHeadingElement = skeleton.catHedElem('Userscripts');
+
+		/**
+		 * Turn On/Off Userscripts settings body element
+		 */
+		let userscriptToggleBodyElement: HTMLElement;
 		if (su.userscripts.length > 0) {
-			csSettings.appendChild(skeleton.catBodElem('userscripts', skeleton.notice('NOTE: refresh page to see changes', { iconHTML: skeleton.refreshIcon('refresh-icon') })));
+			userscriptToggleBodyElement = skeleton.catBodElem('userscripts', skeleton.notice('NOTE: refresh page to see changes', { iconHTML: skeleton.refreshIcon('refresh-icon') }));
 		} else {
-			csSettings.appendChild(skeleton.catBodElem('userscripts', skeleton.notice('No userscripts...',
-				{ desc: `Go to the Crankshaft <a href="https://github.com/${repoID}#userscripts">README.md</a> to download some made by the client dev.` })));
+			userscriptToggleBodyElement = skeleton.catBodElem('userscripts', skeleton.notice('No userscripts...', { desc: `Go to the Crankshaft <a href="https://github.com/${repoID}#userscripts">README.md</a> to download some made by the client dev.` }));
 		}
 
 		// This array is used to store userscript settings HTML
-		const customUserScriptSettingsElems: DocumentFragment[] = [];
+		const customUserscriptSettingsDocumentFragments: DocumentFragment[] = [];
 
-		const userscriptSettings: RenderReadySetting[] = su.userscripts.map(userscript => {
+		const toggleUserscriptSettings: RenderReadySetting[] = su.userscripts.map(userscript => {
 			const customUserscriptSetting: RenderReadySetting = {
 				key: userscript.name.replace(/.js$/u, ''), // remove .js
 				title: userscript.name,
@@ -718,30 +767,33 @@ export function renderSettings() {
 					const settingCount = Object.keys(userscript.settings).length;
 					customUserscriptSetting.desc = `${customUserscriptSetting.desc} ${`&#8226; Uses ${settingCount} Custom Setting${settingCount === 1 ? '' : 's'}`}`;
 
-					const userscriptSettings = generateRenderReadyUserscriptSettings(userscript, { author: (scriptAuthor !== false) ? scriptAuthor : '', name: scriptName });
-					// Add fragment to array of userscript options.
-					customUserScriptSettingsElems.push(userscriptSettings.documentFragment);
+					// Last argument below is to make sure userscript settings are rendered if the script name itself is searched
+					const userscriptSettings = generateRenderReadyUserscriptSettings(userscript, { author: (scriptAuthor !== false) ? scriptAuthor : '', name: scriptName }, filter, `${scriptName}${scriptAuthor || ''}`.toLowerCase().includes(filter));
+					if (userscriptSettings.renderedSettings > 0) {
+						// Add fragment to array of userscript options.
+						customUserscriptSettingsDocumentFragments.push(userscriptSettings.documentFragment);
+					}
 				}
 			}
 			customUserscriptSetting.instant = !(userscript.unload === false);
 
 			return customUserscriptSetting;
-		});
+		}).filter((setting) => { return settingSearchFilter(setting, filter) });;
+
+		if (toggleUserscriptSettings.length > 0) {
+			// Add the userscript toggle settings to the settings container
+			for (const constructedUserscriptToggle of toggleUserscriptSettings) {
+				const userSet = new SettingElem(constructedUserscriptToggle);
+				userscriptToggleBodyElement.appendChild(userSet.elem);
+			}
+			crankshaftSettingsHolder.appendChild(userscriptToggleHeadingElement);
+			crankshaftSettingsHolder.appendChild(userscriptToggleBodyElement);
+		}
 
 		// Apply custom userscript options to the settings fragment
-		customUserScriptSettingsElems.forEach(fragment => { csSettings.appendChild(fragment); });
-		document.querySelector('.Crankshaft-settings').textContent = '';
-		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
-
-		const userScriptToggleElem = document.querySelector('.Crankshaft-settings .setBodH.userscripts');
-		for (const constructedUserscriptToggle of userscriptSettings) {
-			const userSet = new SettingElem(constructedUserscriptToggle);
-			userScriptToggleElem.appendChild(userSet.elem);
-		}
-	} else {
-		document.querySelector('.Crankshaft-settings').textContent = '';
-		document.querySelector('.Crankshaft-settings').append(csSettings); // append the DocumentFragment
+		customUserscriptSettingsDocumentFragments.forEach(fragment => { crankshaftSettingsHolder.appendChild(fragment); });
 	}
+	document.getElementById('settHolder').appendChild(crankshaftSettingsHolder); // append the holder to the DOM
 
 	function toggleCategory(me: Element) {
 		const sibling = me.nextElementSibling;
@@ -752,8 +804,8 @@ export function renderSettings() {
 		else iconElem.innerHTML = 'keyboard_arrow_down';
 	}
 
-	const settHeaders = [...document.querySelectorAll('.Crankshaft-setHed')];
-	settHeaders.forEach(header => {
+	const settingCategoryHeaders = [...document.querySelectorAll('.Crankshaft-setHed')];
+	settingCategoryHeaders.forEach(header => {
 		const collapseCallback = () => { toggleCategory(header); };
 		try { header.removeEventListener('click', collapseCallback); } catch (e) { }
 		header.addEventListener('click', collapseCallback);

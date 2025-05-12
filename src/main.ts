@@ -52,7 +52,7 @@ const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
 const cssPath = pathJoin(configPath, 'css');
 const exampleCssPath = pathJoin(cssPath, 'example.css');
 
-app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Electron/12.2.3 Safari/537.36';
+app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.0 Electron/12.0.0-nightly.20201116 Safari/537.36';
 
 const settingsSkeleton = {
 	fpsUncap: true,
@@ -301,24 +301,27 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
 
-		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL(userPrefs.overrideURL ?? 'https://krunker.io'); return; }
+		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
 		if (userPrefs.discordRPC) {
-			import('discord-rpc').then(DiscordRPC => {
-				const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+			// @ts-ignore since this node version is older than webcrypto
+			globalThis.crypto = { randomUUID: () => '' };
+
+			import('minimal-discord-rpc').then(DiscordRPC => {
+				const rpc = new DiscordRPC.Client({ clientId: '988529967220523068' });
 				const startTimestamp = new Date();
-				const clientId = '988529967220523068';
 
 				function updateRPC({ details, state }: RPCargs) {
 					const data = {
 						details,
 						state,
-						startTimestamp,
-						largeImageKey: 'logo',
-						largeImageText: 'Playing Krunker',
-						instance: true
+						timestamps: { start: startTimestamp },
+						assets: {
+							large_image: 'logo',
+							large_text: 'Playing Krunker'
+						}
 					};
 					if (userPrefs.extendedRPC) {
 						Object.assign(data, {
@@ -328,11 +331,17 @@ app.on('ready', () => {
 							]
 						});
 					}
-					rpc.setActivity(data);
+					rpc.setActivity(data).catch(console.error);
 				}
 
-				rpc.login({ clientId }).catch(console.error); // login to the RPC
-				mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
+				rpc.login().catch(console.error); // login to the RPC
+
+				let initialized = false;
+				rpc.on('ready', () => {
+					if (initialized) return;
+					initialized = true;
+					mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
+				});
 				ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
 			});
 		}
@@ -366,7 +375,7 @@ app.on('ready', () => {
 				accelerator: 'F6',
 				click: () => {
 					if (userPrefs.matchmaker && userPrefs.matchmaker_F6) mainWindow.webContents.send('matchmakerRedirect', userPrefs);
-					else mainWindow.loadURL(userPrefs.overrideURL ?? 'https://krunker.io');
+					else mainWindow.loadURL('https://krunker.io');
 				}
 			},
 			{ label: 'Copy game link to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(mainWindow.webContents.getURL()); } },

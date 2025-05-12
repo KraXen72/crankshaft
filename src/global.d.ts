@@ -66,7 +66,7 @@ interface Window {
 		genList: Function;
 		toggleType: Function;
 		getSettings: Function;
-
+		searchList: Function;
 	}, ...Object[]];
 
 	// crankshaft's stuff

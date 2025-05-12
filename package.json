@@ -1,6 +1,6 @@
 {
 	"name": "crankshaft-next",
-	"version": "1.9.0",
+	"version": "1.9.1",
 	"description": "Crankshaft Krunker Client by KraXen72",
 	"main": "./app/main.js",
 	"scripts": {
@@ -11,7 +11,10 @@
 		"watch": "node esbuilder.js --watch",
 		"dev": "concurrently --kill-others \"node esbuilder.js --watch\" \"electron .\"",
 		"testbuild": "pnpm run build && electron .",
-		"testbuild-nv": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
+		"testbuild-nv": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
+		"testbuild-nv-gl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
+		"testbuild-nv-gl-wl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 __GLX_VENDOR_LIBRARY_NAME=nvidia electron --enable-features=UseOzonePlatform --ozone-platform=wayland .",
+		"testbuild-nv-wl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia  electron --enable-features=UseOzonePlatform --ozone-platform=wayland .",
 		"dist": "pnpm run build && electron-builder",
 		"release": "pnpm run build && electron-builder --publish always",
 		"lint": "eslint .",
@@ -29,7 +32,6 @@
 		"url": "https://github.com/KraXen72/crankshaft.git"
 	},
 	"devDependencies": {
-		"@types/discord-rpc": "^4.0.9",
 		"concurrently": "^9.1.2",
 		"conventional-changelog-cli": "^5.0.0",
 		"electron": "npm:electron-nightly@37.0.0-nightly.20250328",
@@ -42,10 +44,15 @@
 	},
 	"dependencies": {
 		"compare-versions": "^6.1.0",
-		"discord-rpc": "^4.0.1",
+		"minimal-discord-rpc": "^1.0.2",
 		"urlpattern-polyfill": "^10.0.0"
 	},
 	"pnpm": {
-		"onlyBuiltDependencies": ["electron", "esbuild", "register-scheme"]
+		"onlyBuiltDependencies": [
+			"electron",
+			"electron-nightly",
+			"esbuild",
+			"register-scheme"
+		]
 	}
 }
