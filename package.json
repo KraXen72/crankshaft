@@ -2,7 +2,6 @@
 	"name": "crankshaft-next",
 	"version": "1.9.1",
 	"description": "Crankshaft Krunker Client by KraXen72",
-	"main": "./app/main.js",
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"postinstall": "electron-builder install-app-deps",
