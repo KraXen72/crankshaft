@@ -14,6 +14,7 @@
 ![splash](assets/blank_splash.png)  
   
 ## client features
+
 - very good performance with additional performance enhancing settings
 - highly customisable, many different settings
 - _hides_ ads by default (can be disabled)
@@ -26,6 +27,7 @@
 - maintained & open source
   
 ## quality of life
+
 - all client specific **features can be turned off** to ensure **maximum performance**
   - once a feature is disabled, none of it code runs
   - for example, while 'Discord RPC' is off, crankshaft does not even import the [discord-rpc](https://github.com/discordjs/RPC) library.
@@ -64,10 +66,12 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 - `F12`: devtools (alternative hotkey)
 
 ## matchmaker
+
 a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6` 
 ![matchmaker](./assets/matchmaker_screenshot.png)
 
 ## building from source
+
 1. **you have to have [git](https://git-scm.com/downloads), [nodejs](https://nodejs.org/en/download/), and [pnpm](https://pnpm.io/installation) installed**.
 2. **installation**:
    - `git clone https://github.com/KraXen72/crankshaft`
@@ -76,6 +80,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 3. **building from source**: `pnpm dist`
   
 ### contributing
+
 1. follow previous steps 1 & 2
 2. make your changes + running from source: `pnpm start`/`pnpm dev` (rebuilds on changes, refresh krunker with `F6`)
    - make sure to run the code through the configured eslint before contributing. (vs code will enable it if you have the extension)
@@ -85,6 +90,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.
   
 #### wanted/potential features
+
 - here are some features i wanted to add, but don't have the time to
 - if you're looking to contribute, feel free to open pr's for these
 - [ ] **Add a new setting type: Keybind**
@@ -105,6 +111,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
   - honestly good luck since this client uses an ancient electron version due to all the newer ones having a bug that causes aim freeze in krunker
 
 ### credits
+
 - [Creepycats](https://github.com/creepycats) released [Gatoclient](https://github.com/Gatohost/gatoclient), which was based on top of [idkr](https://github.com/idkr-client/idkr).
 - Crankshaft was built on top of [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite), an `app.asar` mod optimizing Gatoclient by [LukeTheDuke](https://github.com/LukeTheDuke240).
 - Very little code remains, as Crankshaft was rewritten in typescript & more features were added.
@@ -115,6 +122,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
   - [Tae](https://github.com/whuuayu) - awesome logo for the client <3
 
 ## support development
+
 [![Recurring donation via Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/kraxen72)
   
 You can support ongoing development & maintainance by donating. All donations are highly appreciated! <3
