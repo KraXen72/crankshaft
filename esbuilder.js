@@ -36,7 +36,7 @@ const buildOptions = {
 	metafile: metaFile,
 	format: 'cjs',
 	platform: 'node',
-	target: ["node22", "chrome136"], // electron 12.2.3
+	target: ["node22", "chrome136"], // electron 37.0.0-nightly.20250328
 	outdir: 'app',
 	tsconfig: 'tsconfig.json',
 	external: ["electron"]
@@ -51,7 +51,7 @@ async function watch(extraOptions) {
 }
 
 if (watching) {
-	watch({ plugins: [ buildLogger ] })
+	watch({ plugins: [buildLogger] })
 } else {
 	const result = esbuild.buildSync(buildOptions)
 	if (metaFile) {

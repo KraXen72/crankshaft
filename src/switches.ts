@@ -22,6 +22,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 		console.log('Removed useless features');
 	}
+
 	if (userPrefs.safeFlags_helpfulFlags) {
 		app.commandLine.appendSwitch('enable-javascript-harmony');
 		app.commandLine.appendSwitch('enable-future-v8-vm-features');
@@ -36,6 +37,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 		console.log('Applied helpful flags');
 	}
+
 	if (userPrefs.experimentalFlags_increaseLimits) {
 		app.commandLine.appendSwitch('renderer-process-limit', '100');
 		app.commandLine.appendSwitch('max-active-webgl-contexts', '100');
@@ -44,6 +46,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 		console.log('Applied flags to increase limits');
 	}
+
 	if (userPrefs.experimentalFlags_lowLatency) {
 		app.commandLine.appendSwitch('enable-highres-timer'); // supposedly lowers latency
 		app.commandLine.appendSwitch('enable-quic'); // enables an experimental low-latency protocol
@@ -51,6 +54,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 		console.log('Applied latency-reducing flags');
 	}
+
 	if (userPrefs.experimentalFlags_experimental) {
 		// do they crash the game? not for me. do they actually help? ¯\_(ツ)_/¯
 		app.commandLine.appendSwitch('disable-low-end-device-mode');
@@ -65,6 +69,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 		console.log('Enabled Experiments');
 	}
+
 	if (userPrefs.safeFlags_gpuRasterizing) {
 		// do they crash the game? not for me. do they actually help? yeah kind of. depending on your gpu etc.
 		app.commandLine.appendSwitch('enable-gpu-rasterization');
@@ -94,6 +99,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 			console.log(`Using Angle: ${userPrefs['angle-backend']}`);
 		}
 	}
+
 	if (userPrefs.inProcessGPU) {
 		app.commandLine.appendSwitch('in-process-gpu');
 		console.log('In Process GPU is active');

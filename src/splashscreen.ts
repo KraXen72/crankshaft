@@ -162,5 +162,4 @@ const possibleSplashFlavors: string[] = [
 ];
 
 const splashFlavor = possibleSplashFlavors[Math.floor(Math.random() * possibleSplashFlavors.length)];
-
 export { splashFlavor };

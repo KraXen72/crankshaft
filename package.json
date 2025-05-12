@@ -2,6 +2,7 @@
 	"name": "crankshaft-next",
 	"version": "1.9.1",
 	"description": "Crankshaft Krunker Client by KraXen72",
+	"main": "./app/main.js",
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"postinstall": "electron-builder install-app-deps",
@@ -13,7 +14,7 @@
 		"testbuild-nv": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
 		"testbuild-nv-gl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
 		"testbuild-nv-gl-wl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 __GLX_VENDOR_LIBRARY_NAME=nvidia electron --enable-features=UseOzonePlatform --ozone-platform=wayland .",
-		"testbuild-nv-wl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia  electron --enable-features=UseOzonePlatform --ozone-platform=wayland .",
+		"testbuild-nv-wl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia electron --enable-features=UseOzonePlatform --ozone-platform=wayland .",
 		"dist": "pnpm run build && electron-builder",
 		"release": "pnpm run build && electron-builder --publish always",
 		"lint": "eslint .",
@@ -34,10 +35,10 @@
 		"concurrently": "^9.1.2",
 		"conventional-changelog-cli": "^5.0.0",
 		"electron": "npm:electron-nightly@37.0.0-nightly.20250328",
-		"electron-builder": "23.6.0",
+		"electron-builder": "26.0.15",
 		"esbuild": "^0.25.1",
-		"eslint": "^8.56.0",
-		"eslint-config-airbnb-typescript": "^17.1.0",
+		"eslint": "^9.26.0",
+		"eslint-config-airbnb-typescript": "^18.0.0",
 		"eslint-config-raven": "^1.0.3",
 		"eslint-plugin-import": "^2.29.1"
 	},
@@ -47,6 +48,10 @@
 		"urlpattern-polyfill": "^10.0.0"
 	},
 	"pnpm": {
-		"onlyBuiltDependencies": ["electron", "esbuild", "register-scheme"]
+		"onlyBuiltDependencies": [
+			"electron",
+			"esbuild",
+			"register-scheme"
+		]
 	}
 }

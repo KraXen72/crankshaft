@@ -49,7 +49,6 @@ type SettingsTab = {
 
 // a shim of krunker's modified window object
 interface Window {
-
 	// krunker's stuff
 	OffCliV: boolean;
 	getGameActivity: Function;
@@ -205,7 +204,6 @@ type RPCargs = { details: string, state: string };
  * this should be consumed as `Partial<GameInfo>` with fallbacks from elements for properties you are using 
  */
 interface GameInfo {
-
 	/** example: FRA:h83cx */
 	id: string,
 

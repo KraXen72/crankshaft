@@ -237,14 +237,14 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 applyCommandLineSwitches(userPrefs);
 
 if (userPrefs.resourceSwapper) {
-	protocol.registerSchemesAsPrivileged([{
+	protocol.registerSchemesAsPrivileged([ {
 		scheme: 'krunker-resource-swapper',
 		privileges: {
 			secure: true,
 			corsEnabled: true,
 			bypassCSP: true
 		}
-	}]);
+	} ]);
 }
 
 // Listen for app to get ready
@@ -474,8 +474,6 @@ app.on('ready', () => {
 			}
 		}
 	});
-
-	// console.log(readFileSync(pathJoin($assets, 'blockFilters.txt'), { encoding: 'utf-8' }));
 
 	if (userPrefs.resourceSwapper || userPrefs.hideAds === 'block') {
 		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow,

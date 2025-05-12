@@ -63,6 +63,7 @@ ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
 					damage: rowChildren[6].innerText
 				});
 			}
+
 			return returnObj;
 		});
 
@@ -331,7 +332,6 @@ function patchSettings(_userPrefs: UserPrefs) {
 			selectedTab = settingsWindow.tabIndex;
 
 			safeRenderSettings();
-
 			return result;
 		};
 

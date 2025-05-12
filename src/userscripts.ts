@@ -45,7 +45,6 @@ const parseMetadata = (meta: string) => meta.split(/[\r\n]/u)
 // this could be moved into the ipcRenderer eventlistener but i don't like the idea of a class existing only locally in that arrow function...
 /** class for userscripts */
 class Userscript implements IUserscriptInstance {
-
 	name: string;
 
 	fullpath: string;

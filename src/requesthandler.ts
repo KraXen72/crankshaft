@@ -9,7 +9,6 @@ import { URLPattern } from 'urlpattern-polyfill';
 const TARGET_GAME_DOMAIN = 'krunker.io';
 
 export default class RequestHandler {
-
 	private browserWindow: Electron.BrowserWindow;
 
 	private swapperEnabled: boolean;
