@@ -13,7 +13,7 @@
 
 ![splash](assets/blank_splash.png)  
   
-## client features
+## Client features
 
 - very good performance with additional performance enhancing settings
 - highly customisable, many different settings
@@ -26,7 +26,7 @@
 - built-in hotkeys: [more about them here](#hotkeys)
 - maintained & open source
   
-## quality of life
+## Quality of life
 
 - all client specific **features can be turned off** to ensure **maximum performance**
   - once a feature is disabled, none of it code runs
@@ -40,7 +40,7 @@
 - no-compromise mac, linux and windows support
 - only 4 dependencies
 
-## userscripts
+## Userscripts
 
 - any `.js` file in `%APPDATA%/crankshaft/config/scripts` will be considered a userscript and executed if enabled in settings.
 - There are a few official/example userscripts:
@@ -53,7 +53,7 @@ If you want to write a userscript or learn more about them, read the [Documentat
 > **Use userscripts at your own risk**, the author(s) of this client are **not responsible for any damage done** with userscripts because the user is the author of the script.
 > **Do not write or use any userscripts which would give the user a competitive advantage.**
   
-## hotkeys
+## Hotkeys
 
 Press `Alt` to show electron menu. Here you can find all hotkeys.  
 standard hotkeys like zooming, copying/pasting and devtools also included.  
@@ -65,9 +65,9 @@ standard hotkeys like zooming, copying/pasting and devtools also included.
 - `Ctrl+F7`: join game from clipboard
 - `F12`: devtools (alternative hotkey)
 
-## matchmaker
+## Matchmaker
 
-a customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6` 
+A customisable matchmaker (with GUI settings!) that you can use alongside/instead of the regular `F6` 
 ![matchmaker](./assets/matchmaker_screenshot.png)
 
 ## building from source
@@ -79,7 +79,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
    - `pnpm i`
 3. **building from source**: `pnpm dist`
   
-### contributing
+### Contributing
 
 1. follow previous steps 1 & 2
 2. make your changes + running from source: `pnpm start`/`pnpm dev` (rebuilds on changes, refresh krunker with `F6`)
@@ -91,8 +91,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
   
 #### wanted/potential features
 
-- here are some features i wanted to add, but don't have the time to
-- if you're looking to contribute, feel free to open pr's for these
+Here are some features I wanted to add, but don't have the time to (if you're looking to contribute, feel free to open pr's for these):
 - [ ] **Add a new setting type: Keybind**
   - after clicking it, it would wait until a keypress that isn't esc & register it
   - there would be a reset button to `[none]` next to the setting input
@@ -110,18 +109,18 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
   - i tried to add this once and failed.
   - honestly good luck since this client uses an ancient electron version due to all the newer ones having a bug that causes aim freeze in krunker
 
-### credits
+### Credits
 
 - [Creepycats](https://github.com/creepycats) released [Gatoclient](https://github.com/Gatohost/gatoclient), which was based on top of [idkr](https://github.com/idkr-client/idkr).
 - Crankshaft was built on top of [Gatoclient lite](https://github.com/LukeTheDuke240/gatoclient-lite), an `app.asar` mod optimizing Gatoclient by [LukeTheDuke](https://github.com/LukeTheDuke240).
 - Very little code remains, as Crankshaft was rewritten in typescript & more features were added.
 - Gatoclient was later rewritten, implementing some code from Crankshaft too.
-- **other acknowledgments**
+- **Other acknowledgments**
   - [wa/paintingofblue](https://github.com/paintingofblue) - matchmaker implementation
   - [Commander/asger-finding](https://github.com/asger-finding) (AKC client) - resource swapper implementation
   - [Tae](https://github.com/whuuayu) - awesome logo for the client <3
 
-## support development
+## Support development
 
 [![Recurring donation via Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/kraxen72)
   
