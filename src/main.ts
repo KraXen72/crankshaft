@@ -52,7 +52,7 @@ const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
 const cssPath = pathJoin(configPath, 'css');
 const exampleCssPath = pathJoin(cssPath, 'example.css');
 
-app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.0 Electron/12.0.0-nightly.20201116 Safari/537.36';
+app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7067.0 Electron/37.0.0-nightly.20250328 Safari/537.36';
 
 const settingsSkeleton = {
 	fpsUncap: true,
@@ -237,14 +237,14 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 applyCommandLineSwitches(userPrefs);
 
 if (userPrefs.resourceSwapper) {
-	protocol.registerSchemesAsPrivileged([ {
+	protocol.registerSchemesAsPrivileged([{
 		scheme: 'krunker-resource-swapper',
 		privileges: {
 			secure: true,
 			corsEnabled: true,
 			bypassCSP: true
 		}
-	} ]);
+	}]);
 }
 
 // Listen for app to get ready
