@@ -4,8 +4,7 @@ import { app } from 'electron';
 export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 	// app.commandLine.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations');
 	// app.commandLine.appendSwitch('ozone-platform', 'wayland');
-
-	// app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
+	app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
 
 	if (userPrefs.safeFlags_removeUselessFeatures) {
 		app.commandLine.appendSwitch('disable-breakpad');
