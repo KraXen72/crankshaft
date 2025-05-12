@@ -69,6 +69,7 @@ export default class RequestHandler {
 				if (swapResourse) {
 					const path = new URL(details.url).pathname;
 					const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path);
+
 					// Redirect to the local resource.
 					return callback({ redirectURL: `krunker-resource-swapper:/${resultPath}` });
 				}
