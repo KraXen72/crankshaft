@@ -1,5 +1,5 @@
 import { strippedConsole } from './preload';
-import { secondsToTimestring } from './utils';
+import { createElement, secondsToTimestring } from './utils';
 
 // eslint-disable-next-line max-len
 export const MATCHMAKER_GAMEMODES = ['Free for All', 'Team Deathmatch', 'Hardpoint', 'Capture the Flag', 'Parkour', 'Hide & Seek', 'Infected', 'Race', 'Last Man Standing', 'Simon Says', 'Gun Game', 'Prop Hunt', 'Boss Hunt', 'Classic FFA', 'Deposit', 'Stalker', 'King of the Hill', 'One in the Chamber', 'Trade', 'Kill Confirmed', 'Defuse', 'Sharp Shooter', 'Traitor', 'Raid', 'Blitz', 'Domination', 'Squad Deathmatch', 'Kranked FFA', 'Team Defender', 'Deposit FFA', 'Chaos Snipers', 'Bighead FFA'];
@@ -29,34 +29,32 @@ function decideMatchmakerDecision(accept: boolean) {
 const popupContainerID = "matchmakerPopupContainer";
 
 // Create popup element
-const popupElement = document.createElement('div');
-popupElement.id = popupContainerID;
+const popupElement = createElement('div', { id: popupContainerID });
 
-const popupTitle = document.createElement('div');
-popupTitle.id = "matchmakerPopupTitle";
+const popupTitle = createElement('div', { id: "matchmakerPopupTitle" });
 popupElement.appendChild(popupTitle);
 
-const popupDescription = document.createElement('div');
-popupDescription.id = "matchmakerPopupDescription";
+const popupDescription = createElement('div', { id: "matchmakerPopupDescription" });
 popupElement.appendChild(popupDescription);
 
-const popupOptions = document.createElement('div');
-popupOptions.id = "matchmakerPopupOptions";
+const popupOptions = createElement('div', { id: "matchmakerPopupOptions" });
 
 const confirmKey = "Enter";
-const popupConfirmOption = document.createElement('div');
-popupConfirmOption.className = "matchmakerPopupButton bigShadowT";
-popupConfirmOption.id = "matchmakerConfirmButton";
-popupConfirmOption.innerText = `Join`;
-popupConfirmOption.setAttribute('onmouseenter', 'playTick()'); // This is to play the little krunker 'tick' noise when hovering over the button.
+const popupConfirmOption = createElement('div', {
+	class: ["matchmakerPopupButton", "bigShadowT"],
+	id: "matchmakerConfirmButton",
+	text: "Join",
+	onmouseenter: "playTick()" // This is to play the little krunker 'tick' noise when hovering over the button.
+})
 popupConfirmOption.addEventListener('click', () => { decideMatchmakerDecision(true) });
 
 const cancelKey = "Escape";
-const popupCancelOption = document.createElement('div');
-popupCancelOption.className = "matchmakerPopupButton bigShadowT";
-popupCancelOption.id = "matchmakerCancelButton";
-popupCancelOption.innerText = `Cancel`;
-popupCancelOption.setAttribute('onmouseenter', 'playTick()'); // This is to play the little krunker 'tick' noise when hovering over the button.
+const popupCancelOption = createElement('div', {
+	class: ["matchmakerPopupButton", "bigShadowT"],
+	id: "matchmakerCancelButton",
+	text: "Cancel",
+	onmouseenter: "playTick()" // This is to play the little krunker 'tick' noise when hovering over the button.
+})
 popupCancelOption.addEventListener('click', () => { decideMatchmakerDecision(false) });
 
 popupOptions.appendChild(popupConfirmOption);
