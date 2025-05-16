@@ -165,9 +165,13 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	const splashScreenCSSInjectionID = 'Crankshaft-splash-css';
 	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
 	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
+	const backPortedFixesCSSInjectionID = 'Crankshaft-ported-css';
 
 	const settCss = readFileSync(pathJoin($assets, 'settings.css'), { encoding: 'utf-8' });
 	injectSettingsCSS(settCss, customSettingsCSSInjectionID);
+
+	const backportedCss = readFileSync(pathJoin($assets, 'portedCssRules.css'), { encoding: 'utf-8' });
+	injectSettingsCSS(backportedCss, backPortedFixesCSSInjectionID);
 
 	if (matchmaker) {
 		const matchmakerCss = readFileSync(pathJoin($assets, 'matchmaker.css'), { encoding: 'utf-8' });
