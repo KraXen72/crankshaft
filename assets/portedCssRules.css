@@ -1,0 +1,80 @@
+.bpCardRarityLabel span {
+    padding-top: 4px;
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 100%;
+    letter-spacing: 0.3px;
+    text-shadow: -1px -1px 0 #202020, 1px -1px 0 #202020, -1px 1px 0 #202020, 1px 1px 0 #202020, -1px -2px 0 #202020, 2px -2px 0 #202020, -2px 2px 0 #202020, 2px 2px 0 #202020;
+}
+
+.bpLevelNum span {
+    color: #fff;
+    padding-top: 8px;
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%;
+    letter-spacing: 0.8px;
+    text-shadow: -1px -1px 0 #202020, 1px -1px 0 #202020, -1px 1px 0 #202020, 1px 1px 0 #202020, -2px -2px 0 #202020, 2px -2px 0 #202020, -2px 2px 0 #202020, 2px 2px 0 #202020;
+}
+
+.bpSeasonTime span {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%;
+    color: #A8A8A8 !important;
+    text-align: center;
+}
+
+.bpLevelText span {
+    color: #fff;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%;
+    letter-spacing: 1.1px;
+}
+
+.bpClaimB span {
+    padding-top: 2px;
+    color: #fff;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+}
+
+.spinInfoText span {
+    font-size: 16px;
+    color: var(--white);
+    text-shadow: 0 0 10px #000;
+    margin-bottom: 2px;
+}
+
+.spinInfoText li {
+    font-size: 12px;
+    color: var(--white);
+    text-shadow: 0 0 10px #000;
+}
+
+.spinInfoText #spinEndTime {
+    font-size: 12px;
+    text-align: left;
+}
+
+.bpBtn span {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%;
+    letter-spacing: 0.7px;
+}
+
+.viewer-count > span:where(.svelte-fr7m0d) {
+    color: #ffffff;
+}
