@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
-import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID } from './utils';
+import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
 import { splashFlavor } from './splashscreen';
@@ -154,14 +154,22 @@ ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGam
 
 ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string, cssPath: string) => {
 	// eslint-disable-next-line
-	const { matchmaker, matchmaker_F6 } = _userPrefs;
+	const { matchmaker, matchmakerKey, overrideURL } = _userPrefs;
 
 	document.addEventListener('keydown', event => {
 		if (event.code === 'Escape') document.exitPointerLock();
-		if (event.code === 'F1' && matchmaker && !matchmaker_F6) ipcRenderer.send('matchmaker_requests_userPrefs');
+		if (keyboardEventMatchesCustomSetting(matchmakerKey as KeybindUserPref, event)) {
+			if (matchmaker) {
+				event.preventDefault();
+				event.stopPropagation();
+				ipcRenderer.send('matchmaker_requests_userPrefs');
+			} else {
+				window.location.href = `${overrideURL || 'https://krunker.io'}`;
+			}
+		}
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, userscripts, cssSwapper } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper } = _userPrefs;
 	const splashScreenCSSInjectionID = 'Crankshaft-splash-css';
 	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
 	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
@@ -187,11 +195,16 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		if (uiBaseElement === null) throw `Krunker didn't create #${splashMountElementID}`;
 
 		const splashBackground = createElement('div', { class: ['crankshaft-loading-background'] });
-		if (immersiveSplash) splashBackground.classList.add('immersive');
+		if (immersiveSplash) {
+			splashBackground.classList.add('immersive');
+			splashBackground.style.setProperty("background-color", `${immersiveSplashBackgroundColor}`);
+		}
+		
 		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
 			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })
 		});
+		logoSVG.style.setProperty('background-color', `${loadingSplashTitleCardBackgroundColor}`);
 
 		const clearSplash = (_observer: MutationObserver) => {
 			try {

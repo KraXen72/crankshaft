@@ -81,7 +81,12 @@ const settingsSkeleton = {
 	experimentalFlags_lowLatency: false,
 	experimentalFlags_experimental: false,
 	matchmaker: false,
-	matchmaker_F6: false,
+	matchmakerKey: {
+		shift: false,
+		alt: false,
+		ctrl: false,
+		key: "F1"
+	},
 	matchmaker_regions: [] as string[],
 	matchmaker_gamemodes: [] as string[],
 	matchmaker_minPlayers: 1,
@@ -89,7 +94,9 @@ const settingsSkeleton = {
 	matchmaker_minRemainingTime: 120,
 	hideAds: 'hide',
 	customFilters: false,
-	regionTimezones: false
+	regionTimezones: false,
+	immersiveSplashBackgroundColor: '#171717',
+	loadingSplashTitleCardBackgroundColor: '#363636'
 };
 
 const userPrefs = settingsSkeleton;
@@ -142,7 +149,7 @@ if (modifiedSettings) writeFileSync(settingsPath, JSON.stringify(userPrefs, null
 let mainWindow: BrowserWindow;
 let socialWindowReference: BrowserWindow;
 
-ipcMain.on('logMainConsole', (event, data) => { console.log(data); });
+ipcMain.on('logMainConsole', (event, ...data) => { console.log(...data); });
 
 // send usercript path to preload
 ipcMain.on('initializeUserscripts', () => {
@@ -371,14 +378,6 @@ app.on('ready', () => {
 		label: 'Game',
 		submenu: [
 			{ label: 'Reload this game', accelerator: 'F5', click: () => { mainWindow.reload(); } },
-			{
-				label: 'Find new Lobby',
-				accelerator: 'F6',
-				click: () => {
-					if (userPrefs.matchmaker && userPrefs.matchmaker_F6) mainWindow.webContents.send('matchmakerRedirect', userPrefs);
-					else mainWindow.loadURL(userPrefs.overrideURL || 'https://krunker.io');
-				}
-			},
 			{ label: 'Copy game link to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(mainWindow.webContents.getURL()); } },
 			{
 				label: 'Join game link from clipboard',
