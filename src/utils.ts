@@ -161,6 +161,7 @@ export  function objectsAreEqual(object1: {[key: string]: any}, object2: {[key: 
 
 	return true;
 }
+// Keyboard event settings use the first 3 characters for modifiers then the last characters for the event.code
 
 /**
  * Check if a KeyboardEvent matches a keybind setting.
@@ -169,7 +170,6 @@ export  function objectsAreEqual(object1: {[key: string]: any}, object2: {[key: 
  * @returns Whether or not the passed KeyboardEvent matches the keybind setting
  */
 export function keyboardEventMatchesCustomSetting(setting: KeybindUserPref, event: KeyboardEvent) {
-	if (document.activeElement.tagName === "INPUT") return; // Don't fire keybind inputs when in chat, typing something into a form, etc.
 	return event.key === setting.key && event.shiftKey === setting.shift && event.altKey === setting.alt && event.ctrlKey === setting.ctrl;
 }
 
@@ -179,7 +179,7 @@ export function keyboardEventMatchesCustomSetting(setting: KeybindUserPref, even
  * @returns A parsed string containing the modifiers and key of the keybind setting.
  */
 export function parseKeybindSettingDisplay(setting: KeybindUserPref) {
-	return (setting.shift ? 'Shift+' : '') + (setting.ctrl ? ((os.platform() === "darwin") ? 'CMD+' : 'CTRL+') : '') + (setting.alt ? 'Alt+' : '') + setting.key.toUpperCase();
+	return (setting.shift ? 'Shift+' : '') + (setting.ctrl ? 'Ctrl+' : '') + (setting.alt ? 'Alt+' : '') + setting.key.toUpperCase();
 }
 
 /**
