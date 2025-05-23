@@ -45,6 +45,10 @@ export function createElement(type: string, options: Object = {}) {
 			element.innerHTML = value;
 			return;
 		}
+		if (key === 'innerText') {
+			element.innerText = value;
+			return;
+		}
 		element.setAttribute(key, value);
 	});
 
@@ -131,4 +135,45 @@ export function secondsToTimestring(num: number) {
 export function haveSameContents(array1: any[], array2: any[]) {
 	for (const value of new Set([...array1, ...array2])) if (array1.filter(e => e === value).length !== array2.filter(e => e === value).length) return false;
 	return true;
+}
+
+// Keyboard event settings use the first 3 characters for modifiers then the last characters for the event.code
+
+/**
+ * Check if a KeyboardEvent matches a keybind setting.
+ * @param setting The value of the 'keybind' setting
+ * @param event The KeyboardEvent that needs to be matched
+ * @returns Whether or not the passed KeyboardEvent matches the keybind setting
+ */
+export function keyboardEventMatchesCustomSetting(setting: KeybindUserPref, event: KeyboardEvent) {
+	return event.key === setting.key && event.shiftKey === setting.shift && event.altKey === setting.alt && event.ctrlKey === setting.ctrl;
+}
+
+/**
+ * Get the display string of a keybind setting
+ * @param setting The value of the 'keybind' setting
+ * @returns A parsed string containing the modifiers and key of the keybind setting.
+ */
+export function parseKeybindSettingDisplay(setting: KeybindUserPref) {
+	return (setting.shift ? 'Shift+' : '') + (setting.ctrl ? 'Ctrl+' : '') + (setting.alt ? 'Alt+' : '') + setting.key.toUpperCase();
+}
+
+/**
+ * Parses a KeyboardEvent into a keybind setting
+ * @param event The captured KeyboardEvent
+ * @returns A 'keybind' setting value created from the KeyboardEvent.
+ */
+export function turnKeyboardEventIntoSettingValue(event: KeyboardEvent): KeybindUserPref {
+	if (event.key === "Shift" || event.key === "Control" || event.key === "Alt") return {
+		shift: false,
+		ctrl: false,
+		alt: false,
+		key: event.key
+	}
+	return {
+		shift: event.shiftKey,
+		ctrl: event.ctrlKey,
+		alt: event.altKey,
+		key: event.key
+	}
 }

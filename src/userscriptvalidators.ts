@@ -44,6 +44,15 @@ export function customSettingIsMalformed(customUserScriptSetting: UserscriptRend
 				settingIsMalformed = `'${setting.value}' is not a valid color. Use #ffffff`;
 			}
 			break;
+		case 'keybind':
+			if (typeof setting.value !== 'object') {
+				settingIsMalformed = `'${setting.value}' (${typeof setting.value}) is NOT a valid value for setting type '${setting.type}.'`;
+			} else if (Array.isArray(setting.value)) {
+				settingIsMalformed = `'${JSON.stringify(setting.value)}' (Array) is NOT a valid value for setting type '${setting.type}.'`;
+			} else if (typeof setting.value.alt !== "boolean" || typeof setting.value.ctrl !== "boolean" || typeof setting.value.shift !== "boolean" || typeof setting.value.key !== "string") {
+				settingIsMalformed = `'${JSON.stringify(setting.value)}' has invalid properties. Consult USERSCRIPTS.md for proper 'keybind' setting type value formation.`;
+			}
+			break;
 		default:
 			settingIsMalformed = `'${setting.type}' is NOT a valid setting type.`;
 			break;

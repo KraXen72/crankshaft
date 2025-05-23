@@ -342,6 +342,29 @@ this.settings = {
 ```
 ![Finished custom settings example](./assets/customsettings_finishedexample.png)
 
+### Custom Keybind Setting (version 1.9.2+)
+
+Beginning in version 1.9.2, crankshaft supports custom keybind options for userscripts.
+```js
+this.settings = {
+	"mySuperAwesomeCustomSetting": {
+		"title": "Example Keybind Setting", 
+        "desc": "Example setting with 'keybind' type", 
+        "type": "keybind", 
+        "value": {
+			shift: false,
+			ctrl: false,
+			alt: false,
+			key: 'g'
+		},
+        changed: (binding) => { this._console.log(binding) }
+	}
+}
+```
+The `shift`, `ctrl`, and `alt` properties of `value` control the key modifiers. You don't *have* to support these modifiers in your script, but crankshaft will still display those modifiers in the settings page.
+NOTE: The '`key`' property comes from [event.key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key), so make sure your handlers match `event.key`, NOT `event.code`.
+NOTE: You will have to create your own `KeyboardEvent` listeners in your script.
+
 Custom Settings Implementation Examples:
 [customsettingsexample.js](./assets/userscriptexamples/customsettingsexample.js)
 [customcsschanger.js](./assets/userscriptexamples/customcsschanger.js)
@@ -350,13 +373,13 @@ Custom Settings Implementation Examples:
 ## Tips / Notes
 
 ### removing an eventListener easily:
-if you want to easily remove an eventlistener, define it's callback function outside, like in the example (not using an arrow function).  
-### 'once' attribute on eventlisteners
-you might want to use the `once: true` eventlistener option, that way if you only run it at the page load, you don't need to remove it. 
+If you want to easily remove an eventListener, define its callback function outside, like in the example (not using an arrow function).  
+### 'once' attribute on eventListeners
+You might want to use the `once: true` eventListener option, that way if you only run it at the page load, you don't need to remove it. 
 ```js
 myElem.addEventListener("DOMContentLoaded", () => { /* ... */ }, { once: true })
 ```
-however, you shouldn't need to use this at all - `@run-at` is `document-end` by default. you can assume the dom elements will exist
+However, you shouldn't need to use this at all - `@run-at` is `document-end` by default. You can assume the dom elements will exist.
 
 - **It is highly recommended to always define an `unload` function if all your script does is add some css. It's really easy to do.**
 - You are encouraged to write your scripts in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) (start them with `"use strict"`), because it skips esbuild transforming your code.
@@ -366,16 +389,16 @@ however, you shouldn't need to use this at all - `@run-at` is `document-end` by 
 ## Enabling and testing your userscript
 
 ### crankshaft version 1.9.0+
-save your userscript to `<userData>/crankshaft/config/scripts/` as a file ending in `.js`,
-with `<userData>` being:
+Save your userscript to `<userData>/crankshaft/config/scripts/` as a file ending in `.js`,
+With `<userData>` being:
 - `%APPDATA%` on **Windows**
 - `$XDG_CONFIG_HOME or ~/.config` on **Linux**
 - `~/Library/Application Support` on **macOS**
 
 ### crankshaft version <1.9.0
-save your userscript to `Documents/crankshaft/scripts/` as a file ending in `.js`
+Save your userscript to `Documents/crankshaft/scripts/` as a file ending in `.js`
 
-1. in crankshaft settings, enable the setting *Userscript support* and re-launch the client
-2. in crankshaft settings > Userscripts, enable your userscript and refresh the page / F6 (find new game)
-  
-every time you make a change to your userscript, just refresh the page / F6 and you should see the changes.
+1. In crankshaft settings, enable the setting *Userscript support* and re-launch the client
+2. In crankshaft settings > Userscripts, enable your userscript and refresh the page (F5)
+
+Every time you make a change to your userscript, just refresh the page (F5) and you should see the changes.

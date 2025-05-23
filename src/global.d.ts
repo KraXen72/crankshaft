@@ -2,7 +2,14 @@ type UserPrefs = {
 	[preference: string]: UserPrefValue;
 };
 
-type UserPrefValue = boolean | string | string[] | number;
+type KeybindUserPref = {
+	shift: boolean,
+	alt: boolean,
+	ctrl: boolean,
+	key: string
+}
+
+type UserPrefValue = boolean | string | string[] | number | KeybindUserPref;
 
 interface UserscriptTracker {
 	[script: string]: boolean;
@@ -79,7 +86,7 @@ interface Window {
  */
 
 type Callbacks = 'normal' | 'userscript' | Function;
-type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'color' | 'num';
+type ValidTypes = 'bool' | 'heading' | 'text' | 'sel' | 'multisel' | 'color' | 'num' | 'keybind';
 
 interface SettingExtraButton {
 	icon: string,
@@ -109,6 +116,8 @@ interface SettingItemGeneric {
 
 // sel has to have an opts with a string array
 interface SelectSettingDescItem extends SettingItemGeneric { type: 'sel', opts?: string[] }
+
+interface KeybindSettingDescItem extends SettingItemGeneric { type: 'keybind' }
 
 interface MultiselectSettingDescItem extends SettingItemGeneric {
 	type: 'multisel',
