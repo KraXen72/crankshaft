@@ -2,7 +2,7 @@
 import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
-import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID } from './utils';
+import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
@@ -95,10 +95,12 @@ const settingsDesc: SettingsDesc = {
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
 	clientSplash: { title: 'Client Splash Screen', type: 'bool', safety: 0, cat: 1, refreshOnly: true },
 	immersiveSplash: { title: 'Immersive Splash Screen', type: 'bool', desc: 'Adds a background that covers the Krunker loading skeleton. Has no effect if Client Splash Screen is off.', safety: 0, cat: 1, refreshOnly: true },
+	immersiveSplashBackgroundColor: { title: 'Immersive Splash Screen BG Color', desc: 'Changes the color of the immersive splash screen background. Has no effect if Immersive Splash Screen is off.', safety: 0, cat: 1, refreshOnly: true, type: 'color'},
+	loadingSplashTitleCardBackgroundColor: { title: 'Splash Screen Title Card BG Color', desc: 'Changes the color of the immersive splash screen title card. Has no effect if Client Splash Screen is off.', safety: 0, cat: 1, refreshOnly: true, type: 'color' },
 	regionTimezones: { title: 'Region Picker Timezones', type: 'bool', desc: 'Adds local time to all region pickers', safety: 0, cat: 1, refreshOnly: true },
 
-	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: 'Configurable matchmaker. Default hotkey F1', safety: 0, cat: 2, refreshOnly: true },
-	matchmaker_F6: { title: 'F6 hotkey', type: 'bool', desc: 'Replace default \'New Lobby\' F6 hotkey with Matchmaker ', safety: 0, cat: 2 },
+	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: "Use the configurable matchmaker over krunker's matchmaker.", safety: 0, cat: 2, refreshOnly: true },
+	matchmakerKey: { title: 'Matchmaker Hotkey', type: 'keybind', desc: 'Change keybind for the matchmaker', safety: 0, cat: 2, refreshOnly: true },
 	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, instant: true },
 	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, instant: true },
 	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 480, safety: 0, cat: 2, instant: true },
@@ -351,6 +353,15 @@ class SettingElem {
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange'; // oninput works too, but will fire each frame the selector is dragged, causing performance drops. onchange will fire when the selector is closed, ultimately achieving the same effect.
 				break;
+			case 'keybind':
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
+					<label class="setting-input-wrapper">
+							<input class="s-update keybinddummyinput" type="text" />
+							<span class="keyIcon crankshaftKeyIcon">${ parseKeybindSettingDisplay(props.value as KeybindUserPref) }</span>
+					</label>`;
+				this.updateKey = 'value';
+				this.updateMethod = 'onchange';
+				break;
 			default:
 				// @ts-ignore
 				this.HTML = `<span class="setting-title">${sanitize(props.title)}</span><span>Unknown setting type</span>`;
@@ -392,10 +403,14 @@ class SettingElem {
 			updateUI(); // synchronize slider and number inputs visually
 		}
 
-		const value = dirtyValue; // so we don't accidentally mutate it later
+		if (this.props.type === "keybind") {
+			elem.querySelector('.keyIcon').innerHTML = parseKeybindSettingDisplay(JSON.parse(`${dirtyValue}`));
+		}
+
+		const value = (this.props.type == "keybind") ? JSON.parse(`${dirtyValue}`) : dirtyValue; // so we don't accidentally mutate it later
 
 		if (callback === 'normal') {
-			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}: ${value}`);
+			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}:`, value);
 			userPrefs[this.props.key] = value;
 			saveSettings();
 			if (this.props.key === 'hideAds') {
@@ -438,10 +453,10 @@ class SettingElem {
 						this.#disabled = true;
 					}
 				}
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}: ${value}`);
+				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}`, value);
 				su.userscriptTracker[userscript.name] = value;
 			} else {
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}: ${value}`);
+				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}`, value);
 				su.userscriptTracker[this.props.title] = value;
 			}
 			saveUserscriptTracker();
@@ -483,6 +498,15 @@ class SettingElem {
 			wrapper.appendChild(skeleton.settingButton(icon, text, callback, this.props.button.customTitle ?? void 0));
 		}
 		if (this.type === 'sel') wrapper.querySelector('select').value = String(this.props.value);
+
+		if (this.type === 'keybind') {
+			wrapper.querySelector('.keyIcon').addEventListener('mousedown', (event) => {
+				triggerKeybindSettingDialog(this);
+			})
+			// The reason we do this is to transmit the value when updating the value, since there's no <input> for JS objects themselves.
+			wrapper.querySelector('input').setAttribute("value", JSON.stringify(this.props.value));
+		}
+
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
 
 		// @ts-ignore
@@ -494,6 +518,135 @@ class SettingElem {
 		return wrapper; // return the element
 	}
 
+}
+
+let capturingKeybindSetting: false | SettingElem = false;
+
+// Construct keybind overlay
+const keybindSettingDialogElement = createElement('div', {
+	class: ['customKeybindSettingWrapper']
+})
+const keybindSettingDialogCard = createElement('div', {
+	class: ['customKeybindSettingDialogCard']
+})
+const keybindSettingDialogTitle = createElement('div', {
+	class: ['customKeybindSettingDialogTitle'],
+	innerText: 'Edit Keybind: Setting Name'
+})
+const keybindSettingDialogSubTitle = createElement('div', {
+	class: ['customKeybindSettingDialogSubTitle'],
+	innerHTML: 'Press any key on your keyboard. Press <code>Escape</code> to cancel.'
+})
+const keybindSettingDialogContent = createElement('div', {
+	class: ['customKeybindSettingDialogContent']
+})
+const keybindSettingDialogShiftIndicator = createElement('div', {
+	class: ['customKeybindSettingDialogIndicator'],
+	innerText: 'Shift'
+})
+const keybindSettingDialogCtrlIndicator = createElement('div', {
+	class: ['customKeybindSettingDialogIndicator'],
+	innerText: 'Control'
+})
+const keybindSettingDialogAltIndicator = createElement('div', {
+	class: ['customKeybindSettingDialogIndicator'],
+	innerText: 'Alt'
+})
+const keybindSettingDialogCancelButton = createElement('div', {
+	class: ['customKeybindSettingDialogCancelButton'],
+	innerText: 'Cancel'
+})
+keybindSettingDialogCancelButton.addEventListener('click', removeKeybindSettingDialog);
+
+keybindSettingDialogContent.appendChild(keybindSettingDialogShiftIndicator);
+keybindSettingDialogContent.appendChild(keybindSettingDialogCtrlIndicator);
+keybindSettingDialogContent.appendChild(keybindSettingDialogAltIndicator);
+
+keybindSettingDialogCard.appendChild(keybindSettingDialogCancelButton);
+keybindSettingDialogCard.appendChild(keybindSettingDialogTitle);
+keybindSettingDialogCard.appendChild(keybindSettingDialogSubTitle);
+keybindSettingDialogCard.appendChild(keybindSettingDialogContent);
+
+keybindSettingDialogElement.appendChild(keybindSettingDialogCard);
+
+/**
+ * Stores class name for active modifier elements
+*/
+const activeIndicatorClass = 'activeIndicator';
+
+/**
+ * The handler for key rebinding. This is where the setting is updated and the reset function is called.
+ * @param event KeyboardEvent that triggered the keybind dialog listener
+ */
+function keybindSettingDialogListener(event: KeyboardEvent) {
+	event.stopImmediatePropagation();
+	event.preventDefault();
+	if (capturingKeybindSetting !== false) {
+		if (event.key === "Escape") {
+			removeKeybindSettingDialog();
+		} else {
+			const capturedSetting = turnKeyboardEventIntoSettingValue(event);
+			// We transmit the change through the <input> element to keep the flow the same; there's no <input> for JS objects themselves.
+			capturingKeybindSetting.elem.querySelector('input').setAttribute("value", JSON.stringify(capturedSetting));
+			capturingKeybindSetting.update(capturingKeybindSetting.elem, capturingKeybindSetting.props.callback);
+			removeKeybindSettingDialog();
+		}
+	}
+}
+
+document.addEventListener('keydown', (event) => {
+	if (capturingKeybindSetting !== false) {
+		// These event stoppers are here to prevent other keys being accessed while rebinding something.
+		event.stopImmediatePropagation();
+		event.preventDefault();
+
+		switch (event.key) {
+			case "Control":
+				keybindSettingDialogCtrlIndicator.classList.add(activeIndicatorClass);
+				break;
+			case "Shift":
+				keybindSettingDialogShiftIndicator.classList.add(activeIndicatorClass);
+				break;
+			case "Alt":
+				keybindSettingDialogAltIndicator.classList.add(activeIndicatorClass);
+				break;
+			default:
+				break;
+		}
+	}
+})
+
+/**
+ * Resets the classLists of the key modifier elements
+ */
+function resetKeybindModifierIndicators() {
+	keybindSettingDialogCtrlIndicator.classList.remove(activeIndicatorClass);
+	keybindSettingDialogShiftIndicator.classList.remove(activeIndicatorClass);
+	keybindSettingDialogAltIndicator.classList.remove(activeIndicatorClass);
+}
+
+/**
+ * Removes the keybind dialog, resets the auxilary variable, and removes the event listener.
+ */
+function removeKeybindSettingDialog() {
+	resetKeybindModifierIndicators();
+	document.removeEventListener('keyup', keybindSettingDialogListener, true);
+	keybindSettingDialogElement.remove();
+	capturingKeybindSetting = false;
+}
+
+/**
+ * Shows the rebind dialog, element is the SettingElem that requires the dialog.
+ * @param element The setting that the dialog should use for rebinding.
+ */
+function triggerKeybindSettingDialog(element: SettingElem) {
+	if (capturingKeybindSetting === false) {
+		capturingKeybindSetting = element;
+		keybindSettingDialogTitle.innerText = `Edit Keybind: ${element.props.title}`;
+		resetKeybindModifierIndicators();
+		document.addEventListener('keyup', keybindSettingDialogListener, true);
+		document.getElementById("uiBase").appendChild(keybindSettingDialogElement);
+	}
 }
 
 /** a settings generation helper. has some skeleton elements and methods that make them. purpose: prevents code duplication */
@@ -546,7 +699,7 @@ const skeleton = {
 			case RefreshEnum.reloadApp:
 				return '<span class="restart-msg">Restart client fully to see changes</span>';
 			case RefreshEnum.refresh:
-				return `<span class="reload-msg">${skeleton.refreshIcon('refresh-icon')}Reload page with <code>F5</code> or <code>F6</code> to see changes</span>`;
+				return `<span class="reload-msg">${skeleton.refreshIcon('refresh-icon')}Reload page with <code>F5</code> or <code>CTRL + R</code> to see changes</span>`;
 			case RefreshEnum.notNeeded:
 			default:
 				return '';
@@ -630,6 +783,7 @@ function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, 
 					// We specifically apply the callback at the top level so that a userscript creator can't just define their own callback() and access the client directly through a userscript.
 					callback: function(this: { settingKey: string, prefsKey: string, changed: Function }, value: UserPrefs[keyof UserPrefs]) {
 						userscriptPreferences[this.prefsKey][this.settingKey] = value;
+						ipcRenderer.send('logMainConsole', `Custom userscript setting: recieved an update for key: '${this.settingKey}' from '${this.prefsKey}.js'`, value);
 						saveUserScriptSettings(this.prefsKey);
 						this.changed(value);
 					}.bind({ settingKey, prefsKey: userscriptPrefsKey, changed: setting.changed })

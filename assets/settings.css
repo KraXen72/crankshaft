@@ -332,6 +332,103 @@ input:checked+.advancedSlider:hover {
 .hiddenClasses-hideAds-bottomOffset { bottom: 80px !important; }
 #editorBtnM[src$="client.png"] { display: none; } /* don't promote official client in a custom client lol */
 
+.keybinddummyinput {
+	display: none;
+}
+
+.customKeybindSettingWrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 99999999;
+	background: rgba(0, 0, 0, 0.6);
+	pointer-events: all !important;
+}
+
+.customKeybindSettingDialogCard {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	min-width: 50em;
+	transform: translate(-50%, -50%);
+	background: #363636;
+	padding: 2.4em;
+	border-radius: 0.8em;
+	box-shadow: 1.1em 1.1em 0px black;
+	box-sizing: border-box;
+	border: 0.4em solid rgba(255, 255, 255, 0.2);
+}
+
+.customKeybindSettingDialogCancelButton {
+	color: var(--blue);
+	font-size: 1.4em;
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0.3em;
+	margin: 0.1em;
+}
+
+.customKeybindSettingDialogCancelButton:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.customKeybindSettingDialogTitle {
+	color: var(--crankshaft-gray);
+	white-space: nowrap;
+	font-size: 2.2em;
+	padding-right: 5em;
+}
+
+.customKeybindSettingDialogSubTitle {
+	color: var(--crankshaft-gray);
+	filter: brightness(0.7);
+	white-space: nowrap;
+	margin-right: 2.4em;
+	padding-bottom: 0.9em;
+	border-bottom: 0.2em solid;
+}
+
+.customKeybindSettingDialogSubTitle code {
+	color: var(--blue);
+}
+
+.customKeybindSettingDialogContent {
+	display: flex;
+	padding: 1.1em 0em 0em 0em;
+	font-size: 2em;
+}
+
+.customKeybindSettingDialogIndicator {
+	background: #212121;
+	flex-grow: 1;
+	width: 0px;
+	text-align: center;
+	margin: 0em 0.5em;
+	border: 0.2em solid rgba(255, 255, 255, 0.4);
+	padding: 0.3em;
+	font-size: 0.7em;
+	color: var(--crankshaft-gray);
+}
+
+.customKeybindSettingDialogIndicator.activeIndicator {
+	color: white;
+	background: var(--blue);
+}
+
+.keyIcon.crankshaftKeyIcon:hover {
+	transform: scale(1.25);
+	cursor: pointer;
+}
+
+.keyIcon.crankshaftKeyIcon {
+	display: inline-block;
+	transition: 0s;
+}
+
 /* Match Result Copy Button Styles */
 .matchResultButton {
 	position: absolute;
