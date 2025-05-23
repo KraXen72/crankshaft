@@ -15,9 +15,14 @@
   
 ## client features
 - very good performance with additional performance enhancing settings
+- unobtrusive
+  - no clan colors
+  - no watermarks
+  - all features can be disabled
 - highly customisable, many different settings
 - _hides_ ads by default (can be disabled)
-- resource swapper (css, sounds & all other assets)
+- resource swapper (sounds & all other assets)
+- css swapper
 - userscript support
 - discord RPC (gamemode, map, class & skin)
 - customisable matchmaker (Gamemode, Region, Min/Max players, Time)
@@ -26,17 +31,13 @@
 - maintained & open source
   
 ## quality of life
-- all client specific **features can be turned off** to ensure **maximum performance**
-  - once a feature is disabled, none of it code runs
-  - for example, while 'Discord RPC' is off, crankshaft does not even import the [discord-rpc](https://github.com/discordjs/RPC) library.
-- **written in typescript**
+- very lightweight
+  - only 100kb of javascript combined
+  - dependencies are carefully chosen (currently, there are 3)
+- **no-compromise mac, linux and windows support**
 - **secure:** `web security` is on, the `remote` module and `nodeIntegration` are disabled
 - splash screen is not a separate window, shows only while krunker is actually loading.
-- doesn't automatically open free spin urls in browser
-  - you can open them in a new window, in browser or not open them at all
 - Discord RPC: if enabled, only updates while you're not actually in game. Does not use `setInterval` like other clients.
-- no-compromise mac, linux and windows support
-- only 4 dependencies
 
 ## userscripts
 
@@ -87,10 +88,6 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 #### wanted/potential features
 - here are some features i wanted to add, but don't have the time to
 - if you're looking to contribute, feel free to open pr's for these
-- [ ] **Add a new setting type: Keybind**
-  - after clicking it, it would wait until a keypress that isn't esc & register it
-  - there would be a reset button to `[none]` next to the setting input
-  - allow userscripts to create this setting type
 - [ ] **Matchmaker: Map autocomplete**
   - create a simple typeahead/autocomplete for the matchmaker, where you can input maps (official ones)
     - you can get more info about maps from [this krunker api link](https://matchmaker.krunker.io/game-list?hostname=krunker.io) or the [client code](https://github.com/KraXen72/crankshaft/blob/master/src/matchmaker.ts)
@@ -110,6 +107,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 - Very little code remains, as Crankshaft was rewritten in typescript & more features were added.
 - Gatoclient was later rewritten, implementing some code from Crankshaft too.
 - **other acknowledgments**
+  - [All contriutors](https://github.com/KraXen72/crankshaft/graphs/contributors)
   - [wa/paintingofblue](https://github.com/paintingofblue) - matchmaker implementation
   - [Commander/asger-finding](https://github.com/asger-finding) (AKC client) - resource swapper implementation
   - [Tae](https://github.com/whuuayu) - awesome logo for the client <3
