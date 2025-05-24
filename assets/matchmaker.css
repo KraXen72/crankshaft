@@ -8,11 +8,15 @@
     }
 }
 
+.onGame #matchmakerPopupContainer {
+    opacity: 0 !important;
+}
+
 #matchmakerPopupContainer {
     position: absolute;
     top: 10em;
     left: 50%;
-    z-index: 10;
+    z-index: 10000000000000000000;
     box-sizing: border-box;
     width: 35em;
     aspect-ratio: 2.5/1;

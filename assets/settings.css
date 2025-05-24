@@ -444,6 +444,21 @@ input:checked+.advancedSlider:hover {
 	transform: scale(1.2);
 }
 
+.crankshaftKeybindConflict.hidden {
+	display: none;
+}
+
+.crankshaftKeybindConflict {
+	color: #ffad00;
+	font-size: 1.4em !important;
+	margin: 0.1em 0.6em;
+	box-sizing: border-box;
+	border: 2px solid;
+	padding: 0.1em 0.2em;
+	border-radius: 0.2em;
+	cursor: help;
+}
+
 /* Match Result Copy Button Styles */
 .matchResultButton {
 	position: absolute;
