@@ -136,13 +136,15 @@ const settingsDesc: SettingsDesc = {
 	regionTimezones: { title: 'Region Picker Timezones', type: 'bool', desc: 'Adds local time to all region pickers', safety: 0, cat: 1, refreshOnly: true },
 
 	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: "Use the configurable matchmaker over krunker's matchmaker.", safety: 0, cat: 2, refreshOnly: true },
-	matchmakerKey: { title: 'Matchmaker Hotkey', type: 'keybind', desc: 'Change keybind for the matchmaker', safety: 0, cat: 2, refreshOnly: true },
+	matchmakerKey: { title: 'Matchmaker Hotkey', type: 'keybind', desc: 'Change the hotkey for the matchmaker', safety: 0, cat: 2, refreshOnly: true },
 	matchmaker_openServerWindow: { title: 'Open Server Window On Cancel', type: 'bool', safety: 0, cat: 2, instant: true },
 	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, instant: true },
 	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, instant: true },
 	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 480, safety: 0, cat: 2, instant: true },
 	matchmaker_minPlayers: { title: 'Minimum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true },
 	matchmaker_maxPlayers: { title: 'Maximum players in Lobby', type: 'num', min: 0, max: 7, safety: 0, cat: 2, instant: true, desc: 'if you set the criteria too strictly, matchmaker won\'t find anything' },
+	matchmakerAcceptKey: { title: 'Matchmaker Accept Hotkey', type: 'keybind', desc: 'Change the hotkey that accepts a game from the custom matchmaker.', safety: 0, cat: 2, instant: true },
+	matchmakerCancelKey: { title: 'Matchmaker Cancel Hotkey', type: 'keybind', desc: 'Change the hotkey that rejects a game from the custom matchmaker.', safety: 0, cat: 2, instant: true },
 
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
 	overrideURL: { title: 'Override URL', desc: 'Useful for beta tests', type: 'text', placeholder: 'https://krunker.io', safety: 0, cat: 3 },
@@ -394,6 +396,7 @@ class SettingElem {
 				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
 					<label class="setting-input-wrapper crankshaftKeybindSettingWrapper">
 							<input class="s-update keybinddummyinput" type="text" />
+							<span class="material-icons crankshaftKeybindConflict" title="This keybind conflicts with '_'.">warning</span>
 							<span class="keyIcon crankshaftKeyIcon">${ parseKeybindSettingDisplay(props.value as KeybindUserPref) }</span>
 							<span class="material-icons crankshaftUnbindButton">delete_forever</span>
 					</label>`;
@@ -441,11 +444,17 @@ class SettingElem {
 			updateUI(); // synchronize slider and number inputs visually
 		}
 
-		if (this.props.type === "keybind") {
-			elem.querySelector('.keyIcon').innerHTML = parseKeybindSettingDisplay(JSON.parse(`${dirtyValue}`));
-		}
-
 		const value = (this.props.type == "keybind") ? JSON.parse(`${dirtyValue}`) : dirtyValue; // so we don't accidentally mutate it later
+
+		if (this.props.type === "keybind") {
+			elem.querySelector('.keyIcon').innerHTML = parseKeybindSettingDisplay(value);
+
+			// Calculate whether or not this conflicts with any other keybinds
+			if (callback === "normal") { // We don't care about userscript keybinds conflicting; that's outside of our scope.
+				const warningElement = elem.querySelector('.crankshaftKeybindConflict');
+				updateKeybindConflictDisplay(this.props.key, value, userPrefs[this.props.key] as KeybindUserPref, warningElement);
+			}
+		}
 
 		if (callback === 'normal') {
 			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}:`, value);
@@ -555,6 +564,11 @@ class SettingElem {
 					key: 'NONE'
 				})
 			})
+
+			if (this.props.callback === "normal") { // We don't care about userscript keybinds conflicting; that's outside of our scope.
+				const warningElement = wrapper.querySelector('.crankshaftKeybindConflict');
+				updateKeybindConflictDisplay(this.props.key, this.props.value as KeybindUserPref, this.props.value as KeybindUserPref, warningElement);
+			}
 		}
 
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
@@ -568,6 +582,35 @@ class SettingElem {
 		return wrapper; // return the element
 	}
 
+}
+
+/**
+ * Updates the displayed keybinding conflict elements
+ * @param key the object key of the setting that was changed
+ * @param value the value of the setting after the change
+ * @param oldValue the value of the setting before the change
+ * @param baseWarningElement the initiator's baseWarningElement
+ */
+function updateKeybindConflictDisplay(key: string, value: KeybindUserPref, oldValue: KeybindUserPref, baseWarningElement: Element) {
+	const conflictingOptions: string[] = [];
+	const warningElementsToModify: Element[] = [baseWarningElement];
+	Object.keys(settingsDesc).forEach((settingKey: keyof typeof settingsDesc) => {
+		// If the setting type is a keybind, and the setting isn't the initiator, and the keybind change matches another setting before/after the change
+		if (settingsDesc[settingKey].type === "keybind" && settingKey !== key && (objectsAreEqual(userPrefs[settingKey] as KeybindUserPref, value) || objectsAreEqual(userPrefs[settingKey] as KeybindUserPref, oldValue))) {
+			if (settingElementPairs[settingKey]) warningElementsToModify.push(settingElementPairs[settingKey].elem.querySelector('.crankshaftKeybindConflict'));
+			if (objectsAreEqual(userPrefs[settingKey] as KeybindUserPref, value)) conflictingOptions.push(settingsDesc[settingKey].title);
+		}
+	})
+	for (const warningElement of warningElementsToModify) {
+		if (warningElement) {
+			if (conflictingOptions.length > 0) {
+				warningElement.classList.remove('hidden');
+				warningElement.setAttribute("title", `This keybind conflicts with ${conflictingOptions.join(', ')}. Things may not work as intended.`)
+			} else {
+				warningElement.classList.add('hidden');
+			}
+		}
+	}
 }
 
 let capturingKeybindSetting: false | SettingElem = false;
@@ -585,7 +628,7 @@ const keybindSettingDialogTitle = createElement('div', {
 })
 const keybindSettingDialogSubTitle = createElement('div', {
 	class: ['customKeybindSettingDialogSubTitle'],
-	innerHTML: 'Press any key on your keyboard. Press <code>Escape</code> to cancel.'
+	innerHTML: 'Press any key on your keyboard. Press <code>Shift+Escape</code> to cancel.'
 })
 const keybindSettingDialogContent = createElement('div', {
 	class: ['customKeybindSettingDialogContent']
@@ -638,7 +681,7 @@ function keybindSettingDialogListener(event: KeyboardEvent) {
 	event.stopImmediatePropagation();
 	event.preventDefault();
 	if (capturingKeybindSetting !== false) {
-		if (event.key === "Escape") {
+		if (event.key === "Escape" && event.shiftKey) {
 			removeKeybindSettingDialog();
 		} else {
 			const capturedSetting = turnKeyboardEventIntoSettingValue(event);
@@ -890,12 +933,19 @@ function settingSearchFilter(setting: RenderReadySetting, query: string) {
 const crankshaftSettingsHolder = createElement('div', {
 	class: ['Crankshaft-settings']
 })
+
+/**
+ * Stores setting/element key pairs. Used for when setting changes affect different settings. (e.g. keybinding conflicts)
+ */
+let settingElementPairs: { [key: string]: SettingElem } = {};
+
 export function renderSettings() {
 	const filter = ((document.getElementById('settSearch') as (HTMLInputElement | undefined))?.value ?? "").toLowerCase();
 	Array.from(document.querySelectorAll(".setHed")).filter(element => element.innerHTML === "No settings found").forEach(element => element.remove());
 
 	crankshaftSettingsHolder.remove();
 	crankshaftSettingsHolder.innerHTML = "";
+	settingElementPairs = {};
 
 	const settings: RenderReadySetting[] = transformMarrySettings(userPrefs, settingsDesc, 'normal').filter((setting) => {return settingSearchFilter(setting, filter)});
 
@@ -907,6 +957,7 @@ export function renderSettings() {
 
 	for (const setObj of settings) {
 		const setElem = new SettingElem(setObj);
+		settingElementPairs[setObj.key] = setElem;
 		const settElemMade = setElem.elem;
 
 		if ('cat' in setObj) { // if category is specified

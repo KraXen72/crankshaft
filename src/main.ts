@@ -92,6 +92,18 @@ const settingsSkeleton = {
 		ctrl: false,
 		key: "F1"
 	},
+	matchmakerAcceptKey: {
+		shift: false,
+		alt: false,
+		ctrl: false,
+		key: "Enter"
+	},
+	matchmakerCancelKey: {
+		shift: false,
+		alt: false,
+		ctrl: false,
+		key: "Escape"
+	},
 	matchmaker_openServerWindow: true,
 	matchmaker_regions: [] as string[],
 	matchmaker_gamemodes: [] as string[],
