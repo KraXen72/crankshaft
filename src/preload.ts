@@ -169,7 +169,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		}
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper, socialCssSwapper } = _userPrefs;
 	const splashScreenCSSInjectionID = 'Crankshaft-splash-css';
 	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
 	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
@@ -234,12 +234,13 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
 	}
 
+	// Add the style element regardless because otherwise the hot-swap functionality doesn't work unless the page loaded with a CSS selected beforehand.
+	const styleElement = createElement('style', { id: 'crankshaftCustomCSS' });
+	document.body.appendChild(styleElement);
 	if (cssSwapper !== 'None') {
-		const cssInUse = readFileSync(pathJoin(cssPath, cssSwapper), { encoding: 'utf-8' });
+		const cssInUse = readFileSync(pathJoin(cssPath, `${cssSwapper}`), { encoding: 'utf-8' });
 		addEventListener('DOMContentLoaded', (event) => {
-			const styleElement = createElement('style', { id: 'crankshaftCustomCSS' });
 			styleElement.textContent = cssInUse;
-			document.body.appendChild(styleElement);
 		});
 	}
 
@@ -327,6 +328,12 @@ function patchSettings(_userPrefs: UserPrefs) {
 				// We check the search query here because krunker reloads the search each time the settings page is closed/reopened, causing any client settings to be erased
 				const searchQuery = (document.getElementById('settSearch') as (HTMLInputElement | undefined))?.value ?? "";
 				if (isClientTab() || searchQuery.length > 0) renderSettings();
+			}
+
+			if (args[0] === 4) {
+				// This makes the model viewer link open in a new window. Krunker doesn't currently have it set to target _blank for some reason.
+				const modelViewerElement = Array.from(document.getElementsByClassName('menuLink')).find((elem: HTMLElement) => elem.innerText === "Model Viewer");
+				if (modelViewerElement) modelViewerElement.setAttribute('target', '_blank');
 			}
 
 			return result;
