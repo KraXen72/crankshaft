@@ -170,6 +170,7 @@ export  function objectsAreEqual(object1: {[key: string]: any}, object2: {[key: 
  * @returns Whether or not the passed KeyboardEvent matches the keybind setting
  */
 export function keyboardEventMatchesCustomSetting(setting: KeybindUserPref, event: KeyboardEvent) {
+	if (document.activeElement.tagName === "INPUT") return; // Don't fire keybind inputs when in chat, typing something into a form, etc.
 	return event.key === setting.key && event.shiftKey === setting.shift && event.altKey === setting.alt && event.ctrlKey === setting.ctrl;
 }
 
