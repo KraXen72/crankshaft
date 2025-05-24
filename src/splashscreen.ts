@@ -158,7 +158,11 @@ const possibleSplashFlavors: string[] = [
 	'Forklift Certified.',
 	'...is not a palendrome.',
 	'Big if true.',
-	'Evasive maneuvers!'
+	'Evasive maneuvers!',
+	"I'm the main character!",
+	'Da svidaniya, darling!',
+	'SI SI SI SI SI',
+	'Who up?'
 ];
 
 const splashFlavor = possibleSplashFlavors[Math.floor(Math.random() * possibleSplashFlavors.length)];
