@@ -1,5 +1,6 @@
 import { webFrame } from 'electron';
 import { strippedConsole } from './preload';
+import os from "os";
 
 /** inject css as a style tag */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -155,7 +156,7 @@ export function keyboardEventMatchesCustomSetting(setting: KeybindUserPref, even
  * @returns A parsed string containing the modifiers and key of the keybind setting.
  */
 export function parseKeybindSettingDisplay(setting: KeybindUserPref) {
-	return (setting.shift ? 'Shift+' : '') + (setting.ctrl ? 'Ctrl+' : '') + (setting.alt ? 'Alt+' : '') + setting.key.toUpperCase();
+	return (setting.shift ? 'Shift+' : '') + (setting.ctrl ? ((os.platform() === "darwin") ? 'CMD+' : 'CTRL+') : '') + (setting.alt ? 'Alt+' : '') + setting.key.toUpperCase();
 }
 
 /**

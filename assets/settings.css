@@ -429,6 +429,21 @@ input:checked+.advancedSlider:hover {
 	transition: 0s;
 }
 
+.crankshaftKeybindSettingWrapper {
+	display: flex;
+}
+
+.material-icons.crankshaftUnbindButton {
+	color: red;
+	font-size: 2em !important;
+	padding-left: 0.2em;
+}
+
+.crankshaftUnbindButton:hover {
+	cursor: pointer;
+	transform: scale(1.2);
+}
+
 /* Match Result Copy Button Styles */
 .matchResultButton {
 	position: absolute;

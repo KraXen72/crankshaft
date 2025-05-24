@@ -30,6 +30,37 @@ let paths: IPaths;
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
+// Swapper options are declared here so that TS knows they are the correct type for modifications under the m_userPrefs_for_settingUI message
+const cssSwapperOption: SelectSettingDescItem = {
+	title: 'CSS Swapper',
+	type: 'sel',
+	desc: 'Load and swap between CSS files',
+	safety: 0,
+	cat: 1,
+	instant: true,
+	opts: [],
+	button: {
+		icon: 'folder',
+		text: 'CSS',
+		callback: e => openPath(e, paths.cssPath)
+	}
+}
+
+const socialCssSwapperOption: SelectSettingDescItem = {
+	title: 'Social CSS Swapper',
+	type: 'sel',
+	desc: 'Load and swap between CSS files on the Krunker Hub',
+	safety: 0,
+	cat: 1,
+	instant: true,
+	opts: [],
+	button: {
+		icon: 'folder',
+		text: 'Social CSS',
+		callback: e => openPath(e, paths.socialCssPath)
+	}
+}
+
 ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
 	userPrefsPath = recieved_paths.settingsPath;
@@ -41,10 +72,12 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, rec
 	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) };
 	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) };
 	settingsDesc.userscripts.button = { icon: 'folder', text: 'Scripts', callback: e => openPath(e, paths.userscriptsPath) };
-	settingsDesc.cssSwapper.button = { icon: 'folder', text: 'CSS', callback: e => openPath(e, paths.cssPath) };
 
-	settingsDesc.cssSwapper.opts = ['None', ...readdirSync(paths.cssPath)];
-	if (!settingsDesc.cssSwapper.opts.includes(userPrefs.cssSwapper)) userPrefs.cssSwapper = 'None';
+	cssSwapperOption.opts = ['None', ...readdirSync(paths.cssPath).filter(path => path.endsWith('.css'))];
+	if (!cssSwapperOption.opts.includes(`${userPrefs.cssSwapper}`)) userPrefs.cssSwapper = 'None';
+
+	socialCssSwapperOption.opts = ['None', ...readdirSync(paths.socialCssPath).filter(path => path.endsWith('.css'))];
+	if (!socialCssSwapperOption.opts.includes(`${userPrefs.socialCssSwapper}`)) userPrefs.socialCssSwapper = 'None';
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -89,8 +122,10 @@ const settingsDesc: SettingsDesc = {
 	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. ', safety: 0, cat: 0, refreshOnly: true },
 	saveMatchResultJSONButton: { title: 'Match Result To Clipboard', type: 'bool', desc: 'New button on match end which copies the match results JSON.', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
+	socialTabBehaviour: { title: 'Social/Hub Tab Behaviour', type: 'sel', desc: "Defines how new social tabs are handled. 'Same Window' will only keep one social tab open at any time. 'New Window' will open new browser windows for every tab.", safety: 0, cat: 0, opts: ['Same Window', 'New Window'], instant: true },
 
-	cssSwapper: { title: 'CSS Swapper', type: 'sel', desc: 'Load and swap between CSS files', safety: 0, cat: 1, instant: true, opts: [] },
+	cssSwapper: cssSwapperOption,
+	socialCssSwapper: socialCssSwapperOption,
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -356,9 +391,10 @@ class SettingElem {
 				break;
 			case 'keybind':
 				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
-					<label class="setting-input-wrapper">
+					<label class="setting-input-wrapper crankshaftKeybindSettingWrapper">
 							<input class="s-update keybinddummyinput" type="text" />
 							<span class="keyIcon crankshaftKeyIcon">${ parseKeybindSettingDisplay(props.value as KeybindUserPref) }</span>
+							<span class="material-icons crankshaftUnbindButton">delete_forever</span>
 					</label>`;
 				this.updateKey = 'value';
 				this.updateMethod = 'onchange';
@@ -424,6 +460,9 @@ class SettingElem {
 				const cssElem = document.getElementById('crankshaftCustomCSS');
 				const cssFile = readFileSync(join(paths.cssPath, value), { encoding: 'utf-8' });
 				cssElem.textContent = cssFile;
+			} else if (this.props.key === 'cssSwapper' && value === 'None') {
+				const cssElem = document.getElementById('crankshaftCustomCSS');
+				cssElem.textContent = '';
 			}
 
 			// you can add custom instant refresh callbacks for settings here
@@ -506,6 +545,15 @@ class SettingElem {
 			})
 			// The reason we do this is to transmit the value when updating the value, since there's no <input> for JS objects themselves.
 			wrapper.querySelector('input').setAttribute("value", JSON.stringify(this.props.value));
+
+			wrapper.querySelector('.crankshaftUnbindButton').addEventListener('mousedown', (event) => {
+				setKeybindSetting(this, {
+					shift: false,
+					alt: false,
+					ctrl: false,
+					key: 'NONE'
+				})
+			})
 		}
 
 		if (typeof this.props.callback === 'undefined') this.props.callback = 'normal'; // default callback
@@ -575,6 +623,12 @@ keybindSettingDialogElement.appendChild(keybindSettingDialogCard);
 */
 const activeIndicatorClass = 'activeIndicator';
 
+function setKeybindSetting(settingElem: SettingElem, setting: KeybindUserPref) {
+	// We transmit the change through the <input> element to keep the flow the same; there's no <input> for JS objects themselves.
+	settingElem.elem.querySelector('input').setAttribute("value", JSON.stringify(setting));
+	settingElem.update(settingElem.elem, settingElem.props.callback);
+}
+
 /**
  * The handler for key rebinding. This is where the setting is updated and the reset function is called.
  * @param event KeyboardEvent that triggered the keybind dialog listener
@@ -587,9 +641,7 @@ function keybindSettingDialogListener(event: KeyboardEvent) {
 			removeKeybindSettingDialog();
 		} else {
 			const capturedSetting = turnKeyboardEventIntoSettingValue(event);
-			// We transmit the change through the <input> element to keep the flow the same; there's no <input> for JS objects themselves.
-			capturingKeybindSetting.elem.querySelector('input').setAttribute("value", JSON.stringify(capturedSetting));
-			capturingKeybindSetting.update(capturingKeybindSetting.elem, capturingKeybindSetting.props.callback);
+			setKeybindSetting(capturingKeybindSetting, capturedSetting);
 			removeKeybindSettingDialog();
 		}
 	}
