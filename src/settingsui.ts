@@ -137,6 +137,7 @@ const settingsDesc: SettingsDesc = {
 
 	matchmaker: { title: 'Custom Matchmaker', type: 'bool', desc: "Use the configurable matchmaker over krunker's matchmaker.", safety: 0, cat: 2, refreshOnly: true },
 	matchmakerKey: { title: 'Matchmaker Hotkey', type: 'keybind', desc: 'Change keybind for the matchmaker', safety: 0, cat: 2, refreshOnly: true },
+	matchmaker_openServerWindow: { title: 'Open Server Window On Cancel', type: 'bool', safety: 0, cat: 2, instant: true },
 	matchmaker_regions: { title: 'Whitelisted regions', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_REGIONS, cols: 16, instant: true },
 	matchmaker_gamemodes: { title: 'Whitelisted gamemodes', type: 'multisel', desc: '', safety: 0, cat: 2, opts: MATCHMAKER_GAMEMODES, cols: 4, instant: true },
 	matchmaker_minRemainingTime: { title: 'Minimum remaining seconds', type: 'num', min: 0, max: 480, safety: 0, cat: 2, instant: true },

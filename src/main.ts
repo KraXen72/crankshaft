@@ -92,6 +92,7 @@ const settingsSkeleton = {
 		ctrl: false,
 		key: "F1"
 	},
+	matchmaker_openServerWindow: true,
 	matchmaker_regions: [] as string[],
 	matchmaker_gamemodes: [] as string[],
 	matchmaker_minPlayers: 1,
