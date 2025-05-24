@@ -1,5 +1,5 @@
 import { strippedConsole } from './preload';
-import { createElement, secondsToTimestring } from './utils';
+import { createElement, keyboardEventMatchesCustomSetting, secondsToTimestring } from './utils';
 
 // eslint-disable-next-line max-len
 export const MATCHMAKER_GAMEMODES = ['Free for All', 'Team Deathmatch', 'Hardpoint', 'Capture the Flag', 'Parkour', 'Hide & Seek', 'Infected', 'Race', 'Last Man Standing', 'Simon Says', 'Gun Game', 'Prop Hunt', 'Boss Hunt', 'Classic FFA', 'Deposit', 'Stalker', 'King of the Hill', 'One in the Chamber', 'Trade', 'Kill Confirmed', 'Defuse', 'Sharp Shooter', 'Traitor', 'Raid', 'Blitz', 'Domination', 'Squad Deathmatch', 'Kranked FFA', 'Team Defender', 'Deposit FFA', 'Chaos Snipers', 'Bighead FFA'];
@@ -42,7 +42,12 @@ popupElement.appendChild(popupDescription);
 
 const popupOptions = createElement('div', { id: "matchmakerPopupOptions" });
 
-const confirmKey = "Enter";
+let confirmKey: KeybindUserPref = {
+	shift: false,
+	ctrl: false,
+	alt: false,
+	key: "Enter"
+}
 const popupConfirmOption = createElement('div', {
 	class: ["matchmakerPopupButton", "bigShadowT"],
 	id: "matchmakerConfirmButton",
@@ -51,7 +56,12 @@ const popupConfirmOption = createElement('div', {
 })
 popupConfirmOption.addEventListener('click', () => { decideMatchmakerDecision(true) });
 
-const cancelKey = "Escape";
+let cancelKey: KeybindUserPref = {
+	shift: false,
+	ctrl: false,
+	alt: false,
+	key: "Escape"
+}
 const popupCancelOption = createElement('div', {
 	class: ["matchmakerPopupButton", "bigShadowT"],
 	id: "matchmakerCancelButton",
@@ -69,11 +79,14 @@ popupElement.appendChild(popupOptions);
  * @param event The keyboard event that initiated the handler
  */
 function handleMatchmakerBind(event: KeyboardEvent) {
-	if (event.code === confirmKey || event.code === cancelKey) {
+	if (document.pointerLockElement) return; // Don't fire while in-game
+	const matchesAcceptKey = keyboardEventMatchesCustomSetting(confirmKey, event);
+	const matchesCancelKey = keyboardEventMatchesCustomSetting(cancelKey, event);
+	if (matchesAcceptKey || matchesCancelKey) {
 		document.removeEventListener('keydown', handleMatchmakerBind, true);
-		if (event.code === confirmKey) {
+		if (matchesAcceptKey) {
 			decideMatchmakerDecision(true);
-		} else if (event.code === cancelKey) {
+		} else if (matchesCancelKey) {
 			decideMatchmakerDecision(false);
 		}
 	}
@@ -113,6 +126,9 @@ let currentMatch = '';
  */
 export async function fetchGame(_userPrefs: UserPrefs) {
 	openServerWindow = _userPrefs.matchmaker_openServerWindow as boolean;
+	confirmKey = _userPrefs.matchmakerAcceptKey as KeybindUserPref;
+	cancelKey = _userPrefs.matchmakerCancelKey as KeybindUserPref;
+
 	// If the popup is active, hide it gracefully and create a new one.
 	if (document.getElementById(popupContainerID)) decideMatchmakerDecision(false);
 	const criteria = {

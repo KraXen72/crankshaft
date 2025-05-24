@@ -136,7 +136,7 @@ interface TextSettingDescItem extends SettingItemGeneric {
 // num has to have a min and max
 interface NumSettingItem extends SettingItemGeneric { type: 'num', min?: number, max?: number }
 
-type SettingsDescItem = (SettingItemGeneric | NumSettingItem | SelectSettingDescItem | MultiselectSettingDescItem | TextSettingDescItem);
+type SettingsDescItem = (SettingItemGeneric | NumSettingItem | SelectSettingDescItem | MultiselectSettingDescItem | TextSettingDescItem | KeybindSettingDescItem);
 
 /** array of SettingDescItem objects */
 interface SettingsDesc {
