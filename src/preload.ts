@@ -306,7 +306,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		}
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper, socialCssSwapper } = _userPrefs;
 	const splashScreenCSSInjectionID = 'Crankshaft-splash-css';
 	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
 	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
