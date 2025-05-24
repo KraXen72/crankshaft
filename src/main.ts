@@ -315,7 +315,12 @@ app.on('ready', () => {
 
 		if (userPrefs.discordRPC) {
 			// @ts-ignore since this node version is older than webcrypto
-			globalThis.crypto = { randomUUID: () => '' };
+			globalThis.crypto = { randomUUID: () => {
+				return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+					var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+					return v.toString(16);
+				});
+			} };
 
 			import('minimal-discord-rpc').then(DiscordRPC => {
 				const rpc = new DiscordRPC.Client({ clientId: '988529967220523068' });
@@ -325,7 +330,7 @@ app.on('ready', () => {
 					const data = {
 						details,
 						state,
-						timestamps: { start: startTimestamp },
+						timestamps: { start: Math.floor(startTimestamp.getTime() / 1000) },
 						assets: {
 							large_image: 'logo',
 							large_text: 'Playing Krunker'
