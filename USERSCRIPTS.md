@@ -363,7 +363,15 @@ this.settings = {
 ```
 The `shift`, `ctrl`, and `alt` properties of `value` control the key modifiers. You don't *have* to support these modifiers in your script, but crankshaft will still display those modifiers in the settings page.
 NOTE: The '`key`' property comes from [event.key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key), so make sure your handlers match `event.key`, NOT `event.code`.
-NOTE: You will have to create your own `KeyboardEvent` listeners in your script.
+NOTE: You will have to create your own `KeyboardEvent` listeners in your script. 
+
+Tip: When making these event listeners, you may want to exclude keyboard events that are created while the user is focused on the chat window. You can do this by checking `document.activeElement`.
+```js
+document.addEventlistener("keydown", (keyboardEvent) => {
+	if (document.activeElement.tagName == "INPUT") return; // Don't do anything with inputs while the user is focused on an input element (like the chat message window)
+	// Handle keyboard input
+})
+```
 
 Custom Settings Implementation Examples:
 [customsettingsexample.js](./assets/userscriptexamples/customsettingsexample.js)
