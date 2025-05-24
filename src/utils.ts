@@ -138,7 +138,41 @@ export function haveSameContents(array1: any[], array2: any[]) {
 	return true;
 }
 
-// Keyboard event settings use the first 3 characters for modifiers then the last characters for the event.code
+/**
+ * Checks whether or not 2 objects are equal.
+ * @param object1 the first object
+ * @param object2 the second object
+ * @returns whether or not they are equal
+ */
+export function objectsAreEqual(object1: {[key: string]: any}, object2: {[key: string]: any}) {
+	if (typeof object1 !== typeof object2) return false; // failsafe here just in case
+	if (Array.isArray(object1) && Array.isArray(object2) && !haveSameContents(object1, object2)) return false;
+	if (!haveSameContents(Object.keys(object1), Object.keys(object2))) return false;
+
+	// Now we can assume object1 and object2 have all the same keys.
+	for (const key of Object.keys(object1)) {
+		const object1Value = object1[key];
+		const object2Value = object2[key];
+
+		if (typeof object1Value !== typeof object2Value) return false;
+		// Now we can assume object1Value and object2Value have the same typeof
+
+		if (Array.isArray(object1Value)) {
+			if (!Array.isArray(object2Value)) return false; // We have to re-check here since arrays and objects have the same typeof
+			if (!haveSameContents(object1Value, object2Value)) return false;
+			continue;
+		}
+
+		if (typeof object1Value === "object") {
+			if (!objectsAreEqual(object1Value, object2Value)) return false;
+			continue;
+		}
+
+		if (object1Value !== object2Value) return false;
+	}
+
+	return true;
+}
 
 /**
  * Check if a KeyboardEvent matches a keybind setting.
@@ -147,6 +181,7 @@ export function haveSameContents(array1: any[], array2: any[]) {
  * @returns Whether or not the passed KeyboardEvent matches the keybind setting
  */
 export function keyboardEventMatchesCustomSetting(setting: KeybindUserPref, event: KeyboardEvent) {
+	if (document.activeElement.tagName == "INPUT") return; // Don't fire keybind inputs when in chat, typing something into a form, etc.
 	return event.key === setting.key && event.shiftKey === setting.shift && event.altKey === setting.alt && event.ctrlKey === setting.ctrl;
 }
 

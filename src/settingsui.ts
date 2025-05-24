@@ -3,7 +3,7 @@ import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import os from "os";
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
-import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue } from './utils';
+import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
@@ -229,8 +229,8 @@ function recalculateRefreshNeeded() {
 		const setting = cache(userPrefs[key]);
 		const cachedSetting = cache(userPrefsCache[key]);
 
-		const settingsEqual = Array.isArray(setting) && Array.isArray(cachedSetting)
-			? haveSameContents(setting, cachedSetting)
+		const settingsEqual = Array.isArray(setting) && Array.isArray(cachedSetting) ? haveSameContents(setting, cachedSetting)
+			: (typeof setting === "object" && typeof cachedSetting === "object") ? objectsAreEqual(setting, cachedSetting)
 			: setting === cachedSetting;
 
 		if (!settingsEqual) {
