@@ -7,6 +7,9 @@ export const MATCHMAKER_REGIONS = ['MBI', 'NY', 'FRA', 'SIN', 'DAL', 'SYD', 'MIA
 export const MATCHMAKER_REGION_NAMES = { "MBI": "Mumbai", "NY": "New York", "FRA": "Frankfurt", "SIN": "Singapore", "DAL": "Dallas", "SYD": "Sydney", "MIA": "Miami", "BHN": "Middle East", "TOK": "Tokyo", "BRZ": "Brazil", "AFR": "South Africa", "LON": "London", "CHI": "China", "SV": "Silicon Valley", "STL": "Seattle", "MX": "Mexico", "SSS": "Super Secret Servers" };
 export const MATCHMAKER_MAP_ICON_INDICES = ['Burg', 'Littletown', 'Sandstorm', 'Subzero', 'Undergrowth', 'Shipment', 'Freight', 'Lostworld', 'Citadel', 'Oasis', 'Kanji', 'Industry', 'Lumber', 'Evacuation', 'Site', 'SkyTemple', 'Lagoon', 'Bureau', 'Tortuga', 'Tropicano', 'Krunk_Plaza', 'Arena', 'Habitat', 'Atomic', 'Old_Burg', 'Throwback', 'Stockade', 'Facility', 'Clockwork', 'Laboratory', 'Shipyard', 'Soul Sanctum', 'Bazaar', 'Erupt', 'HQ', 'Khepri'];
 
+// Hacky, but needed (?) until there's a better system to store state
+let openServerWindow: boolean = undefined;
+
 // https://greasyfork.org/en/scripts/468482-kraxen-s-krunker-utils
 
 /**
@@ -21,7 +24,7 @@ function decideMatchmakerDecision(accept: boolean) {
 	} else {
 		popupElement.remove();
 		// @ts-ignore Built into the global window object from krunker
-		if (currentMatch === 'none') window.openServerWindow(0);
+		if (currentMatch === 'none' && openServerWindow) window.openServerWindow(0);
 	}
 }
 
@@ -109,6 +112,7 @@ let currentMatch = '';
  * @param _userPrefs User Preferences Object
  */
 export async function fetchGame(_userPrefs: UserPrefs) {
+	openServerWindow = _userPrefs.matchmaker_openServerWindow as boolean;
 	// If the popup is active, hide it gracefully and create a new one.
 	if (document.getElementById(popupContainerID)) decideMatchmakerDecision(false);
 	const criteria = {
