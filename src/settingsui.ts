@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
+import os from "os";
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
@@ -699,7 +700,7 @@ const skeleton = {
 			case RefreshEnum.reloadApp:
 				return '<span class="restart-msg">Restart client fully to see changes</span>';
 			case RefreshEnum.refresh:
-				return `<span class="reload-msg">${skeleton.refreshIcon('refresh-icon')}Reload page with <code>F5</code> or <code>CTRL + R</code> to see changes</span>`;
+				return `<span class="reload-msg">${skeleton.refreshIcon('refresh-icon')}Reload page with <code>F5</code> or <code>${os.platform() === "darwin" ? "CMD" : "CTRL"} + R</code> to see changes</span>`;
 			case RefreshEnum.notNeeded:
 			default:
 				return '';
