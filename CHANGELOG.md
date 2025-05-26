@@ -1,3 +1,24 @@
+## [1.10.0](https://github.com/KraXen72/crankshaft/compare/1.9.1...1.10.0) (2025-05-26)
+
+
+### Features
+(all by @AspectQuote)
+* New matchmaker popup ([0df4d68](https://github.com/KraXen72/crankshaft/commit/0df4d68a687807e05b5137e3dca53e453e1492e2))
+* Show client settings when searching ([0df4d68](https://github.com/KraXen72/crankshaft/commit/0df4d68a687807e05b5137e3dca53e453e1492e2))
+* Keybind settings ([c85b9ea](https://github.com/KraXen72/crankshaft/commit/c85b9ea0647208a102c4cef8626278238aec4f1e))
+* Social CSS swapper ([52ea9d1](https://github.com/KraXen72/crankshaft/commit/52ea9d19fda49c0984c0c27dd0a560998a6fa811))
+
+### Bugfixes
+* Partially fix mac resizing by downgrading electron (still broken with uncapped fps)
+* Fix Discord RPC (again)
+* Fix Override URL setting when set to an empty string
+* Backport battlepass css by @AspectQuote ([f88e2c6](https://github.com/KraXen72/crankshaft/commit/f88e2c6511f9d29ae0e354754749ad1d453e60c8))
+* Fix refresh key display on macs
+
+### Cleanup
+* nvidia-related start scripts by @KraXen72 
+* Readme & documentation updates
+
 ## [1.9.1](https://github.com/KraXen72/crankshaft/compare/1.9.0...1.9.1) (2025-04-26)
 
 
