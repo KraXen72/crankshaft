@@ -402,8 +402,13 @@ app.on('ready', () => {
 		}
 	});
 
-	// only runs on client start
-	mainWindow.once('ready-to-show', () => {
+	// due to loading dummy.html and krunker.io being separate events, we need to wait for the second event emitted instead of the first
+	let dummyRTS = false;
+	mainWindow.on('ready-to-show', () => {
+		if (!dummyRTS) {
+			dummyRTS = true;
+			return;
+		}
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
 	});
