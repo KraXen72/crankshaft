@@ -1,3 +1,9 @@
+## [1.10.1](https://github.com/KraXen72/crankshaft/compare/1.10.0...1.10.1) (2025-05-28)
+
+
+### Bugfixes
+* Fix update checker
+
 ## [1.10.0](https://github.com/KraXen72/crankshaft/compare/1.9.1...1.10.0) (2025-05-26)
 
 
