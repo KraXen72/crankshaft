@@ -34,6 +34,7 @@ interface IUserscriptInstance extends IUserscript {
 	meta: UserscriptMeta | false,
 	hasRan: boolean,
 	runAt: ('document-start' | 'document-end'),
+	priority: number,
 	load: Function,
 	unload: Function | false,
 	settings?: Record<string, UserscriptRenderReadySetting>

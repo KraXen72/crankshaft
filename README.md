@@ -107,7 +107,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 - Very little code remains, as Crankshaft was rewritten in typescript & more features were added.
 - Gatoclient was later rewritten, implementing some code from Crankshaft too.
 - **other acknowledgments**
-  - [All contriutors](https://github.com/KraXen72/crankshaft/graphs/contributors)
+  - [All contributors](https://github.com/KraXen72/crankshaft/graphs/contributors)
   - [wa/paintingofblue](https://github.com/paintingofblue) - matchmaker implementation
   - [Commander/asger-finding](https://github.com/asger-finding) (AKC client) - resource swapper implementation
   - [Tae](https://github.com/whuuayu) - awesome logo for the client <3
