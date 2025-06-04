@@ -81,8 +81,9 @@ You can define an optional `@run-at` rule.
 ### optional @priority rule
 
 You can define an optional `@priority` rule as a integer.
-- The lower the integer, the earlier the script will run. Useful in scenarios where you need a userscript to run before/after another userscript.
-- **By default, this is set to `1`**, so for example you can set it to `0` or `-1` if you want a userscript to run before any other.
+- The higher the integer, the earlier the script will run. Useful in scenarios where you need a userscript to run before/after another userscript.
+- **By default, this is set to `0`**, so for example you can set it to `1` or `2` etc if you want a userscript to run before any other. Negative numbers are allowed so you can also set it to `-1` or `-2` etc. to make it run after any other.
+- Keep in mind that the userscripts will still run according to the [@run-at](#optional-run-at-rule) rule.
 
 ## Waiting for a function to exist
 While krunker is loading, you might already have existing dom elements, (`@run-at` is set to `document-end` by default) but the functions in their `onclick`'s don't exist yet. You can do something like this:

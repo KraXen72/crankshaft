@@ -109,14 +109,14 @@ class Userscript implements IUserscriptInstance {
 
 				if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';
 
-				// assign priority 1 incase not defined or invalid type
-				this.priority = 1;
+				// assign priority 0 incase not defined or invalid type
+				this.priority = 0;
 				if ('priority' in this.meta && typeof this.meta['priority'] === "string"){
 					try {
 						this.priority = parseInt(this.meta['priority']);
 					} catch (e){
 						console.log("Error while parsing userscript priority: ", e);
-						this.priority = 1;
+						this.priority = 0;
 					}
 				}
 			}
@@ -185,8 +185,8 @@ ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths
 
 	su.userscriptTracker = tracker;
 
-	// sort userscripts based on priority
-	su.userscripts = su.userscripts.sort((a,b)=>{ return a.priority - b.priority });
+	// sort userscripts based on priority (descending)
+	su.userscripts = su.userscripts.sort((a,b)=>{ return b.priority - a.priority });
 
 	su.userscripts.forEach(u => {
 		if (tracker[u.name]) {
