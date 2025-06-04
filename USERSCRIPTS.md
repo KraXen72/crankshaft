@@ -8,6 +8,7 @@ There are a few example userscripts mentioned in the README you can go off of.
 		- [Example](#example)
 		- [Template to copy](#template-to-copy)
 		- [optional @run-at rule](#optional-run-at-rule)
+		- [optional @priority rule](#optional-priority-rule)
 	- [Waiting for a function to exist](#waiting-for-a-function-to-exist)
 		- [Explanation/notes](#explanationnotes)
 		- [Template to copy](#template-to-copy-1)
@@ -31,7 +32,8 @@ There are a few example userscripts mentioned in the README you can go off of.
 
 Crankshaft recognizes standard userscript metadata comment, but only a subset of keys.  
 You can define `@name`, `@author`, `@ersion`, `@desc`, `@src`, `@license` as strings.  
-There is also an optional `@run-at` rule, more about that [here](#optional-run-at-rule)  
+There is also an optional `@run-at` rule, more about that [here](#optional-run-at-rule) , and an optional `@priority` rule, more about that [here](#optional-priority-rule).
+
 Defining metadata is optional. If no metadata is provided, only information displayed will be the filename.
 
 You can define only some of them if you want, for example `@name` and `@desc`  
@@ -75,6 +77,13 @@ You can define an optional `@run-at` rule.
   The script executes when DOMContentLoaded is fired. At this time, the basic HTML of the page is ready and other resources like images might still be on the way. This will be picked if no `@run-at` rule is defined.
 - `document-start`
   The script executes as soon as possible. `body` most likely won't have any content in it yet.
+
+### optional @priority rule
+
+You can define an optional `@priority` rule as a integer.
+- The higher the integer, the earlier the script will run. Useful in scenarios where you need a userscript to run before/after another userscript.
+- **By default, this is set to `0`**, so for example you can set it to `1` or `2` etc if you want a userscript to run before any other. Negative numbers are allowed so you can also set it to `-1` or `-2` etc. to make it run after any other.
+- Keep in mind that the userscripts will still run according to the [@run-at](#optional-run-at-rule) rule.
 
 ## Waiting for a function to exist
 While krunker is loading, you might already have existing dom elements, (`@run-at` is set to `document-end` by default) but the functions in their `onclick`'s don't exist yet. You can do something like this:
