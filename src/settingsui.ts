@@ -565,9 +565,11 @@ class SettingElem {
 				})
 			})
 
+			const warningElement = wrapper.querySelector('.crankshaftKeybindConflict') as HTMLElement;
 			if (this.props.callback === "normal") { // We don't care about userscript keybinds conflicting; that's outside of our scope.
-				const warningElement = wrapper.querySelector('.crankshaftKeybindConflict');
 				updateKeybindConflictDisplay(this.props.key, this.props.value as KeybindUserPref, this.props.value as KeybindUserPref, warningElement);
+			} else {
+				warningElement.style.display = "none";
 			}
 		}
 
