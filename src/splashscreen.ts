@@ -162,7 +162,8 @@ const possibleSplashFlavors: string[] = [
 	"I'm the main character!",
 	'Da svidaniya, darling!',
 	'SI SI SI SI SI',
-	'Who up?'
+	'Who up?',
+	'rest in peace, Boo'
 ];
 
 const splashFlavor = possibleSplashFlavors[Math.floor(Math.random() * possibleSplashFlavors.length)];
