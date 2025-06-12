@@ -9,7 +9,6 @@
 *://*.cookiepro.com/*
 *://www.googletagmanager.com/*
 *://storage.googleapis.com/pollfish_production/*
-*://krunker.io/libs/frvr-channel-web*
-*://*.krunker.io/libs/frvr-channel-web*
+*://crucible.frvr.com/*
 *://apis.google.com/js/platform.js
 *://imasdk.googleapis.com/*
