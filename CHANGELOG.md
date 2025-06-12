@@ -1,3 +1,9 @@
+## [1.10.3](https://github.com/KraXen72/crankshaft/compare/1.10.2...1.10.3) (2025-06-12)
+
+
+### Bugfixes
+* Fix ad prebid script blocking
+
 ## [1.10.2](https://github.com/KraXen72/crankshaft/compare/1.10.1...1.10.2) (2025-06-12)
 
 
