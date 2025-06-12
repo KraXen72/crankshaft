@@ -1,3 +1,13 @@
+## [1.10.2](https://github.com/KraXen72/crankshaft/compare/1.10.1...1.10.2) (2025-06-12)
+
+
+### Features
+* Priority role for userscripts by @BluZed ([971a5dc](https://github.com/KraXen72/crankshaft/commit/971a5dc7b3366609443aa425304828d93c74920c))
+* Fix userscript keybind setting conflict display by @AspectQuote ([ce7991e](https://github.com/KraXen72/crankshaft/commit/ce7991ef0a61d7891a8dfa655d57fd0ff380364a))
+
+### Bugfixes
+* Fix login issue with network filters (would log you out on refresh if "Hide/Block Ads" was set to "Block")
+
 ## [1.10.1](https://github.com/KraXen72/crankshaft/compare/1.10.0...1.10.1) (2025-05-28)
 
 
