@@ -2,7 +2,7 @@
 *://www.paypalobjects.com/*
 *://fran-cdn.frvr.com/*
 *://c.amazon-adsystem.com/*
-*://fran-cdn.frvr.com/pubads_*
+*://cdn.frvr.com/fran/*
 *://platform.twitter.com/*
 *://cookiepro.com/*
 *://*.cookiepro.com/*
