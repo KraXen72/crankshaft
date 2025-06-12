@@ -1,13 +1,13 @@
 *://*.pollfish.com/*
 *://www.paypalobjects.com/*
-*://fran-cdn.frvr.com/prebid*
-*://fran-cdn.frvr.com/gpt_*
+*://fran-cdn.frvr.com/*
 *://c.amazon-adsystem.com/*
 *://fran-cdn.frvr.com/pubads_*
 *://platform.twitter.com/*
 *://cookiepro.com/*
 *://*.cookiepro.com/*
 *://www.googletagmanager.com/*
+*://*.doubleclick.net/*
 *://storage.googleapis.com/pollfish_production/*
 *://crucible.frvr.com/*
 *://apis.google.com/js/platform.js
