@@ -9,6 +9,6 @@
 *://www.googletagmanager.com/*
 *://*.doubleclick.net/*
 *://storage.googleapis.com/pollfish_production/*
-*://crucible.frvr.com/*
+*://coeus.frvr.com/*
 *://apis.google.com/js/platform.js
 *://imasdk.googleapis.com/*
