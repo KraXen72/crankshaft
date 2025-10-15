@@ -21,6 +21,123 @@ export const strippedConsole = {
 
 const $assets = pathResolve(__dirname, '..', 'assets');
 
+interface CompHostParams {
+    mapId: string;
+    team1Name: string;
+    team2Name: string;
+    teamSize: string;
+    webhook?: string;
+}
+
+
+const waitForElement = (selector: string): Promise<HTMLElement> => {
+	return new Promise((resolve) => {
+		const el = document.querySelector(selector) as HTMLElement;
+		if (el) return resolve(el);
+
+		const observer = new MutationObserver(() => {
+			const el = document.querySelector(selector) as HTMLElement;
+			if (el) {
+				resolve(el);
+				observer.disconnect();
+			}
+		});
+		observer.observe(document.body, { childList: true, subtree: true });
+	});
+};
+
+const waitForGameReady = (): Promise<void> => {
+    return new Promise((resolve) => {
+        if (typeof window.openHostWindow === 'function') {
+            return resolve();
+        }
+
+        const interval = setInterval(() => {
+            if (typeof window.openHostWindow === 'function') {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 100);
+    });
+};
+
+const automateCompHost = async (params: CompHostParams) => {
+    await waitForGameReady();
+	window.openHostWindow(false, 1);
+	await waitForElement(".hostTb0");
+
+	let mapCheckbox: HTMLInputElement | null = null;
+
+	mapCheckbox = document.querySelector<HTMLInputElement>(`#${params.mapId}`);
+
+	if (!mapCheckbox) {
+		const allMapNameElements = document.querySelectorAll('.hostMap .hostMapName');
+		const targetNameElement = Array.from(allMapNameElements).find(
+			(el) => (el as HTMLElement).innerText.trim().toLowerCase() === params.mapId.toLowerCase()
+		);
+		if (targetNameElement && targetNameElement.parentElement) {
+			mapCheckbox = targetNameElement.parentElement.querySelector('input[type="checkbox"]');
+		}
+	}
+
+	if (!mapCheckbox) {
+        strippedConsole.error(`[Crankshaft] Automation failed: Could not find map '${params.mapId}'`);
+        window.closeHostWindow();
+        return;
+    }
+
+	if (!mapCheckbox.checked) {
+		mapCheckbox.click();
+	}
+
+	(window.windows[7] as any).switchTab(2);
+
+	const team1Input = await waitForElement("#customSnameTeam1") as HTMLInputElement;
+	team1Input.value = params.team1Name;
+
+	const team2Input = await waitForElement("#customSnameTeam2") as HTMLInputElement;
+	team2Input.value = params.team2Name;
+
+	const teamSizeSelect = await waitForElement("#customStmSize") as HTMLSelectElement;
+    
+	const teamSizeMap: { [key: string]: string } = {
+		"1v1": "0", 
+		"2v2": "1", 
+		"3v3": "2", 
+		"4v4": "3",
+	};
+	const finalTeamSize = teamSizeMap[params.teamSize] || params.teamSize;
+	teamSizeSelect.value = finalTeamSize;
+
+    if (params.webhook) {
+        try {
+            const webhookInput = await waitForElement("#customSwebhook") as HTMLInputElement;
+            webhookInput.value = decodeURIComponent(params.webhook);
+        } catch(e) {
+            strippedConsole.error("[Crankshaft] Could not find webhook input element.", e);
+        }
+    }
+
+	window.createPrivateRoom();
+};
+
+const parseStartupArgs = (args: string) => {
+    try {
+        if (args.includes("action=host-comp")) {
+            const url = new URL(args);
+            const params = Object.fromEntries(url.searchParams.entries()) as unknown as CompHostParams;
+            automateCompHost(params);
+        }
+    } catch(e) {
+        strippedConsole.error("[Crankshaft] Error parsing startup URL:", e);
+    }
+};
+
+ipcRenderer.on('process-startup-url', (event, url: string) => {
+	strippedConsole.log('[Crankshaft Preload] Received startup URL from main process:', url);
+	parseStartupArgs(url);
+});
+
 /** actual css for settings that are style-based (hide ads, etc)*/
 export const styleSettingsCSS = {
 	hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' }),

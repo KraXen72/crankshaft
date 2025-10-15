@@ -11,6 +11,33 @@ const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 
 const configPath = userData;
 const windowScale = 0.8; // In windowed mode, the window will cover 80% of the height/width of the screen. 
 
+let crankshaftUrlStartup: string | null = null;
+
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('crankshaft', process.execPath, [pathResolve(process.argv[1])]);
+  }
+} else {
+  app.setAsDefaultProtocolClient('crankshaft');
+}
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+    const url = commandLine.find(arg => arg.startsWith('crankshaft://'));
+    if (url && mainWindow) {
+        mainWindow.webContents.send('process-startup-url', url);
+    }
+  });
+}
+
 /*
  * TODO make crankshaft server announcement about backup
  * TODO mention minor breaking change in changelog & mention backup
@@ -303,6 +330,8 @@ app.on('ready', () => {
 
 	const screenSize = screen.getPrimaryDisplay().size;
 
+	crankshaftUrlStartup = process.argv.find(arg => arg.startsWith('crankshaft://')) || null;
+
 	const mainWindowProps: BrowserWindowConstructorOptions = {
 		show: false,
 		width: screenSize.width * windowScale,
@@ -411,6 +440,12 @@ app.on('ready', () => {
 		}
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
+
+		 if (crankshaftUrlStartup) {
+            mainWindow.webContents.send('process-startup-url', crankshaftUrlStartup);
+			//resetting url
+			crankshaftUrlStartup = null;
+            }
 	});
 
 	mainWindow.loadFile(pathJoin($assets, 'dummy.html'));
