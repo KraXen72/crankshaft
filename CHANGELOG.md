@@ -1,3 +1,12 @@
+## [1.11.0](https://github.com/KraXen72/crankshaft/compare/1.10.3...1.11.0) (2025-10-18)
+
+
+### Features
+* crankshaft:// comp host support by @DrEviliskool
+
+### Bugfixes
+* Added missing map icons to matchmaker by @AspectQuote
+
 ## [1.10.3](https://github.com/KraXen72/crankshaft/compare/1.10.2...1.10.3) (2025-06-12)
 
 
