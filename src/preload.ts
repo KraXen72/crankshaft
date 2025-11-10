@@ -476,6 +476,8 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 				for (let i = 0; i < optionElements.length; i++) {
 					const opt = optionElements[i];
+					// bad hack to fix it getting added multiple times (don't know why..)
+					if (opt.textContent.includes("[")) continue;
 					try {
 						opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
 					} catch (error) {
