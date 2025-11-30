@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/KraXen72/crankshaft/compare/1.11.0...1.11.1) (2025-11-30)
+
+
+### Bugfixes
+* fix repeating region timezone display
+* fix the splash screen not clearing correctly
+
 ## [1.11.0](https://github.com/KraXen72/crankshaft/compare/1.10.3...1.11.0) (2025-10-18)
 
 
