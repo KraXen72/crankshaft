@@ -354,7 +354,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 				observer.observe(instructions, observerConfig);
 				clearInterval(instructionsInterval);
 			}
-		}, 150)
+		}, 150);
 	}
 
 	// Add the style element regardless because otherwise the hot-swap functionality doesn't work unless the page loaded with a CSS selected beforehand.
