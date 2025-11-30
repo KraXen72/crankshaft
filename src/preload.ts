@@ -348,13 +348,16 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 		const observer = new MutationObserver(callback);
 		document.addEventListener('pointerlockchange', () => { clearSplash(observer); }, { once: true });
-		const instructionsInterval = setInterval(() => {
-			const instructions = document.getElementById('instructions');
-			if(instructions) {
-				observer.observe(instructions, observerConfig);
-				clearInterval(instructionsInterval);
-			}
-		}, 150);
+
+		const observeInstructions = () => {
+			observer.observe(document.getElementById('instructions'), observerConfig);
+		}
+		
+		if(document.readyState === "loading") {
+			window.addEventListener("DOMContentLoaded", observeInstructions);
+		} else {
+			observeInstructions();
+		}
 	}
 
 	// Add the style element regardless because otherwise the hot-swap functionality doesn't work unless the page loaded with a CSS selected beforehand.
