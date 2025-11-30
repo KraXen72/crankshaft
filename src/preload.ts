@@ -351,8 +351,8 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 		const observeInstructions = () => {
 			observer.observe(document.getElementById('instructions'), observerConfig);
-		}
-		
+		};
+
 		if(document.readyState === "loading") {
 			window.addEventListener("DOMContentLoaded", observeInstructions);
 		} else {
