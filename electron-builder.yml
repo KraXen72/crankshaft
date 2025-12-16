@@ -11,6 +11,9 @@ win:
         - target: portable
           arch:
               - x64
+        - target: zip
+          arch:
+              - x64
 mac:
     artifactName: ${productName}-portable-${os}-${arch}.${ext}
     target:
