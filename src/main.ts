@@ -393,7 +393,7 @@ app.on('ready', () => {
 				});
 			} };
 
-			import('minimal-discord-rpc').then(DiscordRPC => {
+			import('@nyabsi/minimal-discord-rpc').then(DiscordRPC => {
 				const rpc = new DiscordRPC.Client({ clientId: '988529967220523068' });
 				const startTimestamp = new Date();
 
