@@ -1,6 +1,7 @@
 // crankshaft's build script. uses esbuild, which is a fast js build tool written in go.
-const esbuild = require("esbuild");
-const fs = require("node:fs");
+import * as esbuild from "esbuild";
+import type { BuildOptions, Plugin } from "esbuild";
+import * as fs from "fs";
 
 const args = process.argv.filter(a => a.startsWith("--"))
 const building = args.includes("--build")
@@ -12,20 +13,14 @@ fs.rmSync("app/main.js", { force: true });
 fs.rmSync("app/preload.js", { force: true });
 fs.rmSync("app/socialpreload.js", { force: true });
 
-/**
- * @type {import('esbuild').Plugin}
- */
-const buildLogger = {
+const buildLogger: Plugin = {
 	name: 'build-logger',
 	setup(build) {
 		build.onEnd(result => console.log(`build completed with ${result.errors.length} errors`))
 	},
 }
 
-/**
- * @type {import('esbuild').BuildOptions}
- */
-const buildOptions = {
+const buildOptions: BuildOptions = {
 	// keep this manually in-sync!
 	entryPoints: [
 		'src/main.ts',
@@ -44,10 +39,7 @@ const buildOptions = {
 	external: ["electron"]
 }
 
-/**
- * @param {import('esbuild').BuildOptions} extraOptions 
- */
-async function watch(extraOptions) {
+async function watch(extraOptions: BuildOptions) {
 	const ctx = await esbuild.context({ ...buildOptions, ...extraOptions })
 	await ctx.watch()
 }
