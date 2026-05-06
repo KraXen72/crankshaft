@@ -1,4 +1,4 @@
-import { shell, type MenuItemConstructorOptions, MenuItem, app, BrowserWindow } from 'electron';
+import { shell, type MenuItemConstructorOptions, type MenuItem, app, BrowserWindow } from 'electron';
 import type { OpenDevToolsOptions } from 'electron/main';
 
 // Menu

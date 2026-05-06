@@ -111,9 +111,9 @@ class Userscript implements IUserscriptInstance {
 
 				// assign priority 0 incase not defined or invalid type
 				this.priority = 0;
-				if ('priority' in this.meta && typeof this.meta['priority'] === "string"){
+				if ('priority' in this.meta && typeof this.meta.priority === "string"){
 					try {
-						this.priority = parseInt(this.meta['priority']);
+						this.priority = parseInt(this.meta.priority, 10);
 					} catch (e){
 						console.log("Error while parsing userscript priority: ", e);
 						this.priority = 0;
@@ -151,7 +151,7 @@ class Userscript implements IUserscriptInstance {
 							this.settings[settingKey].changed(settingsJSON[settingKey]);
 						}
 					});
-				} catch (err) { // Preferences for script are probably corrupted.
+				} catch (_err) { // Preferences for script are probably corrupted.
 				}
 			}
 
@@ -166,7 +166,7 @@ class Userscript implements IUserscriptInstance {
 
 }
 
-ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths: { userscriptsPath: string, userscriptPrefsPath: string }) => {
+ipcRenderer.on('main_initializes_userscripts', (_event, recieved_userscript_paths: { userscriptsPath: string, userscriptPrefsPath: string }) => {
 	su.userscriptsPath = recieved_userscript_paths.userscriptsPath;
 	su.userscriptTrackerPath = pathResolve(su.userscriptsPath, 'tracker.json');
 	su.userscriptPrefsPath = recieved_userscript_paths.userscriptPrefsPath;
@@ -194,7 +194,7 @@ ipcRenderer.on('main_initializes_userscripts', (event, recieved_userscript_paths
 				u.load();
 			} else {
 				const callback = () => u.load();
-				try { document.removeEventListener('DOMContentLoaded', callback); } catch (e) { }
+				try { document.removeEventListener('DOMContentLoaded', callback); } catch (_e) { }
 				document.addEventListener('DOMContentLoaded', callback, { once: true });
 			}
 		}

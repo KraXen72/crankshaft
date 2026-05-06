@@ -1,4 +1,3 @@
-import { strippedConsole } from './preload';
 import { createElement, keyboardEventMatchesCustomSetting, secondsToTimestring } from './utils';
 
 // eslint-disable-next-line max-len
@@ -8,7 +7,7 @@ export const MATCHMAKER_REGION_NAMES = { "MBI": "Mumbai", "NY": "New York", "FRA
 export const MATCHMAKER_MAP_ICON_INDICES = ['Burg', 'Littletown', 'Sandstorm', 'Subzero', 'Undergrowth', 'Shipment', 'Freight', 'Lostworld', 'Citadel', 'Oasis', 'Kanji', 'Industry', 'Lumber', 'Evacuation', 'Site', 'SkyTemple', 'Lagoon', 'Bureau', 'Tortuga', 'Tropicano', 'Krunk_Plaza', 'Arena', 'Habitat', 'Atomic', 'Old_Burg', 'Throwback', 'Stockade', 'Facility', 'Clockwork', 'Laboratory', 'Shipyard', 'Soul Sanctum', 'Bazaar', 'Erupt', 'HQ', 'Khepri', 'Lush', 'Vivo', 'Slide Moonlight', 'Eterno Sim'];
 
 // Hacky, but needed (?) until there's a better system to store state
-let openServerWindow: boolean = undefined;
+let openServerWindow: boolean;
 
 // https://greasyfork.org/en/scripts/468482-kraxen-s-krunker-utils
 
@@ -97,7 +96,7 @@ function handleMatchmakerBind(event: KeyboardEvent) {
  * @param game The game that was retrieved by the custom matchmaker
  */
 function createFetchedGamePopup(game: IMatchmakerGame) {
-	popupElement.style["backgroundImage"] = `url(https://assets.krunker.io/img/maps/map_${ MATCHMAKER_MAP_ICON_INDICES.indexOf(game.map) || 0}.png)`;
+	popupElement.style.backgroundImage = `url(https://assets.krunker.io/img/maps/map_${ MATCHMAKER_MAP_ICON_INDICES.indexOf(game.map) || 0}.png)`;
 	
 	currentMatch = game.gameID;
 	if (game.gameID === "none") {
