@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
@@ -440,7 +440,7 @@ export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
 
 function patchSettings(_userPrefs: UserPrefs) {
 	// hooking & binding credit: https://github.com/asger-finding/anotherkrunkerclient/blob/main/src/preload/game-settings.ts
-	let interval: number | NodeJS.Timer = null;
+	let interval: number = null;
 	strippedConsole.log('waiting to hook settings...');
 
 	function hookSettings() {
@@ -477,7 +477,11 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 			if (args[0] === 4) {
 				// This makes the model viewer link open in a new window. Krunker doesn't currently have it set to target _blank for some reason.
-				const modelViewerElement = Array.from(document.getElementsByClassName('menuLink')).find((elem: HTMLElement) => elem.innerText === "Model Viewer");
+				const modelViewerElement = Array.from(document.getElementsByClassName('menuLink')).find((elem: Element) => {
+					if (elem instanceof HTMLElement) {
+						elem.innerText === "Model Viewer"
+					}
+				});
 				if (modelViewerElement) modelViewerElement.setAttribute('target', '_blank');
 			}
 
@@ -532,8 +536,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 
 		safeRenderSettings();
 	}
-
-	function waitForWindow0() {
+	const waitForWindow0: TimerHandler = () => {
 		if (
 			hasOwn(window, 'showWindow')
 			&& typeof window.showWindow === 'function'
@@ -548,7 +551,6 @@ function patchSettings(_userPrefs: UserPrefs) {
 			hookSettings();
 		}
 	}
-
 	interval = setInterval(waitForWindow0, 250);
 }
 

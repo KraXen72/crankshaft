@@ -1,6 +1,6 @@
 import { webFrame } from 'electron';
 import { strippedConsole } from './preload';
-import os from "os";
+import * as os from "os";
 
 /** inject css as a style tag */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -91,17 +91,6 @@ export function userscriptToggleCSS(css: string, identifier: string, value: ('to
 	const reservedKeywords = ['menuTimer', 'hideAds', 'hideReCaptcha'];
 	if (!reservedKeywords.includes(identifier)) toggleSettingCSS(css, identifier, value);
 	else strippedConsole.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`);
-}
-
-export function debounce(func: Function, timeout = 300) {
-	// eslint-disable-next-line init-declarations
-	let timer: NodeJS.Timeout;
-
-	// @ts-ignore
-	return (...args) => {
-		clearTimeout(timer);
-		timer = setTimeout(() => { func.apply(this, args); }, timeout);
-	};
 }
 
 /** @param classesCount how many classes krunker currently has (custom-only included) */

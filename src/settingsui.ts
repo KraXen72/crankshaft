@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
-import os from "os";
+import * as os from "os";
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
@@ -261,7 +261,7 @@ function sanitizeString(string: string) {
 		'/': '&#x2F;',
 	};
 	const reg = /[&<>"'/]/ig;
-	return string.replace(reg, (match: keyof typeof map) => (map[match]));
+	return string.replace(reg, (match: string) => (map[match as keyof typeof map]));
 }
 
 /** creates a new Setting element */

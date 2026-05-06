@@ -1,5 +1,5 @@
-import { shell, MenuItemConstructorOptions, MenuItem, app, BrowserWindow } from 'electron';
-import { OpenDevToolsOptions } from 'electron/main';
+import { shell, type MenuItemConstructorOptions, MenuItem, app, BrowserWindow } from 'electron';
+import type { OpenDevToolsOptions } from 'electron/main';
 
 // Menu
 /** submenu to replace the About screen */

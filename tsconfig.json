@@ -1,16 +1,17 @@
 {
 	"compilerOptions": {
 		"target": "es2021",
-		"module": "commonjs",
-		"esModuleInterop": true,
-		"noImplicitAny": true,
+		"module": "preserve",
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": false, // todo
 		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
 		"noEmit": true,
-		"allowJs": true,
-		"checkJs": true
+		"types": ["node"]
 	},
 	"include": [
 		"src/**/*",
-		"esbuilder.js"
+		"esbuilder.ts"
 	]
 }

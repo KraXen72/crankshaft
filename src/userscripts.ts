@@ -159,7 +159,7 @@ class Userscript implements IUserscriptInstance {
 				'color: lightblue; font-weight: bold;', this.#strictMode ? 'color: #62dd4f' : 'color: orange',
 				'color: white;', 'color: lightgreen;');
 		} catch (error) {
-			errAlert(error, this.name);
+			errAlert(error as Error, this.name);
 			strippedConsole.error(error);
 		}
 	}
