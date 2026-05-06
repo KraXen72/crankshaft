@@ -163,7 +163,15 @@ const possibleSplashFlavors: string[] = [
 	'Da svidaniya, darling!',
 	'SI SI SI SI SI',
 	'Who up?',
-	'rest in peace, Boo'
+	'rest in peace, Boo',
+	'issues.chromium.org/415071737',
+	':pleading_face:',
+	'Absolute Cinema',
+	"743⁺Aether*✧ ˳ ⁎ ¹¹¹} ⁺ . ˳",
+	"CHEAT_CHECK",
+	"Powered by ECMAScript (tm)",
+	"🫪",
+	"Did you see that?"
 ];
 
 const splashFlavor = possibleSplashFlavors[Math.floor(Math.random() * possibleSplashFlavors.length)];
