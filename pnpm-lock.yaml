@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@nyabsi/minimal-discord-rpc':
+        specifier: ^1.0.1
+        version: 1.0.1
       compare-versions:
         specifier: ^6.1.0
         version: 6.1.1
-      minimal-discord-rpc:
-        specifier: ^1.0.2
-        version: 1.0.2
       urlpattern-polyfill:
         specifier: ^10.0.0
         version: 10.0.0
@@ -301,6 +301,9 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
+  '@nyabsi/minimal-discord-rpc@1.0.1':
+    resolution: {integrity: sha512-TxiOS+R18lJA66e63Rq1LETx+HkRTROcrPFw1h+RBFoO7/BF6VdPGGzRv+V6mVhJE1xMxtPdtSQJgi8QnlgBBw==}
+
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
@@ -428,6 +431,7 @@ packages:
   '@xmldom/xmldom@0.8.10':
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1552,9 +1556,6 @@ packages:
     resolution: {integrity: sha512-j5EctnkH7amfV/q5Hgmoal1g2QHFJRraOtmx0JpIqkxhBhI/lJSl1nMpQ45hVarwNETOoWEimndZ4QK0RHxuxQ==}
     engines: {node: '>=4'}
 
-  minimal-discord-rpc@1.0.2:
-    resolution: {integrity: sha512-rRBUQ989jdRGRe0gRgsYPyO7AEYgtc9SkfHFq5riSODOEWmcOG29QEVGCsEPheB4o3rzXtJrpizRLfAI7bVb9g==}
-
   minimatch@3.0.4:
     resolution: {integrity: sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==}
 
@@ -2334,6 +2335,8 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
+
+  '@nyabsi/minimal-discord-rpc@1.0.1': {}
 
   '@rtsao/scc@1.1.0': {}
 
@@ -3881,8 +3884,6 @@ snapshots:
   mime@2.6.0: {}
 
   mimic-response@1.0.1: {}
-
-  minimal-discord-rpc@1.0.2: {}
 
   minimatch@3.0.4:
     dependencies:

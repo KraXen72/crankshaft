@@ -26,6 +26,9 @@ interface CompHostParams {
     team1Name: string;
     team2Name: string;
     teamSize: string;
+	team1Players?: string;
+	team2Players?: string;
+	spectators?: string;
     webhook?: string;
 }
 
@@ -61,24 +64,36 @@ const waitForGameReady = (): Promise<void> => {
     });
 };
 
+const setInputValue = (selector: string, value?: string) => {
+	if (!value) return;
+	const input = document.querySelector<HTMLInputElement>(selector);
+	if (!input) return;
+	input.value = value;
+};
+
+const findMapCheckbox = (mapIdOrName: string): HTMLInputElement | null => {
+	if (!mapIdOrName) return null;
+
+	const byId = document.querySelector<HTMLInputElement>(`#${mapIdOrName}`);
+	if (byId) return byId;
+
+	const allMapNameElements = document.querySelectorAll('.hostMap .hostMapName');
+	const targetNameElement = Array.from(allMapNameElements).find(
+		(el) => (el as HTMLElement).innerText.trim() === mapIdOrName.trim()
+	);
+	if (targetNameElement && targetNameElement.parentElement) {
+		return targetNameElement.parentElement.querySelector('input[type="checkbox"]');
+	}
+
+	return null;
+};
+
 const automateCompHost = async (params: CompHostParams) => {
     await waitForGameReady();
 	window.openHostWindow(false, 1);
 	await waitForElement(".hostTb0");
 
-	let mapCheckbox: HTMLInputElement | null = null;
-
-	mapCheckbox = document.querySelector<HTMLInputElement>(`#${params.mapId}`);
-
-	if (!mapCheckbox) {
-		const allMapNameElements = document.querySelectorAll('.hostMap .hostMapName');
-		const targetNameElement = Array.from(allMapNameElements).find(
-			(el) => (el as HTMLElement).innerText.trim().toLowerCase() === params.mapId.toLowerCase()
-		);
-		if (targetNameElement && targetNameElement.parentElement) {
-			mapCheckbox = targetNameElement.parentElement.querySelector('input[type="checkbox"]');
-		}
-	}
+	const mapCheckbox = findMapCheckbox(params.mapId);
 
 	if (!mapCheckbox) {
         strippedConsole.error(`[Crankshaft] Automation failed: Could not find map '${params.mapId}'`);
@@ -108,6 +123,10 @@ const automateCompHost = async (params: CompHostParams) => {
 	};
 	const finalTeamSize = teamSizeMap[params.teamSize] || params.teamSize;
 	teamSizeSelect.value = finalTeamSize;
+
+	setInputValue('#customSteam1Players', params.team1Players);
+	setInputValue('#customSteam2Players', params.team2Players);
+	setInputValue('#customSspectators', params.spectators);
 
     if (params.webhook) {
         try {
