@@ -81,7 +81,7 @@ const findMapCheckbox = (mapIdOrName: string): HTMLInputElement | null => {
 	const targetNameElement = Array.from(allMapNameElements).find(
 		(el) => (el as HTMLElement).innerText.trim() === mapIdOrName.trim()
 	);
-	if (targetNameElement && targetNameElement.parentElement) {
+	if (targetNameElement?.parentElement) {
 		return targetNameElement.parentElement.querySelector('input[type="checkbox"]');
 	}
 
@@ -105,6 +105,7 @@ const automateCompHost = async (params: CompHostParams) => {
 		mapCheckbox.click();
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: function provided by krunker
 	(window.windows[7] as any).switchTab(2);
 
 	const team1Input = await waitForElement("#customSnameTeam1") as HTMLInputElement;
@@ -152,7 +153,7 @@ const parseStartupArgs = (args: string) => {
     }
 };
 
-ipcRenderer.on('process-startup-url', (event, url: string) => {
+ipcRenderer.on('process-startup-url', (_event, url: string) => {
 	strippedConsole.log('[Crankshaft Preload] Received startup URL from main process:', url);
 	parseStartupArgs(url);
 });
@@ -165,7 +166,7 @@ export const styleSettingsCSS = {
 	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
-ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
+ipcRenderer.on('main_did-finish-load', (_event, _userPrefs) => {
 	patchSettings(_userPrefs);
 
 	if (!_userPrefs.saveMatchResultJSONButton) return;
@@ -219,7 +220,7 @@ ipcRenderer.on('main_did-finish-load', (event, _userPrefs) => {
 	document.getElementById('endMidHolder').appendChild(buttonElement);
 });
 
-ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
+ipcRenderer.on('checkForUpdates', async (_event, currentVersion) => {
 	const releases = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`);
 	const response = await releases.json();
 	const latestVersion = response.tag_name;
@@ -234,7 +235,7 @@ ipcRenderer.on('checkForUpdates', async(event, currentVersion) => {
 		updateElement.appendChild(createElement('a', { text: `New update! Download ${latestVersion}` }));
 
 		const callback = () => { ipcRenderer.send('openExternal', `https://github.com/${repoID}/releases/latest`); };
-		try { updateElement.removeEventListener('click', callback); } catch (e) { }
+		try { updateElement.removeEventListener('click', callback); } catch (_e) { }
 		updateElement.addEventListener('click', callback);
 	} else {
 		updateElement.appendChild(createElement('span', { text: 'No new updates' }));
@@ -305,7 +306,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		}
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper, socialCssSwapper } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper } = _userPrefs;
 	const splashScreenCSSInjectionID = 'Crankshaft-splash-css';
 	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
 	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
@@ -346,7 +347,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 			try {
 				splashBackground.remove();
 				_observer.disconnect();
-			} catch (e) {
+			} catch (_e) {
 				console.log('splash screen was already cleared.');
 			}
 		};
@@ -384,7 +385,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	document.body.appendChild(styleElement);
 	if (cssSwapper !== 'None') {
 		const cssInUse = readFileSync(pathJoin(cssPath, `${cssSwapper}`), { encoding: 'utf-8' });
-		addEventListener('DOMContentLoaded', (event) => {
+		addEventListener('DOMContentLoaded', (_event) => {
 			styleElement.textContent = cssInUse;
 		});
 	}
@@ -426,7 +427,7 @@ export const regionMappings = [
 ];
 
 // find option elements of the region setting, + select closing tag
-const regionOptionsRegex = new RegExp('s*<option value=.*(de-fra).*(us-ca-sv).*</option>', 'gu');
+const regionOptionsRegex = /s*<option value=.*(de-fra).*(us-ca-sv).*<\/option>/gu;
 
 /** get a timezone in format '[HH:mm]' for a region by it's 3-letter code (e.g. FRA) or id (e.g. de-fra) */
 export function getTimezoneByRegionKey(key: 'code' | 'id', value: string) {
@@ -512,7 +513,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 					if (opt.textContent.includes("[")) continue;
 					try {
 						opt.textContent += ` ${getTimezoneByRegionKey('id', opt.value)}`;
-					} catch (error) {
+					} catch (_error) {
 						strippedConsole.error('Error getting timezone for: ', opt);
 						opt.textContent += ' [??:??]';
 					}
@@ -529,6 +530,7 @@ function patchSettings(_userPrefs: UserPrefs) {
 		};
 
 		settingsWindow.searchList = (...args: unknown[]) => {
+			// biome-ignore lint/suspicious/noExplicitAny: hook code, expected to be hacky
 			const result: any = searchHook(...args); // Do normal krunker settings search things
 			renderSettings();
 			return result;

@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/noUnusedVariables: .d.ts file */
 type UserPrefs = {
 	[preference: string]: UserPrefValue;
 };

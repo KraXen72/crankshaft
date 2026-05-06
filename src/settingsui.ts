@@ -61,7 +61,7 @@ const socialCssSwapperOption: SelectSettingDescItem = {
 	}
 }
 
-ipcRenderer.on('m_userPrefs_for_settingsUI', (event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
+ipcRenderer.on('m_userPrefs_for_settingsUI', (_event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
 	userPrefsPath = recieved_paths.settingsPath;
 	userscriptPrefsPath = recieved_paths.userscriptPreferencesPath;
@@ -190,7 +190,7 @@ function loadUserScriptSettings(eventSuffix: string, settings: Record<string, Us
 			}
 		});
 		return userscriptPreferences[eventSuffix];
-	} catch (e) { // Settings file for script probably doesn't exist yet
+	} catch (_e) { // Settings file for script probably doesn't exist yet
 		return {};
 	}
 }
@@ -237,7 +237,6 @@ function recalculateRefreshNeeded() {
 
 		if (!settingsEqual) {
 			if (descObj?.instant) {
-				continue;
 			} else if (descObj?.refreshOnly) {
 				if (refreshNeeded < RefreshEnum.refresh) refreshNeeded = RefreshEnum.refresh;
 			} else {
@@ -409,7 +408,7 @@ class SettingElem {
 		}
 
 		// add desc
-		if (Boolean(props.desc) && props.desc !== '') this.HTML += `<div class="setting-desc-new">${sanitize(props.desc)}</div>`;
+		if (props.desc && props.desc !== '') this.HTML += `<div class="setting-desc-new">${sanitize(props.desc)}</div>`;
 	}
 
 
@@ -444,7 +443,7 @@ class SettingElem {
 			updateUI(); // synchronize slider and number inputs visually
 		}
 
-		const value = (this.props.type == "keybind") ? JSON.parse(`${dirtyValue}`) : dirtyValue; // so we don't accidentally mutate it later
+		const value = (this.props.type === "keybind") ? JSON.parse(`${dirtyValue}`) : dirtyValue; // so we don't accidentally mutate it later
 
 		if (this.props.type === "keybind") {
 			elem.querySelector('.keyIcon').innerHTML = parseKeybindSettingDisplay(value);
@@ -518,7 +517,7 @@ class SettingElem {
 			callback(value);
 		}
 		recalculateRefreshNeeded();
-		try { refreshNotifElement.remove(); } catch (e) { }
+		try { refreshNotifElement.remove(); } catch (_e) { }
 		if (refreshNeeded > 0) {
 			refreshNotifElement = createElement('div', {
 				class: ['crankshaft-holder-update', 'refresh-popup'],
@@ -550,13 +549,13 @@ class SettingElem {
 		if (this.type === 'sel') wrapper.querySelector('select').value = String(this.props.value);
 
 		if (this.type === 'keybind') {
-			wrapper.querySelector('.keyIcon').addEventListener('mousedown', (event) => {
+			wrapper.querySelector('.keyIcon').addEventListener('mousedown', (_event) => {
 				triggerKeybindSettingDialog(this);
 			})
 			// The reason we do this is to transmit the value when updating the value, since there's no <input> for JS objects themselves.
 			wrapper.querySelector('input').setAttribute("value", JSON.stringify(this.props.value));
 
-			wrapper.querySelector('.crankshaftUnbindButton').addEventListener('mousedown', (event) => {
+			wrapper.querySelector('.crankshaftUnbindButton').addEventListener('mousedown', (_event) => {
 				setKeybindSetting(this, {
 					shift: false,
 					alt: false,
@@ -911,7 +910,7 @@ function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, 
 	if (forceInclude || 'reset defaults'.includes(filter)) {
 		// Add the 'reset defaults' button
 		const defaultsItem = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: `<span class="buttons-title">Reset ${scriptVanity.name} Settings</span>` });
-		defaultsItem.appendChild(skeleton.settingButton('refresh', 'Reset Defaults', e => { userscriptSettingsResetDefaults(userscript.name.replace(/.js$/u, '') ?? userscriptCategoryID, userScriptDefinedOptions, userscriptCategoryID, brokenSettings); }));
+		defaultsItem.appendChild(skeleton.settingButton('refresh', 'Reset Defaults', _e => { userscriptSettingsResetDefaults(userscript.name.replace(/.js$/u, '') ?? userscriptCategoryID, userScriptDefinedOptions, userscriptCategoryID, brokenSettings); }));
 		renderReadyData.documentFragment.querySelector(`.${userscriptCategoryID}`).appendChild(defaultsItem);
 		renderReadyData.renderedSettings++;
 	}
@@ -1068,7 +1067,7 @@ export function renderSettings() {
 	const settingCategoryHeaders = [...document.querySelectorAll('.Crankshaft-setHed')];
 	settingCategoryHeaders.forEach(header => {
 		const collapseCallback = () => { toggleCategory(header); };
-		try { header.removeEventListener('click', collapseCallback); } catch (e) { }
+		try { header.removeEventListener('click', collapseCallback); } catch (_e) { }
 		header.addEventListener('click', collapseCallback);
 	});
 

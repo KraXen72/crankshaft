@@ -1,7 +1,7 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { moveFolderSync } from './utils_node';
-import { BrowserWindow, Menu, MenuItem, type MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
+import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
 import RequestHandler from './requesthandler';
@@ -26,7 +26,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (_event, commandLine, _workingDirectory) => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -203,7 +203,7 @@ let mainWindow: BrowserWindow;
 let mainSocialWindowReference: BrowserWindow;
 let allSocialWindows: BrowserWindow[] = [];
 
-ipcMain.on('logMainConsole', (event, ...data) => { console.log(...data); });
+ipcMain.on('logMainConsole', (_event, ...data) => { console.log(...data); });
 
 // send usercript path to preload
 ipcMain.on('initializeUserscripts', () => {
@@ -222,7 +222,7 @@ ipcMain.on('matchmaker_requests_userPrefs', () => {
 });
 
 // settingsui is sending back updated settings (user changed the settings in ui) - writing new settings is already handled.
-ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
+ipcMain.on('settingsUI_updates_userPrefs', (_event, data) => {
 	if (data?.socialCssSwapper && data.socialCssSwapper !== userPrefs.socialCssSwapper) {
 		// if the new social CSS is different from the old social CSS, swap CSS on social windows if they exist
 		for (const socialWindow of allSocialWindows) {
@@ -234,7 +234,7 @@ ipcMain.on('settingsUI_updates_userPrefs', (event, data) => {
 });
 
 // allow perload opening links in default browser
-ipcMain.on('openExternal', (event, url: string) => { shell.openExternal(url); });
+ipcMain.on('openExternal', (_event, url: string) => { shell.openExternal(url); });
 
 const $assets = pathResolve(__dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
@@ -388,7 +388,7 @@ app.on('ready', () => {
 			// @ts-ignore since this node version is older than webcrypto
 			globalThis.crypto = { randomUUID: () => {
 				return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-					var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+					var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
 					return v.toString(16);
 				});
 			} };
@@ -426,7 +426,7 @@ app.on('ready', () => {
 					initialized = true;
 					mainWindow.webContents.send('initDiscordRPC'); // tell preload to init rpc
 				});
-				ipcMain.on('preload_updates_DiscordRPC', (event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
+				ipcMain.on('preload_updates_DiscordRPC', (_event, data: RPCargs) => { updateRPC(data); }); // whenever preload updates rpc, actually update it here
 			});
 		}
 	});
@@ -491,12 +491,13 @@ app.on('ready', () => {
 	mainWindow.setAutoHideMenuBar(true);
 	mainWindow.setMenuBarVisibility(false);
 
+	// todo: migrate to setWindowOpenHandler
 	mainWindow.webContents.on('new-window', (event, url) => {
 		console.log('url trying to open:', url, 'socialWindowReference:', typeof mainSocialWindowReference);
 		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com', 'github.com'];
 
 		// sanity check, if social window is destroyed but the reference still exists
-		if (typeof mainSocialWindowReference !== 'undefined' && mainSocialWindowReference.isDestroyed()) mainSocialWindowReference = void 0;
+		if (mainSocialWindowReference?.isDestroyed()) mainSocialWindowReference = undefined;
 
 		if (url.includes('social.html') && typeof mainSocialWindowReference !== 'undefined') {
 			// This runs when a social tab is already open and the user tries to open another social tab from the main game.

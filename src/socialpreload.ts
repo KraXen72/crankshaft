@@ -17,19 +17,19 @@ const styleElement = createElement('style', { id: 'crankshaftCustomCSS' });
 let socialCssPath = '';
 
 // userPrefs and the social CSS path are sent here
-ipcRenderer.once('social_tab_data', (event, data) => {
+ipcRenderer.once('social_tab_data', (_event, data) => {
     const { socialCssSwapper } = data.userPrefs;
     socialCssPath = data.socialCssPath;
 
     ipcRenderer.send('logMainConsole', `[Social/Hub Window] Social Tab Received Userprefs.`);
 
-    addEventListener('DOMContentLoaded', (event) => {
+    addEventListener('DOMContentLoaded', (_event) => {
         document.body.appendChild(styleElement);
         updateSocialCSS(socialCssSwapper);
     });
 })
 
-ipcRenderer.on('new_social_css', (event, data) => {
+ipcRenderer.on('new_social_css', (_event, data) => {
     // hot-swap CSS functionality
     updateSocialCSS(data);
 })

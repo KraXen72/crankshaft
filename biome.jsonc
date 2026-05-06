@@ -1,0 +1,53 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": ["**", "!assets"]
+	},
+	"formatter": {
+		"enabled": false, // for now
+		"indentStyle": "tab",
+		"lineWidth": 220
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noBannedTypes": "off",
+				"noUselessSwitchCase": "off",
+				"noVoid": "off" // used deliberately
+			},
+			"correctness": {
+				"noInvalidUseBeforeDeclaration": "off" // triggers mentioning stuff in callback functions (todo: review if needed)
+			},
+			"style": {
+				"useNodejsImportProtocol": "off" // not available for current node & electron versions
+			},
+			"suspicious": {
+				"noPrototypeBuiltins": "off", // not available for current node & electron versions
+				"noTsIgnore": "off", // i already use @ts-ignore sparingly
+				"useIterableCallbackReturn": "off"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"indentStyle": "tab",
+			"trailingCommas": "none"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "off"
+			}
+		}
+	}
+}

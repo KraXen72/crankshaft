@@ -33,7 +33,6 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		// Don't require user gesture for autoplay (thanks Commander)
 		app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
-
 		console.log('Applied helpful flags');
 	}
 	if (userPrefs.experimentalFlags_increaseLimits) {

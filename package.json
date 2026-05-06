@@ -3,7 +3,6 @@
 	"version": "1.11.1",
 	"description": "Crankshaft Krunker Client by KraXen72",
 	"main": "./app/main.js",
-	"type": "module",
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"postinstall": "electron-builder install-app-deps",
@@ -18,7 +17,7 @@
 		"testbuild-nv-wl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia  electron --enable-features=UseOzonePlatform --ozone-platform=wayland .",
 		"dist": "pnpm run build && electron-builder",
 		"release": "pnpm run build && electron-builder --publish always",
-		"lint": "eslint .",
+		"lint": "biome lint",
 		"changelog-c": "conventional-changelog -i CHANGELOG.md -s -p conventionalcommits -r 0",
 		"changelog-a": "conventional-changelog -i CHANGELOG.md -s -r 1"
 	},
@@ -33,16 +32,13 @@
 		"url": "https://github.com/KraXen72/crankshaft.git"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "2.4.14",
 		"@types/node": "14.14",
 		"concurrently": "^9.1.2",
 		"conventional-changelog-cli": "^5.0.0",
 		"electron": "npm:electron-nightly@12.0.0-nightly.20201116",
 		"electron-builder": "23.6.0",
 		"esbuild": "^0.25.1",
-		"eslint": "^8.56.0",
-		"eslint-config-airbnb-typescript": "^17.1.0",
-		"eslint-config-raven": "^1.0.3",
-		"eslint-plugin-import": "^2.29.1",
 		"typescript": "^6.0.3"
 	},
 	"dependencies": {

@@ -139,7 +139,7 @@ export default class RequestHandler {
 					));
 				}
 			}
-		} catch (err) {
+		} catch (_err) {
 			console.error(`Failed to resource-swap with prefix: ${prefix}`);
 		}
 	}

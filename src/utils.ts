@@ -3,8 +3,7 @@ import { strippedConsole } from './preload';
 import * as os from "os";
 
 /** inject css as a style tag */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const injectSettingsCSS = (css: string, identifier = 'settings') => {
+export const injectSettingsCSS = (css: string, _identifier = 'settings') => {
 	webFrame.insertCSS(css);
 };
 
@@ -120,9 +119,7 @@ export function secondsToTimestring(num: number) {
 }
 
 // https://www.30secondsofcode.org/js/s/arrays-have-same-contents/
-
-// eslint-disable-next-line
-export function haveSameContents(array1: any[], array2: any[]) {
+export function haveSameContents(array1: unknown[], array2: unknown[]) {
 	for (const value of new Set([...array1, ...array2])) if (array1.filter(e => e === value).length !== array2.filter(e => e === value).length) return false;
 	return true;
 }
@@ -133,7 +130,9 @@ export function haveSameContents(array1: any[], array2: any[]) {
  * @param object2 the second object
  * @returns whether or not they are equal
  */
-export function objectsAreEqual(object1: {[key: string]: any}, object2: {[key: string]: any}) {
+
+// biome-ignore lint/suspicious/noExplicitAny: hacky
+export  function objectsAreEqual(object1: {[key: string]: any}, object2: {[key: string]: any}) {
 	if (typeof object1 !== typeof object2) return false; // failsafe here just in case
 	if (Array.isArray(object1) && Array.isArray(object2) && !haveSameContents(object1, object2)) return false;
 	if (!haveSameContents(Object.keys(object1), Object.keys(object2))) return false;
@@ -170,7 +169,7 @@ export function objectsAreEqual(object1: {[key: string]: any}, object2: {[key: s
  * @returns Whether or not the passed KeyboardEvent matches the keybind setting
  */
 export function keyboardEventMatchesCustomSetting(setting: KeybindUserPref, event: KeyboardEvent) {
-	if (document.activeElement.tagName == "INPUT") return; // Don't fire keybind inputs when in chat, typing something into a form, etc.
+	if (document.activeElement.tagName === "INPUT") return; // Don't fire keybind inputs when in chat, typing something into a form, etc.
 	return event.key === setting.key && event.shiftKey === setting.shift && event.altKey === setting.alt && event.ctrlKey === setting.ctrl;
 }
 
