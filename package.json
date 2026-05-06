@@ -6,10 +6,10 @@
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"postinstall": "electron-builder install-app-deps",
-		"build": "node esbuilder.ts --build",
-		"start": "node esbuilder.ts && electron .",
-		"watch": "node esbuilder.ts --watch",
-		"dev": "concurrently --kill-others \"node esbuilder.ts --watch\" \"electron .\"",
+		"build": "node esbuilder.mts --build",
+		"start": "node esbuilder.mts && electron .",
+		"watch": "node esbuilder.mts --watch",
+		"dev": "concurrently --kill-others \"node esbuilder.mts --watch\" \"electron .\"",
 		"testbuild": "pnpm run build && electron .",
 		"testbuild-nv": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
 		"testbuild-nv-gl": "pnpm run build && env __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 __GLX_VENDOR_LIBRARY_NAME=nvidia electron .",
@@ -38,7 +38,7 @@
 		"conventional-changelog-cli": "^5.0.0",
 		"electron": "npm:electron-nightly@37.0.0-nightly.20250328",
 		"electron-builder": "23.6.0",
-		"esbuild": "^0.25.1",
+		"esbuild": "^0.28.0",
 		"typescript": "^6.0.3"
 	},
 	"dependencies": {
