@@ -137,7 +137,7 @@ const settingsSkeleton = {
 	matchmaker_minPlayers: 1,
 	matchmaker_maxPlayers: 6,
 	matchmaker_minRemainingTime: 120,
-	hideAds: 'hide',
+	hideAds: 'block',
 	customFilters: false,
 	regionTimezones: false,
 	immersiveSplashBackgroundColor: '#171717',
