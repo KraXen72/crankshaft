@@ -1,3 +1,16 @@
+## [1.12.0](https://github.com/KraXen72/crankshaft/compare/1.11.1...1.12.0) (2026-05-05)
+
+
+### Features
+* Extend automateCompHost with player/spectator params by @DrEviliskool
+* Block instead of hide ads by default
+
+### Cleanup
+* Replace minimal-discord-rpc dependency with a copy still visible on NPM by @DrEviliskool
+* Bump deps
+* Migrate from eslint to biome for linting
+* Clean up typescript config, fix type errors
+
 ## [1.11.1](https://github.com/KraXen72/crankshaft/compare/1.11.0...1.11.1) (2025-11-30)
 
 
