@@ -45,7 +45,7 @@
 	},
 	"dependencies": {
 		"compare-versions": "^6.1.0",
-		"minimal-discord-rpc": "^1.0.2",
+		"@nyabsi/minimal-discord-rpc": "^1.0.1",
 		"urlpattern-polyfill": "^10.0.0"
 	},
 	"pnpm": {
