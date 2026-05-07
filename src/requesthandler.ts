@@ -1,6 +1,7 @@
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join as pathJoin } from 'path';
 
+//@ts-ignore typescript doesn't see this export?
 import type { Filter } from 'electron';
 
 // TODO: conditional import (?)
@@ -18,7 +19,7 @@ export default class RequestHandler {
 
 	private customFiltersEnabled: boolean;
 
-	private filter: WebRequestFilter = { urls: [] };
+	private filter: Filter = { urls: [] };
 
 	private swapUrls: string[] = [];
 
