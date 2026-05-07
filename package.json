@@ -1,6 +1,6 @@
 {
 	"name": "crankshaft-next",
-	"version": "1.9.1",
+	"version": "1.12.0",
 	"description": "Crankshaft Krunker Client by KraXen72",
 	"main": "./app/main.js",
 	"scripts": {
