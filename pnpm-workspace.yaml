@@ -1,0 +1,5 @@
+allowBuilds:
+  electron: true
+  electron-nightly: true
+  esbuild: true
+  register-scheme: true
