@@ -38,10 +38,6 @@ if (!gotTheLock) {
   });
 }
 
-/*
- * TODO make crankshaft server announcement about backup
- * TODO mention minor breaking change in changelog & mention backup
- */
 function migrateSettings() {
 	if (existsSync(pathJoin(docsPath, 'settings moved.txt')) || readdirSync(docsPath).length === 0) return;
 	if (!existsSync(userData)) mkdirSync(userData);
@@ -493,8 +489,9 @@ app.on('ready', () => {
 	mainWindow.setAutoHideMenuBar(true);
 	mainWindow.setMenuBarVisibility(false);
 
-	// todo: migrate to setWindowOpenHandler
-	mainWindow.webContents.on('new-window', (event, url) => {
+	mainWindow.webContents.setWindowOpenHandler(details => {
+		const url = details.url;
+
 		console.log('url trying to open:', url, 'socialWindowReference:', typeof mainSocialWindowReference);
 		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com', 'github.com'];
 
@@ -503,9 +500,9 @@ app.on('ready', () => {
 
 		if (url.includes('social.html') && typeof mainSocialWindowReference !== 'undefined') {
 			// This runs when a social tab is already open and the user tries to open another social tab from the main game.
-			event.preventDefault();
 			mainSocialWindowReference.loadURL(url); // if a designated socialWindow exists already, just load the url there
 			mainSocialWindowReference.show(); // bring the window to the front for if the user forgot if they had a social tab open (I've totally never done that ever)
+			return { action: "deny" };
 		} else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
 			const pick = dialog.showMessageBoxSync({
 				title: 'Opening a new url',
@@ -515,24 +512,20 @@ app.on('ready', () => {
 			});
 			switch (pick) {
 				case 0: // open in default browser
-					event.preventDefault();
 					shell.openExternal(url);
 					break;
 				case 2: // load as main window
-					event.preventDefault();
 					mainWindow.loadURL(url);
 					break;
 				case 3: // don't open
-					event.preventDefault();
 					break;
 				case 1: // open as a new window in client
 				default: {
-					event.preventDefault();
-					const genericWin = customGenericWin(url, strippedMenuTemplate);
-					event.newGuest = genericWin;
+					customGenericWin(url, strippedMenuTemplate);
 					break;
 				}
 			}
+			return { action: "deny" };
 
 			// for comp or hosted game just load it into the mainWindow
 		} else if (url.includes('comp.krunker.io')
@@ -543,25 +536,22 @@ app.on('ready', () => {
 			|| url.includes('?host')
 			|| (url.includes('?game=') && url.includes('&matchId='))
 		) {
-			event.preventDefault();
 			mainWindow.loadURL(url);
+			return { action: "deny" };
 		} else {
-			event.preventDefault();
 			console.log(`genericWindow created for ${url}`);
 			if (url.includes('social.html')) { // for social links, create a separate "master" social window that the main game will reference.
 				const newMainSocialWindow = customGenericWin(url, strippedMenuTemplate, false, true, pathJoin(__dirname, 'socialpreload.js'));
-				event.newGuest = newMainSocialWindow;
-
 				mainSocialWindowReference = newMainSocialWindow;
 				// eslint-disable-next-line no-void
 				newMainSocialWindow.on('close', () => { mainSocialWindowReference = void 0; }); // remove reference once window is closed
 				bindSocialWindowBehaviours(newMainSocialWindow);
 			} else { // for any other link, fall back to creating a custom window with strippedMenu. 
-				const genericWin = customGenericWin(url, strippedMenuTemplate, false, true);
-				event.newGuest = genericWin;
+				customGenericWin(url, strippedMenuTemplate, false, true);
 			}
+			return { action: "deny" };
 		}
-	});
+	})
 
 	// console.log(readFileSync(pathJoin($assets, 'blockFilters.txt'), { encoding: 'utf-8' }));
 
@@ -602,17 +592,16 @@ function bindSocialWindowBehaviours(windowToBind: BrowserWindow) {
 		windowToBind.webContents.send('social_tab_data', { userPrefs, socialCssPath });
 	});
 
-	windowToBind.webContents.on('new-window', (evt, url) => {
-		console.log('Social tab tried to open a child window:', url);
+	windowToBind.webContents.setWindowOpenHandler(details => {
+		console.log('Social tab tried to open a child window:', details.url);
 		if (userPrefs.socialTabBehaviour === "Same Window") {
-			evt.preventDefault();
-			windowToBind.loadURL(url);
+			windowToBind.loadURL(details.url);
+			return { action: "deny" };
 		} else if (userPrefs.socialTabBehaviour === "New Window") {
 			console.log('Creating new social window.');
-			evt.preventDefault();
-			const newSocialWindow = customGenericWin(url, [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate], false, true, pathJoin(__dirname, 'socialpreload.js'));
+			const newSocialWindow = customGenericWin(details.url, [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate], false, true, pathJoin(__dirname, 'socialpreload.js'));
 			bindSocialWindowBehaviours(newSocialWindow);
-			evt.newGuest = newSocialWindow;
+			return { action: "deny" };
 		}
 	})
 }
