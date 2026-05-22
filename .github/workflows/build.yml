@@ -4,14 +4,16 @@ on:
   push:
     branches:
       - master
+      - next2
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-15, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - name: Checkout
@@ -19,8 +21,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -45,6 +45,8 @@ jobs:
     needs: build
 
     runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/master'
 
     permissions:
       contents: write
