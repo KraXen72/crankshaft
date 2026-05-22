@@ -1,10 +1,8 @@
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join as pathJoin } from 'path';
 
-//@ts-ignore typescript doesn't see this export?
-import type { Filter } from 'electron';
+import type { WebRequestFilter } from 'electron';
 
-// TODO: conditional import (?)
 import { URLPattern } from 'urlpattern-polyfill';
 
 const TARGET_GAME_DOMAIN = 'krunker.io';
@@ -19,7 +17,7 @@ export default class RequestHandler {
 
 	private customFiltersEnabled: boolean;
 
-	private filter: Filter = { urls: [] };
+	private filter: WebRequestFilter = { urls: [] };
 
 	private swapUrls: string[] = [];
 
