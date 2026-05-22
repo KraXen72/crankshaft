@@ -402,7 +402,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	 * Animate transforms instead of position properties
 	 * https://web.dev/articles/stick-to-compositor-only-properties-and-manage-layer-count
 	 */
-	addEventListener('DOMContentLoaded', event => {
+	addEventListener('DOMContentLoaded', _event => {
 		const styleElement = createElement('style', { id: 'crankshaftKeyframeFix' });
 		styleElement.textContent = '@keyframes chat-moveup { 0% { transform: translateY(375px); } 100% { transform: translateY(0px); } } @keyframes death-ui-moveup { 0% { transform: translateY(340px); } 100% { transform: translateY(0px); } }';
 		document.body.appendChild(styleElement);
