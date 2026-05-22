@@ -1,0 +1,16 @@
+diff --git a/install.js b/install.js
+index a0c177dea41609f8adfe75fb17bd39ae65b0ad0c..6ab59e1787188776895e1f1db0006a1844b1806a 100644
+--- a/install.js
++++ b/install.js
+@@ -38,6 +38,11 @@ if (platform === 'darwin' && process.platform === 'darwin' && arch === 'x64' &&
+   }
+ }
+ 
++process.env.ELECTRON_CUSTOM_DIR = "v{{ version }}-inputpriofix-1";
++process.env.ELECTRON_MIRROR = "https://github.com/thegu5/electron/releases/download/";
++process.env.ELECTRON_NIGHTLY_MIRROR = "https://github.com/thegu5/electron/releases/download/";
++process.env.electron_use_remote_checksums = "true"
++
+ // downloads if not cached
+ downloadArtifact({
+   version,

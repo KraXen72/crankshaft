@@ -33,7 +33,7 @@ const buildOptions: BuildOptions = {
 	metafile: metaFile,
 	format: 'cjs',
 	platform: 'node',
-	target: ["node14", "chrome89"], // electron 12.2.3
+	target: ["node22", "chrome136"], // electron 37
 	outdir: 'app',
 	tsconfig: 'tsconfig.json',
 	external: ["electron"]
