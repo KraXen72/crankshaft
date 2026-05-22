@@ -42,9 +42,10 @@ export default class RequestHandler {
 		this.blockerEnabled = blockerEnabled;
 		this.customFiltersEnabled = customFiltersEnabled;
 
-		this.defaultFilters = defaultFiltersStr.split(/\r?\n/u);
+		this.defaultFilters = defaultFiltersStr.split(/\r?\n/u).filter(s => s.length);
 		this.customFilters = readFileSync(customFiltersPath, { encoding: 'utf-8' }).toString()
 			.split(/\r?\n/u)
+			.filter(s => s.length)
 			.filter(filter => filter[0] !== '#');
 	}
 

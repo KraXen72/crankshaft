@@ -11,4 +11,5 @@
 *://storage.googleapis.com/pollfish_production/*
 *://coeus.frvr.com/*
 *://apis.google.com/js/platform.js
+*://pagead2.googlesyndication.com/pagead/js/*
 *://imasdk.googleapis.com/*
