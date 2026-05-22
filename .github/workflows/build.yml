@@ -4,12 +4,14 @@ on:
   push:
     branches:
       - master
+      - next2
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
@@ -44,6 +46,8 @@ jobs:
     needs: build
 
     runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/master'
 
     permissions:
       contents: write
