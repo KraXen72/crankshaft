@@ -1,5 +1,5 @@
 {
-	"name": "crankshaft",
+	"name": "crankshaft-next",
 	"version": "1.12.0",
 	"description": "Crankshaft Krunker Client by KraXen72",
 	"main": "./app/main.js",
@@ -36,7 +36,7 @@
 		"@types/node": "14.14",
 		"concurrently": "^9.2.1",
 		"conventional-changelog-cli": "^5.0.0",
-		"electron": "npm:electron-nightly@12.0.0-nightly.20201116",
+		"electron": "npm:electron-nightly@37.0.0-nightly.20250328",
 		"electron-builder": "23.6.0",
 		"esbuild": "^0.28.0",
 		"typescript": "^6.0.3"

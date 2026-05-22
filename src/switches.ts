@@ -39,7 +39,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		app.commandLine.appendSwitch('renderer-process-limit', '100');
 		app.commandLine.appendSwitch('max-active-webgl-contexts', '100');
 		app.commandLine.appendSwitch('webrtc-max-cpu-consumption-percentage', '100');
-		app.commandLine.appendSwitch('ignore-gpu-blacklist');
+		app.commandLine.appendSwitch('ignore-gpu-blocklist');
 
 		console.log('Applied flags to increase limits');
 	}
@@ -56,7 +56,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		app.commandLine.appendSwitch('enable-accelerated-video-decode');
 		app.commandLine.appendSwitch('enable-native-gpu-memory-buffers');
 		app.commandLine.appendSwitch('high-dpi-support', '1');
-		app.commandLine.appendSwitch('ignore-gpu-blacklist');
+		app.commandLine.appendSwitch('ignore-gpu-blocklist');
 		app.commandLine.appendSwitch('no-pings');
 		app.commandLine.appendSwitch('no-proxy-server');
 
@@ -82,16 +82,13 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 	if (userPrefs['angle-backend'] !== 'default') {
 		if (userPrefs['angle-backend'] === 'vulkan') {
-			app.commandLine.appendSwitch('use-angle', 'vulkan');
 			app.commandLine.appendSwitch('use-vulkan');
-			app.commandLine.appendSwitch('--enable-features=Vulkan');
-
-			console.log('VULKAN INITIALIZED');
-		} else {
-			app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
-
-			console.log(`Using Angle: ${userPrefs['angle-backend']}`);
+			app.commandLine.appendSwitch('enable-features', 'Vulkan');
 		}
+
+		app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
+
+		console.log(`Using Angle: ${userPrefs['angle-backend']}`);
 	}
 	if (userPrefs.inProcessGPU) {
 		app.commandLine.appendSwitch('in-process-gpu');

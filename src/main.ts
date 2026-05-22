@@ -255,7 +255,6 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 		webPreferences: {
 			preload: (customPreload) ? customPreload : '',
 			spellcheck: false,
-			enableRemoteModule: false,
 			nodeIntegration: false
 		}
 	});
@@ -342,10 +341,10 @@ app.on('ready', () => {
 		center: true,
 		webPreferences: {
 			preload: pathJoin(__dirname, 'preload.js'),
-			enableRemoteModule: false,
 			spellcheck: false,
 			nodeIntegration: false,
-			contextIsolation: false // not ideal, but preload does a lot of interaction w/ the page
+			contextIsolation: false, // not ideal, but preload does a lot of interaction w/ the page
+			sandbox: false
 		},
 		backgroundColor: '#000000'
 	};
@@ -383,7 +382,7 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
 
-		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL(userPrefs.overrideURL || 'https://krunker.io'); return; }
+		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
