@@ -55,7 +55,6 @@ export function constructDevtoolsSubmenu(providedWindow: BrowserWindow, skipFall
 
 	/** test first time if should open fallback or not. then decide */
 	function openDevToolsWithFallback() {
-		/* eslint-disable no-param-reassign */
 		if (skipFallback === true) {
 			providedWindow.webContents.openDevTools(options);
 		} else if (skipFallback === false) {
@@ -65,7 +64,6 @@ export function constructDevtoolsSubmenu(providedWindow: BrowserWindow, skipFall
 			const popupDevtoolTimeout = setTimeout(() => { skipFallback = false; fallbackDevtools(); }, maxLag); // wait maxLag. if times out, always run fallback
 			providedWindow.webContents.once('devtools-opened', () => { skipFallback = true; clearTimeout(popupDevtoolTimeout); }); // if opens devtools first, never run fallback
 		}
-		/* eslint-disable no-param-reassign */
 	}
 
 	// return 2 menuItems that can be spread and injected where needed

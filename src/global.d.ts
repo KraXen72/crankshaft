@@ -50,16 +50,13 @@ interface UserscriptMeta {
 	settingsID: string;
 }
 
-/** krunker injects these into the window object */
+// stuff krunker adds
 type SettingsTab = {
 	name: string;
 	categories: string[];
 };
 
-// a shim of krunker's modified window object
 interface Window {
-
-	// krunker's stuff
 	OffCliV: boolean;
 	getGameActivity: Function;
 	showWindow: Function;
@@ -81,9 +78,6 @@ interface Window {
 		getSettings: Function;
 		searchList: Function;
 	}, ...Object[]];
-
-	// crankshaft's stuff
-	errAlert: Function;
 }
 
 /*

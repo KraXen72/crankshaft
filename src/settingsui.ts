@@ -1,9 +1,8 @@
-/* eslint-disable max-len */
 import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import * as os from "os";
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
-import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils';
+import { createElement, haveSameContents, toggleSettingCSS, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils';
 import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
 import { su } from './userscripts';
 import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
@@ -17,7 +16,6 @@ enum RefreshEnum {
 interface IPaths { [path: string]: string }
 type CustomUserscriptSettings = Record<string, UserPrefs>;
 
-/* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
 let userscriptPrefsPath: string;
@@ -26,7 +24,6 @@ let userPrefsCache: UserPrefs; // the userprefs on path
 let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
 let refreshNotifElement: HTMLElement;
 let paths: IPaths;
-/* eslint-disable init-declarations */
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
@@ -368,8 +365,8 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			case 'multisel': {
-				const hasValidDescriptions = hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length;
-				if (hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`);
+				const hasValidDescriptions = Object.hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length;
+				if (Object.hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`);
 				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : ''}>
 						${props.opts.map((opt, i) => `<label class="hostOpt">
@@ -438,8 +435,8 @@ class SettingElem {
 				setVal(userPrefs[this.props.key].toString());
 				return; // revert UI and don't apply this change;
 			}
-			if (hasOwn(this.props, 'min') && dirtyValue < this.props.min) { dirtyValue = this.props.min; updateUI(); }
-			if (hasOwn(this.props, 'max') && dirtyValue > this.props.max) { dirtyValue = this.props.max; updateUI(); }
+			if (Object.hasOwn(this.props, 'min') && dirtyValue < this.props.min) { dirtyValue = this.props.min; updateUI(); }
+			if (Object.hasOwn(this.props, 'max') && dirtyValue > this.props.max) { dirtyValue = this.props.max; updateUI(); }
 			updateUI(); // synchronize slider and number inputs visually
 		}
 
@@ -513,7 +510,6 @@ class SettingElem {
 			// krunkers transition takes .4s, this is more reliable than to wait for transitionend
 			if (refreshSettings) setTimeout(renderSettings, 400);
 		} else {
-			// eslint-disable-next-line callback-return
 			callback(value);
 		}
 		recalculateRefreshNeeded();

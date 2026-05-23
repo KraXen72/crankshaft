@@ -2,7 +2,7 @@
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
 import { fetchGame } from './matchmaker';
-import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils';
+import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils';
 import { renderSettings } from './settingsui';
 import { compareVersions } from 'compare-versions';
 import { splashFlavor } from './splashscreen';
@@ -258,10 +258,10 @@ ipcRenderer.on('initDiscordRPC', () => {
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo');
 
-		const gameActivity = hasOwn(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
+		const gameActivity = Object.hasOwn(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
 		let overWriteDetails: string | false = false;
-		if (!hasOwn(gameActivity, 'class')) gameActivity.class = { name: classElem?.textContent ?? '' };
-		if (!hasOwn(gameActivity, 'map') || !hasOwn(gameActivity, 'mode')) overWriteDetails = mapElem?.textContent ?? 'Loading game...';
+		if (!Object.hasOwn(gameActivity, 'class')) gameActivity.class = { name: classElem?.textContent ?? '' };
+		if (!Object.hasOwn(gameActivity, 'map') || !Object.hasOwn(gameActivity, 'mode')) overWriteDetails = mapElem?.textContent ?? 'Loading game...';
 
 		const data: RPCargs = {
 			details: overWriteDetails || `${gameActivity.mode} on ${gameActivity.map}`,
@@ -290,7 +290,6 @@ ipcRenderer.on('initDiscordRPC', () => {
 ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
 
 ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string, cssPath: string) => {
-	// eslint-disable-next-line
 	const { matchmaker, matchmakerKey, overrideURL } = _userPrefs;
 
 	document.addEventListener('keydown', event => {
@@ -550,9 +549,9 @@ function patchSettings(_userPrefs: UserPrefs) {
 	}
 	const waitForWindow0: TimerHandler = () => {
 		if (
-			hasOwn(window, 'showWindow')
+			Object.hasOwn(window, 'showWindow')
 			&& typeof window.showWindow === 'function'
-			&& hasOwn(window, 'windows')
+			&& Object.hasOwn(window, 'windows')
 			&& Array.isArray(window.windows)
 			&& window.windows.length >= 0
 			&& typeof window.windows[0] !== 'undefined'

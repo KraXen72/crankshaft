@@ -1,6 +1,5 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
-import { moveFolderSync } from './utils_node';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync, cpSync } from 'fs';
 import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
 import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
 import { applyCommandLineSwitches } from './switches';
@@ -57,7 +56,8 @@ function migrateSettings() {
 		error.stack = null;
 		throw error;
 	}
-	moveFolderSync(docsPath, userData);
+	cpSync(docsPath, userData, { recursive: true });
+	rmSync(docsPath, { recursive: true });
 	if (!existsSync(docsPath)) mkdirSync(docsPath);
 	writeFileSync(pathJoin(docsPath, 'settings moved.txt'),
 		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.\n
@@ -540,7 +540,6 @@ app.on('ready', () => {
 			if (url.includes('social.html')) { // for social links, create a separate "master" social window that the main game will reference.
 				const newMainSocialWindow = customGenericWin(url, strippedMenuTemplate, false, true, pathJoin(__dirname, 'socialpreload.js'));
 				mainSocialWindowReference = newMainSocialWindow;
-				// eslint-disable-next-line no-void
 				newMainSocialWindow.on('close', () => { mainSocialWindowReference = void 0; }); // remove reference once window is closed
 				bindSocialWindowBehaviours(newMainSocialWindow);
 			} else { // for any other link, fall back to creating a custom window with strippedMenu. 
@@ -604,7 +603,6 @@ function bindSocialWindowBehaviours(windowToBind: BrowserWindow) {
 }
 
 // for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic - when all windows close, the app should exit itself
-// eslint-disable-next-line consistent-return
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') return app.quit(); // don't quit on mac systems unless user explicitly quits
 });
