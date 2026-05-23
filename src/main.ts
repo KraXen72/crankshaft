@@ -380,14 +380,6 @@ app.on('ready', () => {
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
 		if (userPrefs.discordRPC) {
-			// @ts-ignore since this node version is older than webcrypto
-			globalThis.crypto = { randomUUID: () => {
-				return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-					var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-					return v.toString(16);
-				});
-			} };
-
 			import('@nyabsi/minimal-discord-rpc').then(DiscordRPC => {
 				const rpc = new DiscordRPC.Client({ clientId: '988529967220523068' });
 				const startTimestamp = new Date();

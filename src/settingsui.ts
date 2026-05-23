@@ -400,7 +400,6 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			default:
-				// @ts-ignore
 				this.HTML = `<span class="setting-title">${sanitize(props.title)}</span><span>Unknown setting type</span>`;
 		}
 

@@ -15,13 +15,11 @@ let openServerWindow: boolean;
  * @param accept whether or not the new game was accepted
  */
 function decideMatchmakerDecision(accept: boolean) {
-	// @ts-ignore Built into the global window object from krunker
 	window.playSelect();
 	if (accept && currentMatch !== 'none') {
 		window.location.href = `https://krunker.io/?game=${currentMatch}`;
 	} else {
 		popupElement.remove();
-		// @ts-ignore Built into the global window object from krunker
 		if (currentMatch === 'none' && openServerWindow) window.openServerWindow(0);
 	}
 }
