@@ -7,7 +7,6 @@ export const injectSettingsCSS = (css: string, _identifier = 'settings') => {
 	webFrame.insertCSS(css);
 };
 
-export const hasOwn = (object: Object, key: string) => Object.prototype.hasOwnProperty.call(object, key);
 export const repoID = 'KraXen72/crankshaft';
 
 // create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js
@@ -17,7 +16,6 @@ export const repoID = 'KraXen72/crankshaft';
  * @param options options for the element. like class, id, etc
  * @returns element
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export function createElement(type: string, options: Object = {}) {
 	const element = document.createElement(type);
 

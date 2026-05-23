@@ -16,7 +16,6 @@ export const su = {
 
 /** simple error message for usercripts. can be called from the userscript itself */
 const errAlert = (err: Error, name: string) => {
-	// eslint-disable-next-line no-alert
 	alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`);
 };
 
@@ -126,8 +125,6 @@ class Userscript implements IUserscriptInstance {
 	/** runs the userscript */
 	load() {
 		try {
-			// @ts-ignore
-			// eslint-disable-next-line @typescript-eslint/no-implied-eval
 			const exported = new Function(this.content).apply({
 				unload: false,
 				settings: {},
