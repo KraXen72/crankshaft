@@ -63,6 +63,8 @@ interface Window {
 	showWindow: Function;
 	instruction: { log: (type: number, message: string) => void };
 	openHostWindow: (isCustom: boolean, type: number) => void;
+	openServerWindow: (id: number) => void;
+	playSelect: (volume?: number) => void;
 	closeHostWindow: () => void;
 	createPrivateRoom: () => void;
 	windows: [{ // settings window
