@@ -17,9 +17,14 @@ There are a few example userscripts mentioned in the README you can go off of.
 		- [Console access (version 1.6.0+)](#console-access-version-160)
 		- [Insert CSS (version 1.6.1+)](#insert-css-version-161)
 		- [Custom Krunker Settings (version 1.9.0+)](#custom-krunker-settings-version-190)
+			- [Step 1 - Add the setting key:](#step-1---add-the-setting-key)
+			- [Step 2 - Add the required setting properties:](#step-2---add-the-required-setting-properties)
+			- [Step 3 - Add the optional setting properties:](#step-3---add-the-optional-setting-properties)
+			- [Step 4 - Add the changed() function:](#step-4---add-the-changed-function)
+		- [Custom Keybind Setting (version 1.9.2+)](#custom-keybind-setting-version-192)
 	- [Tips / Notes](#tips--notes)
 		- [removing an eventListener easily:](#removing-an-eventlistener-easily)
-		- ['once' attribute on eventlisteners](#once-attribute-on-eventlisteners)
+		- ['once' attribute on eventListeners](#once-attribute-on-eventlisteners)
 	- [Enabling and testing your userscript](#enabling-and-testing-your-userscript)
 		- [crankshaft version 1.9.0+](#crankshaft-version-190)
 		- [crankshaft version \<1.9.0](#crankshaft-version-190-1)
@@ -97,11 +102,10 @@ While krunker is loading, you might already have existing dom elements, (`@run-a
 // ==/UserScript==
 
 
-const has = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
 let interval = null
 
 function checkSpect() {
-	if (has(globalThis, "setSpect") && typeof globalThis.setSpect === 'function') {
+	if (Object.hasOwn(globalThis, "setSpect") && typeof globalThis.setSpect === 'function') {
 		globalThis.setSpect(true)
 		clearInterval(interval)
 		this._console.log("sucessfully set spectator mode!")
@@ -115,12 +119,6 @@ return this
 ```
 ### Explanation/notes
 - `globalThis` **can be used interchangably with** `window` **in this case.** - [more details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis)
-- **we use a custom `has` function to check if a function exists on window**. <u>**you can just copy-paste it**</u>, but here's a technical explanation for those interested:
-  - Unlike the `in` operator, this method does not check for the specified property in the object's prototype chain. - [source (MDN)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty#description)
-  - ideally, we'd use `Object.hasOwn`, but that's supported only in chrome >= 93 (not our case)
-  - you *can* use `window`/`globalThis.hasOwnProperty('key')`, however, `hasOwnProperty` is not a protected keyword - [more details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty#using_hasownproperty_as_a_property_name)
-  - thus, we have to use `Object.prototype.hasOwnProperty.call(object, key)`, which always sources the function from the `Object.prototype`
-  - if you're thinking this is too paranoid, even eslint yells at you about using `hasOwnProperty` from a source other than `Object.prototype`
 - **clear the interval after you run your stuff!!!** `setInterval` is one of the most performance heavy function. it literally schedules a function to be ran every x ms. ***unless*** that's what you want to do, clear the interval after you're done.
 - **unless your callback is an arrow function, use `callback.apply(this)`.** we have to run `checkSpect.apply(this)` instead of just `checkSpect()` because in that case the `this` keyword will no longer have our helper functions like `_css`, `_console`, etc.
 - if you want to wait for more functions, you can define more intervals & callback under different names. but honestly once 1 function exists, others probably exist too. so you should be fine only waiting for 1 of them.
