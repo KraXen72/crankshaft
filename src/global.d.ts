@@ -61,6 +61,7 @@ interface Window {
 
 	// krunker's stuff
 	OffCliV: boolean;
+	closeClient: Function;
 	getGameActivity: Function;
 	showWindow: Function;
 	instruction: { log: (type: number, message: string) => void };

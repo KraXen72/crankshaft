@@ -478,3 +478,8 @@ input:checked+.advancedSlider:hover {
 	transition: color 0s;
 	cursor: pointer;
 }
+
+/* Enables the exit prompt button for new UI */
+#clientExit {
+	display: flex !important;
+}

@@ -236,6 +236,9 @@ ipcMain.on('settingsUI_updates_userPrefs', (_event, data) => {
 // allow perload opening links in default browser
 ipcMain.on('openExternal', (_event, url: string) => { shell.openExternal(url); });
 
+// allow exit client prompt to quit the entire electron process
+ipcMain.on('closeClient', () => { app.exit(); });
+
 const $assets = pathResolve(__dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
 
