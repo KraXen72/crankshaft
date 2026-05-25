@@ -58,6 +58,7 @@ type SettingsTab = {
 
 interface Window {
 	OffCliV: boolean;
+	closeClient: Function;
 	getGameActivity: Function;
 	showWindow: Function;
 	instruction: { log: (type: number, message: string) => void };

@@ -9,6 +9,7 @@ import { splashFlavor } from './splashscreen';
 
 // get rid of client unsupported message 
 window.OffCliV = true;
+window.closeClient = () => ipcRenderer.send('closeClient');
 
 // save some console methods from krunker
 export const strippedConsole = {
