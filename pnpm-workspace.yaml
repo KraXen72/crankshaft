@@ -1,3 +1,5 @@
 allowBuilds:
   electron-nightly: true
   esbuild: true
+patchedDependencies:
+  electron-nightly: patches/electron-nightly.patch

@@ -1,8 +1,8 @@
 diff --git a/install.js b/install.js
-index a0c177dea41609f8adfe75fb17bd39ae65b0ad0c..6ab59e1787188776895e1f1db0006a1844b1806a 100644
+index 540e1e68a561fbd0b3af0438b0465e984a7d5b52..993438448286aabc751228632bb87f3138e9b273 100755
 --- a/install.js
 +++ b/install.js
-@@ -38,6 +38,11 @@ if (platform === 'darwin' && process.platform === 'darwin' && arch === 'x64' &&
+@@ -38,6 +38,11 @@ if (
    }
  }
  
