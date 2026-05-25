@@ -35,7 +35,7 @@
 		"@biomejs/biome": "2.4.14",
 		"@types/node": "22.15.0",
 		"concurrently": "^9.2.1",
-		"electron": "npm:electron-nightly@37.0.0-nightly.20250328",
+		"electron": "npm:electron-nightly@44.0.0-nightly.20260522",
 		"electron-builder": "23.6.0",
 		"esbuild": "^0.28.0",
 		"typescript": "^6.0.3"
