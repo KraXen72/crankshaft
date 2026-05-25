@@ -45,5 +45,6 @@
 		"@nyabsi/minimal-discord-rpc": "^1.0.1",
 		"compare-versions": "^6.1.0",
 		"urlpattern-polyfill": "^10.1.0"
-	}
+	},
+	"packageManager": "pnpm@11.1.1"
 }
