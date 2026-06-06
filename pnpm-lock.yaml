@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  electron-nightly: 36f6b77b36c726f9da971867f4a0aa857ed17a022023b1a006bbe391fffe2d47
+  electron-nightly: ba2822e24ca8d99f9e1f3047970ab91e9e2aa27a03ffd2770dc7ea4a316ed8e7
 
 importers:
 
@@ -32,7 +32,7 @@ importers:
         version: 9.2.1
       electron:
         specifier: npm:electron-nightly@44.0.0-nightly.20260522
-        version: electron-nightly@44.0.0-nightly.20260522(patch_hash=36f6b77b36c726f9da971867f4a0aa857ed17a022023b1a006bbe391fffe2d47)
+        version: electron-nightly@44.0.0-nightly.20260522(patch_hash=ba2822e24ca8d99f9e1f3047970ab91e9e2aa27a03ffd2770dc7ea4a316ed8e7)
       electron-builder:
         specifier: 23.6.0
         version: 23.6.0
@@ -1556,7 +1556,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electron-nightly@44.0.0-nightly.20260522(patch_hash=36f6b77b36c726f9da971867f4a0aa857ed17a022023b1a006bbe391fffe2d47):
+  electron-nightly@44.0.0-nightly.20260522(patch_hash=ba2822e24ca8d99f9e1f3047970ab91e9e2aa27a03ffd2770dc7ea4a316ed8e7):
     dependencies:
       '@electron/get': 5.0.0
       '@types/node': 24.12.4

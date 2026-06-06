@@ -6,7 +6,7 @@ index 540e1e68a561fbd0b3af0438b0465e984a7d5b52..993438448286aabc751228632bb87f31
    }
  }
  
-+process.env.ELECTRON_CUSTOM_DIR = "v{{ version }}-inputpriofix-1";
++process.env.ELECTRON_CUSTOM_DIR = "v{{ version }}-patched-2";
 +process.env.ELECTRON_MIRROR = "https://github.com/thegu5/electron/releases/download/";
 +process.env.ELECTRON_NIGHTLY_MIRROR = "https://github.com/thegu5/electron/releases/download/";
 +process.env.electron_use_remote_checksums = "true"
