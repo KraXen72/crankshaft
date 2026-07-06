@@ -74,9 +74,7 @@ const filtersPath = pathJoin(configPath, 'filters.txt');
 const userscriptsPath = pathJoin(configPath, 'scripts');
 const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
 const cssPath = pathJoin(configPath, 'css');
-const socialCssPath = pathJoin(configPath, 'socialcss');
 const exampleCssPath = pathJoin(cssPath, 'example.css');
-const exampleSocialCssPath = pathJoin(socialCssPath, 'example.css');
 
 app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.0 Electron/12.0.0-nightly.20201116 Safari/537.36';
 
@@ -90,8 +88,6 @@ const settingsSkeleton = {
 	fullscreen: 'windowed', // windowed, maximized, fullscreen, borderless
 	resourceSwapper: true,
 	cssSwapper: 'None',
-	socialCssSwapper: 'None',
-	socialTabBehaviour: 'Same Window' as 'Same Window' | 'New Window',
 	userscripts: false,
 	clientSplash: true,
 	immersiveSplash: false,
@@ -166,14 +162,6 @@ if (!existsSync(exampleCssPath)) {
 /* Files in this directory automatically show up in the CSS Swapper setting's dropdown. */`);
 }
 
-if (!existsSync(socialCssPath)) mkdirSync(socialCssPath);
-
-if (!existsSync(exampleSocialCssPath)) {
-	writeFileSync(exampleSocialCssPath,
-		`/* This is an example of a css file that can be loaded by Crankshaft. */
-/* Files in this directory automatically show up in the Social CSS Swapper setting's dropdown. */`);
-}
-
 Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, { encoding: 'utf-8' })));
 
 
@@ -196,8 +184,6 @@ if (typeof userPrefs.hideAds === 'boolean') {
 if (modifiedSettings) writeFileSync(settingsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
 
 let mainWindow: BrowserWindow;
-let mainSocialWindowReference: BrowserWindow;
-let allSocialWindows: BrowserWindow[] = [];
 
 ipcMain.on('logMainConsole', (_event, ...data) => { console.log(...data); });
 
@@ -208,7 +194,7 @@ ipcMain.on('initializeUserscripts', () => {
 
 // initial request of settings to populate the settingsUI
 ipcMain.on('settingsUI_requests_userPrefs', () => {
-	const paths = { settingsPath, swapperPath, cssPath, socialCssPath, filtersPath, userscriptPreferencesPath, configPath, userscriptsPath };
+	const paths = { settingsPath, swapperPath, cssPath, filtersPath, userscriptPreferencesPath, configPath, userscriptsPath };
 	mainWindow.webContents.send('m_userPrefs_for_settingsUI', paths, userPrefs);
 });
 
@@ -219,13 +205,6 @@ ipcMain.on('matchmaker_requests_userPrefs', () => {
 
 // settingsui is sending back updated settings (user changed the settings in ui) - writing new settings is already handled.
 ipcMain.on('settingsUI_updates_userPrefs', (_event, data) => {
-	if (data?.socialCssSwapper && data.socialCssSwapper !== userPrefs.socialCssSwapper) {
-		// if the new social CSS is different from the old social CSS, swap CSS on social windows if they exist
-		for (const socialWindow of allSocialWindows) {
-			socialWindow.webContents.send('new_social_css', `${data.socialCssSwapper}`);
-		}
-	}
-
 	Object.assign(userPrefs, data);
 });
 
@@ -484,18 +463,10 @@ app.on('ready', () => {
 	mainWindow.webContents.setWindowOpenHandler(details => {
 		const url = details.url;
 
-		console.log('url trying to open:', url, 'socialWindowReference:', typeof mainSocialWindowReference);
+		console.log('url trying to open:', url);
 		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com', 'github.com'];
 
-		// sanity check, if social window is destroyed but the reference still exists
-		if (mainSocialWindowReference?.isDestroyed()) mainSocialWindowReference = undefined;
-
-		if (url.includes('social.html') && typeof mainSocialWindowReference !== 'undefined') {
-			// This runs when a social tab is already open and the user tries to open another social tab from the main game.
-			mainSocialWindowReference.loadURL(url); // if a designated socialWindow exists already, just load the url there
-			mainSocialWindowReference.show(); // bring the window to the front for if the user forgot if they had a social tab open (I've totally never done that ever)
-			return { action: "deny" };
-		} else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
+		if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
 			const pick = dialog.showMessageBoxSync({
 				title: 'Opening a new url',
 				noLink: false,
@@ -532,14 +503,8 @@ app.on('ready', () => {
 			return { action: "deny" };
 		} else {
 			console.log(`genericWindow created for ${url}`);
-			if (url.includes('social.html')) { // for social links, create a separate "master" social window that the main game will reference.
-				const newMainSocialWindow = customGenericWin(url, strippedMenuTemplate, false, true, pathJoin(__dirname, 'socialpreload.js'));
-				mainSocialWindowReference = newMainSocialWindow;
-				newMainSocialWindow.on('close', () => { mainSocialWindowReference = void 0; }); // remove reference once window is closed
-				bindSocialWindowBehaviours(newMainSocialWindow);
-			} else { // for any other link, fall back to creating a custom window with strippedMenu. 
-				customGenericWin(url, strippedMenuTemplate, false, true);
-			}
+			// fall back to creating a custom window with strippedMenu
+			customGenericWin(url, strippedMenuTemplate, false, true);
 			return { action: "deny" };
 		}
 	})
@@ -558,44 +523,6 @@ app.on('ready', () => {
 	}
 });
 
-/**
- * Binds social/hub window behaviours to a window. This includes navigation, closing, window tracking, and preload options.
- * @param windowToBind The BrowserWindow that needs to have social/hub behaviours bound.
- */
-function bindSocialWindowBehaviours(windowToBind: BrowserWindow) {
-	allSocialWindows.push(windowToBind);
-
-	windowToBind.webContents.on('will-navigate', (evt, willnavUrl) => { // new social pages will just replace the url in this one window
-		if (willnavUrl.includes('social.html')) {
-			windowToBind.loadURL(willnavUrl);
-		} else {
-			evt.preventDefault();
-			shell.openExternal(willnavUrl);
-		}
-	});
-
-	windowToBind.on('closed', () => {
-		allSocialWindows = allSocialWindows.filter(socialWindow => !socialWindow.isDestroyed());
-		console.log(`Social Window Closed. Total Social Windows: ${allSocialWindows.length}`);
-	})
-
-	windowToBind.on("ready-to-show", () => {
-		windowToBind.webContents.send('social_tab_data', { userPrefs, socialCssPath });
-	});
-
-	windowToBind.webContents.setWindowOpenHandler(details => {
-		console.log('Social tab tried to open a child window:', details.url);
-		if (userPrefs.socialTabBehaviour === "Same Window") {
-			windowToBind.loadURL(details.url);
-			return { action: "deny" };
-		} else if (userPrefs.socialTabBehaviour === "New Window") {
-			console.log('Creating new social window.');
-			const newSocialWindow = customGenericWin(details.url, [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate], false, true, pathJoin(__dirname, 'socialpreload.js'));
-			bindSocialWindowBehaviours(newSocialWindow);
-			return { action: "deny" };
-		}
-	})
-}
 
 // for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic - when all windows close, the app should exit itself
 app.on('window-all-closed', () => {

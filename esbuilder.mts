@@ -11,7 +11,6 @@ console.log("building(minifying):", building, "watching:", watching)
 
 fs.rmSync("app/main.js", { force: true });
 fs.rmSync("app/preload.js", { force: true });
-fs.rmSync("app/socialpreload.js", { force: true });
 
 const buildLogger: Plugin = {
 	name: 'build-logger',
@@ -25,7 +24,6 @@ const buildOptions: BuildOptions = {
 	entryPoints: [
 		'src/main.ts',
 		'src/preload.ts',
-		'src/socialpreload.ts'
 	],
 	bundle: true,
 	minify: building,
