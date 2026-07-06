@@ -81,7 +81,6 @@ app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 const settingsSkeleton = {
 	fpsUncap: true,
 	inProcessGPU: false,
-	disableAccelerated2D: false,
 	hideReCaptcha: true,
 	menuTimer: false,
 	quickClassPicker: false,
@@ -102,7 +101,6 @@ const settingsSkeleton = {
 	safeFlags_helpfulFlags: true,
 	safeFlags_gpuRasterizing: false,
 	experimentalFlags_increaseLimits: false,
-	experimentalFlags_lowLatency: false,
 	experimentalFlags_experimental: false,
 	matchmaker: false,
 	matchmakerKey: {
