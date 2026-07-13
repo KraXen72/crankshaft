@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@electron/get': ^5.0.0
+
 patchedDependencies:
   electron-nightly: ba2822e24ca8d99f9e1f3047970ab91e9e2aa27a03ffd2770dc7ea4a316ed8e7
 

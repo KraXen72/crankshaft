@@ -3,3 +3,5 @@ allowBuilds:
   esbuild: true
 patchedDependencies:
   electron-nightly: patches/electron-nightly.patch
+overrides:
+  "@electron/get": "^5.0.0"
