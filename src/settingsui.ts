@@ -91,7 +91,6 @@ function openPath(e: MouseEvent, path: string) {
  */
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
-	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'vulkan', 'metal', 'd3d11', 'd3d9', 'd3d11on12'], cat: 0 },
 	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', 'borderless'] },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. ', safety: 0, cat: 0 },
@@ -126,11 +125,10 @@ const settingsDesc: SettingsDesc = {
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
 	overrideURL: { title: 'Override URL', desc: 'Useful for beta tests', type: 'text', placeholder: 'https://krunker.io', safety: 0, cat: 3 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 3 },
-	safeFlags_removeUselessFeatures: { title: 'Remove useless features', type: 'bool', desc: 'Adds a lot of flags that disable useless features.', safety: 1, cat: 3 },
 	safeFlags_gpuRasterizing: { title: 'GPU rasterization', type: 'bool', desc: 'Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable', safety: 2, cat: 3 },
-	safeFlags_helpfulFlags: { title: '(Potentially) useful flags', type: 'bool', desc: 'Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.', safety: 3, cat: 3 },
-	experimentalFlags_increaseLimits: { title: 'Increase limits flags', type: 'bool', desc: 'Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist', safety: 4, cat: 3 },
-	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server', safety: 4, cat: 3 }
+	safeFlags_disableBackgrounding: { title: 'Disable background optimizations', type: 'bool', desc: 'When tabbed out, keep the game running as if you were tabbed in. Uses more resources, but avoids catch-up', safety: 2, cat: 3 },
+	experimentalFlags_increaseLimits: { title: 'Increase limits flags', type: 'bool', desc: 'Allows more renderer processes and disables gpu blocklist', safety: 4, cat: 3 },
+	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Weird GPU buffer stuff', safety: 4, cat: 3 }
 };
 
 /** index-based safety descriptions. goes in title attribute */

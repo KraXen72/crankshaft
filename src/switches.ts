@@ -2,34 +2,26 @@ import { app } from 'electron';
 
 /** applies command line switches to the app based on the passed userprefs */
 export function applyCommandLineSwitches(userPrefs: UserPrefs) {
-	// app.commandLine.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations');
-	// app.commandLine.appendSwitch('ozone-platform', 'wayland');
 
-	// app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
+	app.commandLine.appendSwitch('disable-breakpad');
+	app.commandLine.appendSwitch('disable-print-preview');
+	app.commandLine.appendSwitch('disable-metrics-repo');
+	app.commandLine.appendSwitch('disable-metrics');
+	app.commandLine.appendSwitch('disable-2d-canvas-clip-aa');
+	app.commandLine.appendSwitch('disable-bundled-ppapi-flash');
+	app.commandLine.appendSwitch('disable-logging');
+	app.commandLine.appendSwitch('disable-component-update');
+	app.commandLine.appendSwitch('no-pings');
+	console.log('Removed useless features');
 
-	if (userPrefs.safeFlags_removeUselessFeatures) {
-		app.commandLine.appendSwitch('disable-breakpad');
-		app.commandLine.appendSwitch('disable-print-preview');
-		app.commandLine.appendSwitch('disable-metrics-repo');
-		app.commandLine.appendSwitch('disable-metrics');
-		app.commandLine.appendSwitch('disable-2d-canvas-clip-aa');
-		app.commandLine.appendSwitch('disable-bundled-ppapi-flash');
-		app.commandLine.appendSwitch('disable-logging');
-		app.commandLine.appendSwitch('disable-component-update');
-		app.commandLine.appendSwitch('no-pings');
-
-		if (process.platform === 'darwin') app.commandLine.appendSwitch('disable-dev-shm-usage');
-
-		console.log('Removed useless features');
-	}
-	if (userPrefs.safeFlags_helpfulFlags) {
+	// Don't require user gesture for autoplay (thanks Commander)
+	app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+	
+	if (userPrefs.safeFlags_disableBackgrounding) {
 		app.commandLine.appendSwitch('disable-background-timer-throttling');
 		app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
-		// Don't require user gesture for autoplay (thanks Commander)
-		app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-
-		console.log('Applied helpful flags');
+		console.log('Applied flags to disable background throttling');
 	}
 	if (userPrefs.experimentalFlags_increaseLimits) {
 		app.commandLine.appendSwitch('renderer-process-limit', '100');
@@ -55,21 +47,9 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 	if (userPrefs.fpsUncap) {
 		app.commandLine.appendSwitch('disable-frame-rate-limit');
 		app.commandLine.appendSwitch('disable-gpu-vsync');
-		app.commandLine.appendSwitch('max-gum-fps', '9999');
-		app.commandLine.appendSwitch('enable-features', 'ImplLatencyRecovery,MainLatencyRecovery');
 		console.log('Removed FPS Cap');
 	}
 
-	if (userPrefs['angle-backend'] !== 'default') {
-		if (userPrefs['angle-backend'] === 'vulkan') {
-			app.commandLine.appendSwitch('use-vulkan');
-			app.commandLine.appendSwitch('enable-features', 'Vulkan');
-		}
-
-		app.commandLine.appendSwitch('use-angle', userPrefs['angle-backend'] as string);
-
-		console.log(`Using Angle: ${userPrefs['angle-backend']}`);
-	}
 	if (userPrefs.inProcessGPU) {
 		app.commandLine.appendSwitch('in-process-gpu');
 		console.log('In Process GPU is active');
