@@ -11,6 +11,12 @@
 [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) -
 [Other](https://github.com/KraXen72/crankshaft/releases/latest)  
 
+> [!WARNING]
+> If you're on MacOS, you may see a popup saying the app is 'damaged'.
+> To fix this, open Terminal and run:
+> 
+> `xattr -cr /Applications/crankshaft.app`
+
 ![splash](assets/blank_splash.png)  
   
 ## client features
