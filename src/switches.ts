@@ -3,6 +3,9 @@ import { app } from 'electron';
 /** applies command line switches to the app based on the passed userprefs */
 export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
+	// works as a cli flag, but not w/ appendSwitch. why.
+	// app.commandLine.appendSwitch("ozone-platform", "x11")
+
 	app.commandLine.appendSwitch('disable-breakpad');
 	app.commandLine.appendSwitch('disable-print-preview');
 	app.commandLine.appendSwitch('disable-metrics-repo');
