@@ -1,5 +1,7 @@
 allowBuilds:
   electron-winstaller: true
+  fs-xattr: true
+  macos-alias: true
 
 overrides:
   "@electron-forge/maker-base": "^8.0.0-0"
