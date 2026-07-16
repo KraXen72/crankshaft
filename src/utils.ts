@@ -1,5 +1,5 @@
 import { webFrame } from 'electron';
-import { strippedConsole } from './preload';
+import { strippedConsole } from './preload.ts';
 import * as os from "os";
 
 /** inject css as a style tag */

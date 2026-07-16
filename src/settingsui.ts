@@ -2,17 +2,18 @@ import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import * as os from "os";
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
-import { createElement, haveSameContents, toggleSettingCSS, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils';
-import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
-import { su } from './userscripts';
-import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
-import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
+import { createElement, haveSameContents, toggleSettingCSS, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils.ts';
+import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload.ts';
+import { su } from './userscripts.ts';
+import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker.ts';
+import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from './userscriptvalidators.ts';
 
-enum RefreshEnum {
-	notNeeded = 0,
-	refresh,
-	reloadApp
-}
+const RefreshEnum = {
+	notNeeded: 0,
+	refresh: 1,
+	reloadApp: 2
+} as const;
+
 interface IPaths { [path: string]: string }
 type CustomUserscriptSettings = Record<string, UserPrefs>;
 
@@ -21,7 +22,7 @@ let userPrefsPath: string;
 let userscriptPrefsPath: string;
 const userscriptPreferences: CustomUserscriptSettings = {};
 let userPrefsCache: UserPrefs; // the userprefs on path
-let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
+let refreshNeeded: (typeof RefreshEnum)[keyof typeof RefreshEnum]  = RefreshEnum.notNeeded;
 let refreshNotifElement: HTMLElement;
 let paths: IPaths;
 
@@ -520,13 +521,13 @@ class SettingElem {
 		if (this.type === 'sel') wrapper.querySelector('select').value = String(this.props.value);
 
 		if (this.type === 'keybind') {
-			wrapper.querySelector('.keyIcon').addEventListener('mousedown', (_event) => {
+			wrapper.querySelector('.keyIcon').addEventListener('mousedown', () => {
 				triggerKeybindSettingDialog(this);
 			})
 			// The reason we do this is to transmit the value when updating the value, since there's no <input> for JS objects themselves.
 			wrapper.querySelector('input').setAttribute("value", JSON.stringify(this.props.value));
 
-			wrapper.querySelector('.crankshaftUnbindButton').addEventListener('mousedown', (_event) => {
+			wrapper.querySelector('.crankshaftUnbindButton').addEventListener('mousedown', () => {
 				setKeybindSetting(this, {
 					shift: false,
 					alt: false,
@@ -763,7 +764,7 @@ const skeleton = {
 		innerHTML: content
 	}),
 
-	refreshElem: (level: RefreshEnum) => {
+	refreshElem: (level: (typeof RefreshEnum)[keyof typeof RefreshEnum]) => {
 		switch (level) {
 			case RefreshEnum.reloadApp:
 				return '<span class="restart-msg">Restart client fully to see changes</span>';

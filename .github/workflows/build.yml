@@ -6,6 +6,10 @@ on:
       - master
       - next2
 
+# scary
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -41,31 +45,4 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: binaries-${{ matrix.os }}
-          path: dist/crankshaft-*
-  release:
-    needs: build
-
-    runs-on: ubuntu-latest
-
-    if: github.ref == 'refs/heads/master'
-
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          persist-credentials: false
-
-      - name: Download artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-
-      - name: Create nightly release
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3
-        with:
-          files: binaries-*/*
-          body_path: ${{ github.workspace }}/.github/workflows/notes.md
-          name: Nightly release
-          tag_name: nightly
-          prerelease: true
+          path: dist/make/**

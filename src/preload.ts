@@ -1,11 +1,11 @@
 ﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
-import { fetchGame } from './matchmaker';
-import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils';
-import { renderSettings } from './settingsui';
+import { fetchGame } from './matchmaker.ts';
+import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils.ts';
+import { renderSettings } from './settingsui.ts';
 import { compareVersions } from 'compare-versions';
-import { splashFlavor } from './splashscreen';
+import { splashFlavor } from './splashscreen.ts';
 
 // get rid of client unsupported message 
 window.OffCliV = true;
@@ -20,7 +20,7 @@ export const strippedConsole = {
 	timeEnd: console.timeEnd.bind(console)
 };
 
-const $assets = pathResolve(__dirname, '..', 'assets');
+const $assets = pathResolve(import.meta.dirname, '..', 'assets');
 
 interface CompHostParams {
     mapId: string;

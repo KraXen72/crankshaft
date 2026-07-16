@@ -1,17 +1,20 @@
 {
 	"compilerOptions": {
 		"target": "es2024",
-		"module": "preserve",
+		"module": "nodenext",
 		"skipLibCheck": true,
 		"strict": true,
 		"strictNullChecks": false, // todo
 		"isolatedModules": true,
 		"verbatimModuleSyntax": true,
+		"erasableSyntaxOnly": true,
+		"allowImportingTsExtensions": true,
+		"rewriteRelativeImportExtensions": true,
 		"noEmit": true,
 		"types": ["node"]
 	},
 	"include": [
 		"src/**/*",
-		"esbuilder.mts"
+		"forge.config.ts"
 	]
 }

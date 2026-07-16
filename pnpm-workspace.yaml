@@ -1,7 +1,12 @@
 allowBuilds:
-  electron-nightly: true
-  esbuild: true
-patchedDependencies:
-  electron-nightly: patches/electron-nightly.patch
+  electron-winstaller: true
+
 overrides:
-  "@electron/get": "^5.0.0"
+  "@electron-forge/maker-base": "^8.0.0-0"
+  "@electron-forge/publisher-base": "^8.0.0-0"
+  # https://github.com/max-mapper/extract-zip/issues/154
+  "yauzl": "3.3.1"
+
+blockExoticSubdeps: false
+
+nodeLinker: hoisted # :(

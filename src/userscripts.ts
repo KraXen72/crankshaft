@@ -1,17 +1,17 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
-import { strippedConsole } from './preload';
-import { userscriptToggleCSS } from './utils';
-import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
+import { strippedConsole } from './preload.ts';
+import { userscriptToggleCSS } from './utils.ts';
+import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators.ts';
 
 /** sharedUserscriptData */
 export const su = {
 	userscriptsPath: '',
 	userscriptTrackerPath: '',
 	userscriptPrefsPath: '',
-	userscripts: <IUserscriptInstance[]>[],
-	userscriptTracker: <UserscriptTracker>{}
+	userscripts: [] as IUserscriptInstance[],
+	userscriptTracker: {} as UserscriptTracker
 };
 
 /** simple error message for usercripts. can be called from the userscript itself */

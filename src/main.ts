@@ -1,9 +1,9 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync, cpSync } from 'fs';
 import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
-import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
-import { applyCommandLineSwitches } from './switches';
-import RequestHandler from './requesthandler';
+import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu.ts';
+import { applyCommandLineSwitches } from './switches.ts';
+import RequestHandler from './requesthandler.ts';
 
 const userData = pathJoin(app.getPath('userData'), 'config');
 const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 settings path
@@ -185,7 +185,7 @@ ipcMain.on('logMainConsole', (_event, ...data) => { console.log(...data); });
 
 // send usercript path to preload
 ipcMain.on('initializeUserscripts', () => {
-	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, __dirname);
+	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, import.meta.dirname);
 });
 
 // initial request of settings to populate the settingsUI
@@ -210,7 +210,7 @@ ipcMain.on('openExternal', (_event, url: string) => { shell.openExternal(url); }
 // allow exit client prompt to quit the entire electron process
 ipcMain.on('closeClient', () => { app.exit(); });
 
-const $assets = pathResolve(__dirname, '..', 'assets');
+const $assets = pathResolve(import.meta.dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
 
 /** open a custom generic window with our menu, hidden */
@@ -311,7 +311,7 @@ app.on('ready', () => {
 		height: screenSize.height * windowScale,
 		center: true,
 		webPreferences: {
-			preload: pathJoin(__dirname, 'preload.js'),
+			preload: pathJoin(import.meta.dirname, 'preload.ts'),
 			spellcheck: false,
 			nodeIntegration: false,
 			contextIsolation: false, // not ideal, but preload does a lot of interaction w/ the page
