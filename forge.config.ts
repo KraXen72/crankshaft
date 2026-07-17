@@ -4,7 +4,6 @@ import { MakerDMG } from "@electron-forge/maker-dmg";
 import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { PublisherGitHub } from "@electron-forge/publisher-github"
 
-const ICON_PATH = "assets/logo_only.svg";
 
 export const VERSION = "44.0.0-nightly.20260522"
 
@@ -13,7 +12,7 @@ export default {
         name: "crankshaft",
         executableName: "crankshaft",
         appBundleId: "com.kraxen72.crankshaft",
-        icon: ICON_PATH,
+        icon: "./build/icon",
         appCategoryType: "public.app-category.games",
         appCopyright: "",
         ignore: /^\/(?!(src|assets|build|node_modules|package\.json|README\.md|LICENSE))/,
@@ -42,16 +41,18 @@ export default {
             options: {
                 bin: "crankshaft",
                 categories: ["Game"],
-                icon: ICON_PATH,
+                icon: "./build/icon.png",
+                mimeType: ["x-scheme-handler/crankshaft"]
             },
             
         }),
         new MakerDMG({
-            icon: ICON_PATH,
+            icon: "./build/icon.icns",
             iconSize: 128 // ?
         }),
         new MakerSquirrel({
-            
+            setupIcon: "./build/icon.ico",
+            iconUrl: "https://raw.githubusercontent.com/KraXen72/crankshaft/refs/heads/master/build/icon.ico",
         })
     ],
     publishers: [
