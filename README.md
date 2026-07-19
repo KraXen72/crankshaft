@@ -1,15 +1,14 @@
 # crankshaft
-  
+
 [![GitHub All Releases](https://img.shields.io/github/downloads/KraXen72/crankshaft/total.svg)](https://github.com/KraXen72/crankshaft/releases/latest) [![Latest release](https://img.shields.io/github/downloads/KraXen72/crankshaft/latest/total)](https://github.com/KraXen72/crankshaft/releases/latest) [![Chat](https://img.shields.io/discord/966300714060116008?color=blue&label=discord)](https://discord.gg/ZeVuxG7gQJ) [![Recurring donation via Liberapay](https://img.shields.io/badge/donate-liberapay-%23f6c915?logo=liberapay)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://img.shields.io/badge/donate-ko--fi-%23ff5e5b?logo=kofi)](https://ko-fi.com/kraxen72)
 
 > a fast, feature-rich krunker client written in typescript
-  
+
 **Download:**
 [Windows (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-setup-win-x64.exe) -
-[Mac (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-x64.dmg) -
 [Mac (arm64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-arm64.dmg) -
 [Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) -
-[Other](https://github.com/KraXen72/crankshaft/releases/latest)  
+[Other](https://github.com/KraXen72/crankshaft/releases/latest)
 
 > [!WARNING]
 > If you're on MacOS, you may see a popup saying the app is 'damaged'.
@@ -17,8 +16,9 @@
 > 
 > `xattr -cr /Applications/crankshaft.app`
 
-![splash](assets/blank_splash.png)  
-  
+![splash](assets/blank_splash.png)
+
+<!-- TODO: update -->
 ## client features
 - very good performance with additional performance enhancing settings
 - unobtrusive
@@ -35,7 +35,7 @@
 - quick class switcher using `#hiddenClasses`
 - built-in hotkeys: [more about them here](#hotkeys)
 - maintained & open source
-  
+
 ## quality of life
 - very lightweight
   - only 100kb of javascript combined
@@ -53,15 +53,15 @@
   - [autospectate.js](https://gist.github.com/KraXen72/270b2b8f28dda974f9e643b384e87a68): automatically joins game as spectator if turned on
 - all userscripts are disabled when they are first added.
 - `%APPDATA%/crankshaft/config/tracker.json` is used to keep track of enabled userscripts.
-  
-If you want to write a userscript or learn more about them, read the [Documentation](./USERSCRIPTS.md)  
+
+If you want to write a userscript or learn more about them, read the [Documentation](./USERSCRIPTS.md)
 > **Use userscripts at your own risk**, the author(s) of this client are **not responsible for any damage done** with userscripts because the user is the author of the script.
 > **Do not write or use any userscripts which would give the user a competitive advantage.**
-  
+
 ## hotkeys
 
-Press `Alt` to show electron menu. Here you can find all hotkeys.  
-standard hotkeys like zooming, copying/pasting and devtools also included.  
+Press `Alt` to show electron menu. Here you can find all hotkeys.
+standard hotkeys like zooming, copying/pasting and devtools also included.
 **Client's hotkeys:**
 
 - `F5`: reload
@@ -81,7 +81,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
    - `cd crankshaft`
    - `pnpm i`
 3. **building from source**: `pnpm dist`
-  
+
 ### contributing
 1. follow previous steps 1 & 2
 2. make your changes + running from source: `pnpm start`/`pnpm dev` (rebuilds on changes, refresh krunker with `F6`)
@@ -90,7 +90,7 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
    - until automated tests are added, try to manually test it works even after the code is minified. if it does not, you're probably doing something wrong
 - please report any bugs/feature requests in the Issues.
 - feel free to submit pull requests, they will be merged as long as they support the client ideology.
-  
+
 #### wanted/potential features
 - here are some features i wanted to add, but don't have the time to
 - if you're looking to contribute, feel free to open pr's for these
@@ -120,5 +120,5 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 
 ## support development
 [![Recurring donation via Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/KraXen72) [![One-time donation via ko-fi.com](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/kraxen72)
-  
+
 You can support ongoing development & maintainance by donating. All donations are highly appreciated! <3

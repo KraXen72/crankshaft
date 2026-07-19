@@ -1,10 +1,9 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
-import { moveFolderSync } from './utils_node';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync, cpSync } from 'fs';
 import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
-import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu';
-import { applyCommandLineSwitches } from './switches';
-import RequestHandler from './requesthandler';
+import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu.ts';
+import { applyCommandLineSwitches } from './switches.ts';
+import RequestHandler from './requesthandler.ts';
 
 const userData = pathJoin(app.getPath('userData'), 'config');
 const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 settings path
@@ -38,10 +37,6 @@ if (!gotTheLock) {
   });
 }
 
-/*
- * TODO make crankshaft server announcement about backup
- * TODO mention minor breaking change in changelog & mention backup
- */
 function migrateSettings() {
 	if (existsSync(pathJoin(docsPath, 'settings moved.txt')) || readdirSync(docsPath).length === 0) return;
 	if (!existsSync(userData)) mkdirSync(userData);
@@ -61,7 +56,8 @@ function migrateSettings() {
 		error.stack = null;
 		throw error;
 	}
-	moveFolderSync(docsPath, userData);
+	cpSync(docsPath, userData, { recursive: true });
+	rmSync(docsPath, { recursive: true });
 	if (!existsSync(docsPath)) mkdirSync(docsPath);
 	writeFileSync(pathJoin(docsPath, 'settings moved.txt'),
 		`Starting from crankshaft v1.9.0, the configuration directory is no longer '${docsPath}'.\n
@@ -78,39 +74,31 @@ const filtersPath = pathJoin(configPath, 'filters.txt');
 const userscriptsPath = pathJoin(configPath, 'scripts');
 const userscriptTrackerPath = pathJoin(userscriptsPath, 'tracker.json');
 const cssPath = pathJoin(configPath, 'css');
-const socialCssPath = pathJoin(configPath, 'socialcss');
 const exampleCssPath = pathJoin(cssPath, 'example.css');
-const exampleSocialCssPath = pathJoin(socialCssPath, 'example.css');
 
 app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.0 Electron/12.0.0-nightly.20201116 Safari/537.36';
 
 const settingsSkeleton = {
 	fpsUncap: true,
 	inProcessGPU: false,
-	disableAccelerated2D: false,
 	hideReCaptcha: true,
 	menuTimer: false,
 	quickClassPicker: false,
 	fullscreen: 'windowed', // windowed, maximized, fullscreen, borderless
 	resourceSwapper: true,
 	cssSwapper: 'None',
-	socialCssSwapper: 'None',
-	socialTabBehaviour: 'Same Window' as 'Same Window' | 'New Window',
 	userscripts: false,
 	clientSplash: true,
 	immersiveSplash: false,
 	discordRPC: false,
 	extendedRPC: true,
 	saveMatchResultJSONButton: false,
-	'angle-backend': 'default',
 	logDebugToConsole: false,
 	overrideURL: undefined as string | undefined,
 	alwaysWaitForDevTools: false,
-	safeFlags_removeUselessFeatures: true,
-	safeFlags_helpfulFlags: true,
+	safeFlags_disableBackgrounding: true,
 	safeFlags_gpuRasterizing: false,
 	experimentalFlags_increaseLimits: false,
-	experimentalFlags_lowLatency: false,
 	experimentalFlags_experimental: false,
 	matchmaker: false,
 	matchmakerKey: {
@@ -170,14 +158,6 @@ if (!existsSync(exampleCssPath)) {
 /* Files in this directory automatically show up in the CSS Swapper setting's dropdown. */`);
 }
 
-if (!existsSync(socialCssPath)) mkdirSync(socialCssPath);
-
-if (!existsSync(exampleSocialCssPath)) {
-	writeFileSync(exampleSocialCssPath,
-		`/* This is an example of a css file that can be loaded by Crankshaft. */
-/* Files in this directory automatically show up in the Social CSS Swapper setting's dropdown. */`);
-}
-
 Object.assign(userPrefs, JSON.parse(readFileSync(settingsPath, { encoding: 'utf-8' })));
 
 
@@ -200,19 +180,17 @@ if (typeof userPrefs.hideAds === 'boolean') {
 if (modifiedSettings) writeFileSync(settingsPath, JSON.stringify(userPrefs, null, 2), { encoding: 'utf-8' });
 
 let mainWindow: BrowserWindow;
-let mainSocialWindowReference: BrowserWindow;
-let allSocialWindows: BrowserWindow[] = [];
 
 ipcMain.on('logMainConsole', (_event, ...data) => { console.log(...data); });
 
 // send usercript path to preload
 ipcMain.on('initializeUserscripts', () => {
-	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, __dirname);
+	mainWindow.webContents.send('main_initializes_userscripts', { userscriptsPath, userscriptPrefsPath: userscriptPreferencesPath }, import.meta.dirname);
 });
 
 // initial request of settings to populate the settingsUI
 ipcMain.on('settingsUI_requests_userPrefs', () => {
-	const paths = { settingsPath, swapperPath, cssPath, socialCssPath, filtersPath, userscriptPreferencesPath, configPath, userscriptsPath };
+	const paths = { settingsPath, swapperPath, cssPath, filtersPath, userscriptPreferencesPath, configPath, userscriptsPath };
 	mainWindow.webContents.send('m_userPrefs_for_settingsUI', paths, userPrefs);
 });
 
@@ -223,13 +201,6 @@ ipcMain.on('matchmaker_requests_userPrefs', () => {
 
 // settingsui is sending back updated settings (user changed the settings in ui) - writing new settings is already handled.
 ipcMain.on('settingsUI_updates_userPrefs', (_event, data) => {
-	if (data?.socialCssSwapper && data.socialCssSwapper !== userPrefs.socialCssSwapper) {
-		// if the new social CSS is different from the old social CSS, swap CSS on social windows if they exist
-		for (const socialWindow of allSocialWindows) {
-			socialWindow.webContents.send('new_social_css', `${data.socialCssSwapper}`);
-		}
-	}
-
 	Object.assign(userPrefs, data);
 });
 
@@ -239,7 +210,7 @@ ipcMain.on('openExternal', (_event, url: string) => { shell.openExternal(url); }
 // allow exit client prompt to quit the entire electron process
 ipcMain.on('closeClient', () => { app.exit(); });
 
-const $assets = pathResolve(__dirname, '..', 'assets');
+const $assets = pathResolve(import.meta.dirname, '..', 'assets');
 const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
 
 /** open a custom generic window with our menu, hidden */
@@ -255,7 +226,6 @@ function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructo
 		webPreferences: {
 			preload: (customPreload) ? customPreload : '',
 			spellcheck: false,
-			enableRemoteModule: false,
 			nodeIntegration: false
 		}
 	});
@@ -341,11 +311,11 @@ app.on('ready', () => {
 		height: screenSize.height * windowScale,
 		center: true,
 		webPreferences: {
-			preload: pathJoin(__dirname, 'preload.js'),
-			enableRemoteModule: false,
+			preload: pathJoin(import.meta.dirname, 'preload.ts'),
 			spellcheck: false,
 			nodeIntegration: false,
-			contextIsolation: false // not ideal, but preload does a lot of interaction w/ the page
+			contextIsolation: false, // not ideal, but preload does a lot of interaction w/ the page
+			sandbox: false
 		},
 		backgroundColor: '#000000'
 	};
@@ -383,19 +353,11 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
 
-		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL(userPrefs.overrideURL || 'https://krunker.io'); return; }
+		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
 
 		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
 
 		if (userPrefs.discordRPC) {
-			// @ts-ignore since this node version is older than webcrypto
-			globalThis.crypto = { randomUUID: () => {
-				return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-					var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-					return v.toString(16);
-				});
-			} };
-
 			import('@nyabsi/minimal-discord-rpc').then(DiscordRPC => {
 				const rpc = new DiscordRPC.Client({ clientId: '988529967220523068' });
 				const startTimestamp = new Date();
@@ -494,20 +456,13 @@ app.on('ready', () => {
 	mainWindow.setAutoHideMenuBar(true);
 	mainWindow.setMenuBarVisibility(false);
 
-	// todo: migrate to setWindowOpenHandler
-	mainWindow.webContents.on('new-window', (event, url) => {
-		console.log('url trying to open:', url, 'socialWindowReference:', typeof mainSocialWindowReference);
+	mainWindow.webContents.setWindowOpenHandler(details => {
+		const url = details.url;
+
+		console.log('url trying to open:', url);
 		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com', 'github.com'];
 
-		// sanity check, if social window is destroyed but the reference still exists
-		if (mainSocialWindowReference?.isDestroyed()) mainSocialWindowReference = undefined;
-
-		if (url.includes('social.html') && typeof mainSocialWindowReference !== 'undefined') {
-			// This runs when a social tab is already open and the user tries to open another social tab from the main game.
-			event.preventDefault();
-			mainSocialWindowReference.loadURL(url); // if a designated socialWindow exists already, just load the url there
-			mainSocialWindowReference.show(); // bring the window to the front for if the user forgot if they had a social tab open (I've totally never done that ever)
-		} else if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
+		if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
 			const pick = dialog.showMessageBoxSync({
 				title: 'Opening a new url',
 				noLink: false,
@@ -516,24 +471,20 @@ app.on('ready', () => {
 			});
 			switch (pick) {
 				case 0: // open in default browser
-					event.preventDefault();
 					shell.openExternal(url);
 					break;
 				case 2: // load as main window
-					event.preventDefault();
 					mainWindow.loadURL(url);
 					break;
 				case 3: // don't open
-					event.preventDefault();
 					break;
 				case 1: // open as a new window in client
 				default: {
-					event.preventDefault();
-					const genericWin = customGenericWin(url, strippedMenuTemplate);
-					event.newGuest = genericWin;
+					customGenericWin(url, strippedMenuTemplate);
 					break;
 				}
 			}
+			return { action: "deny" };
 
 			// for comp or hosted game just load it into the mainWindow
 		} else if (url.includes('comp.krunker.io')
@@ -544,25 +495,15 @@ app.on('ready', () => {
 			|| url.includes('?host')
 			|| (url.includes('?game=') && url.includes('&matchId='))
 		) {
-			event.preventDefault();
 			mainWindow.loadURL(url);
+			return { action: "deny" };
 		} else {
-			event.preventDefault();
 			console.log(`genericWindow created for ${url}`);
-			if (url.includes('social.html')) { // for social links, create a separate "master" social window that the main game will reference.
-				const newMainSocialWindow = customGenericWin(url, strippedMenuTemplate, false, true, pathJoin(__dirname, 'socialpreload.js'));
-				event.newGuest = newMainSocialWindow;
-
-				mainSocialWindowReference = newMainSocialWindow;
-				// eslint-disable-next-line no-void
-				newMainSocialWindow.on('close', () => { mainSocialWindowReference = void 0; }); // remove reference once window is closed
-				bindSocialWindowBehaviours(newMainSocialWindow);
-			} else { // for any other link, fall back to creating a custom window with strippedMenu. 
-				const genericWin = customGenericWin(url, strippedMenuTemplate, false, true);
-				event.newGuest = genericWin;
-			}
+			// fall back to creating a custom window with strippedMenu
+			customGenericWin(url, strippedMenuTemplate, false, true);
+			return { action: "deny" };
 		}
-	});
+	})
 
 	// console.log(readFileSync(pathJoin($assets, 'blockFilters.txt'), { encoding: 'utf-8' }));
 
@@ -578,48 +519,8 @@ app.on('ready', () => {
 	}
 });
 
-/**
- * Binds social/hub window behaviours to a window. This includes navigation, closing, window tracking, and preload options.
- * @param windowToBind The BrowserWindow that needs to have social/hub behaviours bound.
- */
-function bindSocialWindowBehaviours(windowToBind: BrowserWindow) {
-	allSocialWindows.push(windowToBind);
-
-	windowToBind.webContents.on('will-navigate', (evt, willnavUrl) => { // new social pages will just replace the url in this one window
-		if (willnavUrl.includes('social.html')) {
-			windowToBind.loadURL(willnavUrl);
-		} else {
-			evt.preventDefault();
-			shell.openExternal(willnavUrl);
-		}
-	});
-
-	windowToBind.on('closed', () => {
-		allSocialWindows = allSocialWindows.filter(socialWindow => !socialWindow.isDestroyed());
-		console.log(`Social Window Closed. Total Social Windows: ${allSocialWindows.length}`);
-	})
-
-	windowToBind.on("ready-to-show", () => {
-		windowToBind.webContents.send('social_tab_data', { userPrefs, socialCssPath });
-	});
-
-	windowToBind.webContents.on('new-window', (evt, url) => {
-		console.log('Social tab tried to open a child window:', url);
-		if (userPrefs.socialTabBehaviour === "Same Window") {
-			evt.preventDefault();
-			windowToBind.loadURL(url);
-		} else if (userPrefs.socialTabBehaviour === "New Window") {
-			console.log('Creating new social window.');
-			evt.preventDefault();
-			const newSocialWindow = customGenericWin(url, [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate], false, true, pathJoin(__dirname, 'socialpreload.js'));
-			bindSocialWindowBehaviours(newSocialWindow);
-			evt.newGuest = newSocialWindow;
-		}
-	})
-}
 
 // for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic - when all windows close, the app should exit itself
-// eslint-disable-next-line consistent-return
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') return app.quit(); // don't quit on mac systems unless user explicitly quits
 });

@@ -50,22 +50,21 @@ interface UserscriptMeta {
 	settingsID: string;
 }
 
-/** krunker injects these into the window object */
+// stuff krunker adds
 type SettingsTab = {
 	name: string;
 	categories: string[];
 };
 
-// a shim of krunker's modified window object
 interface Window {
-
-	// krunker's stuff
 	OffCliV: boolean;
 	closeClient: Function;
 	getGameActivity: Function;
 	showWindow: Function;
 	instruction: { log: (type: number, message: string) => void };
 	openHostWindow: (isCustom: boolean, type: number) => void;
+	openServerWindow: (id: number) => void;
+	playSelect: (volume?: number) => void;
 	closeHostWindow: () => void;
 	createPrivateRoom: () => void;
 	windows: [{ // settings window
@@ -82,9 +81,6 @@ interface Window {
 		getSettings: Function;
 		searchList: Function;
 	}, ...Object[]];
-
-	// crankshaft's stuff
-	errAlert: Function;
 }
 
 /*

@@ -1,32 +1,30 @@
-/* eslint-disable max-len */
 import { join } from 'path';
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import * as os from "os";
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
-import { createElement, haveSameContents, toggleSettingCSS, hasOwn, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils';
-import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload';
-import { su } from './userscripts';
-import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker';
-import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
+import { createElement, haveSameContents, toggleSettingCSS, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils.ts';
+import { styleSettingsCSS, getTimezoneByRegionKey, strippedConsole } from './preload.ts';
+import { su } from './userscripts.ts';
+import { MATCHMAKER_GAMEMODES, MATCHMAKER_REGIONS } from './matchmaker.ts';
+import { customSettingIsMalformed, customSettingSavedJSONIsNotMalformed } from './userscriptvalidators.ts';
 
-enum RefreshEnum {
-	notNeeded = 0,
-	refresh,
-	reloadApp
-}
+const RefreshEnum = {
+	notNeeded: 0,
+	refresh: 1,
+	reloadApp: 2
+} as const;
+
 interface IPaths { [path: string]: string }
 type CustomUserscriptSettings = Record<string, UserPrefs>;
 
-/* eslint-disable init-declarations */
 let userPrefs: UserPrefs;
 let userPrefsPath: string;
 let userscriptPrefsPath: string;
 const userscriptPreferences: CustomUserscriptSettings = {};
 let userPrefsCache: UserPrefs; // the userprefs on path
-let refreshNeeded: RefreshEnum = RefreshEnum.notNeeded;
+let refreshNeeded: (typeof RefreshEnum)[keyof typeof RefreshEnum]  = RefreshEnum.notNeeded;
 let refreshNotifElement: HTMLElement;
 let paths: IPaths;
-/* eslint-disable init-declarations */
 
 document.addEventListener('DOMContentLoaded', () => { ipcRenderer.send('settingsUI_requests_userPrefs'); });
 
@@ -46,21 +44,6 @@ const cssSwapperOption: SelectSettingDescItem = {
 	}
 }
 
-const socialCssSwapperOption: SelectSettingDescItem = {
-	title: 'Social CSS Swapper',
-	type: 'sel',
-	desc: 'Load and swap between CSS files on the Krunker Hub',
-	safety: 0,
-	cat: 1,
-	instant: true,
-	opts: [],
-	button: {
-		icon: 'folder',
-		text: 'Social CSS',
-		callback: e => openPath(e, paths.socialCssPath)
-	}
-}
-
 ipcRenderer.on('m_userPrefs_for_settingsUI', (_event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
 	userPrefsPath = recieved_paths.settingsPath;
@@ -75,9 +58,6 @@ ipcRenderer.on('m_userPrefs_for_settingsUI', (_event, recieved_paths: IPaths, re
 
 	cssSwapperOption.opts = ['None', ...readdirSync(paths.cssPath).filter(path => path.endsWith('.css'))];
 	if (!cssSwapperOption.opts.includes(`${userPrefs.cssSwapper}`)) userPrefs.cssSwapper = 'None';
-
-	socialCssSwapperOption.opts = ['None', ...readdirSync(paths.socialCssPath).filter(path => path.endsWith('.css'))];
-	if (!socialCssSwapperOption.opts.includes(`${userPrefs.socialCssSwapper}`)) userPrefs.socialCssSwapper = 'None';
 });
 
 /** joins the data: userPrefs and Desc: SettingsDesc into one array of objects */
@@ -112,7 +92,6 @@ function openPath(e: MouseEvent, path: string) {
  */
 const settingsDesc: SettingsDesc = {
 	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
-	'angle-backend': { title: 'ANGLE Backend', type: 'sel', safety: 0, opts: ['default', 'gl', 'vulkan', 'metal', 'd3d11', 'd3d9', 'd3d11on12'], cat: 0 },
 	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', 'borderless'] },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. ', safety: 0, cat: 0 },
@@ -122,10 +101,8 @@ const settingsDesc: SettingsDesc = {
 	customFilters: { title: 'Custom Filters', type: 'bool', desc: 'Enable custom network filters. ', safety: 0, cat: 0, refreshOnly: true },
 	saveMatchResultJSONButton: { title: 'Match Result To Clipboard', type: 'bool', desc: 'New button on match end which copies the match results JSON.', safety: 0, cat: 0, refreshOnly: true },
 	userscripts: { title: 'Userscript support', type: 'bool', desc: `Enable userscript support. read <a href="https://github.com/${repoID}/blob/master/USERSCRIPTS.md" target="_blank">USERSCRIPTS.md</a> for more info.`, safety: 1, cat: 0 },
-	socialTabBehaviour: { title: 'Social/Hub Tab Behaviour', type: 'sel', desc: "Defines how new social tabs are handled. 'Same Window' will only keep one social tab open at any time. 'New Window' will open new browser windows for every tab.", safety: 0, cat: 0, opts: ['Same Window', 'New Window'], instant: true },
 
 	cssSwapper: cssSwapperOption,
-	socialCssSwapper: socialCssSwapperOption,
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
 	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
@@ -149,13 +126,10 @@ const settingsDesc: SettingsDesc = {
 	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
 	overrideURL: { title: 'Override URL', desc: 'Useful for beta tests', type: 'text', placeholder: 'https://krunker.io', safety: 0, cat: 3 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 3 },
-	safeFlags_removeUselessFeatures: { title: 'Remove useless features', type: 'bool', desc: 'Adds a lot of flags that disable useless features.', safety: 1, cat: 3 },
 	safeFlags_gpuRasterizing: { title: 'GPU rasterization', type: 'bool', desc: 'Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable', safety: 2, cat: 3 },
-	safeFlags_helpfulFlags: { title: '(Potentially) useful flags', type: 'bool', desc: 'Enables javascript-harmony, future-v8-vm-features, webgl2-compute-context.', safety: 3, cat: 3 },
-	disableAccelerated2D: { title: 'Disable Accelerated 2D canvas', type: 'bool', desc: '', safety: 3, cat: 3 },
-	experimentalFlags_increaseLimits: { title: 'Increase limits flags', type: 'bool', desc: 'Sets renderer-process-limit, max-active-webgl-contexts and webrtc-max-cpu-consumption-percentage to 100, adds ignore-gpu-blacklist', safety: 4, cat: 3 },
-	experimentalFlags_lowLatency: { title: 'Lower Latency flags', type: 'bool', desc: 'Adds following flags: enable-highres-timer, enable-quic (experimental low-latency protocol) and enable-accelerated-2d-canvas', safety: 4, cat: 3 },
-	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Adds following flags: disable-low-end-device-mode, high-dpi-support, ignore-gpu-blacklist, no-pings and no-proxy-server', safety: 4, cat: 3 }
+	safeFlags_disableBackgrounding: { title: 'Disable background optimizations', type: 'bool', desc: 'When tabbed out, keep the game running as if you were tabbed in. Uses more resources, but avoids catch-up', safety: 2, cat: 3 },
+	experimentalFlags_increaseLimits: { title: 'Increase limits flags', type: 'bool', desc: 'Allows more renderer processes and disables gpu blocklist', safety: 4, cat: 3 },
+	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Weird GPU buffer stuff', safety: 4, cat: 3 }
 };
 
 /** index-based safety descriptions. goes in title attribute */
@@ -368,8 +342,8 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			case 'multisel': {
-				const hasValidDescriptions = hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length;
-				if (hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`);
+				const hasValidDescriptions = Object.hasOwn(this.props, 'optDescriptions') && this.props.opts.length === this.props.optDescriptions.length;
+				if (Object.hasOwn(this.props, 'optDescriptions') && !hasValidDescriptions) throw new Error(`Setting '${this.props.key}' declared 'optDescriptions', but a different amount than 'opts'!`);
 				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<div class="crankshaft-multisel-parent s-update" ${props?.cols ? `style="grid-template-columns:repeat(${props.cols}, 1fr)"` : ''}>
 						${props.opts.map((opt, i) => `<label class="hostOpt">
@@ -403,7 +377,6 @@ class SettingElem {
 				this.updateMethod = 'onchange';
 				break;
 			default:
-				// @ts-ignore
 				this.HTML = `<span class="setting-title">${sanitize(props.title)}</span><span>Unknown setting type</span>`;
 		}
 
@@ -438,8 +411,8 @@ class SettingElem {
 				setVal(userPrefs[this.props.key].toString());
 				return; // revert UI and don't apply this change;
 			}
-			if (hasOwn(this.props, 'min') && dirtyValue < this.props.min) { dirtyValue = this.props.min; updateUI(); }
-			if (hasOwn(this.props, 'max') && dirtyValue > this.props.max) { dirtyValue = this.props.max; updateUI(); }
+			if (Object.hasOwn(this.props, 'min') && dirtyValue < this.props.min) { dirtyValue = this.props.min; updateUI(); }
+			if (Object.hasOwn(this.props, 'max') && dirtyValue > this.props.max) { dirtyValue = this.props.max; updateUI(); }
 			updateUI(); // synchronize slider and number inputs visually
 		}
 
@@ -513,7 +486,6 @@ class SettingElem {
 			// krunkers transition takes .4s, this is more reliable than to wait for transitionend
 			if (refreshSettings) setTimeout(renderSettings, 400);
 		} else {
-			// eslint-disable-next-line callback-return
 			callback(value);
 		}
 		recalculateRefreshNeeded();
@@ -549,13 +521,13 @@ class SettingElem {
 		if (this.type === 'sel') wrapper.querySelector('select').value = String(this.props.value);
 
 		if (this.type === 'keybind') {
-			wrapper.querySelector('.keyIcon').addEventListener('mousedown', (_event) => {
+			wrapper.querySelector('.keyIcon').addEventListener('mousedown', () => {
 				triggerKeybindSettingDialog(this);
 			})
 			// The reason we do this is to transmit the value when updating the value, since there's no <input> for JS objects themselves.
 			wrapper.querySelector('input').setAttribute("value", JSON.stringify(this.props.value));
 
-			wrapper.querySelector('.crankshaftUnbindButton').addEventListener('mousedown', (_event) => {
+			wrapper.querySelector('.crankshaftUnbindButton').addEventListener('mousedown', () => {
 				setKeybindSetting(this, {
 					shift: false,
 					alt: false,
@@ -792,7 +764,7 @@ const skeleton = {
 		innerHTML: content
 	}),
 
-	refreshElem: (level: RefreshEnum) => {
+	refreshElem: (level: (typeof RefreshEnum)[keyof typeof RefreshEnum]) => {
 		switch (level) {
 			case RefreshEnum.reloadApp:
 				return '<span class="restart-msg">Restart client fully to see changes</span>';

@@ -1,11 +1,11 @@
 ﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
-import { fetchGame } from './matchmaker';
-import { hasOwn, createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils';
-import { renderSettings } from './settingsui';
+import { fetchGame } from './matchmaker.ts';
+import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils.ts';
+import { renderSettings } from './settingsui.ts';
 import { compareVersions } from 'compare-versions';
-import { splashFlavor } from './splashscreen';
+import { splashFlavor } from './splashscreen.ts';
 
 // get rid of client unsupported message 
 window.OffCliV = true;
@@ -20,7 +20,7 @@ export const strippedConsole = {
 	timeEnd: console.timeEnd.bind(console)
 };
 
-const $assets = pathResolve(__dirname, '..', 'assets');
+const $assets = pathResolve(import.meta.dirname, '..', 'assets');
 
 interface CompHostParams {
     mapId: string;
@@ -259,10 +259,10 @@ ipcRenderer.on('initDiscordRPC', () => {
 		const skinElem = document.querySelector('#menuClassSubtext > span');
 		const mapElem = document.getElementById('mapInfo');
 
-		const gameActivity = hasOwn(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
+		const gameActivity = Object.hasOwn(window, 'getGameActivity') ? window.getGameActivity() as Partial<GameInfo> : {};
 		let overWriteDetails: string | false = false;
-		if (!hasOwn(gameActivity, 'class')) gameActivity.class = { name: classElem?.textContent ?? '' };
-		if (!hasOwn(gameActivity, 'map') || !hasOwn(gameActivity, 'mode')) overWriteDetails = mapElem?.textContent ?? 'Loading game...';
+		if (!Object.hasOwn(gameActivity, 'class')) gameActivity.class = { name: classElem?.textContent ?? '' };
+		if (!Object.hasOwn(gameActivity, 'map') || !Object.hasOwn(gameActivity, 'mode')) overWriteDetails = mapElem?.textContent ?? 'Loading game...';
 
 		const data: RPCargs = {
 			details: overWriteDetails || `${gameActivity.mode} on ${gameActivity.map}`,
@@ -291,7 +291,6 @@ ipcRenderer.on('initDiscordRPC', () => {
 ipcRenderer.on('matchmakerRedirect', (_event, _userPrefs: UserPrefs) => fetchGame(_userPrefs));
 
 ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: string, cssPath: string) => {
-	// eslint-disable-next-line
 	const { matchmaker, matchmakerKey, overrideURL } = _userPrefs;
 
 	document.addEventListener('keydown', event => {
@@ -398,6 +397,16 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true);
 	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
+
+	/*
+	 * Animate transforms instead of position properties
+	 * https://web.dev/articles/stick-to-compositor-only-properties-and-manage-layer-count
+	 */
+	addEventListener('DOMContentLoaded', _event => {
+		const styleElement = createElement('style', { id: 'crankshaftKeyframeFix' });
+		styleElement.textContent = '@keyframes chat-moveup { 0% { transform: translateY(375px); } 100% { transform: translateY(0px); } } @keyframes death-ui-moveup { 0% { transform: translateY(340px); } 100% { transform: translateY(0px); } }';
+		document.body.appendChild(styleElement);
+	});
 	if (userscripts) ipcRenderer.send('initializeUserscripts');
 });
 
@@ -541,9 +550,9 @@ function patchSettings(_userPrefs: UserPrefs) {
 	}
 	const waitForWindow0: TimerHandler = () => {
 		if (
-			hasOwn(window, 'showWindow')
+			Object.hasOwn(window, 'showWindow')
 			&& typeof window.showWindow === 'function'
-			&& hasOwn(window, 'windows')
+			&& Object.hasOwn(window, 'windows')
 			&& Array.isArray(window.windows)
 			&& window.windows.length >= 0
 			&& typeof window.windows[0] !== 'undefined'

@@ -1,22 +1,21 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 import { ipcRenderer } from 'electron';
-import { strippedConsole } from './preload';
-import { userscriptToggleCSS } from './utils';
-import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators';
+import { strippedConsole } from './preload.ts';
+import { userscriptToggleCSS } from './utils.ts';
+import { customSettingSavedJSONIsNotMalformed } from './userscriptvalidators.ts';
 
 /** sharedUserscriptData */
 export const su = {
 	userscriptsPath: '',
 	userscriptTrackerPath: '',
 	userscriptPrefsPath: '',
-	userscripts: <IUserscriptInstance[]>[],
-	userscriptTracker: <UserscriptTracker>{}
+	userscripts: [] as IUserscriptInstance[],
+	userscriptTracker: {} as UserscriptTracker
 };
 
 /** simple error message for usercripts. can be called from the userscript itself */
 const errAlert = (err: Error, name: string) => {
-	// eslint-disable-next-line no-alert
 	alert(`Userscript '${name}' had an error:\n\n${err.toString()}\n\nPlease fix the error, disable the userscript in the 'tracker.json' file or delete it.\nFeel free to check console for stack trace`);
 };
 
@@ -126,8 +125,6 @@ class Userscript implements IUserscriptInstance {
 	/** runs the userscript */
 	load() {
 		try {
-			// @ts-ignore
-			// eslint-disable-next-line @typescript-eslint/no-implied-eval
 			const exported = new Function(this.content).apply({
 				unload: false,
 				settings: {},
