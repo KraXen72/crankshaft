@@ -114,7 +114,10 @@ a customisable matchmaker (with GUI settings!) that you can use alongside/instea
 - Gatoclient was later rewritten, implementing some code from Crankshaft too.
 - **other acknowledgments**
   - [All contributors](https://github.com/KraXen72/crankshaft/graphs/contributors)
-  - [wa/paintingofblue](https://github.com/paintingofblue) - matchmaker implementation
+  - [bigjakk](https://github.com/bigjakk) - electron build help, parallel work on [KCC](https://github.com/bigjakk/Krunker-Civilian-Client)
+  - [AspectQuote](https://github.com/AspectQuote) - Current matchmaker implementation, some UI, CSS backporting
+  - [Iona](https://github.com/eeonaa) - CSS Swapper implementation
+  - [wa/paintingofblue](https://github.com/hsyslm) - original matchmaker implementation
   - [Commander/asger-finding](https://github.com/asger-finding) (AKC client) - resource swapper implementation
   - [Tae](https://github.com/whuuayu) - awesome logo for the client <3
 
