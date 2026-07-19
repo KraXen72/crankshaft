@@ -1043,6 +1043,11 @@ export function renderSettings() {
 		header.addEventListener('click', collapseCallback);
 	});
 
+	const supportHolder = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: '<span class="buttons-title">Support:</span>'});
+	supportHolder.appendChild(skeleton.settingButton('chat_bubble', 'Discord', _ => shell.openExternal('https://discord.gg/DVnhngXWaa')));
+	supportHolder.appendChild(skeleton.settingButton('error', 'GitHub', _ => shell.openExternal("https://github.com/KraXen72/crankshaft/issues")))
+	document.querySelector('.setBodH.Crankshaft-setBodH').prepend(supportHolder);
+
 	const buttonsHolder = createElement('div', { class: ['crankshaft-button-holder', 'setting', 'settName'], innerHTML: '<span class="buttons-title">Quick open:</span>' });
 	buttonsHolder.appendChild(skeleton.settingButton('file_open', 'Settings file', e => openPath(e, userPrefsPath)));
 	buttonsHolder.appendChild(skeleton.settingButton('folder', 'Crankshaft folder', e => openPath(e, paths.configPath)));
