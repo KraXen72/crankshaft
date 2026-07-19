@@ -129,7 +129,7 @@ const settingsDesc: SettingsDesc = {
 	safeFlags_gpuRasterizing: { title: 'GPU rasterization', type: 'bool', desc: 'Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable', safety: 2, cat: 3 },
 	safeFlags_disableBackgrounding: { title: 'Disable background optimizations', type: 'bool', desc: 'When tabbed out, keep the game running as if you were tabbed in. Uses more resources, but avoids catch-up', safety: 2, cat: 3 },
 	experimentalFlags_increaseLimits: { title: 'Increase limits flags', type: 'bool', desc: 'Allows more renderer processes and disables gpu blocklist', safety: 4, cat: 3 },
-	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Weird GPU buffer stuff', safety: 4, cat: 3 }
+	experimentalFlags_experimental: { title: 'Experimental flags', type: 'bool', desc: 'Breaks things. Only enable if you know what you\'re doing.', safety: 4, cat: 3 }
 };
 
 /** index-based safety descriptions. goes in title attribute */

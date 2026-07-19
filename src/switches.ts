@@ -7,13 +7,9 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 	// app.commandLine.appendSwitch("ozone-platform", "x11")
 
 	app.commandLine.appendSwitch('disable-breakpad');
-	app.commandLine.appendSwitch('disable-print-preview');
-	app.commandLine.appendSwitch('disable-metrics-repo');
-	app.commandLine.appendSwitch('disable-metrics');
-	app.commandLine.appendSwitch('disable-2d-canvas-clip-aa');
-	app.commandLine.appendSwitch('disable-bundled-ppapi-flash');
 	app.commandLine.appendSwitch('disable-logging');
-	app.commandLine.appendSwitch('disable-component-update');
+	app.commandLine.appendSwitch('disable-2d-canvas-clip-aa');
+	app.commandLine.appendSwitch('disable-hang-monitor');
 	app.commandLine.appendSwitch('no-pings');
 	console.log('Removed useless features');
 
@@ -33,17 +29,20 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		console.log('Applied flags to increase limits');
 	}
 	if (userPrefs.experimentalFlags_experimental) {
-		// do they crash the game? not for me. do they actually help? ¯\_(ツ)_/¯
 		app.commandLine.appendSwitch('enable-native-gpu-memory-buffers'); // linux-specific
 		app.commandLine.appendSwitch('ignore-gpu-blocklist');
-		// disable-canvas-aa
 
+		app.commandLine.appendSwitch('disable-best-effort-tasks');
+		app.commandLine.appendSwitch('raise-timer-frequency');
+		app.commandLine.appendSwitch('force-high-performance-gpu');
 		console.log('Enabled Experiments');
 	}
 	if (userPrefs.safeFlags_gpuRasterizing) {
 		// do they crash the game? not for me. do they actually help? yeah kind of. depending on your gpu etc.
 		app.commandLine.appendSwitch('enable-gpu-rasterization');
-		app.commandLine.appendSwitch('disable-zero-copy'); // this is really important, otherwise the game crashes. // <- probably not a good idea
+		// app.commandLine.appendSwitch('disable-zero-copy');
+		app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds');
+		app.commandLine.appendSwitch('disable-software-rasterizer');
 		console.log('GPU rasterization active');
 	}
 
