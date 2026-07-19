@@ -1,7 +1,7 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync, cpSync } from 'fs';
-import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, dialog, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
-import { aboutSubmenu, macAppMenuArr, genericMainSubmenu, csMenuTemplate, constructDevtoolsSubmenu } from './menu.ts';
+import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
+import { aboutSubmenu, macAppMenuArr, csMenuTemplate, constructDevtoolsSubmenu } from './menu.ts';
 import { applyCommandLineSwitches } from './switches.ts';
 import RequestHandler from './requesthandler.ts';
 
@@ -211,75 +211,6 @@ ipcMain.on('openExternal', (_event, url: string) => { shell.openExternal(url); }
 ipcMain.on('closeClient', () => { app.exit(); });
 
 const $assets = pathResolve(import.meta.dirname, '..', 'assets');
-const hideAdsCSS = readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' });
-
-/** open a custom generic window with our menu, hidden */
-function customGenericWin(url: string, providedMenuTemplate: (MenuItemConstructorOptions | MenuItem)[], addAdditionalSubmenus = true, addDevtools = true, customPreload: string | false = false) {
-	const screenSize = screen.getPrimaryDisplay().size;
-
-	const genericWin = new BrowserWindow({
-		autoHideMenuBar: true,
-		show: false,
-		width: screenSize.width * windowScale,
-		height: screenSize.height * windowScale,
-		center: true,
-		webPreferences: {
-			preload: (customPreload) ? customPreload : '',
-			spellcheck: false,
-			nodeIntegration: false
-		}
-	});
-
-	// add additional submenus to the generic win
-	const injectablePosition = process.platform === 'darwin' ? 1 : 0; // the position where we should inject our submenus
-	const { submenu } = providedMenuTemplate[injectablePosition];
-
-	if (addAdditionalSubmenus && Array.isArray(submenu)) {
-		providedMenuTemplate[injectablePosition].submenu = submenu.concat([
-			{ label: 'Copy current url to clipboard', accelerator: 'F7', click: () => { clipboard.writeText(genericWin.webContents.getURL()); } },
-			{ label: 'Debug: Display original url', accelerator: 'CommandOrControl+F1', click: () => { dialog.showMessageBoxSync(genericWin, { message: url }); } },
-			{ type: 'separator' },
-			{
-				label: 'Go to previous page (Go Back)',
-				registerAccelerator: false,
-				click: () => {
-					if (genericWin.webContents.canGoBack()) genericWin.webContents.goBack();
-				}
-			},
-			{
-				label: 'Go to next page (Go Forward)',
-				registerAccelerator: false,
-				click: () => {
-					if (genericWin.webContents.canGoForward()) genericWin.webContents.goForward();
-				}
-			},
-			{ type: 'separator' }
-		]);
-	}
-
-	if (addDevtools && Array.isArray(submenu)) {
-		submenu.push(...constructDevtoolsSubmenu(genericWin, userPrefs.alwaysWaitForDevTools || null));
-	}
-
-	const thisMenu = Menu.buildFromTemplate(providedMenuTemplate);
-
-	genericWin.setMenu(thisMenu);
-	genericWin.setMenuBarVisibility(false);
-	genericWin.loadURL(url);
-
-	// if hideAds is enabled, hide them. then show the window
-	genericWin.once('ready-to-show', () => {
-		if (userPrefs.hideAds === 'hide' || userPrefs.hideAds === 'block') genericWin.webContents.insertCSS(hideAdsCSS);
-		genericWin.show();
-	});
-	if (userPrefs.hideAds === 'hide' || userPrefs.hideAds === 'block') {
-		// re-inject hide ads even when going back and forth in history
-		genericWin.webContents.on('did-navigate', () => { genericWin.webContents.insertCSS(hideAdsCSS); });
-	}
-	genericWin.once('close', () => { genericWin.destroy(); });
-
-	return genericWin;
-}
 
 // apply settings and flags
 applyCommandLineSwitches(userPrefs);
@@ -448,7 +379,6 @@ app.on('ready', () => {
 
 	// the other submenus are defined in menu.ts
 	const csMenu = Menu.buildFromTemplate([...macAppMenuArr, gameSubmenu, ...csMenuTemplate]);
-	const strippedMenuTemplate = [...macAppMenuArr, genericMainSubmenu, ...csMenuTemplate]; // don't forget to inject devtools in this
 
 	Menu.setApplicationMenu(csMenu);
 
@@ -457,55 +387,18 @@ app.on('ready', () => {
 	mainWindow.setMenuBarVisibility(false);
 
 	mainWindow.webContents.setWindowOpenHandler(details => {
-		const url = details.url;
+		const url = new URL(details.url)
 
 		console.log('url trying to open:', url);
-		const freeSpinHostnames = ['youtube.com', 'twitch.tv', 'twitter.com', 'reddit.com', 'discord.com', 'accounts.google.com', 'instagram.com', 'github.com'];
 
-		if (freeSpinHostnames.some(fsUrl => url.includes(fsUrl))) {
-			const pick = dialog.showMessageBoxSync({
-				title: 'Opening a new url',
-				noLink: false,
-				message: `You're trying to open ${url}`,
-				buttons: ['Open in default browser', 'Open as a new window in client', 'Open in this window', "Don't open"]
-			});
-			switch (pick) {
-				case 0: // open in default browser
-					shell.openExternal(url);
-					break;
-				case 2: // load as main window
-					mainWindow.loadURL(url);
-					break;
-				case 3: // don't open
-					break;
-				case 1: // open as a new window in client
-				default: {
-					customGenericWin(url, strippedMenuTemplate);
-					break;
-				}
-			}
-			return { action: "deny" };
-
-			// for comp or hosted game just load it into the mainWindow
-		} else if (url.includes('comp.krunker.io')
-			|| url.includes('beta.krunker.io')
-			|| url.startsWith('https://krunker.io/?game')
-			|| url.startsWith('https://krunker.io/?play')
-			|| url.endsWith('?sandbox')
-			|| url.includes('?host')
-			|| (url.includes('?game=') && url.includes('&matchId='))
-		) {
-			mainWindow.loadURL(url);
-			return { action: "deny" };
+		if (url.hostname.endsWith("krunker.io") && url.hostname !== "editor.krunker.io") {
+			mainWindow.loadURL(url.toString());
+			return { action: 'deny' };
 		} else {
-			console.log(`genericWindow created for ${url}`);
-			// fall back to creating a custom window with strippedMenu
-			customGenericWin(url, strippedMenuTemplate, false, true);
-			return { action: "deny" };
+			shell.openExternal(url.toString())
+			return { action: 'deny' };
 		}
 	})
-
-	// console.log(readFileSync(pathJoin($assets, 'blockFilters.txt'), { encoding: 'utf-8' }));
 
 	if (userPrefs.resourceSwapper || userPrefs.hideAds === 'block') {
 		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow,

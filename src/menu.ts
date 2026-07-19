@@ -29,14 +29,6 @@ export const macAppMenuArr: (MenuItemConstructorOptions | MenuItem)[] = process.
 	} ]
 	: [];
 
-/** submenu for social shortcuts */
-export const genericMainSubmenu: (MenuItemConstructorOptions | MenuItem) = {
-	label: 'Window',
-	submenu: [
-		{ label: 'Refresh', role: 'reload', accelerator: 'F5' }
-	]
-};
-
 /** make 2 menuItems that determine wether to use fallback or not, and then act accordingly */
 export function constructDevtoolsSubmenu(providedWindow: BrowserWindow, skipFallback: null | boolean = null, options?: OpenDevToolsOptions) {
 	const maxLag = 500; // default timeout by asger-finding / Commander
