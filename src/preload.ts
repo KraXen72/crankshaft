@@ -1,8 +1,8 @@
 ﻿import { readFileSync } from 'fs';
 import { join as pathJoin, resolve as pathResolve } from 'path';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, webFrame } from 'electron';
 import { fetchGame } from './matchmaker.ts';
-import { createElement, hiddenClassesImages, injectSettingsCSS, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils.ts';
+import { createElement, hiddenClassesImages, toggleSettingCSS, repoID, keyboardEventMatchesCustomSetting } from './utils.ts';
 import { renderSettings } from './settingsui.ts';
 import { compareVersions } from 'compare-versions';
 import { splashFlavor } from './splashscreen.ts';
@@ -307,25 +307,18 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	});
 
 	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper } = _userPrefs;
-	const splashScreenCSSInjectionID = 'Crankshaft-splash-css';
-	const customSettingsCSSInjectionID = 'Crankshaft-settings-css';
-	const matchmakerPopupCSSInjectionID = 'Crankshaft-matchmaker-css';
-	const backPortedFixesCSSInjectionID = 'Crankshaft-ported-css';
 
 	const settCss = readFileSync(pathJoin($assets, 'settings.css'), { encoding: 'utf-8' });
-	injectSettingsCSS(settCss, customSettingsCSSInjectionID);
-
-	const backportedCss = readFileSync(pathJoin($assets, 'portedCssRules.css'), { encoding: 'utf-8' });
-	injectSettingsCSS(backportedCss, backPortedFixesCSSInjectionID);
+	webFrame.insertCSS(settCss);
 
 	if (matchmaker) {
 		const matchmakerCss = readFileSync(pathJoin($assets, 'matchmaker.css'), { encoding: 'utf-8' });
-		injectSettingsCSS(matchmakerCss, matchmakerPopupCSSInjectionID);
+		webFrame.insertCSS(matchmakerCss);
 	}
 
 	if (clientSplash) {
 		const splashCSS = readFileSync(pathJoin($assets, 'splash.css'), { encoding: 'utf-8' });
-		injectSettingsCSS(splashCSS, splashScreenCSSInjectionID);
+		webFrame.insertCSS(splashCSS);
 
 		const splashMountElementID = 'uiBase';
 		const uiBaseElement = document.getElementById(splashMountElementID);

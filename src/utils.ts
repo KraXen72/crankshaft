@@ -2,11 +2,6 @@ import { webFrame } from 'electron';
 import { strippedConsole } from './preload.ts';
 import * as os from "os";
 
-/** inject css as a style tag */
-export const injectSettingsCSS = (css: string, _identifier = 'settings') => {
-	webFrame.insertCSS(css);
-};
-
 export const repoID = 'KraXen72/crankshaft';
 
 // create element util function. source is my utils lib: https://github.com/KraXen72/roseboxlib/blob/master/esm/lib.js
