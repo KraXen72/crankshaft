@@ -245,7 +245,9 @@ app.on('ready', () => {
 			preload: pathJoin(import.meta.dirname, 'preload.ts'),
 			spellcheck: false,
 			nodeIntegration: false,
-			contextIsolation: false, // not ideal, but preload does a lot of interaction w/ the page
+			// not ideal, but preload does a lot of interaction w/ the page
+			// turning this on will also likely require transpiling the preload script to js
+			contextIsolation: false,
 			sandbox: false
 		},
 		backgroundColor: '#000000'
@@ -284,9 +286,14 @@ app.on('ready', () => {
 		if (userPrefs.fullscreen === 'maximized' && !mainWindow.isMaximized()) mainWindow.maximize();
 		if (!mainWindow.isVisible()) mainWindow.show();
 
-		if (mainWindow.webContents.getURL().endsWith('dummy.html')) { mainWindow.loadURL('https://krunker.io'); return; }
+		if (crankshaftUrlStartup) {
+            mainWindow.webContents.send('process-startup-url', crankshaftUrlStartup);
+			// resetting url
+			crankshaftUrlStartup = null;
+        }
 
-		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath); // tell preload to inject settingcss and splashcss + other
+		// tell preload to inject settingcss and splashcss + other
+		mainWindow.webContents.send('injectClientCSS', userPrefs, app.getVersion(), cssPath);
 
 		if (userPrefs.discordRPC) {
 			import('@nyabsi/minimal-discord-rpc').then(DiscordRPC => {
@@ -294,7 +301,7 @@ app.on('ready', () => {
 				const startTimestamp = new Date();
 
 				function updateRPC({ details, state }: RPCargs) {
-					const data = {
+					const data: Parameters<typeof rpc.setActivity>[0] = {
 						details,
 						state,
 						timestamps: { start: Math.floor(startTimestamp.getTime() / 1000) },
@@ -327,24 +334,14 @@ app.on('ready', () => {
 		}
 	});
 
-	// due to loading dummy.html and krunker.io being separate events, we need to wait for the second event emitted instead of the first
-	let dummyRTS = false;
-	mainWindow.on('ready-to-show', () => {
-		if (!dummyRTS) {
-			dummyRTS = true;
-			return;
-		}
+	// only check for updates once
+	mainWindow.once("ready-to-show", () => {
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());
+
 		mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
+	})
 
-		 if (crankshaftUrlStartup) {
-            mainWindow.webContents.send('process-startup-url', crankshaftUrlStartup);
-			//resetting url
-			crankshaftUrlStartup = null;
-            }
-	});
-
-	mainWindow.loadFile(pathJoin($assets, 'dummy.html'));
+	mainWindow.loadURL('https://krunker.io');
 
 	if (userPrefs.logDebugToConsole) {
 		console.log('GPU INFO BEGIN');
@@ -389,7 +386,7 @@ app.on('ready', () => {
 	mainWindow.webContents.setWindowOpenHandler(details => {
 		const url = new URL(details.url)
 
-		console.log('url trying to open:', url);
+		console.log('url trying to open:', url.toString());
 
 		if (url.hostname.endsWith("krunker.io") && url.hostname !== "editor.krunker.io") {
 			mainWindow.loadURL(url.toString());
@@ -410,10 +407,4 @@ app.on('ready', () => {
 			filtersPath);
 		CrankshaftFilterHandlerInstance.start();
 	}
-});
-
-
-// for the 2nd attempt at fixing the memory leak, i am just going to rely on standard electron lifecycle logic - when all windows close, the app should exit itself
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') return app.quit(); // don't quit on mac systems unless user explicitly quits
 });
