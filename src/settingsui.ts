@@ -390,7 +390,7 @@ class SettingElem {
 	 * not sure if you can currently synthetically update the settings, but at that point just change userPrefs and re-render?
 	 */
 	update(elem: HTMLElement, callback: 'normal' | 'userscript' | Function, event?: InputEvent) {
-		if (this.updateKey === '') throw 'Invalid update key';
+		if (this.updateKey === '') throw new Error('Invalid update key');
 		const target = elem.querySelector('.s-update') as HTMLInputElement;
 
 		// parse & sanitize the value from our input element
@@ -454,7 +454,7 @@ class SettingElem {
 				if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
 			}
 		} else if (callback === 'userscript') {
-			if (typeof value !== 'boolean') throw `Callback cannot be "userscript" for non-boolean values, like: ${value.toString()}`;
+			if (typeof value !== 'boolean') throw new Error(`Callback cannot be "userscript" for non-boolean values, like: ${value.toString()}`);
 
 			let refreshSettings = false;
 			if ('userscriptReference' in this.props) {

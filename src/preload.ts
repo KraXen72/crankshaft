@@ -322,7 +322,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 
 		const splashMountElementID = 'uiBase';
 		const uiBaseElement = document.getElementById(splashMountElementID);
-		if (uiBaseElement === null) throw `Krunker didn't create #${splashMountElementID}`;
+		if (uiBaseElement === null) throw new Error(`Krunker didn't create #${splashMountElementID}`);
 
 		const splashBackground = createElement('div', { class: ['crankshaft-loading-background'] });
 		if (immersiveSplash) {
