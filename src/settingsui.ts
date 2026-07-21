@@ -44,13 +44,13 @@ const cssSwapperOption: SelectSettingDescItem = {
 	}
 }
 
-ipcRenderer.on('m_userPrefs_for_settingsUI', (_event, recieved_paths: IPaths, recieved_userPrefs: UserPrefs) => {
+ipcRenderer.on('m_userPrefs_for_settingsUI', (_event, received_paths: IPaths, received_userPrefs: UserPrefs) => {
 	// main sends us the path to settings and also settings themselves on initial load.
-	userPrefsPath = recieved_paths.settingsPath;
-	userscriptPrefsPath = recieved_paths.userscriptPreferencesPath;
-	paths = recieved_paths;
-	userPrefs = recieved_userPrefs;
-	userPrefsCache = { ...recieved_userPrefs }; // cache userprefs
+	userPrefsPath = received_paths.settingsPath;
+	userscriptPrefsPath = received_paths.userscriptPreferencesPath;
+	paths = received_paths;
+	userPrefs = received_userPrefs;
+	userPrefsCache = { ...received_userPrefs }; // cache userprefs
 
 	settingsDesc.resourceSwapper.button = { icon: 'folder', text: 'Swapper', callback: e => openPath(e, paths.swapperPath) };
 	settingsDesc.customFilters.button = { icon: 'filter_list', text: 'Filters file', callback: e => openPath(e, paths.filtersPath) };
@@ -429,7 +429,7 @@ class SettingElem {
 		}
 
 		if (callback === 'normal') {
-			ipcRenderer.send('logMainConsole', `recieved an update for ${this.props.key}:`, value);
+			ipcRenderer.send('logMainConsole', `received an update for ${this.props.key}:`, value);
 			userPrefs[this.props.key] = value;
 			saveSettings();
 			if (this.props.key === 'hideAds') {
@@ -475,10 +475,10 @@ class SettingElem {
 						this.#disabled = true;
 					}
 				}
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${userscript.name}`, value);
+				ipcRenderer.send('logMainConsole', `userscript: received an update for ${userscript.name}`, value);
 				su.userscriptTracker[userscript.name] = value;
 			} else {
-				ipcRenderer.send('logMainConsole', `userscript: recieved an update for ${this.props.title}`, value);
+				ipcRenderer.send('logMainConsole', `userscript: received an update for ${this.props.title}`, value);
 				su.userscriptTracker[this.props.title] = value;
 			}
 			saveUserscriptTracker();
@@ -853,7 +853,7 @@ function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, 
 					// We specifically apply the callback at the top level so that a userscript creator can't just define their own callback() and access the client directly through a userscript.
 					callback: function(this: { settingKey: string, prefsKey: string, changed: Function }, value: UserPrefs[keyof UserPrefs]) {
 						userscriptPreferences[this.prefsKey][this.settingKey] = value;
-						ipcRenderer.send('logMainConsole', `Custom userscript setting: recieved an update for key: '${this.settingKey}' from '${this.prefsKey}.js'`, value);
+						ipcRenderer.send('logMainConsole', `Custom userscript setting: received an update for key: '${this.settingKey}' from '${this.prefsKey}.js'`, value);
 						saveUserScriptSettings(this.prefsKey);
 						this.changed(value);
 					}.bind({ settingKey, prefsKey: userscriptPrefsKey, changed: setting.changed })

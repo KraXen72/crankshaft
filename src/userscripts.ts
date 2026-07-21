@@ -163,10 +163,10 @@ class Userscript implements IUserscriptInstance {
 
 }
 
-ipcRenderer.on('main_initializes_userscripts', (_event, recieved_userscript_paths: { userscriptsPath: string, userscriptPrefsPath: string }) => {
-	su.userscriptsPath = recieved_userscript_paths.userscriptsPath;
+ipcRenderer.on('main_initializes_userscripts', (_event, received_userscript_paths: { userscriptsPath: string, userscriptPrefsPath: string }) => {
+	su.userscriptsPath = received_userscript_paths.userscriptsPath;
 	su.userscriptTrackerPath = pathResolve(su.userscriptsPath, 'tracker.json');
-	su.userscriptPrefsPath = recieved_userscript_paths.userscriptPrefsPath;
+	su.userscriptPrefsPath = received_userscript_paths.userscriptPrefsPath;
 
 	// init the userscripts (read, map and set up tracker)
 	su.userscripts = readdirSync(su.userscriptsPath, { withFileTypes: true })

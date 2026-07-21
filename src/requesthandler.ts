@@ -66,8 +66,8 @@ export default class RequestHandler {
 
 		this.browserWindow.webContents.session.webRequest.onBeforeRequest(this.filter, (details, callback) => {
 			if (this.swapperEnabled) {
-				const swapResourse = this.swapUrls.some(pat => new URLPattern(pat).test(details.url));
-				if (swapResourse) {
+				const swapResource = this.swapUrls.some(pat => new URLPattern(pat).test(details.url));
+				if (swapResource) {
 					const path = new URL(details.url).pathname;
 					const resultPath = path.startsWith('/assets/') ? pathJoin(this.swapDir, path.substring(7)) : pathJoin(this.swapDir, path);
 					// Redirect to the local resource.
