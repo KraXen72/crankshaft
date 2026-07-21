@@ -91,7 +91,7 @@ class Userscript implements IUserscriptInstance {
 			if (startLine !== -1 && endLine !== -1) {
 				chunk = chunk.slice(startLine, endLine + 1).join('\n');
 
-				/* 
+				/*
 				 * assume this.meta is not false when parsing
 				 * fixme: types
 				 */

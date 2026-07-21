@@ -7,7 +7,7 @@ import { renderSettings } from './settingsui.ts';
 import { compareVersions } from 'compare-versions';
 import { splashFlavor } from './splashscreen.ts';
 
-// get rid of client unsupported message 
+// get rid of client unsupported message
 window.OffCliV = true;
 window.closeClient = () => ipcRenderer.send('closeClient');
 
@@ -116,11 +116,11 @@ const automateCompHost = async (params: CompHostParams) => {
 	team2Input.value = params.team2Name;
 
 	const teamSizeSelect = await waitForElement("#customStmSize") as HTMLSelectElement;
-    
+
 	const teamSizeMap: { [key: string]: string } = {
-		"1v1": "0", 
-		"2v2": "1", 
-		"3v3": "2", 
+		"1v1": "0",
+		"2v2": "1",
+		"3v3": "2",
 		"4v4": "3",
 	};
 	const finalTeamSize = teamSizeMap[params.teamSize] || params.teamSize;
@@ -329,7 +329,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 			splashBackground.classList.add('immersive');
 			splashBackground.style.setProperty("background-color", `${immersiveSplashBackgroundColor}`);
 		}
-		
+
 		const logoSVG = createElement('svg', {
 			id: 'crankshaft-logo-holder',
 			innerHTML: readFileSync(pathJoin($assets, 'full_logo.svg'), { encoding: 'utf-8' })
@@ -558,4 +558,3 @@ function patchSettings(_userPrefs: UserPrefs) {
 	}
 	interval = setInterval(waitForWindow0, 250);
 }
-

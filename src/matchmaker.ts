@@ -94,7 +94,7 @@ function handleMatchmakerBind(event: KeyboardEvent) {
  */
 function createFetchedGamePopup(game: IMatchmakerGame) {
 	popupElement.style.backgroundImage = `url(https://assets.krunker.io/img/maps/map_${ MATCHMAKER_MAP_ICON_INDICES.indexOf(game.map) || 0}.png)`;
-	
+
 	currentMatch = game.gameID;
 	if (game.gameID === "none") {
 		popupTitle.innerText = "No Games Found...";
@@ -177,4 +177,3 @@ export async function fetchGame(_userPrefs: UserPrefs) {
 		});
 	}
 }
-

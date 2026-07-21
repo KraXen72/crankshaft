@@ -78,15 +78,15 @@ function openPath(e: MouseEvent, path: string) {
  * each setting is defined here as a SettingsDesc object. check typescript intelliSense to see if you have all required props.
  * some setting types, like 'sel' will have more required props, for example 'opts'.
  * note: for each key in userPrefs, there should exist an entry under the same key here.
- * 
+ *
  * optional props and their defaults:
  * desc (description): omitting it or leaving it "" will not render any description
  * cat (category): omitting will put the setting in the first (0th) category
  * instant: ommiting will not render an instant icon.
  * refreshOnly: ommiting will not render a refresh-only icon
- * 
+ *
  * note: instant and refreshOnly are exclusive. only use one at a time
- * 
+ *
  * note: settings will get rendered in the order you define them.
  * based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
  */
@@ -299,7 +299,7 @@ class SettingElem {
 
 		switch (props.type) {
 			case 'bool':
-				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<label class="switch">
 							<input class="s-update" type="checkbox" ${props.value ? 'checked' : ''} ${this.#disabled ? 'disabled' : ''}/>
 							<div class="slider round"></div>
@@ -323,7 +323,7 @@ class SettingElem {
 							value="${props.value}" min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
 						/>
 					</div>
-					<input type="number" class="rb-input s-update sliderVal" name="${props.key}" 
+					<input type="number" class="rb-input s-update sliderVal" name="${props.key}"
 						autocomplete="off" value="${props.value}" min="${props.min}" max="${props.max}" step="${props?.step ?? 1}"
 					/>
 				</span>`;
@@ -358,7 +358,7 @@ class SettingElem {
 				break;
 			}
 			case 'color':
-				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<label class="setting-input-wrapper">
 							<input class="s-update" type="color" value="${props.value ? props.value : ''}" ${this.#disabled ? 'disabled' : ''}/>
 					</label>`;
@@ -366,7 +366,7 @@ class SettingElem {
 				this.updateMethod = 'onchange'; // oninput works too, but will fire each frame the selector is dragged, causing performance drops. onchange will fire when the selector is closed, ultimately achieving the same effect.
 				break;
 			case 'keybind':
-				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span> 
+				this.HTML += `<span class="setting-title">${sanitize(props.title)}</span>
 					<label class="setting-input-wrapper crankshaftKeybindSettingWrapper">
 							<input class="s-update keybinddummyinput" type="text" />
 							<span class="material-icons crankshaftKeybindConflict" title="This keybind conflicts with '_'.">warning</span>
@@ -728,9 +728,9 @@ const skeleton = {
 			${innerHTML}
 	</div>`,
 
-	/** 
-	 * make a setting with some text (notice) 
-	 * @param desc description of the notice 
+	/**
+	 * make a setting with some text (notice)
+	 * @param desc description of the notice
 	 * @param opts desc => description, iconHTML => icon's html, generate through skeleton's *icon methods
 	 */
 	notice: (notice: string, opts?: { desc?: string, iconHTML?: string }) => `
@@ -796,16 +796,16 @@ const skeleton = {
  * @returns the rendered userscript settings and how many settings were rendered
  */
 function generateRenderReadyUserscriptSettings(userscript: IUserscriptInstance, scriptVanity: { author: string, name: string }, filter: string, forceInclude: boolean) {
-	const renderReadyData = { 
+	const renderReadyData = {
 		/**
 		 * Document Fragment containing the custom userscript settings to be rendered
 		 */
-		documentFragment: new DocumentFragment(), 
+		documentFragment: new DocumentFragment(),
 
 		/**
 		 * Count of the actual rendered custom userscript settings
 		 */
-		renderedSettings: 0 
+		renderedSettings: 0
 	}
 
 	// Create tracker for broken settings so that they aren't saved or modified.

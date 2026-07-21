@@ -15,7 +15,7 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 
 	// Don't require user gesture for autoplay (thanks Commander)
 	app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-	
+
 	if (userPrefs.safeFlags_disableBackgrounding) {
 		app.commandLine.appendSwitch('disable-background-timer-throttling');
 		app.commandLine.appendSwitch('disable-renderer-backgrounding');

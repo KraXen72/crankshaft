@@ -8,7 +8,7 @@ import RequestHandler from './requesthandler.ts';
 const userData = pathJoin(app.getPath('userData'), 'config');
 const docsPath = pathJoin(app.getPath('documents'), 'Crankshaft'); // pre 1.9.0 settings path
 const configPath = userData;
-const windowScale = 0.8; // In windowed mode, the window will cover 80% of the height/width of the screen. 
+const windowScale = 0.8; // In windowed mode, the window will cover 80% of the height/width of the screen.
 
 let crankshaftUrlStartup: string | null = null;
 
@@ -49,9 +49,9 @@ function migrateSettings() {
 
 		There are files in both directories!
 		Make sure your actual settings, swapper & scripts are in the new folder & delete stuff from the old one.
-		
+
 		Crankshaft v${app.getVersion()} no longer supports settings in Documents due to inconsistent permissions.
-		
+
 		Restart crankshaft afterwards.`);
 		error.stack = null;
 		throw error;
