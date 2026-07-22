@@ -1,9 +1,8 @@
 import type { ForgeConfig } from '@electron-forge/shared-types';
 import { MakerAppImage } from "@reforged/maker-appimage";
 import { MakerDMG } from "@electron-forge/maker-dmg";
-import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { PublisherGitHub } from "@electron-forge/publisher-github"
-
+import { MakerNSIS } from "./MakerNSIS.ts";
 
 export const VERSION = "44.0.0-nightly.20260522"
 
@@ -15,7 +14,7 @@ export default {
         icon: "./build/icon",
         appCategoryType: "public.app-category.games",
         appCopyright: "",
-        ignore: /^\/(?!(src|assets|build|node_modules|package\.json|README\.md|LICENSE))/,
+        ignore: /^\/(?!(src|assets|node_modules|package\.json|README\.md|LICENSE))/,
         prune: true,
         // asar: true,
         download: {
@@ -32,7 +31,6 @@ export default {
                 schemes: ["crankshaft"]
             }
         ]
-        
     },
     outDir: "dist",
     
@@ -50,10 +48,7 @@ export default {
             icon: "./build/icon.icns",
             iconSize: 128 // ?
         }),
-        new MakerSquirrel({
-            setupIcon: "./build/icon.ico",
-            iconUrl: "https://raw.githubusercontent.com/KraXen72/crankshaft/refs/heads/master/build/icon.ico",
-        })
+        new MakerNSIS()
     ],
     publishers: [
         new PublisherGitHub({

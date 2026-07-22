@@ -1,7 +1,7 @@
 {
 	"name": "crankshaft-next",
 	"version": "2.0.0-alpha.2",
-	"description": "Crankshaft Krunker Client by KraXen72",
+	"description": "Crankshaft Krunker Client",
 	"main": "./src/main.ts",
 	"type": "module",
 	"scripts": {
@@ -12,7 +12,7 @@
 		"release": "electron-forge make && electron-forge publish",
 		"lint": "biome lint"
 	},
-	"author": "KraXen72",
+	"author": "KraXen72, thegu5, and more",
 	"license": "GPL-3.0",
 	"homepage": "https://github.com/KraXen72/crankshaft",
 	"keywords": [
@@ -26,7 +26,6 @@
 		"@biomejs/biome": "2.4.14",
 		"@electron-forge/cli": "^8.0.0-0",
 		"@electron-forge/maker-dmg": "^8.0.0-0",
-		"@electron-forge/maker-squirrel": "8.0.0-alpha.10",
 		"@electron-forge/publisher-github": "8.0.0-alpha.10",
 		"@electron-forge/shared-types": "^8.0.0-0",
 		"@reforged/maker-appimage": "^5.2.0",

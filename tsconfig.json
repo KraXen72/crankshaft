@@ -15,6 +15,7 @@
 	},
 	"include": [
 		"src/**/*",
-		"forge.config.ts"
+		"forge.config.ts",
+		"MakerNSIS.ts"
 	]
 }
