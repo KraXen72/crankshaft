@@ -3,6 +3,8 @@ import { MakerAppImage } from "@reforged/maker-appimage";
 import { MakerDMG } from "@electron-forge/maker-dmg";
 import { PublisherGitHub } from "@electron-forge/publisher-github"
 import { MakerNSIS } from "./MakerNSIS.ts";
+import { renameSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export const VERSION = "44.0.0-nightly.20260522"
 
@@ -50,6 +52,25 @@ export default {
         }),
         new MakerNSIS()
     ],
+    hooks: {
+        postPackage: async (config, { platform, outputPaths }) => {
+            if (platform !== "linux") return;
+
+            for (const buildPath of outputPaths) {
+                const exeName = config.packagerConfig.executableName;
+                const realBin = join(buildPath, `${exeName}.bin`);
+                const wrapper = join(buildPath, exeName);
+
+                renameSync(wrapper, realBin);
+
+                writeFileSync(
+                    wrapper,
+                    `#!/bin/sh\nDIR="$(dirname "$(readlink -f "$0")")"\nexec "$DIR/${exeName}.bin" --ozone-platform=x11 "$@"\n`,
+                    { mode: 0o755 }
+                );
+            }
+        }
+    },
     publishers: [
         new PublisherGitHub({
             repository: {
