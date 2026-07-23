@@ -80,7 +80,7 @@ export function toggleSettingCSS(css: string, identifier: string, value: ('toggl
 }
 
 export function userscriptToggleCSS(css: string, identifier: string, value: ('toggle' | boolean) = 'toggle') {
-	const reservedKeywords = ['menuTimer', 'hideAds', 'hideReCaptcha'];
+	const reservedKeywords = ['menuTimer', 'hideAds'];
 	if (!reservedKeywords.includes(identifier)) toggleSettingCSS(css, identifier, value);
 	else strippedConsole.error(`identifier '${identifier}' is reserved by crankshaft. Try something else.`);
 }

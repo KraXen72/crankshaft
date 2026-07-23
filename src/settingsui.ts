@@ -104,7 +104,6 @@ const settingsDesc: SettingsDesc = {
 
 	cssSwapper: cssSwapperOption,
 	menuTimer: { title: 'Menu Timer', type: 'bool', safety: 0, cat: 1, instant: true },
-	hideReCaptcha: { title: 'Hide reCaptcha', type: 'bool', safety: 0, cat: 1, instant: true },
 	quickClassPicker: { title: 'Quick Class Picker', type: 'bool', safety: 0, cat: 1, instant: true },
 	clientSplash: { title: 'Client Splash Screen', type: 'bool', safety: 0, cat: 1, refreshOnly: true },
 	immersiveSplash: { title: 'Immersive Splash Screen', type: 'bool', desc: 'Adds a background that covers the Krunker loading skeleton. Has no effect if Client Splash Screen is off.', safety: 0, cat: 1, refreshOnly: true },
@@ -451,7 +450,6 @@ class SettingElem {
 			if (typeof value === 'boolean') {
 				if (this.props.key === 'menuTimer') toggleSettingCSS(styleSettingsCSS.menuTimer, this.props.key, value);
 				if (this.props.key === 'quickClassPicker') toggleSettingCSS(styleSettingsCSS.quickClassPicker, this.props.key, value);
-				if (this.props.key === 'hideReCaptcha') toggleSettingCSS(styleSettingsCSS.hideReCaptcha, this.props.key, value);
 			}
 		} else if (callback === 'userscript') {
 			if (typeof value !== 'boolean') throw new Error(`Callback cannot be "userscript" for non-boolean values, like: ${value.toString()}`);

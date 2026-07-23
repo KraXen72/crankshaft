@@ -81,7 +81,6 @@ app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 const settingsSkeleton = {
 	fpsUncap: true,
 	inProcessGPU: false,
-	hideReCaptcha: true,
 	menuTimer: false,
 	quickClassPicker: false,
 	fullscreen: 'windowed', // windowed, maximized, fullscreen, borderless

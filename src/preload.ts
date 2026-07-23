@@ -164,7 +164,6 @@ export const styleSettingsCSS = {
 	hideAds: readFileSync(pathJoin($assets, 'hideAds.css'), { encoding: 'utf-8' }),
 	menuTimer: readFileSync(pathJoin($assets, 'menuTimer.css'), { encoding: 'utf-8' }),
 	quickClassPicker: readFileSync(pathJoin($assets, 'quickClassPicker.css'), { encoding: 'utf-8' }) + hiddenClassesImages(16),
-	hideReCaptcha: 'body > div:not([class]):not([id]) > div:not(:empty):not([class]):not([id]) { display: none; }'
 };
 
 ipcRenderer.on('main_did-finish-load', (_event, _userPrefs) => {
@@ -306,7 +305,7 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 		}
 	});
 
-	const { hideAds, menuTimer, quickClassPicker, hideReCaptcha, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper } = _userPrefs;
+	const { hideAds, menuTimer, quickClassPicker, clientSplash, immersiveSplash, immersiveSplashBackgroundColor, loadingSplashTitleCardBackgroundColor, userscripts, cssSwapper } = _userPrefs;
 
 	const settCss = readFileSync(pathJoin($assets, 'settings.css'), { encoding: 'utf-8' });
 	webFrame.insertCSS(settCss);
@@ -389,7 +388,6 @@ ipcRenderer.on('injectClientCSS', (_event, _userPrefs: UserPrefs, version: strin
 	}
 	if (menuTimer) toggleSettingCSS(styleSettingsCSS.menuTimer, 'menuTimer', true);
 	if (quickClassPicker) toggleSettingCSS(styleSettingsCSS.quickClassPicker, 'quickClassPicker', true);
-	if (hideReCaptcha) toggleSettingCSS(styleSettingsCSS.hideReCaptcha, 'hideReCaptcha', true);
 
 	/*
 	 * Animate transforms instead of position properties
