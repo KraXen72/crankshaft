@@ -3,10 +3,28 @@ import { MakerAppImage } from "@reforged/maker-appimage";
 import { MakerDMG } from "@electron-forge/maker-dmg";
 import { PublisherGitHub } from "@electron-forge/publisher-github"
 import { MakerNSIS } from "./MakerNSIS.ts";
-import { renameSync, writeFileSync } from 'node:fs';
+import { readdirSync, renameSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const VERSION = "44.0.0-nightly.20260522"
+
+function removeEmptyDirs(dir: string) {
+  if (!statSync(dir).isDirectory()) return false;
+
+  let entries = readdirSync(dir);
+
+  for (const entry of entries) {
+    const fullPath = join(dir, entry);
+    if (statSync(fullPath).isDirectory()) {
+      removeEmptyDirs(fullPath);
+    }
+  }
+
+  entries = readdirSync(dir);
+  if (entries.length === 0) {
+    rmdirSync(dir);
+  }
+}
 
 export default {
     packagerConfig: {
@@ -53,6 +71,11 @@ export default {
         new MakerNSIS()
     ],
     hooks: {
+        packageAfterPrune: async (_, buildPath) => {
+            const nodeModules = join(buildPath, "node_modules");
+            removeEmptyDirs(nodeModules)
+            rmSync(join(nodeModules, ".pnpm"), { recursive: true, force: true })
+        },
         postPackage: async (config, { platform, outputPaths }) => {
             if (platform !== "linux") return;
 
