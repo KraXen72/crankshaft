@@ -122,7 +122,6 @@ const settingsDesc: SettingsDesc = {
 	matchmakerAcceptKey: { title: 'Matchmaker Accept Hotkey', type: 'keybind', desc: 'Change the hotkey that accepts a game from the custom matchmaker.', safety: 0, cat: 2, instant: true },
 	matchmakerCancelKey: { title: 'Matchmaker Cancel Hotkey', type: 'keybind', desc: 'Change the hotkey that rejects a game from the custom matchmaker.', safety: 0, cat: 2, instant: true },
 
-	logDebugToConsole: { title: 'Log debug & GPU info to electron console', type: 'bool', safety: 0, cat: 3 },
 	overrideURL: { title: 'Override URL', desc: 'Useful for beta tests', type: 'text', placeholder: 'https://krunker.io', safety: 0, cat: 3 },
 	alwaysWaitForDevTools: { title: 'Always wait for DevTools', desc: 'Crankshaft uses an alt. method to open Devtools in a new window if they take too long. This disables that. Might cause DevTools to not work', type: 'bool', safety: 3, cat: 3 },
 	safeFlags_gpuRasterizing: { title: 'GPU rasterization', type: 'bool', desc: 'Enable GPU rasterization and disable Zero-copy rasterizer so rasterizing is stable', safety: 2, cat: 3 },
@@ -959,7 +958,7 @@ export function renderSettings() {
 		 */
 		let userscriptToggleBodyElement: HTMLElement;
 		if (su.userscripts.length > 0) {
-			userscriptToggleBodyElement = skeleton.catBodElem('userscripts', skeleton.notice('NOTE: refresh page to see changes', { iconHTML: skeleton.refreshIcon('refresh-icon') }));
+			userscriptToggleBodyElement = skeleton.catBodElem('userscripts', skeleton.notice('NOTE: refresh page to update list', { iconHTML: skeleton.refreshIcon('refresh-icon') }));
 		} else {
 			userscriptToggleBodyElement = skeleton.catBodElem('userscripts', skeleton.notice('No userscripts...', { desc: `Go to the Crankshaft <a href="https://github.com/${repoID}#userscripts">README.md</a> to download some made by the client dev.` }));
 		}

@@ -92,7 +92,6 @@ const settingsSkeleton = {
 	discordRPC: false,
 	extendedRPC: true,
 	saveMatchResultJSONButton: false,
-	logDebugToConsole: false,
 	overrideURL: undefined as string | undefined,
 	alwaysWaitForDevTools: false,
 	safeFlags_disableBackgrounding: true,
@@ -341,16 +340,6 @@ app.on('ready', () => {
 	})
 
 	mainWindow.loadURL('https://krunker.io');
-
-	if (userPrefs.logDebugToConsole) {
-		console.log('GPU INFO BEGIN');
-		app.getGPUInfo('complete').then(completeObj => {
-			console.dir(completeObj);
-		});
-
-		console.log('GPU FEATURES BEGIN');
-		console.dir(app.getGPUFeatureStatus());
-	}
 
 	/** submenu for in-game shortcuts */
 	const gameSubmenu: (MenuItemConstructorOptions | MenuItem) = {
