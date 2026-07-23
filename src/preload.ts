@@ -169,6 +169,24 @@ export const styleSettingsCSS = {
 ipcRenderer.on('main_did-finish-load', (_event, _userPrefs) => {
 	patchSettings(_userPrefs);
 
+	// fix fps dropping on scroll
+	// https://github.com/bigjakk/Krunker-Civilian-Client/blob/573de775d4b299db87d45d67d568264eb7d7e0f0/src/preload/index.ts#L29
+	window.addEventListener('wheel', (e: WheelEvent) => {
+    	if (document.pointerLockElement) {
+        	e.preventDefault();
+        	return;
+    	}
+    	let el = e.target as HTMLElement | null;
+    	while (el && el !== document.body && el !== document.documentElement) {
+        	const cs = getComputedStyle(el);
+        	const scrolls = (cs.overflowY === 'auto' || cs.overflowY === 'scroll' || cs.overflowX === 'auto' || cs.overflowX === 'scroll')
+            	&& (el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
+        	if (scrolls) return;
+        	el = el.parentElement;
+    	}
+    	e.preventDefault();
+	}, { capture: true, passive: false });
+
 	if (!_userPrefs.saveMatchResultJSONButton) return;
 	const copyStr = 'Copy';
 	const copiedStr = 'Copied to Clipboard!';
