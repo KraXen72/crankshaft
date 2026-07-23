@@ -982,7 +982,7 @@ export function renderSettings() {
 				// Define low-scope variables because I can't be arsed to copy + paste the same ternary operator
 				const scriptAuthor = ('author' in thisMeta && thisMeta.author) ? `${thisMeta.author}` : false;
 				const scriptName = ('name' in thisMeta && thisMeta.name) ? thisMeta.name : userscript.name;
-				const scriptHasSettings = ('settings' in userscript && Object.keys(userscript.settings).length > 0 && su.userscriptTracker[userscript.name]);
+				const scriptHasSettings = (userscript.settings && Object.keys(userscript.settings).length > 0 && su.userscriptTracker[userscript.name]);
 				Object.assign(customUserscriptSetting, {
 					title: scriptName,
 					desc: `${'desc' in thisMeta && thisMeta.desc ? thisMeta.desc.slice(0, 60) : ''}
