@@ -1,5 +1,5 @@
 {
-	"name": "crankshaft",
+	"name": "crankshaft-next",
 	"version": "2.0.0-alpha.2",
 	"description": "Crankshaft Krunker Client",
 	"main": "./src/main.ts",
