@@ -43,6 +43,10 @@
 	padding: 35px 20px 20px;
 	font-size: 42px;
 	border-radius: 0.3em;
+
+	&:empty {
+		display: none;
+	}
 }
 
 /* For some reason, the game insists on showing KPD controls when first loading in. (it doesn't do this on browser so I don't know why it happens) */
