@@ -41,10 +41,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build binaries
-        run: pnpm run dist
-
-      - name: Release
+      - name: Build binaries and release
         run: pnpm run release
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
