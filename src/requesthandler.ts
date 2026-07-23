@@ -3,8 +3,6 @@ import { join as pathJoin } from 'path';
 
 import type { WebRequestFilter } from 'electron';
 
-import { URLPattern } from 'urlpattern-polyfill';
-
 const TARGET_GAME_DOMAIN = 'krunker.io';
 
 export default class RequestHandler {

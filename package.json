@@ -23,21 +23,21 @@
 		"url": "https://github.com/KraXen72/crankshaft.git"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.14",
-		"@electron-forge/cli": "^8.0.0-0",
-		"@electron-forge/maker-dmg": "^8.0.0-0",
+		"@biomejs/biome": "2.5.5",
+		"@electron-forge/cli": "8.0.0-alpha.10",
+		"@electron-forge/maker-base": "8.0.0-alpha.10",
+		"@electron-forge/maker-dmg": "8.0.0-alpha.10",
 		"@electron-forge/publisher-github": "8.0.0-alpha.10",
-		"@electron-forge/shared-types": "^8.0.0-0",
+		"@electron-forge/shared-types": "8.0.0-alpha.10",
 		"@reforged/maker-appimage": "^5.2.0",
-		"@types/node": "22.15.0",
-		"concurrently": "^9.2.1",
+		"@types/node": "24.13.3",
+		"concurrently": "^10.0.3",
 		"electron": "npm:electron-nightly@44.0.0-nightly.20260522",
 		"typescript": "^6.0.3"
 	},
 	"dependencies": {
 		"@nyabsi/minimal-discord-rpc": "^1.0.1",
-		"compare-versions": "^6.1.0",
-		"urlpattern-polyfill": "^10.1.0"
+		"compare-versions": "^6.1.0"
 	},
-	"packageManager": "pnpm@11.1.1"
+	"packageManager": "pnpm@11.15.1"
 }
