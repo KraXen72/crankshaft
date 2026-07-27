@@ -58,6 +58,7 @@ export class MakerNSIS extends MakerBase<{}> {
 
     const script = `
 Unicode true
+ManifestDPIAware true
 
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
