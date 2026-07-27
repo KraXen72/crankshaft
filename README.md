@@ -11,10 +11,10 @@
 [Other](https://github.com/KraXen72/crankshaft/releases/latest)
 
 > [!WARNING]
-> If you're on MacOS, you may see a popup saying the app is 'damaged'.
-> To fix this, open Terminal and run:
+> If you're on MacOS, you may see a popup saying the app is 'damaged' when trying to run it.
+> To fix, open Terminal and run:
 > 
-> `xattr -cr /Applications/crankshaft.app`
+> `xattr -c /Applications/crankshaft.app`
 
 ![splash](assets/blank_splash.png)
 
