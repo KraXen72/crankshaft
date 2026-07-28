@@ -166,6 +166,11 @@ if (typeof userPrefs.fullscreen === 'boolean') {
 	if (userPrefs.fullscreen === true) userPrefs.fullscreen = 'fullscreen'; else userPrefs.fullscreen = 'windowed';
 }
 
+// borderless is now broken on windows, and I don't think there's a fix?
+if (process.platform === "win32" && userPrefs.fullscreen === 'borderless') {
+	userPrefs.fullscreen = 'windowed';
+}
+
 // initially, hideAds was a true/false, now it's "block", "hide" or "off"
 if (typeof userPrefs.hideAds === 'boolean') {
 	modifiedSettings = true;
