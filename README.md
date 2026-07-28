@@ -5,10 +5,10 @@
 > a fast, feature-rich krunker client written in typescript
 
 **Download:**
-[Windows (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-setup-win-x64.exe) -
-[Mac (arm64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-mac-arm64.dmg) -
-[Linux (x86_64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-portable-linux-x86_64.AppImage) -
-[Other](https://github.com/KraXen72/crankshaft/releases/latest)
+[Windows (x64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-x64-setup.exe) -
+[Mac (arm64)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-arm64.dmg) -
+[Linux (x64 AppImage)](https://github.com/KraXen72/crankshaft/releases/latest/download/crankshaft-x64.AppImage) -
+[See Latest Release](https://github.com/KraXen72/crankshaft/releases/latest)
 
 > [!WARNING]
 > If you're on MacOS, you may see a popup saying the app is 'damaged' when trying to run it.

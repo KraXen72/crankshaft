@@ -92,6 +92,19 @@ export default {
                     { mode: 0o755 }
                 );
             }
+        },
+        postMake: async (_, results) => {
+            const { version } = (await import("./package.json", { with: { type: "json" }})).default;
+            for (const result of results) {
+                const newArtifacts: string[] = [];
+                for (const artifact of result.artifacts) {
+                    const newArtifact = artifact.replace(`-${version}`, '')
+                    renameSync(artifact, newArtifact);
+                    newArtifacts.push(newArtifact);
+                }
+                result.artifacts = newArtifacts;
+            }
+            return results;
         }
     },
     publishers: [
