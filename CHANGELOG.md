@@ -1,3 +1,22 @@
+## [2.0.0](https://github.com/KraXen72/crankshaft/compare/1.12.0...2.0.0) (2026-07-28)
+
+
+### Features
+- Update to modern electron (!!!!!!)
+- Add links to Discord and GitHub to top of settings menu
+
+### Bugfixes
+- Fix menu timer
+- Fix exit client button
+- Fix application not closing properly on MacOS
+
+### Cleanup
+- Remove unnecessary/useless settings
+- Remove code tied to legacy social page
+- Remove backported CSS (no longer necessary w/ modern electron)
+- Migrate from electron-builder to electron-forge
+- Dependency cleanup & updates
+
 ## [1.12.0](https://github.com/KraXen72/crankshaft/compare/1.11.1...1.12.0) (2026-05-05)
 
 
