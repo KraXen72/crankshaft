@@ -51,9 +51,4 @@ export function applyCommandLineSwitches(userPrefs: UserPrefs) {
 		app.commandLine.appendSwitch('disable-gpu-vsync');
 		console.log('Removed FPS Cap');
 	}
-
-	if (userPrefs.inProcessGPU) {
-		app.commandLine.appendSwitch('in-process-gpu');
-		console.log('In Process GPU is active');
-	}
 }
