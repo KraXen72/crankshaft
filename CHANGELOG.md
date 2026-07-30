@@ -1,3 +1,9 @@
+## [2.0.1](https://github.com/KraXen72/crankshaft/compare/2.0.0...2.0.1) (2026-07-29)
+
+
+### Bugfixes
+- actually remove in-process-gpu code (fixes breakage on windows)
+
 ## [2.0.0](https://github.com/KraXen72/crankshaft/compare/1.12.0...2.0.0) (2026-07-28)
 
 
