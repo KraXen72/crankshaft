@@ -30,7 +30,7 @@ export default {
     packagerConfig: {
         name: "crankshaft",
         executableName: "crankshaft",
-        appBundleId: "com.kraxen72.crankshaft",
+        appBundleId: "io.github.KraXen72.crankshaft",
         icon: "./build/icon",
         appCategoryType: "public.app-category.games",
         appCopyright: "",

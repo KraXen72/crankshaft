@@ -13,9 +13,4 @@
 		"noEmit": true,
 		"types": ["node"]
 	},
-	"include": [
-		"src/**/*",
-		"forge.config.ts",
-		"MakerNSIS.ts"
-	]
 }
