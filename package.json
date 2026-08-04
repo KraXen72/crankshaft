@@ -1,6 +1,6 @@
 {
 	"name": "crankshaft",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"description": "Crankshaft Krunker Client",
 	"main": "./src/main.ts",
 	"type": "module",
