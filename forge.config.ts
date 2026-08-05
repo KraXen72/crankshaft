@@ -36,7 +36,7 @@ export default {
         appCopyright: "",
         ignore: /^\/(?!(src|assets|node_modules|package\.json|README\.md|LICENSE))/,
         prune: true,
-        // asar: true,
+        asar: true,
         download: {
             unsafelyDisableChecksums: true,
             mirrorOptions: {
