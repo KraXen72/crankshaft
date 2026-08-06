@@ -37,6 +37,13 @@ if (!gotTheLock) {
   });
 }
 
+// Fix flatpak window icon.
+if (process.env.FLATPAK_ID) {
+	// @ts-expect-error - this is an internal api
+	// https://github.com/electron/electron/blob/802ef45ad15e76b36d91b59d4506b4165be71e06/docs/api/app.md#appsetdesktopnamename-linux
+	app.setDesktopName(`${process.env.FLATPAK_ID}.desktop`)
+}
+
 function migrateSettings() {
 	if (existsSync(pathJoin(docsPath, 'settings moved.txt')) || readdirSync(docsPath).length === 0) return;
 	if (!existsSync(userData)) mkdirSync(userData);
@@ -338,7 +345,7 @@ app.on('ready', () => {
 	// only check for updates once
 	mainWindow.once("ready-to-show", () => {
 		if (!process.env.FLATPAK_ID) {
-		mainWindow.webContents.send('checkForUpdates', app.getVersion());
+			mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		}
 
 		mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
