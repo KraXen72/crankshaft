@@ -267,7 +267,7 @@ ipcRenderer.on('checkForUpdates', async (_event, currentVersion) => {
 		try { updateElement.removeEventListener('click', callback); } catch (_e) { }
 		updateElement.addEventListener('click', callback);
 	} else {
-		updateElement.appendChild(createElement('span', { text: 'No new updates' }));
+		// updateElement.appendChild(createElement('span', { text: 'No new updates' }));
 	}
 
 	strippedConsole.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
