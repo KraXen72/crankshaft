@@ -31,12 +31,9 @@
 		"@electron-forge/shared-types": "8.0.0-alpha.10",
 		"@reforged/maker-appimage": "^5.2.0",
 		"@types/node": "24.13.3",
-		"@xmldom/xmldom": "^0.9.10",
 		"concurrently": "^10.0.3",
 		"electron": "npm:electron-nightly@44.0.0-nightly.20260522",
-		"satteri": "^0.9.5",
-		"typescript": "^6.0.3",
-		"xml-formatter": "^3.7.0"
+		"typescript": "^6.0.3"
 	},
 	"dependencies": {
 		"@nyabsi/minimal-discord-rpc": "^1.0.1",
