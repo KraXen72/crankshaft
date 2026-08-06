@@ -250,8 +250,7 @@ ipcRenderer.on('main_did-finish-load', (_event, _userPrefs) => {
 });
 
 ipcRenderer.on('checkForUpdates', async (_event, currentVersion) => {
-	const releases = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`);
-	const response = await releases.json();
+	const response = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`).then(r => r.json());
 	const latestVersion = response.tag_name;
 	const comparison = compareVersions(currentVersion, latestVersion); // -1 === new version available
 
@@ -260,7 +259,7 @@ ipcRenderer.on('checkForUpdates', async (_event, currentVersion) => {
 		id: '#loadInfoUpdateHolder'
 	});
 
-	if (comparison === -1) {
+	if (comparison === -1 && !response.body.includes("NO_NOTIF")) {
 		updateElement.appendChild(createElement('a', { text: `New update! Download ${latestVersion}` }));
 
 		const callback = () => { ipcRenderer.send('openExternal', `https://github.com/${repoID}/releases/latest`); };
