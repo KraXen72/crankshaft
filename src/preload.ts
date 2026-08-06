@@ -11,6 +11,17 @@ import { splashFlavor } from './splashscreen.ts';
 window.OffCliV = true;
 window.closeClient = () => ipcRenderer.send('closeClient');
 
+// force-disable krunker's aim freeze fix
+if (localStorage.getItem("kro_setngss_aimFreezeFix") === "true") {
+	localStorage.setItem("kro_setngss_aimFreezeFix", "false");
+}
+webFrame.insertCSS(`
+div[title="Possible fix for jittery/freezing aiming"] {
+    opacity: 0.3;
+    pointer-events: none;	
+}
+`)
+
 // save some console methods from krunker
 export const strippedConsole = {
 	error: console.error.bind(console),
