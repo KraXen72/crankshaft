@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { writeFileSync, readFileSync, readdirSync } from 'fs';
+import { writeFileSync, readFileSync, readdirSync, existsSync } from 'fs';
 import * as os from "os";
 import { ipcRenderer, shell } from 'electron'; // add app if crashes
 import { createElement, haveSameContents, toggleSettingCSS, repoID, parseKeybindSettingDisplay, turnKeyboardEventIntoSettingValue, objectsAreEqual } from './utils.ts';
@@ -74,6 +74,10 @@ function openPath(e: MouseEvent, path: string) {
 	shell.openPath(path).catch(err => strippedConsole.error(err));
 }
 
+async function hasNvidiaControlPanel() {
+	return os.platform() === "win32" && existsSync("C:\\Program Files\\NVIDIA Corporation\\Control Panel Client\\nvcplui.exe");
+}
+
 /**
  * each setting is defined here as a SettingsDesc object. check typescript intelliSense to see if you have all required props.
  * some setting types, like 'sel' will have more required props, for example 'opts'.
@@ -91,7 +95,7 @@ function openPath(e: MouseEvent, path: string) {
  * based on my generative settings from https://github.com/KraXen72/glide, precisely https://github.com/KraXen72/glide/blob/master/settings.js
  */
 const settingsDesc: SettingsDesc = {
-	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: '', safety: 0, cat: 0 },
+	fpsUncap: { title: 'Un-cap FPS', type: 'bool', desc: hasNvidiaControlPanel() ? 'If you want to cap FPS above your screen\'s refresh rate, enable this option and set the cap in NVIDIA Control Panel.' : '', safety: 0, cat: 0 },
 	fullscreen: { title: 'Start in Windowed/Fullscreen mode', type: 'sel', desc: "Use 'borderless' if you have client-capped fps and unstable fps in fullscreen", safety: 0, cat: 0, opts: ['windowed', 'maximized', 'fullscreen', ...(process.platform !== "win32" ? ['borderless'] : [])] },
 	inProcessGPU: { title: 'In-Process GPU (video capture)', type: 'bool', desc: 'Enables video capture & embeds the GPU under the same process', safety: 1, cat: 0 },
 	resourceSwapper: { title: 'Resource swapper', type: 'bool', desc: 'Enable Krunker Resource Swapper. ', safety: 0, cat: 0 },
