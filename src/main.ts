@@ -337,7 +337,9 @@ app.on('ready', () => {
 
 	// only check for updates once
 	mainWindow.once("ready-to-show", () => {
+		if (!process.env.FLATPAK_ID) {
 		mainWindow.webContents.send('checkForUpdates', app.getVersion());
+		}
 
 		mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
 	})
