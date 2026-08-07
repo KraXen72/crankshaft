@@ -1,6 +1,6 @@
 ﻿import { join as pathJoin, resolve as pathResolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync, cpSync } from 'fs';
-import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions } from 'electron';
+import { BrowserWindow, Menu, type MenuItem, type MenuItemConstructorOptions, app, clipboard, ipcMain, protocol, shell, screen, type BrowserWindowConstructorOptions, type HandlerDetails, type WindowOpenHandlerResponse } from 'electron';
 import { aboutSubmenu, macAppMenuArr, csMenuTemplate, constructDevtoolsSubmenu } from './menu.ts';
 import { applyCommandLineSwitches } from './switches.ts';
 import RequestHandler from './requesthandler.ts';
@@ -216,7 +216,7 @@ ipcMain.on('settingsUI_updates_userPrefs', (_event, data) => {
 ipcMain.on('openExternal', (_event, url: string) => { shell.openExternal(url); });
 
 // allow exit client prompt to quit the entire electron process
-ipcMain.on('closeClient', () => { app.exit(); });
+ipcMain.on('closeClient', () => { app.quit(); });
 
 const $assets = pathResolve(import.meta.dirname, '..', 'assets');
 
@@ -383,19 +383,30 @@ app.on('ready', () => {
 	mainWindow.setAutoHideMenuBar(true);
 	mainWindow.setMenuBarVisibility(false);
 
-	mainWindow.webContents.setWindowOpenHandler(details => {
+	function windowOpenHandler(details: HandlerDetails): WindowOpenHandlerResponse {
 		const url = new URL(details.url)
 
 		console.log('url trying to open:', url.toString());
-
-		if (url.hostname.endsWith("krunker.io") && url.hostname !== "editor.krunker.io") {
+		
+		if (url.pathname === "/editor.html") {
+			const win = new BrowserWindow({
+				autoHideMenuBar: true
+			});
+			win.webContents.setWindowOpenHandler(windowOpenHandler);
+			win.loadURL(url.toString());
+			win.on("close", () => {
+				win.destroy();
+			})
+		} else if (url.hostname === "krunker.io" || url.hostname === "beta.krunker.io") {
 			mainWindow.loadURL(url.toString());
-			return { action: 'deny' };
+			mainWindow.focus();
 		} else {
 			shell.openExternal(url.toString())
-			return { action: 'deny' };
 		}
-	})
+		return { action: 'deny' };
+	}
+
+	mainWindow.webContents.setWindowOpenHandler(windowOpenHandler);
 
 	if (userPrefs.resourceSwapper || userPrefs.hideAds === 'block') {
 		const CrankshaftFilterHandlerInstance = new RequestHandler(mainWindow,
