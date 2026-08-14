@@ -347,9 +347,9 @@ app.on('ready', () => {
 		if (!process.env.FLATPAK_ID) {
 			mainWindow.webContents.send('checkForUpdates', app.getVersion());
 		}
+	});
 
-		mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
-	})
+	mainWindow.webContents.on('did-finish-load', () => mainWindow.webContents.send('main_did-finish-load', userPrefs));
 
 	mainWindow.loadURL('https://krunker.io');
 
