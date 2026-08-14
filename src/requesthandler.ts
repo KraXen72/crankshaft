@@ -79,9 +79,15 @@ export default class RequestHandler {
 			return callback({});
 		});
 
+		const filter: Electron.WebRequestFilter = {
+			urls: [
+				'*://browserfps.com/*',
+				'*://*.browserfps.com/*'
+			]
+		};
 
 		// Fix CORS problem with browserfps.com.
-		this.browserWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, callback) => {
+		this.browserWindow.webContents.session.webRequest.onHeadersReceived(filter, ({ responseHeaders }, callback) => {
 			for (const key in responseHeaders) {
 				const lowercase = key.toLowerCase();
 
