@@ -93,7 +93,8 @@ function handleMatchmakerBind(event: KeyboardEvent) {
  * @param game The game that was retrieved by the custom matchmaker
  */
 function createFetchedGamePopup(game: IMatchmakerGame) {
-	popupElement.style.backgroundImage = `url(https://assets.krunker.io/img/maps/map_${ MATCHMAKER_MAP_ICON_INDICES.indexOf(game.map) || 0}.png)`;
+	const mapIndex = MATCHMAKER_MAP_ICON_INDICES.indexOf(game.map);
+	popupElement.style.backgroundImage = `url(https://assets.krunker.io/img/maps/map_${ mapIndex >= 0 ? mapIndex : 0}.png)`;
 
 	currentMatch = game.gameID;
 	if (game.gameID === "none") {
