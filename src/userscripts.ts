@@ -106,7 +106,13 @@ class Userscript implements IUserscriptInstance {
 					if (Array.isArray(meta)) this.meta[metaKey] = meta[meta.length - 1];
 				}
 
-				if ('run-at' in this.meta && this.meta['run-at'] === 'document.start') this.runAt = 'document-start';
+				// handles the variant with the period as well - this was a mistake and now exists for backwards compatibility
+				if (
+					'run-at' in this.meta &&
+					(this.meta['run-at'] === 'document.start' || this.meta['run-at'] === 'document-start')
+				) {
+					this.runAt = 'document-start';
+				}
 
 				// assign priority 0 incase not defined or invalid type
 				this.priority = 0;
