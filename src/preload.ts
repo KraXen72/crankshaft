@@ -253,23 +253,20 @@ ipcRenderer.on('checkForUpdates', async (_event, currentVersion) => {
 	const response = await fetch(`https://api.github.com/repos/${repoID}/releases/latest`).then(r => r.json());
 	const latestVersion = response.tag_name;
 	const comparison = compareVersions(currentVersion, latestVersion); // -1 === new version available
+	strippedConsole.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
+
+	if (comparison !== -1) return; // no new updates
 
 	const updateElement = createElement('div', {
 		class: ['crankshaft-holder-update', 'refresh-popup'],
 		id: '#loadInfoUpdateHolder'
 	});
 
-	if (comparison === -1 && !response.body.includes("NO_NOTIF")) {
-		updateElement.appendChild(createElement('a', { text: `New update! Download ${latestVersion}` }));
+	updateElement.appendChild(createElement('a', { text: `New update! Download ${latestVersion}` }));
 
-		const callback = () => { ipcRenderer.send('openExternal', `https://github.com/${repoID}/releases/latest`); };
-		try { updateElement.removeEventListener('click', callback); } catch (_e) { }
-		updateElement.addEventListener('click', callback);
-	} else {
-		// updateElement.appendChild(createElement('span', { text: 'No new updates' }));
-	}
-
-	strippedConsole.log(`Crankshaft client v${currentVersion} latest: v${latestVersion}`);
+	const callback = () => { ipcRenderer.send('openExternal', `https://github.com/${repoID}/releases/latest`); };
+	try { updateElement.removeEventListener('click', callback); } catch (_e) { }
+	updateElement.addEventListener('click', callback);
 
 	document.body.appendChild(updateElement);
 
