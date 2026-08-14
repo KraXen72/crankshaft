@@ -112,7 +112,9 @@ class Userscript implements IUserscriptInstance {
 				this.priority = 0;
 				if ('priority' in this.meta && typeof this.meta.priority === "string"){
 					try {
-						this.priority = parseInt(this.meta.priority, 10);
+						const priority = Number.parseInt(this.meta.priority, 10);
+						if (Number.isNaN(priority)) throw new Error("NaN is invalid")
+						this.priority = priority;
 					} catch (e){
 						console.log("Error while parsing userscript priority: ", e);
 						this.priority = 0;
