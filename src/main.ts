@@ -213,7 +213,10 @@ ipcMain.on('settingsUI_updates_userPrefs', (_event, data) => {
 });
 
 // allow perload opening links in default browser
-ipcMain.on('openExternal', (_event, url: string) => { shell.openExternal(url); });
+ipcMain.on('openExternal', (_event, url: string) => {
+	if (new URL(url).protocol !== "https:") throw new Error("invalid url");
+	shell.openExternal(url);
+ });
 
 // allow exit client prompt to quit the entire electron process
 ipcMain.on('closeClient', () => { app.quit(); });
