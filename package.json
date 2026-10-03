@@ -7,7 +7,7 @@
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"postinstall": "env ELECTRON_CUSTOM_DIR=\"v{{ version }}-patched-2\" ELECTRON_NIGHTLY_MIRROR=\"https://github.com/thegu5/electron/releases/download/\" electron_use_remote_checksums=1 install-electron",
-		"start": "electron-forge start -- --ozone-platform=x11",
+		"start": "__NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia electron-forge start -- --ozone-platform=x11",
 		"dist": "electron-forge make",
 		"release": "electron-forge make && electron-forge publish",
 		"lint": "biome lint"

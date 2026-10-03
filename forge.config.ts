@@ -88,7 +88,7 @@ export default {
 
                 writeFileSync(
                     wrapper,
-                    `#!/bin/sh\nDIR="$(dirname "$(readlink -f "$0")")"\nexec "$DIR/${exeName}.bin" --ozone-platform=x11 "$@"\n`,
+                    `#!/bin/sh\nDIR="$(dirname "$(readlink -f "$0")")"\n__NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia\nexec "$DIR/${exeName}.bin" --ozone-platform=x11 "$@"\n`,
                     { mode: 0o755 }
                 );
             }
