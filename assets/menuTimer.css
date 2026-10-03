@@ -33,7 +33,7 @@
 
 #uiBase.onMenu .spectateInfo {
 	position: fixed;
-	top: calc(50% + 80px);
+	top: calc(40% - 120px);
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
