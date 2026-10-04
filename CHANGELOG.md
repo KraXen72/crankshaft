@@ -1,3 +1,19 @@
+## [2.0.2](https://github.com/KraXen72/crankshaft/compare/2.0.1...2.0.2) (2026-10-04)
+
+
+### Features
+- Add NVIDIA-specific environment variables (improves performance on some systems)
+
+### Bugfixes
+- Force-disable krunker's aim freeze fix
+- Fix window handling (editor page works again, editor docs now open in your regular browser)
+- Fix menu timer and splash screen to fit the season 10 UI
+- Fix some crankshaft settings always appearing when searching
+- Misc flatpak fixes
+- Harden IPC call available to preload process
+- Correctly handle userscripts with `@runAt document-start` and invalid priorities
+
+
 ## [2.0.1](https://github.com/KraXen72/crankshaft/compare/2.0.0...2.0.1) (2026-07-29)
 
 
