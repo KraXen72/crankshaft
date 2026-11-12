@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-    
+
       - name: Install NSIS
         if: runner.os == 'Windows'
         uses: negrutiu/nsis-install@f3339c88dba6fd08910d5275a943f8f746d94876 # v2
@@ -33,7 +33,7 @@ jobs:
       - name: Setup pnpm and Node
         uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3
         with:
-          runtime: node@latest
+          runtime: node@lts
           require-lockfile: true
 
       - name: Build binaries and release
